@@ -1,0 +1,756 @@
+(*
+  Copyright 2023 ZhengPu Shi
+  This file is part of VFCS. It is distributed under the MIT
+  "expat license". You should have recieved a LICENSE file with it.
+
+  purpose   : finite set of natural numbers
+  author    : ZhengPu Shi
+  date      : 2023.12
+
+  remark    :
+  1. 比较自然数的判定程序
+     已有的程序
+     le_gt_dec     : forall m n : nat, {m <= n} + {m > n}
+     lt_eq_lt_dec  : forall m n : nat, {m < n} + {m = n} + {n < m}
+     新增的程序
+     lt_ge_dec     : forall m n : nat, {m < n} + {m >= n}
+
+  2. fin 的几种实现方案
+     (1). 使用 unit 来表示 fin 0
+        定义：
+        Definition fin (n : nat) :=
+        match n with O => unit | _ => {i : nat | i < n} end.
+        特点：
+        1. fin2nat 中，将 fin 0 处理为 0
+           注意，由于这个特殊处理，往往需要处理 n = 0 和 n > 0 这两类问题。
+           实际使用时，部分引理需要 0 < n 时成立。
+           同时，部分引理需要 i < n 时成立。
+           由于很多很自然成立的引理需要额外的前提约束，非常不直观。
+           最根本原因是 fin2nat和nat2fin不是一一映射。
+        2. nat2fin 不需要使用option
+        3. 由于fin是依赖类型，抽取出的Ocaml代码含有 Obj.magic
+     (2). fin 0 集合中没有元素
+        定义：
+        Definition fin (n : nat) := {i | i < n}.
+        特点：
+        1. fin2nat 不需要特殊处理
+        2. nat2fin 使用option
+           由于 option 的存在，使得表达式较为复杂。
+        3. sig类型本质上不是依赖类型，抽取的Ocaml代码是正常的。
+        4. 多数引理不需要额外的前提就能成立。
+           比如 vnth 不会越界。
+     (3). 多使用一个下标
+        定义：
+        Definition fin (n : nat) := {i | i <= n}
+        特点：
+        1. fin 0 有一个元素，fin 1 有两个元素，fin n 有 S n 个元素。
+           所以该集合永远不为空。
+           同时，fin2nat, nat2fin 也成为了全函数，并且代码抽取也是正常的。
+        3. 已知的一些问题
+           由于fin用于访问vec，所以 vec 0 也修改为含有1个元素的向量。
+           所以，vec n 含有 S n 个元素。
+           这就导致 vec 3 实际上是 4 个元素，很奇怪。
+        4. 一个思路是，只修改 fin，而不修改 vec, seq 等模块。
+           fin 0 = {0}       丢弃 {0}
+           fin 1 = {0,1}     丢弃 {1}
+           fin 2 = {0,1,2}   丢弃 {2}
+           在与 vec 交互时，人为的丢弃最大的那个值。
+ *)
+
+Require Export PropExtensionality.
+Require Export Arith Lia.
+Require Export ListExt.
+Require Export NatExt.
+Require Import Extraction.
+
+(* #[export] Hint Rewrite *)
+(*   map_length *)
+(*   seq_length *)
+(*   : fin. *)
+
+
+(** ** Type of fin *)
+
+Declare Scope fin_scope.
+Delimit Scope fin_scope with fin.
+
+Open Scope nat_scope.
+Open Scope fin_scope.
+
+(* Notation "[ | i ]" := (exist _ i _) (format "[ | i ]"). *)
+
+(** Definition of fin type *)
+(* Notation fin n := {i | i < n}. *)
+(* Definition fin (n : nat) := {i | i < n}. *)
+(* 借鉴ordinal，使用 Inductive 可避免因过于多态的 sig 类型而带来的不必要的复杂性 *)
+Inductive fin (n : nat) := Fin (i : nat) (E : i < n).
+(* 借鉴了 ordinal 的记号 *)
+Notation "''I_' n" := (fin n)
+                        (at level 8, n at level 2, format "''I_' n").
+Arguments Fin {n}.
+
+Lemma fin_n_gt0 :forall {n} (i : fin n), 0 < n.
+Proof.
+  intros. destruct i as [i E]. destruct n. lia. lia.
+Qed.
+
+Lemma fin0_False : fin 0 -> False.
+Proof. intros. inversion H. lia. Qed.
+
+Lemma fin_eq_iff : forall {n} i j Ei Ej, i = j <-> @Fin n i Ei = @Fin n j Ej.
+Proof.
+  intros. split; intros.
+  - subst. f_equal. apply proof_irrelevance.
+  - inversion H. auto.
+Qed.
+
+
+(** ** [fin] to [nat] *)
+
+(** Convert from [fin] to [nat] *)
+Definition fin2nat {n} (f : fin n) := let '(Fin i _) := f in i.
+(* Coercion fin2nat : fin >-> nat. *)
+
+Lemma fin2nat_inj : forall {n} (i1 i2 : fin n), fin2nat i1 = fin2nat i2 -> i1 = i2.
+Proof. intros. destruct i1,i2; simpl in H. apply fin_eq_iff; auto. Qed.
+
+Lemma fin2nat_inj_not : forall {n} (i1 i2 : fin n), fin2nat i1 <> fin2nat i2 -> i1 <> i2.
+Proof. intros. intro. destruct H. subst; auto. Qed.
+
+Lemma fin2nat_lt : forall {n} (i : fin n), fin2nat i < n.
+Proof. intros. destruct i; simpl. auto. Qed.
+
+Lemma fin2nat_lt_Sn : forall {n} (i : fin n), fin2nat i < S n.
+Proof. intros. pose proof (fin2nat_lt i). auto. Qed.
+
+Lemma fin2nat_Fin : forall {n} i (H : i < n), fin2nat (Fin i H) = i.
+Proof. auto. Qed.
+
+Hint Resolve fin2nat_Fin : fin.
+
+Lemma fin_fin2nat : forall {n} (i : fin n) (E : fin2nat i < n), Fin (fin2nat i) E = i.
+Proof. intros. destruct i; simpl. apply fin_eq_iff; auto. Qed.
+
+Hint Resolve fin_fin2nat : fin.
+
+(** ** comparison procedure of [fin] *)
+Notation "i ??= j" := (fin2nat i ??= fin2nat j) : fin_scope.
+Notation "i ??> j" := (fin2nat i ??> fin2nat j) : fin_scope.
+Notation "i ??>= j" := (fin2nat i ??>= fin2nat j) : fin_scope.
+Notation "i ??< j" := (fin2nat i ??< fin2nat j) : fin_scope.
+Notation "i ??<= j" := (fin2nat i ??<= fin2nat j) : fin_scope.
+
+
+(** ** [fin0] *)
+
+(** A default entry of `fin` *)
+Definition fin0 {n : nat} : fin (S n) := Fin 0 (Nat.lt_0_succ _).
+
+(** i <> fin0 -> 0 < fin2nat i *)
+Lemma fin2nat_gt0_if_neq0 : forall {n} (i : fin (S n)), i <> fin0 -> 0 < fin2nat i.
+Proof.
+  intros. unfold fin2nat,fin0 in *. destruct i.
+  assert (i <> 0). intro. destruct H. apply fin_eq_iff. auto. lia.
+Qed.
+
+(** 0 < fin2nat i -> i <> fin0 *)
+Lemma fin2nat_gt0_imply_neq0 : forall {n} (i : fin (S n)), 0 < fin2nat i -> i <> fin0.
+Proof.
+  intros. unfold fin2nat,fin0 in *. destruct i.
+  intro. apply fin_eq_iff in H0. lia.
+Qed.
+
+
+(** ** [fin1] *)
+
+(** fin 1 is unique *)
+Lemma fin1_uniq : forall (i : fin 1), i = fin0.
+Proof. intros. destruct i. apply fin_eq_iff. lia. Qed.
+
+
+(** ** [nat] to [fin (S n)] *)
+
+(** Convert from nat to fin (S n). If `i >= S n` then {0} *)
+Definition nat2finS {n} (i : nat) : fin (S n).
+  destruct (i ??< S n)%nat as [E|E].
+  - apply (Fin i E).
+  - apply fin0.
+Defined.
+
+Notation "# i" := (nat2finS i) (at level 1, format "# i").
+
+Lemma nat2finS_eq : forall n i (E : i < S n), nat2finS i = Fin i E.
+Proof.
+  intros. unfold nat2finS. destruct (_??<_)%nat; try lia. apply fin_eq_iff; auto.
+Qed.
+
+Lemma nat2finS_fin2nat : forall n i, nat2finS (@fin2nat (S n) i) = i.
+Proof.
+  intros. destruct i; simpl. rewrite nat2finS_eq with (E:=E); auto.
+Qed.
+Hint Rewrite nat2finS_fin2nat : fin.
+
+Lemma fin2nat_nat2finS : forall n i, i < (S n) -> fin2nat (@nat2finS n i) = i.
+Proof.
+  intros. rewrite nat2finS_eq with (E:=H); auto.
+Qed.
+Hint Rewrite fin2nat_nat2finS : fin.
+
+(** {i<n} <> nat2finS n -> fin2nat i < n *)
+Lemma nat2finS_neq_imply_lt : forall {n} (i : fin (S n)),
+    i <> nat2finS n -> fin2nat i < n.
+Proof.
+  intros. pose proof (fin2nat_lt i).
+  assert (fin2nat i <> n); try lia.
+  intro. destruct H. destruct i; simpl in *. subst.
+  rewrite nat2finS_eq with (E:=H0); auto. apply fin_eq_iff; auto.
+Qed.
+
+(** fin2nat i = n -> #n = i *)
+Lemma fin2nat_imply_nat2finS : forall n (i : fin (S n)), fin2nat i = n -> #n = i.
+Proof.
+  intros. erewrite nat2finS_eq. destruct i. apply fin_eq_iff; auto.
+  Unshelve. auto.
+Qed.
+
+
+(** ** [nat] to [fin n] *)
+
+(** Convert from [nat] to [fin] *)
+Definition nat2fin {n} (i : nat) (E : i < n) : fin n := Fin i E.
+
+Lemma nat2fin_fin2nat : forall n (f : fin n) (E: fin2nat f < n),
+    nat2fin (fin2nat f) E = f.
+Proof. intros. unfold nat2fin,fin2nat. destruct f. apply fin_eq_iff; auto. Qed.
+Hint Rewrite nat2fin_fin2nat : fin.
+
+Lemma fin2nat_nat2fin : forall n i (E: i < n), (fin2nat (nat2fin i E)) = i.
+Proof. intros. auto. Qed.
+Hint Rewrite fin2nat_nat2fin : fin.
+
+Lemma fin2nat_imply_nat2fin : forall {n} (i : fin n) j (H: j < n),
+    fin2nat i = j -> nat2fin j H = i.
+Proof.
+  intros. unfold nat2fin, fin2nat in *. destruct i. apply fin_eq_iff; auto.
+Qed.
+
+Lemma nat2fin_imply_fin2nat : forall {n} (i : fin n) j (E: j < n),
+    nat2fin j E = i -> fin2nat i = j.
+Proof.
+  intros. unfold nat2fin, fin2nat in *. destruct i. apply fin_eq_iff in H; auto.
+Qed.
+
+Lemma nat2fin_iff_fin2nat : forall {n} (i : fin n) j (E: j < n),
+    nat2fin j E = i <-> fin2nat i = j.
+Proof.
+  intros; split; intros. apply nat2fin_imply_fin2nat in H; auto.
+  apply fin2nat_imply_nat2fin; auto.
+Qed.
+
+
+(** ** Tactic for fin *)
+
+(* simplify and solve proofs about "fin" *)
+Ltac fin :=
+  repeat
+    (intros;
+     try autorewrite with fin in *;
+     try
+       (let E := fresh "E" in
+        match goal with
+        (* (i:fin n) (H:n=0) |- _ ==> (i:fin 0) |- _ *)
+        | [i : fin ?n, H: ?n = 0 |- _]     => subst
+        (* fin 0 |- _ ==> solve it *)
+        | i : fin 0 |- _  => exfalso; apply (fin0_False i)
+        (* fin2nat (i:fin n) < n ==> solve it *)
+        | [i : fin ?n |- fin2nat ?i < ?n]  => apply fin2nat_lt
+        (* fin2nat i = fin2nat j, i <> j |- _ ==> solve it *)
+        | H1 : fin2nat ?i = fin2nat ?j, H2 : ?i <> ?j |- _ =>
+            apply fin2nat_inj in H1; rewrite H1 in H2; easy
+        | H1 : fin2nat ?i = fin2nat ?j, H2 : ?j <> ?i |- _ =>
+            apply fin2nat_inj in H1; rewrite H1 in H2; easy
+        (* fin2nat i = fin2nat j |- i = j ==> solve it *)
+        | H : fin2nat ?i = fin2nat ?j |- ?i = ?j =>
+            apply fin2nat_inj in H; rewrite H; easy
+        | H : fin2nat ?i = fin2nat ?j |- ?j = ?i =>
+            apply fin2nat_inj in H; rewrite H; easy
+        (* fin2nat i <> fin2nat j |- i <> j ==> solve it *)
+        | H : fin2nat ?i <> fin2nat ?j |- ?i <> ?j => apply fin2nat_inj_not in H; easy
+        | H : fin2nat ?i <> fin2nat ?j |- ?j <> ?i => apply fin2nat_inj_not in H; easy
+        (* fin2nat i = n |- #n = i ==> solve it *)
+        | H : fin2nat ?i = ?n |- nat2finS ?n = ?i =>
+            apply (fin2nat_imply_nat2finS n i H)
+        | H : fin2nat ?i = ?n |- ?i = nat2finS ?n =>
+            symmetry; apply (fin2nat_imply_nat2finS n i H)
+        (* destruct the pattern about "??=, ??<, ??<=" *)
+        | [ H : context [(?i ??= ?j)%nat] |- _]  => destruct (i ??= j)%nat as [E|E]
+        | [ |- context [(?i ??= ?j)%nat]]        => destruct (i ??= j)%nat as [E|E]
+        | [ H : context [(?i ??< ?j)%nat] |- _]  => destruct (i ??< j)%nat as [E|E]
+        | [ |- context [(?i ??< ?j)%nat]]        => destruct (i ??< j)%nat as [E|E]
+        | [ H : context [(?i ??<= ?j)%nat] |- _] => destruct (i ??<= j)%nat as [E|E]
+        | [ |- context [(?i ??<= ?j)%nat]]       => destruct (i ??<= j)%nat as [E|E]
+        (* f i = f j ==> i = j *)
+        | |- ?f ?i = ?f ?j => f_equal
+        (* a = b *)
+        | |- ?a = ?b =>
+            match type of a with
+            (* (i:fin n) = (j:fin n) ==> try to solve it *)
+            | fin ?n => try apply fin_eq_iff
+            (* Prop *)
+            | ?t => match type of t with | Prop => apply proof_irrelevance end
+            end
+        end);
+     try
+       (match goal with
+        (* (i:fin n) = (j:fin n) |- _ ==> subst it *)
+        | H : ?i = ?j |- _ => match type of i with | fin ?n => try rewrite H in * end
+        end);
+     auto; try reflexivity; try easy; try lia; try ring
+    ).
+
+(* simplify "fin2nat i =(<>) fin2nat j" in context *)
+Ltac fin2nat_inj :=
+  repeat
+    (let E := fresh "E" in
+     match goal with
+     (* fin2nat i = fin2nat j |- _ ==> i = j |-, and rewrite *)
+     | H : fin2nat ?i = fin2nat ?j |- _ =>
+         apply fin2nat_inj in H; try rewrite H in *
+     | H : fin2nat ?i <> fin2nat ?j |- _ =>
+         apply fin2nat_inj_not in H
+     end).
+
+
+(** ** Cast between two [fin] type with actual equal range *)
+
+(** Cast from [fin n] type to [fin m] type if [n = m] *)
+Definition cast_fin {n m} (H : n = m) (i : 'I_n) : 'I_m.
+  subst. apply i.
+Defined.
+
+
+(** ** [fin m] to [fin n] *)
+
+(** Convert from [fin m] to [fin n] *)
+Definition fin2fin m n (i : fin m) (E : fin2nat i < n) : fin n :=
+  nat2fin (fin2nat i) E.
+
+Lemma fin2nat_fin2fin : forall m n (i : fin m) (E : fin2nat i < n),
+    fin2nat (fin2fin m n i E) = fin2nat i.
+Proof. intros. unfold fin2fin,fin2nat,nat2fin. auto. Qed.
+Hint Rewrite fin2nat_fin2fin : fin.
+
+Lemma fin2fin_fin2fin :
+  forall m n (i : fin m) (E1 : fin2nat i < n) (E2 : fin2nat (fin2fin m n i E1) < m),
+    fin2fin n m (fin2fin m n i E1) E2 = i.
+Proof.
+  intros. unfold fin2fin,fin2nat,nat2fin. destruct i. apply fin_eq_iff; auto.
+Qed.
+
+(** {i<n} + {k<n} -> (i+k<n) ? {i+k<n} : {0<n} *)
+Definition fin2SameRangeAdd {n : nat} (i k:fin n) : fin (n).
+  destruct (fin2nat i + fin2nat k ??< n)%nat as [E|E].
+  - refine (nat2fin (fin2nat i + fin2nat k) E).
+  - refine (nat2fin 0 _). destruct (n ??= 0)%nat.
+    + subst. fin.
+    + apply neq_0_lt_stt; auto.
+Defined.
+
+Lemma fin2nat_fin2SameRangeAdd : forall n (i k : fin n),
+    fin2nat (fin2SameRangeAdd i k) =
+      if (fin2nat i + fin2nat k ??< n)%nat then (fin2nat i + fin2nat k) else 0.
+Proof. intros. unfold fin2SameRangeAdd. fin. Qed.
+Hint Rewrite fin2nat_fin2SameRangeAdd : fin.
+
+(** {i<n} - {k<n} -> {i-k<n} *)
+Definition fin2SameRangeSub {n : nat} (i k:fin n) : fin (n).
+  refine (nat2fin (fin2nat i - fin2nat k) _).
+  pose proof (fin2nat_lt i). apply Nat.le_lt_trans with (fin2nat i).
+  apply Nat.le_sub_l. auto.
+Defined.
+
+Lemma fin2nat_fin2SameRangeSub : forall n (i k : fin n),
+    fin2nat (fin2SameRangeSub i k) = fin2nat i - fin2nat k.
+Proof. intros. unfold fin2SameRangeSub. simpl. auto. Qed.
+Hint Rewrite fin2nat_fin2SameRangeSub : fin.
+
+(** {i<n} -> (S i<n) ? {S i<n} : {i<n} *)
+Definition fin2SameRangeSucc {n : nat} (i:fin n) : fin (n).
+  destruct (S (fin2nat i) ??< n)%nat as [H|H].
+  - refine (nat2fin (S (fin2nat i)) H).
+  - apply i.
+Defined.
+
+Lemma fin2nat_fin2SameRangeSucc : forall n (i : fin n),
+    fin2nat (fin2SameRangeSucc i) =
+      if (S (fin2nat i) ??< n)%nat then S (fin2nat i) else fin2nat i.
+Proof. intros. unfold fin2SameRangeSucc. fin. Qed.
+Hint Rewrite fin2nat_fin2SameRangeSucc : fin.
+
+(** {i<n} -> (0 < i) ? {pred i<n} : {i<n} *)
+Definition fin2SameRangePred {n : nat} (i:fin n) : fin n.
+  destruct (0 ??< fin2nat i)%nat.
+  - refine (nat2fin (pred (fin2nat i)) _). apply Nat.lt_lt_pred. apply fin2nat_lt.
+  - apply i.
+Defined.
+
+Lemma fin2nat_fin2SameRangePred : forall n (i : fin n),
+    fin2nat (fin2SameRangePred i) =
+      if (0 ??< fin2nat i)%nat then pred (fin2nat i) else fin2nat i.
+Proof. intros. unfold fin2SameRangePred. fin. Qed.
+Hint Rewrite fin2nat_fin2SameRangePred : fin.
+
+(** Loop shift left : {i<n} << {k<n}. Eg: 0 1 2 =1=> 1 2 0  *)
+Definition fin2SameRangeLSL {n : nat} (i k:fin n) : fin (n).
+  destruct (n ??= 0)%nat.
+  - subst; fin.
+  - refine (nat2fin ((n + fin2nat i + fin2nat k) mod n) _).
+    apply Nat.mod_upper_bound. auto.
+Defined.
+
+Lemma fin2nat_fin2SameRangeLSL : forall {n} (i k : fin n),
+    fin2nat (fin2SameRangeLSL i k) = (n + fin2nat i + fin2nat k) mod n.
+Proof. intros. unfold fin2SameRangeLSL. fin. Qed.
+
+(** Loop shift right : {i<n} <-> {k<n}. Eg: 0 1 2 =1=> 2 0 1  *)
+Definition fin2SameRangeLSR {n : nat} (i k:fin n) : fin (n).
+  destruct (n ??= 0)%nat.
+  - subst; fin.
+  - refine (nat2fin ((n + fin2nat i - fin2nat k) mod n) _).
+    apply Nat.mod_upper_bound. auto.
+Defined.
+
+Lemma fin2nat_fin2SameRangeLSR : forall {n} (i k : fin n),
+    fin2nat (fin2SameRangeLSR i k) = (n + fin2nat i - fin2nat k) mod n.
+Proof. intros. unfold fin2SameRangeLSR. fin. Qed.
+
+
+(** {i < n} -> {n - i < n}  *)
+Definition fin2SameRangeRemain {n} (i : fin n) (E : 0 < fin2nat i) : fin n.
+  destruct (n ??= 0)%nat.
+  - subst; fin.
+  - refine (nat2fin (n - fin2nat i) _).
+    apply nat_sub_lt; auto. apply neq_0_lt_stt; auto.
+Defined.
+
+Lemma fin2nat_fin2SameRangeRemain : forall {n} (i : fin n) (E : 0 < fin2nat i),
+    fin2nat (fin2SameRangeRemain i E) = n - fin2nat i.
+Proof. intros. unfold fin2SameRangeRemain. fin. Qed.
+
+
+(** {i<n} -> {i<S n} *)
+Definition fin2SuccRange {n} (i:fin n) : fin (S n).
+  refine (nat2finS (fin2nat i)).
+Defined.
+
+Lemma fin2nat_fin2SuccRange : forall n (i:fin n),
+    fin2nat (@fin2SuccRange n i) = fin2nat i.
+Proof.
+  intros. unfold fin2SuccRange. apply fin2nat_nat2finS.
+  pose proof (fin2nat_lt i). lia.
+Qed.
+Hint Rewrite fin2nat_fin2SuccRange : fin.
+
+Lemma fin2SuccRange_nat2fin : forall n (i:nat) (E : i < n) (E0 : i < S n),
+  fin2SuccRange (nat2fin i E) = nat2fin i E0.
+Proof. intros. unfold fin2SuccRange, nat2finS. simpl. fin. Qed.
+Hint Rewrite fin2SuccRange_nat2fin : fin.
+
+
+(** {i<S n} -> {i<n} *)
+Definition fin2PredRange {n} (i:fin (S n)) (H:fin2nat i < n) : fin n :=
+  nat2fin (fin2nat i) H.
+
+Lemma fin2nat_fin2PredRange : forall n (i:fin (S n)) (E : fin2nat i < n),
+    fin2nat (@fin2PredRange n i E) = fin2nat i.
+Proof. intros. unfold fin2PredRange. simpl. auto. Qed.
+Hint Rewrite fin2nat_fin2PredRange : fin.
+
+Lemma fin2SuccRange_fin2PredRange : forall n (i:fin (S n)) (E : fin2nat i < n),
+    fin2SuccRange (fin2PredRange i E) = i.
+Proof.
+  intros. destruct i. unfold fin2SuccRange,fin2PredRange,nat2finS; simpl. fin.
+Qed.
+Hint Rewrite fin2SuccRange_fin2PredRange : fin.
+
+Lemma fin2PredRange_fin2SuccRange : forall n (i:fin n) (E: fin2nat (fin2SuccRange i) < n),
+    fin2PredRange (fin2SuccRange i) E = i.
+Proof.
+  intros. destruct i as [i Hi].
+  unfold fin2SuccRange,fin2PredRange,nat2finS in *; simpl in *. fin.
+Qed.
+Hint Rewrite fin2PredRange_fin2SuccRange : fin.
+
+
+(** {i < n} -> {i < m + n} *)
+Definition fin2AddRangeL {m n} (i : fin n) : fin (m + n).
+  refine (nat2fin (fin2nat i) _).
+  apply Nat.lt_lt_add_l. fin.
+Defined.
+
+Lemma fin2nat_fin2AddRangeL : forall m n (i : fin n),
+    fin2nat (@fin2AddRangeL m n i) = fin2nat i.
+Proof. intros. auto. Qed.
+Hint Rewrite fin2nat_fin2AddRangeL : fin.
+
+(* {i < m + n} -> {i < m} *)
+Definition fin2AddRangeL' {m n} (i : fin (m + n)) (E : fin2nat i < n) : fin n :=
+  nat2fin (fin2nat i) E.
+
+Lemma fin2nat_fin2AddRangeL' : forall {m n} (i:fin (m + n)) (E : fin2nat i < n),
+    fin2nat (fin2AddRangeL' i E) = fin2nat i.
+Proof. intros. auto. Qed.
+
+Lemma fin2AddRangeL_fin2AddRangeL' : forall {m n} (i:fin (m+n)) (E : fin2nat i < n),
+    fin2AddRangeL (fin2AddRangeL' i E) = i.
+Proof.
+  intros. unfold fin2AddRangeL, fin2AddRangeL'. simpl.
+  destruct i as [i Hi]. apply fin_eq_iff; auto.
+Qed.
+
+(** {i < m} -> {i < m + n} *)
+Definition fin2AddRangeR {m n} (i : fin m) : fin (m + n).
+  refine (nat2fin (fin2nat i) _).
+  apply Nat.lt_lt_add_r. apply fin2nat_lt.
+Defined.
+
+Lemma fin2nat_fin2AddRangeR : forall m n (i : fin m),
+    fin2nat (@fin2AddRangeR m n i) = fin2nat i.
+Proof. intros. auto. Qed.
+Hint Rewrite fin2nat_fin2AddRangeR : fin.
+
+(** {i < m + n} -> {i < m} *)
+Definition fin2AddRangeR' {m n} (i : fin (m + n)) (E : fin2nat i < m) : fin m :=
+  nat2fin (fin2nat i) E.
+
+Lemma fin2nat_fin2AddRangeR' : forall {m n} (i:fin (m+n)) (E : fin2nat i < m),
+    fin2nat (fin2AddRangeR' i E) = fin2nat i.
+Proof. intros. auto. Qed.
+
+Lemma fin2AddRangeR_fin2AddRangeR' : forall {m n} (i:fin (m+n)) (E : fin2nat i < m),
+    fin2AddRangeR (fin2AddRangeR' i E) = i.
+Proof.
+  intros. unfold fin2AddRangeR, fin2AddRangeR'. simpl.
+  destruct i as [i Hi]. apply fin_eq_iff; auto.
+Qed.
+
+Lemma fin2AddRangeR'_fin2AddRangeR : forall {m n} (i : fin m) (E : fin2nat i < m),
+    @fin2AddRangeR' m n (fin2AddRangeR i) E = i.
+Proof.
+  intros. unfold fin2AddRangeR, fin2AddRangeR'. simpl.
+  rewrite nat2fin_fin2nat. auto.
+Qed.
+
+(** {i < n} -> {m + i < m + n} *)
+Definition fin2AddRangeAddL {m n} (i : fin n) : fin (m + n).
+  refine (nat2fin (m + fin2nat i) _).
+  apply Nat.add_lt_mono_l. apply fin2nat_lt.
+Defined.
+
+Lemma fin2nat_fin2AddRangeAddL : forall {m n} (i : fin n),
+    fin2nat (@fin2AddRangeAddL m n i) = m + fin2nat i.
+Proof. intros. auto. Qed.
+
+(** {m + i < m + n} -> {i < n} *)
+Definition fin2AddRangeAddL' {m n} (i : fin (m + n)) (E : m <= fin2nat i) : fin n.
+  refine (nat2fin (fin2nat i - m) _).
+  pose proof (fin2nat_lt i). apply le_ltAdd_imply_subLt_L; auto.
+Defined.
+
+Lemma fin2nat_fin2AddRangeAddL' : forall {m n} (i:fin (m + n)) (E : m <= fin2nat i),
+    fin2nat (@fin2AddRangeAddL' m n i E) = fin2nat i - m.
+Proof. intros. auto. Qed.
+
+Lemma fin2AddRangeAddL_fin2AddRangeAddL' :
+  forall {m n} (i : fin (m + n)) (E : m <= fin2nat i),
+    fin2AddRangeAddL (fin2AddRangeAddL' i E) = i.
+Proof.
+  intros. unfold fin2AddRangeAddL, fin2AddRangeAddL'. simpl.
+  destruct i as [i Hi]. simpl in *. apply fin_eq_iff; auto. lia.
+Qed.
+
+Lemma fin2AddRangeAddL'_fin2AddRangeAddL :
+  forall {m n} (i : fin n) (E : m <= fin2nat (fin2AddRangeAddL i)),
+    @fin2AddRangeAddL' m n (fin2AddRangeAddL i) E = i.
+Proof.
+  intros. unfold fin2AddRangeAddL, fin2AddRangeAddL'. simpl.
+  destruct i as [i Ei]. simpl in *. apply fin_eq_iff; auto. lia.
+Qed.
+  
+(** {i < m} -> {i + n < m + n} *)
+Definition fin2AddRangeAddR {m n} (i : fin m) : fin (m + n).
+  refine (nat2fin (fin2nat i + n) _).
+  apply Nat.add_lt_mono_r. apply fin2nat_lt.
+Defined.
+
+Lemma fin2nat_fin2AddRangeAddR : forall m n (i : fin m),
+    fin2nat (@fin2AddRangeAddR m n i) = fin2nat i + n.
+Proof. intros. auto. Qed.
+Hint Rewrite fin2nat_fin2AddRangeAddR : fin.
+  
+(** {i + n < m + n} -> {i < m} *)
+Definition fin2AddRangeAddR' {m n} (i:fin (m + n)) (E : n <= fin2nat i) : fin m.
+  refine (nat2fin (fin2nat i - n) _).
+  pose proof (fin2nat_lt i). apply le_ltAdd_imply_subLt_R; auto.
+Defined.
+
+Lemma fin2nat_fin2AddRangeAddR' : forall {m n} (i : fin (m + n)) (E : n <= fin2nat i),
+    fin2nat (@fin2AddRangeAddR' m n i E) = fin2nat i - n.
+Proof. intros. auto. Qed.
+
+Lemma fin2AddRangeAddR_fin2AddRangeAddR' :
+  forall {m n} (i : fin (m + n)) (E : n <= fin2nat i),
+    fin2AddRangeAddR (@fin2AddRangeAddR' m n i E) = i.
+Proof.
+  intros. unfold fin2AddRangeAddR, fin2AddRangeAddR'. simpl.
+  destruct i as [i Hi]. simpl in *. apply fin_eq_iff; auto. lia.
+Qed.
+
+Lemma fin2AddRangeAddR'_fin2AddRangeAddR :
+  forall {m n} (i : fin m) (E : n <= fin2nat (fin2AddRangeAddR i)),
+    @fin2AddRangeAddR' m n (fin2AddRangeAddR i) E = i.
+Proof.
+  intros. unfold fin2AddRangeAddR, fin2AddRangeAddR'. simpl.
+  destruct i as [i Hi]. simpl in *. apply fin_eq_iff; auto. lia.
+Qed.
+
+(** {S i < S n} -> {i < n} *)
+Definition fin2PredRangePred {n} (i:fin (S n)) (E : 0 < fin2nat i) : fin n.
+  refine (nat2fin (pred (fin2nat i)) _).
+  destruct i; simpl in *. apply pred_lt; auto.
+Defined.
+
+Lemma fin2nat_fin2PredRangePred : forall n (i:fin (S n)) (E : 0 < fin2nat i),
+    fin2nat (fin2PredRangePred i E) = pred (fin2nat i).
+Proof. intros. unfold fin2PredRangePred. apply fin2nat_nat2fin. Qed.
+Hint Rewrite fin2nat_fin2PredRangePred : fin.
+
+
+(** {i < n} -> {S i < S n} *)
+Definition fin2SuccRangeSucc {n} (i:fin n) : fin (S n).
+  refine (nat2fin (S (fin2nat i)) _).
+  pose proof (fin2nat_lt i).
+  rewrite <- Nat.succ_lt_mono; auto.
+Defined.
+
+Lemma fin2nat_fin2SuccRangeSucc : forall n (i:fin n),
+    fin2nat (fin2SuccRangeSucc i) = S (fin2nat i).
+Proof. intros. unfold fin2SuccRangeSucc. simpl. auto. Qed.
+Hint Rewrite fin2nat_fin2SuccRangeSucc : fin.
+
+Lemma fin2SuccRangeSucc_fin2PredRangePred : forall n (i:fin (S n)) (E : 0 < fin2nat i),
+    fin2SuccRangeSucc (fin2PredRangePred i E) = i.
+Proof.
+  intros. destruct i. cbv. cbv in E. destruct i; try lia. apply fin_eq_iff; auto.
+Qed.
+Hint Rewrite fin2SuccRangeSucc_fin2PredRangePred : fin.
+
+Lemma fin2PredRangePred_fin2SuccRangeSucc :
+  forall n (i : fin n) (E : 0 < fin2nat (fin2SuccRangeSucc i)),
+    fin2PredRangePred (fin2SuccRangeSucc i) E = i.
+Proof.
+  intros. destruct i as [i Hi]. cbv. apply fin_eq_iff; auto.
+Qed.
+Hint Rewrite fin2PredRangePred_fin2SuccRangeSucc : fin.
+
+Lemma fin2nat_fin2SuccRangeSucc_gt0 : forall {n} (i : fin n),
+    0 < fin2nat (fin2SuccRangeSucc i).
+Proof. intros. unfold fin2SuccRangeSucc. simpl. lia. Qed.
+
+Lemma fin2SuccRangeSucc_nat2fin : forall n (i:nat) (E : i < n) (E0 : S i < S n),
+  fin2SuccRangeSucc (nat2fin i E) = nat2fin (S i) E0.
+Proof. fin. Qed.
+Hint Rewrite fin2SuccRangeSucc_nat2fin : fin.
+
+(** ** Sequence of fin *)
+Section finseq.
+
+  Definition finseq (n : nat) : list (fin n) :=
+    match n with
+    | O => []
+    | _ => map nat2finS (seq 0 n)
+    end.
+
+  Lemma finseq_length : forall n, length (finseq n) = n.
+  Proof. destruct n; simpl; auto. rewrite map_length, seq_length. auto. Qed.
+    
+  Lemma finseq_eq_seq : forall n, map fin2nat (finseq n) = seq 0 n.
+  Proof.
+    destruct n; simpl; auto. f_equal.
+    rewrite map_map. apply map_id_In. intros. rewrite fin2nat_nat2finS; auto.
+    apply in_seq in H. lia.
+  Qed.
+
+  Lemma nth_finseq : forall (n : nat) i (E : i < n) i0,
+      nth i (finseq n) i0 = Fin i E.
+  Proof.
+    intros. destruct n. lia. simpl. destruct i; simpl.
+    - apply nat2finS_eq.
+    - rewrite nth_map_seq; try lia.
+      replace (i + 1) with (S i) by lia. apply nat2finS_eq.
+  Qed.
+
+  Lemma nth_map_finseq : forall {A} (n : nat) (f : fin n -> A) i (E : i < n) (a : A),
+      nth i (map f (finseq n)) a = f (Fin i E).
+  Proof.
+    intros. rewrite nth_map with (n:=n)(Azero:=Fin i E); auto.
+    rewrite nth_finseq with (E:=E). auto.
+    rewrite finseq_length; auto.
+  Qed.
+
+  (* {i<n} ∈ (finseq n) *)
+  Lemma In_finseq : forall {n} (i : fin n), In i (finseq n).
+  Proof.
+    intros. unfold finseq. destruct n. exfalso. apply fin0_False; auto.
+    apply in_map_iff. exists (fin2nat i). split.
+    - apply nat2finS_fin2nat.
+    - apply in_seq. pose proof (fin2nat_lt i). lia.
+  Qed.
+  
+End finseq.
+
+
+(** ** Sequence of fin with bounds *)
+Section finseqb.
+
+  (* A list of `fin (S n)` which its value is from `lo` to `lo + cnt -1` *)
+  Definition finseqb (n : nat) (lo cnt : nat) : list (fin (S n)) :=
+    map nat2finS (seq lo cnt).
+
+  Lemma finseqb_length : forall n lo cnt, length (finseqb n lo cnt) = cnt.
+  Proof. intros. unfold finseqb. rewrite map_length, seq_length. auto. Qed.
+
+  Lemma finseqb_eq_seq : forall n lo cnt,
+      lo + cnt <= S n -> map fin2nat (finseqb n lo cnt) = seq lo cnt.
+  Proof.
+    intros. unfold finseqb. rewrite map_map. apply map_id_In. intros.
+    rewrite fin2nat_nat2finS; auto. apply in_seq in H0. lia.
+  Qed.
+
+  (* Lemma nth_finseqb : forall (n lo cnt : nat) i (H: i < n), *)
+  (*     nth i (finseqb n lo cnt) fin0 = (Fin i H : fin n). *)
+  (* Proof. *)
+  (*   intros. destruct n. lia. simpl. destruct i; simpl. *)
+  (*   - apply nat2finS_eq. *)
+  (*   - rewrite nth_map_seq; try lia. *)
+  (*     replace (i + 1) with (S i) by lia. apply nat2finS_eq. *)
+  (* Qed. *)
+
+  (* Lemma nth_map_finseqb : forall {A} (n : nat) (f : fin n -> A) i (H: i < n) (a : A), *)
+  (*     nth i (map f (finseqb n)) a = f (Fin i H). *)
+  (* Proof. *)
+  (*   intros. rewrite nth_map with (n:=n)(Azero:=Fin i H:fin n); auto. *)
+  (*   rewrite nth_finseqb with (H:=H). auto. *)
+  (*   rewrite finseqb_length; auto. *)
+  (* Qed. *)
+
+  (* (* {i<n} ∈ (finseqb n) *) *)
+  (* Lemma In_finseqb : forall {n} (i : fin n), In i (finseqb n). *)
+  (* Proof. *)
+  (*   intros. unfold finseqb. destruct n. exfalso. apply fin0_False; auto. *)
+  (*   apply in_map_iff. exists (fin2nat i). split. *)
+  (*   - apply nat2finS_fin2nat. *)
+  (*   - apply in_seq. pose proof (fin2nat_lt i). lia. *)
+  (* Qed. *)
+  
+End finseqb.

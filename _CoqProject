@@ -1,0 +1,58 @@
+# ===================================================================
+# Copyright 2022 ZhengPu Shi
+#  This file is part of VFCS. It is distributed under the MIT
+#  "expat license". You should have recieved a LICENSE file with it.
+# ===================================================================
+
+-R ./FinMatrix FinMatrix
+
+-arg -w -arg -notation-overridden
+-arg -w -arg -hiding-delimiting-key
+# -arg -w -arg -deprecated-hint-without-locality
+# -arg -w -arg -redundant-canonical-projection
+# -arg -w -arg -ambiguous-paths
+# -arg -w -arg -local-declaration
+# -arg -w -arg -future-coercion-class-field
+# -arg -w -arg -extraction-logical-axiom
+
+# ========== CoqExt ====================
+FinMatrix/CoqExt/Basic.v
+FinMatrix/CoqExt/BoolExt.v
+FinMatrix/CoqExt/StrExt.v
+FinMatrix/CoqExt/TupleExt.v
+FinMatrix/CoqExt/ListExt.v
+FinMatrix/CoqExt/Hierarchy.v
+FinMatrix/CoqExt/NatExt.v
+FinMatrix/CoqExt/PositiveExt.v
+FinMatrix/CoqExt/ZExt.v
+FinMatrix/CoqExt/QExt.v
+FinMatrix/CoqExt/QcExt.v
+FinMatrix/CoqExt/RExt.v
+FinMatrix/CoqExt/RealFunction.v
+FinMatrix/CoqExt/Ratan2.v
+FinMatrix/CoqExt/Complex.v
+FinMatrix/CoqExt/LinearSpace.v
+FinMatrix/CoqExt/MyExtrOCamlR.v
+
+# ========== Matrix ====================
+FinMatrix/Matrix/Fin.v
+FinMatrix/Matrix/Sequence.v
+FinMatrix/Matrix/Vector.v
+FinMatrix/Matrix/Matrix.v
+FinMatrix/Matrix/MatrixDet.v
+FinMatrix/Matrix/MatrixGauss.v
+FinMatrix/Matrix/MatrixInvBase.v
+FinMatrix/Matrix/MatrixInvAM.v
+FinMatrix/Matrix/MatrixInvGE.v
+FinMatrix/Matrix/MatrixInv.v
+FinMatrix/Matrix/MatrixOrth.v
+FinMatrix/Matrix/ElementType.v
+FinMatrix/Matrix/MatrixModule.v
+FinMatrix/Matrix/MatrixNat.v
+FinMatrix/Matrix/MatrixZ.v
+FinMatrix/Matrix/MatrixQ.v
+FinMatrix/Matrix/MatrixQc.v
+FinMatrix/Matrix/MatrixR.v
+FinMatrix/Matrix/MatrixC.v
+FinMatrix/Matrix/MatrixRFun.v
+# FinMatrix/Matrix/VectorSpace.v

@@ -1,11 +1,11 @@
 (*
-  Copyright 2022 ZhengPu Shi
-  This file is part of VFCS. It is distributed under the MIT
+  Copyright 2024 ZhengPu Shi
+  This file is part of FinMatrix. It is distributed under the MIT
   "expat license". You should have recieved a LICENSE file with it.
 
   purpose   : understand For Loop
   author    : ZhengPu Shi
-  date      : 2021.05
+  date      : 2023.05
   
   remark    :
   1. copy from lecture of FEM by professor Gang Chen, NUAA, 2021.

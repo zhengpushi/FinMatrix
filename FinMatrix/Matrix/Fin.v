@@ -1,6 +1,6 @@
 (*
-  Copyright 2023 ZhengPu Shi
-  This file is part of VFCS. It is distributed under the MIT
+  Copyright 2024 ZhengPu Shi
+  This file is part of FinMatrix. It is distributed under the MIT
   "expat license". You should have recieved a LICENSE file with it.
 
   purpose   : finite set of natural numbers

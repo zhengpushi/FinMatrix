@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Copyright 2024 ZhengPu Shi
-# This file is part of CoqMatrix. It is distributed under the MIT
+# This file is part of FinMatrix. It is distributed under the MIT
 # "expat license". You should have recieved a LICENSE file with it.
 
 # Why need this script? we need to fix something to compile the Ocaml program

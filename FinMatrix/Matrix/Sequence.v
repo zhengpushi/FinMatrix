@@ -16,15 +16,15 @@ Require Export Hierarchy.
 Generalizable Variables A Aadd Azero Aopp Amul Aone Ainv Ale Alt.
 Generalizable Variables B Badd Bzero.
 
-(* ######################################################################### *)
-(** * Sequence by function, f : nat -> A  *)
-
 Open Scope nat_scope.
 Open Scope A_scope.
 
 
+(* ######################################################################### *)
+(** * Properties of sequence *)
+
 (* ======================================================================= *)
-(** ** Properties of sequence *)
+(** ** Basic properties of sequence *)
 
 (** Top (S n) elements of a sequence satisfy P, iff
     top n elements of the sequencoe satisfy P and the n-th element hold too. *)
@@ -35,7 +35,6 @@ Proof.
   - split; auto.
   - destruct H. bdestruct (i =? n); subst; auto. apply H; lia.
 Qed.
-
 
 (* ======================================================================= *)
 (** ** Equality of sequence *)
@@ -74,7 +73,6 @@ Section seqeq.
   Qed.
   
 End seqeq.
-
 
 (* ======================================================================= *)
 (** ** Equality of sequence with two indexes *)
@@ -125,8 +123,8 @@ Section seq2eq.
 End seq2eq.
 
 
-(* ======================================================================= *)
-(** ** Folding of a sequence *)
+(* ######################################################################### *)
+(** * Folding of a sequence *)
 Section seqfold.
   Context {A B : Type}.
 
@@ -171,8 +169,10 @@ Section seqfold.
 
 End seqfold.
 
-(* ======================================================================= *)
-(** ** Sum of a sequence *)
+(* ######################################################################### *)
+(** * Sum of a sequence *)
+
+(** ** Basic properties for sequence sum *)
 Section seqsum.
   
   Context `{HAMonoid : AMonoid}.
@@ -360,9 +360,7 @@ Section seqsum.
   
 End seqsum.
 
-
-(** Scalar multiplication of a sequence with different type. *)
-(** Extension for `seqsum` *)
+(** ** Scalar multiplication of a sequence with different type. *)
 Section seqsum_ext.
 
   Context `{HAMonoidA : AMonoid}.
@@ -402,9 +400,133 @@ Section seqsum_ext.
 End seqsum_ext.
 
 
-
 (* ======================================================================= *)
-(** ** Sum of a sequence with bounds *)
+(** ** More properties of sequence on special structure *)
+Section seqsum_more.
+
+  Context `{HOrderedARing : OrderedARing}.
+  Add Ring ring_inst : (make_ring_theory HOrderedARing).
+  Infix "+" := Aadd.
+  Notation "2" := (Aone + Aone).
+  Notation "0" := Azero.
+  Infix "*" := Amul.
+  Notation "- a" := (Aopp a).
+  Infix "-" := (fun a b => a + (- b)).
+  Notation "a ²" := (a * a) (at level 1) : A_scope.
+  Notation seqsum := (@seqsum _ Aadd 0).
+  Infix "<" := Alt : A_scope.
+  Infix "<=" := Ale : A_scope.
+
+  (** If all elements of a sequence are >= 0, then the sum is >= 0 *)
+  Lemma seqsum_ge0 : forall n (f : nat -> A), (forall i, (i < n)%nat -> 0 <= f i) -> 0 <= seqsum n f.
+  Proof.
+    induction n; intros.
+    - simpl. apply le_refl.
+    - rewrite seqsumS_tail.
+      replace 0 with (0 + 0) by ring.
+      apply le_add_compat; auto.
+      rewrite identityLeft. apply IHn; auto.
+  Qed.
+  
+  (** If all elements of a sequence are >= 0, and the sum of top (n+1) elements of
+      the sequence is = 0, then the sum of top n elements are 0 *)
+  Lemma seqsum_eq0_less : forall n (f : nat -> A),
+      (forall i, (i < S n)%nat -> 0 <= f i) ->
+      seqsum (S n) f = 0 -> seqsum n f = 0.
+  Proof.
+    intros. rewrite seqsumS_tail in H0.
+    assert (0 <= f n); auto.
+    assert (0 <= seqsum n f). apply seqsum_ge0; auto.
+    apply add_eq0_imply_0_l in H0; auto.
+  Qed.
+
+  (** If all elements of a sequence are >= 0, and the sum of the sequence is = 0,
+      then all elements of the sequence are 0. *)
+  Lemma seqsum_eq0_imply_seq0 : forall (f : nat -> A) (n : nat), 
+      (forall i, (i < n)%nat -> 0 <= f i) -> seqsum n f = 0 -> (forall i, (i < n)%nat -> f i = 0).
+  Proof.
+    intros f n. induction n. intros H1 H2 i H3; try easy. intros.
+    assert (i < n \/ i = n)%nat by nia. destruct H2.
+    - apply IHn; auto. apply seqsum_eq0_less; auto.
+    - subst.
+      assert (0 <= f n); auto.
+      assert (0 <= seqsum n f). apply seqsum_ge0; auto.
+      rewrite seqsumS_tail in H0.
+      rewrite commutative in H0. apply add_eq0_imply_0_l in H0; auto.
+  Qed.
+  
+  (** If all elements of a sequence are >= 0, then every element is <= the sum *)
+  Lemma seqsum_ge_any : forall (f : nat -> A) (k n : nat),
+      (forall i, (i < n)%nat -> 0 <= f i) -> (k < n)%nat -> f k <= seqsum n f.
+  Proof.
+    intros f k n. induction n; intros. lia.
+    rewrite seqsumS_tail. bdestruct (k =? n)%nat.
+    - subst.
+      assert (0 <= seqsum n f). apply seqsum_ge0; auto.
+      replace (f n) with (0 + f n) by ring.
+      apply le_add_compat; auto. rewrite identityLeft. apply le_refl.
+    - assert (f k <= seqsum n f).
+      { apply IHn; auto. lia. }
+      replace (f k) with (f k + 0) by ring.
+      apply le_add_compat; auto.
+  Qed.
+  
+  (** 2 * ∑(f*g) <= ∑(f)² + ∑(g)² *)
+  Lemma seqsum_Mul2_le_PlusSqr : forall (f g : nat -> A) n,
+      2 * seqsum n (fun i : nat => f i * g i) <=
+        seqsum n (fun i : nat => (f i)²) + seqsum n (fun i : nat => (g i)²).
+  Proof.
+    intros. induction n.
+    - simpl. ring_simplify. apply le_refl.
+    - rewrite !seqsumS_tail. ring_simplify. 
+      replace ((f n) ² + (g n) ² + seqsum n (fun i : nat => (f i) ²) +
+                 seqsum n (fun i : nat => (g i) ²))
+        with ((seqsum n (fun i : nat => (f i) ²) + seqsum n (fun i : nat => (g i) ²)) +
+                ((f n) ² + (g n) ²)) by ring.
+      apply le_add_compat; auto. apply mul_le_add_sqr.
+  Qed.
+
+  (** (∑(f*g))² <= ∑(f)² * ∑(g)² *)
+  Lemma seqsum_SqrMul_le_MulSqr : forall (f g : nat -> A) n,
+      (seqsum n (fun i : nat => f i * g i))² <=
+        seqsum n (fun i : nat => (f i)²) * seqsum n (fun i : nat => (g i)²).
+  Proof.
+    intros. induction n.
+    - simpl. apply le_refl.
+    - rewrite !seqsumS_tail. ring_simplify.
+      remember (seqsum n (fun i : nat => f i * g i)) as a1.
+      remember (seqsum n (fun i : nat => (f i) ²)) as a2.
+      remember (seqsum n (fun i : nat => (g i) ²)) as a3.
+      remember (f n) as a. remember (g n) as b.
+      replace (a1 ² + 2 * a1 * a * b + a ² * b * b)
+        with ((a1 ² + a ² * b * b) + 2 * a1 * a * b) by ring.
+      replace (a ² * b * b + a ² * a3 + b ² * a2 + a2 * a3)
+        with ((a2 * a3 + a ² * b * b) + (a ² * a3 + b ² * a2)) by ring.
+      apply le_add_compat. apply le_add_compat; auto. apply le_refl.
+      rewrite Heqa1, Heqa2, Heqa3, Heqa, Heqb.
+      (* Change the form by abstraction *)
+      remember (fun i => f i * g n) as F.
+      remember (fun i => g i * f n) as G.
+      replace ((f n) ² * seqsum n (fun i : nat => (g i) ²))
+        with (seqsum n (fun i => (G i) ²)).
+      replace ((g n) ² * seqsum n (fun i : nat => (f i) ²))
+        with (seqsum n (fun i => (F i) ²)).
+      replace (2 * seqsum n (fun i : nat => f i * g i) * f n * g n)
+        with (2 * seqsum n (fun i => F i * G i)).
+      + rewrite (commutative (seqsum n (fun i => (G i)²))).
+        apply seqsum_Mul2_le_PlusSqr.
+      + rewrite !associative. f_equal.
+        rewrite seqsum_cmul_r. apply seqsum_eq; intros.
+        rewrite HeqF, HeqG. ring.
+      + rewrite seqsum_cmul_l. apply seqsum_eq; intros. rewrite HeqF. ring.
+      + rewrite seqsum_cmul_l. apply seqsum_eq; intros. rewrite HeqG. ring.
+  Qed.
+  
+End seqsum_more.
+
+
+(* ######################################################################### *)
+(** * Sum of a sequence with bounds *)
 Section seqsumb.
   
   (** Let's have an monoid structure *)
@@ -589,131 +711,6 @@ Section seqsumb.
     Abort.
   
 End seqsumb.
-
-
-(* ======================================================================= *)
-(** ** More properties of sequence on special structure *)
-Section seqsum_more.
-
-  Context `{HOrderedARing : OrderedARing}.
-  Add Ring ring_inst : (make_ring_theory HOrderedARing).
-  Infix "+" := Aadd.
-  Notation "2" := (Aone + Aone).
-  Notation "0" := Azero.
-  Infix "*" := Amul.
-  Notation "- a" := (Aopp a).
-  Infix "-" := (fun a b => a + (- b)).
-  Notation "a ²" := (a * a) (at level 1) : A_scope.
-  Notation seqsum := (@seqsum _ Aadd 0).
-  Infix "<" := Alt : A_scope.
-  Infix "<=" := Ale : A_scope.
-
-  (** If all elements of a sequence are >= 0, then the sum is >= 0 *)
-  Lemma seqsum_ge0 : forall n (f : nat -> A), (forall i, (i < n)%nat -> 0 <= f i) -> 0 <= seqsum n f.
-  Proof.
-    induction n; intros.
-    - simpl. apply le_refl.
-    - rewrite seqsumS_tail.
-      replace 0 with (0 + 0) by ring.
-      apply le_add_compat; auto.
-      rewrite identityLeft. apply IHn; auto.
-  Qed.
-  
-  (** If all elements of a sequence are >= 0, and the sum of top (n+1) elements of
-      the sequence is = 0, then the sum of top n elements are 0 *)
-  Lemma seqsum_eq0_less : forall n (f : nat -> A),
-      (forall i, (i < S n)%nat -> 0 <= f i) ->
-      seqsum (S n) f = 0 -> seqsum n f = 0.
-  Proof.
-    intros. rewrite seqsumS_tail in H0.
-    assert (0 <= f n); auto.
-    assert (0 <= seqsum n f). apply seqsum_ge0; auto.
-    apply add_eq0_imply_0_l in H0; auto.
-  Qed.
-
-  (** If all elements of a sequence are >= 0, and the sum of the sequence is = 0,
-      then all elements of the sequence are 0. *)
-  Lemma seqsum_eq0_imply_seq0 : forall (f : nat -> A) (n : nat), 
-      (forall i, (i < n)%nat -> 0 <= f i) -> seqsum n f = 0 -> (forall i, (i < n)%nat -> f i = 0).
-  Proof.
-    intros f n. induction n. intros H1 H2 i H3; try easy. intros.
-    assert (i < n \/ i = n)%nat by nia. destruct H2.
-    - apply IHn; auto. apply seqsum_eq0_less; auto.
-    - subst.
-      assert (0 <= f n); auto.
-      assert (0 <= seqsum n f). apply seqsum_ge0; auto.
-      rewrite seqsumS_tail in H0.
-      rewrite commutative in H0. apply add_eq0_imply_0_l in H0; auto.
-  Qed.
-  
-  (** If all elements of a sequence are >= 0, then every element is <= the sum *)
-  Lemma seqsum_ge_any : forall (f : nat -> A) (k n : nat),
-      (forall i, (i < n)%nat -> 0 <= f i) -> (k < n)%nat -> f k <= seqsum n f.
-  Proof.
-    intros f k n. induction n; intros. lia.
-    rewrite seqsumS_tail. bdestruct (k =? n)%nat.
-    - subst.
-      assert (0 <= seqsum n f). apply seqsum_ge0; auto.
-      replace (f n) with (0 + f n) by ring.
-      apply le_add_compat; auto. rewrite identityLeft. apply le_refl.
-    - assert (f k <= seqsum n f).
-      { apply IHn; auto. lia. }
-      replace (f k) with (f k + 0) by ring.
-      apply le_add_compat; auto.
-  Qed.
-  
-  (** 2 * ∑(f*g) <= ∑(f)² + ∑(g)² *)
-  Lemma seqsum_Mul2_le_PlusSqr : forall (f g : nat -> A) n,
-      2 * seqsum n (fun i : nat => f i * g i) <=
-        seqsum n (fun i : nat => (f i)²) + seqsum n (fun i : nat => (g i)²).
-  Proof.
-    intros. induction n.
-    - simpl. ring_simplify. apply le_refl.
-    - rewrite !seqsumS_tail. ring_simplify. 
-      replace ((f n) ² + (g n) ² + seqsum n (fun i : nat => (f i) ²) +
-                 seqsum n (fun i : nat => (g i) ²))
-        with ((seqsum n (fun i : nat => (f i) ²) + seqsum n (fun i : nat => (g i) ²)) +
-                ((f n) ² + (g n) ²)) by ring.
-      apply le_add_compat; auto. apply mul_le_add_sqr.
-  Qed.
-
-  (** (∑(f*g))² <= ∑(f)² * ∑(g)² *)
-  Lemma seqsum_SqrMul_le_MulSqr : forall (f g : nat -> A) n,
-      (seqsum n (fun i : nat => f i * g i))² <=
-        seqsum n (fun i : nat => (f i)²) * seqsum n (fun i : nat => (g i)²).
-  Proof.
-    intros. induction n.
-    - simpl. apply le_refl.
-    - rewrite !seqsumS_tail. ring_simplify.
-      remember (seqsum n (fun i : nat => f i * g i)) as a1.
-      remember (seqsum n (fun i : nat => (f i) ²)) as a2.
-      remember (seqsum n (fun i : nat => (g i) ²)) as a3.
-      remember (f n) as a. remember (g n) as b.
-      replace (a1 ² + 2 * a1 * a * b + a ² * b * b)
-        with ((a1 ² + a ² * b * b) + 2 * a1 * a * b) by ring.
-      replace (a ² * b * b + a ² * a3 + b ² * a2 + a2 * a3)
-        with ((a2 * a3 + a ² * b * b) + (a ² * a3 + b ² * a2)) by ring.
-      apply le_add_compat. apply le_add_compat; auto. apply le_refl.
-      rewrite Heqa1, Heqa2, Heqa3, Heqa, Heqb.
-      (* Change the form by abstraction *)
-      remember (fun i => f i * g n) as F.
-      remember (fun i => g i * f n) as G.
-      replace ((f n) ² * seqsum n (fun i : nat => (g i) ²))
-        with (seqsum n (fun i => (G i) ²)).
-      replace ((g n) ² * seqsum n (fun i : nat => (f i) ²))
-        with (seqsum n (fun i => (F i) ²)).
-      replace (2 * seqsum n (fun i : nat => f i * g i) * f n * g n)
-        with (2 * seqsum n (fun i => F i * G i)).
-      + rewrite (commutative (seqsum n (fun i => (G i)²))).
-        apply seqsum_Mul2_le_PlusSqr.
-      + rewrite !associative. f_equal.
-        rewrite seqsum_cmul_r. apply seqsum_eq; intros.
-        rewrite HeqF, HeqG. ring.
-      + rewrite seqsum_cmul_l. apply seqsum_eq; intros. rewrite HeqF. ring.
-      + rewrite seqsum_cmul_l. apply seqsum_eq; intros. rewrite HeqG. ring.
-  Qed.
-  
-End seqsum_more.
 
 (* ======================================================================= *)
 (** ** Usage demo *)

@@ -274,26 +274,26 @@ Module BasicMatrixTheory (E : ElementType).
       fin2nat i < fin2nat j -> (vinsert a i x).[j] = a.[fin2PredRangePred j H].
   Proof. intros. apply (@vnth_vinsert_gt _ 0); auto. Qed.
 
-  (** (vzero <<- 0) = vzero *)
+  (** Invert 0 into vzero get vzero *)
   Lemma vinsert_vzero_eq0 : forall {n} i, @vinsert n vzero i 0 = vzero.
   Proof. intros. apply vinsert_vzero_eq0. Qed.
 
-  (** (a <<- x) = vzero -> x = 0 *)
+  (** If insert x into vector a get vzero, then x is 0 *)
   Lemma vinsert_eq0_imply_x0 : forall {n} (a : vec n) i x,
       vinsert a i x = vzero -> x = 0.
   Proof. intros. apply (vinsert_eq0_imply_x0 a i x H). Qed.
 
-  (** (a <<- x) = vzero -> a = vzero *)
+  (** If insert x into vector _a_ get vzero, then _a_ is vzero *)
   Lemma vinsert_eq0_imply_v0 : forall {n} (a : vec n) i x,
       vinsert a i x = vzero -> a = vzero.
   Proof. intros. apply (vinsert_eq0_imply_v0 a i x H). Qed.
 
-  (** (a <<- x) = vzero <-> a = vzero /\ x = 0 *)
+  (** Insert x into vector _a_ get vzero, iff _a_ is vzero and _x_ is 0 *)
   Lemma vinsert_eq0_iff : forall {n} (a : vec n) i x,
       vinsert a i x = vzero <-> (a = vzero /\ x = 0).
   Proof. intros. apply vinsert_eq0_iff. Qed.
 
-  (** (a <<- x) <> vzero <-> a <> vzero \/ x <> 0 *)
+  (** Insert x into vector _a_ is not vzero, iff _a_ is not vzero or _x_ is 0 *)
   Lemma vinsert_neq0_iff : forall {n} (a : vec n) i x,
       vinsert a i x <> vzero <-> (a <> vzero \/ x <> 0).
   Proof. intros. apply vinsert_neq0_iff. Qed.

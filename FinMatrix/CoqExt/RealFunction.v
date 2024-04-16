@@ -162,32 +162,6 @@ Section common_funs.
 
   Definition fid : tpRFun := fun x => x.
 
-  (** Absolute function *)
-  Fact Rabs_pos_iff : forall x, |x| = x <-> x >= 0.
-  Proof.
-    intros. split; intros.
-    - bdestruct (x >=? 0). lra. exfalso.
-      assert (x <= 0); try lra.
-      apply Rabs_left1 in H1. lra.
-    - apply Rabs_right. auto.
-  Qed.
-
-  Fact Rabs_neg_iff : forall x, |x| = - x <-> x <= 0.
-  Proof.
-    intros. split; intros.
-    - destruct (Rleb_reflect x 0); auto.
-      assert (x >= 0); try lra.
-      apply Rabs_right in H0. lra.
-    - apply Rabs_left1. auto.
-  Qed.
-
-  Fact Rabs_le_rev : forall a b : R, |a| <= b -> - b <= a <= b.
-  Proof.
-    intros. bdestruct (a <? 0).
-    - assert (|a| = -a). apply Rabs_neg_iff; ra. ra.
-    - assert (|a| = a). apply Rabs_pos_iff; ra. ra.
-  Qed.
-
   (** 取整函数 *)
   (* Check R2Z_floor. *)
   (* Check R2Z_ceiling. *)

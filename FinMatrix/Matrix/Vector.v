@@ -28,7 +28,8 @@
 
 
 Require Export TupleExt ListExt Hierarchy.
-Require Export RExt RealFunction.
+Require Export RExt.
+(* Require Export RExt RealFunction. *)
 Require Export Fin Sequence.
 Require Import Extraction.
 
@@ -42,23 +43,13 @@ Open Scope fin_scope.
 Open Scope A_scope.
 Open Scope vec_scope.
 
+(* ######################################################################### *)
+(** * vec type and basic operations *)
+
 (* ======================================================================= *)
 (** ** Definition of vector type [vec] *)
 
 Definition vec {A : Type} (n : nat) := fin n -> A.
-
-
-(* ======================================================================= *)
-
-(** ** Cast between two [vec] type with actual equal range *)
-
-(** Cast from [vec n] type to [vec m] type if [n = m] *)
-(* Definition cast_vec : forall {A} n m, n = m -> @vec A n = @vec A m. *)
-(* Proof. intros. subst. auto. Qed. *)
-
-Definition cast_vec {A} n m (a : @vec A n) (H : n = m) : @vec A m :=
-  eq_rect_r (fun n0 => vec n0 -> vec m) (fun a0 : vec m => a0) H a.
-
 
 (* ======================================================================= *)
 (** ** Get element of a vector *)
@@ -86,7 +77,6 @@ Notation "a .4" := (a.[#3]) : vec_scope.
 Notation "a .x" := (a.[#0]) : vec_scope.
 Notation "a .y" := (a.[#1]) : vec_scope.
 Notation "a .z" := (a.[#2]) : vec_scope.
-
 
 (* ======================================================================= *)
 (** ** Equality of vector *)
@@ -209,6 +199,19 @@ Proof.
   - apply ex_not_not_all; auto.
 Qed.
 
+(* ======================================================================= *)
+(** ** Cast between two [vec] type with actual equal range *)
+
+(** Cast from [vec n] type to [vec m] type if [n = m] *)
+(* Definition cast_vec : forall {A} n m, n = m -> @vec A n = @vec A m. *)
+(* Proof. intros. subst. auto. Qed. *)
+
+Definition cast_vec {A} n m (a : @vec A n) (H : n = m) : @vec A m :=
+  eq_rect_r (fun n0 => vec n0 -> vec m) (fun a0 : vec m => a0) H a.
+
+
+(* ######################################################################### *)
+(** * Make a vector *)
 
 (* ======================================================================= *)
 (** ** Vector with same elements *)
@@ -223,7 +226,6 @@ Section vrepeat.
 
 End vrepeat.
 
-
 (* ======================================================================= *)
 (** ** Zero vector *)
 Section vzero.
@@ -237,9 +239,8 @@ Section vzero.
 
 End vzero.
 
-
 (* ======================================================================= *)
-(** ** Convert between nat-index-function (f) and vector (v) *)
+(** ** Convert between function and vector *)
 Section f2v_v2f.
   Context {A} (Azero : A).
 
@@ -252,7 +253,6 @@ Section f2v_v2f.
   Lemma f2v_inj : forall {n} (f g : nat -> A),
       @f2v n f = @f2v n g -> (forall i, i < n -> f i = g i).
   Proof. intros. unfold f2v in *. apply (equal_f H (Fin i H0)). Qed.
-
 
   Definition v2f {n} (a : @vec A n) : (nat -> A) :=
     fun i => match (i ??< n)%nat with
@@ -280,7 +280,6 @@ Section f2v_v2f.
     specialize (H (fin2nat i) (fin2nat_lt _)).
     unfold v2f in *. fin. destruct E. fin.
   Qed.
-    
 
   (** f2v (v2f a) = a *)
   Lemma f2v_v2f : forall {n} (a : vec n), (@f2v n (v2f a)) = a.
@@ -294,7 +293,6 @@ Section f2v_v2f.
   Proof. intros. rewrite nth_v2f with (H:=H). rewrite vnth_f2v. auto. Qed.
 
 End f2v_v2f.
-
 
 (* ======================================================================= *)
 (** ** Convert between list and vector *)
@@ -326,7 +324,6 @@ Section l2v_v2l.
   (** length (v2l a) = n *)
   Lemma v2l_length : forall {n} (a : vec n), length (v2l a) = n.
   Proof. intros. unfold v2l. rewrite map_length, finseq_length. auto. Qed.
-
 
   (** v2l a = v2l b -> a = b *)
   Lemma v2l_inj : forall {n} (a b : vec n), v2l a = v2l b -> a = b.
@@ -376,7 +373,6 @@ Section test.
   
 End test.
 
-
 (* ======================================================================= *)
 (** ** vector with specific size *)
 Section vec_specific.
@@ -390,9 +386,55 @@ Section vec_specific.
   Definition mkvec4 : @vec A 4 := l2v Azero [a1;a2;a3;a4].
 End vec_specific.
 
+(* ======================================================================= *)
+(** ** Vector by mapping one vector *)
+Section vmap.
+  Context {A B : Type} (f : A -> B).
+  
+  Definition vmap {n} (a : @vec A n) : @vec B n := fun i => f (a i).
+
+  (** (vmap f a).i = f (a.i) *)
+  Lemma vnth_vmap : forall {n} (a : vec n) i, (vmap a).[i] = f (a.[i]).
+  Proof. intros. unfold vmap; auto. Qed.
+
+End vmap.
 
 (* ======================================================================= *)
-(** ** 自然基的基向量 *)
+(** ** Vector by mapping two vectors *)
+Section vmap2.
+  Context {A B C : Type} (f : A -> B -> C).
+  
+  Definition vmap2 {n} (a : @vec A n) (b : @vec B n) : @vec C n :=
+    fun i => f a.[i] b.[i].
+
+  (** (vmap2 f a b).i = f (a.i) (b.i) *)
+  Lemma vnth_vmap2 : forall {n} (a b : vec n) i, (vmap2 a b).[i] = f a.[i] b.[i].
+  Proof. intros. unfold vmap2; auto. Qed.
+
+  (* vmap2 f a b = vmap id (fun i => f u.i v.i) *)
+  Lemma vmap2_eq_vmap : forall {n} (a b : vec n),
+      vmap2 a b = vmap (fun a => a) (fun i => f a.[i] b.[i]).
+  Proof. intros. auto. Qed.
+  
+End vmap2.
+
+(** vmap2 on same type *)
+Section vmap2_sametype.
+  Context `{ASGroup}.
+
+  (** vmap2 f a b = vmap2 f b a *)
+  Lemma vmap2_comm : forall {n} (a b : vec n),
+      vmap2 Aadd a b = vmap2 Aadd b a.
+  Proof. intros. apply veq_iff_vnth; intros. unfold vmap2. agroup. Qed.
+  
+  (** vmap2 f (vmap2 f a b) c = vmap2 f a (vmap2 f b c) *)
+  Lemma vmap2_assoc : forall {n} (a b c : vec n),
+      vmap2 Aadd (vmap2 Aadd a b) c = vmap2 Aadd a (vmap2 Aadd b c).
+  Proof. intros. apply veq_iff_vnth; intros. unfold vmap2. agroup. Qed.
+End vmap2_sametype.
+
+(* ======================================================================= *)
+(** ** Vector with only one element is 1 *)
 Section veye.
   Context {A} (Azero Aone : A).
   Notation "0" := Azero : A_scope.
@@ -420,7 +462,6 @@ Section veye.
   
 End veye.
 
-
 (* ======================================================================= *)
 (** ** natural basis, 自然基（最常见的一种标准正交基) *)
 Section veyes.
@@ -443,56 +484,119 @@ Section veyes.
 End veyes.
 
 
+(* ######################################################################### *)
+(** * Get head, tail, slice of a vector *)
 
 (* ======================================================================= *)
-(** ** Mapping of a vector *)
-Section vmap.
-  Context {A B : Type} (f : A -> B).
-  
-  Definition vmap {n} (a : @vec A n) : @vec B n := fun i => f (a i).
+(** ** Get head or tail element *)
 
-  (** (vmap f a).i = f (a.i) *)
-  Lemma vnth_vmap : forall {n} (a : vec n) i, (vmap a).[i] = f (a.[i]).
-  Proof. intros. unfold vmap; auto. Qed.
+Section vhead_vtail.
+  Context {A} {Azero : A}.
 
-End vmap.
+  (** Get head element *)
+  Definition vhead {n} (a : @vec A (S n)) : A := a.[fin0].
 
+  (** vhead a is = a.0 *)
+  Lemma vhead_spec : forall {n} (a : @vec A (S n)), vhead a = (v2f Azero a) 0.
+  Proof.
+    intros. unfold vhead. erewrite nth_v2f. f_equal.
+    apply fin_eq_iff; auto. Unshelve. lia.
+  Qed.
+
+  (** vhead a = a $ 0 *)
+  Lemma vhead_eq : forall {n} (a : @vec A (S n)), vhead a = a.[fin0].
+  Proof. auto. Qed.
+
+  (** Get tail element *)
+  Definition vtail {n} (a : @vec A (S n)) : A := a.[#n].
+
+  (** vtail a = a.(n - 1) *)
+  Lemma vtail_spec : forall {n} (a : @vec A (S n)), vtail a = (v2f Azero a) n.
+  Proof.
+    intros. unfold vtail. erewrite nth_v2f. erewrite nat2finS_eq. f_equal.
+    Unshelve. lia.
+  Qed.
+
+  (** vtail a = a $ (n - 1) *)
+  Lemma vtail_eq : forall {n} (a : @vec A (S n)), vtail a = a.[#n].
+  Proof. auto. Qed.
+End vhead_vtail.
 
 (* ======================================================================= *)
-(** ** Mapping of two vectors *)
-Section vmap2.
-  Context {A B C : Type} (f : A -> B -> C).
+(** ** Get head or tail elements *)
+Section vheadN_vtailN.
+  Context {A} {Azero : A}.
+
+  (** Get head elements *)
+  Definition vheadN {m n} (a : @vec A (m + n)) : @vec A m :=
+    fun i => a.[fin2AddRangeR i].
+
+  (** i < m -> (vheadN a).i = (v2f a).i *)
+  Lemma vheadN_spec : forall {m n} (a : @vec A (m + n)) i,
+      i < m -> v2f Azero (vheadN a) i = (v2f Azero a) i.
+  Proof.
+    intros. unfold vheadN. erewrite !nth_v2f. f_equal.
+    apply fin_eq_iff; auto. Unshelve. all: try lia.
+  Qed.
+
+  (** (vheadN a).i = a.i *)
+  Lemma vnth_vheadN : forall {m n} (a : @vec A (m + n)) i,
+      (vheadN a).[i] = a.[fin2AddRangeR i].
+  Proof. auto. Qed.
+
+  (** Get tail elements *)
+  Definition vtailN {m n} (a : @vec A (m + n)) : @vec A n :=
+    fun i => a.[fin2AddRangeAddL i].
+
+  (** i < n -> (vtailN a).i = (v2f a).(m + i) *)
+  Lemma vtailN_spec : forall {m n} (a : @vec A (m + n)) i,
+      i < n -> v2f Azero (vtailN a) i = (v2f Azero a) (m + i).
+  Proof.
+    intros. unfold vtailN. erewrite !nth_v2f. f_equal.
+    apply fin_eq_iff; auto. Unshelve. all: try lia.
+  Qed.
+
+  (** (vtailN a).i = a.(n + i) *)
+  Lemma vnth_vtailN : forall {m n} (a : @vec A (m + n)) i,
+      (vtailN a).[i] = a.[fin2AddRangeAddL i].
+  Proof. auto. Qed.
+End vheadN_vtailN.
+
+(* ======================================================================= *)
+(** ** Get slice of a vector *)
+Section vslice.
+  Context {A} {Azero : A}.
+
+  (** {i<n}, {j<n}, {k:=S j-i} -> {i+k < n} *)
+  Definition vslice_idx {n} (i j : fin n)
+    (k : fin (S (fin2nat j) - (fin2nat i))) : fin n.
+    refine (nat2fin (fin2nat i + fin2nat k) _).
+    pose proof (fin2nat_lt k). pose proof (fin2nat_lt j).
+    apply nat_lt_sub_imply_lt_add in H. rewrite commutative.
+    apply nat_ltS_lt_lt with (b := fin2nat j); auto.
+  Defined.
   
-  Definition vmap2 {n} (a : @vec A n) (b : @vec B n) : @vec C n :=
-    fun i => f a.[i] b.[i].
+  (** Get a slice from vector `v` which contain elements from v$i to v$j.
+      1. Include the i-th and j-th element
+      2. If i > i, then the result is `vec 0` *)
+  Definition vslice {n} (a : @vec A n) (i j : fin n) :
+    @vec A (S (fin2nat j) - (fin2nat i)) :=
+    fun k => a.[vslice_idx i j k].
 
-  (** (vmap2 f a b).i = f (a.i) (b.i) *)
-  Lemma vnth_vmap2 : forall {n} (a b : vec n) i, (vmap2 a b).[i] = f a.[i] b.[i].
-  Proof. intros. unfold vmap2; auto. Qed.
-
-  (* vmap2 f a b = vmap id (fun i => f u.i v.i) *)
-  Lemma vmap2_eq_vmap : forall {n} (a b : vec n),
-      vmap2 a b = vmap (fun a => a) (fun i => f a.[i] b.[i]).
+  Lemma vnth_vslice : forall {n} (a : @vec A n) (i j : fin n) k,
+      (vslice a i j).[k] = a.[vslice_idx i j k].
   Proof. intros. auto. Qed.
-  
-End vmap2.
+End vslice.
+
+Section test.
+  Let n := 5.
+  Let a : vec n := l2v 9 [1;2;3;4;5].
+  (* Compute v2l (vslice a (nat2finS 1) (nat2finS 3)). *)
+End test.
 
 
-(** vmap2 on same type *)
-Section vmap2_sametype.
-  Context `{ASGroup}.
-
-  (** vmap2 f a b = vmap2 f b a *)
-  Lemma vmap2_comm : forall {n} (a b : vec n),
-      vmap2 Aadd a b = vmap2 Aadd b a.
-  Proof. intros. apply veq_iff_vnth; intros. unfold vmap2. agroup. Qed.
-  
-  (** vmap2 f (vmap2 f a b) c = vmap2 f a (vmap2 f b c) *)
-  Lemma vmap2_assoc : forall {n} (a b c : vec n),
-      vmap2 Aadd (vmap2 Aadd a b) c = vmap2 Aadd a (vmap2 Aadd b c).
-  Proof. intros. apply veq_iff_vnth; intros. unfold vmap2. agroup. Qed.
-End vmap2_sametype.
-
+(* ######################################################################### *)
+(** * Update a vector *)
 
 (* ======================================================================= *)
 (** ** Set element of a vector *)
@@ -515,9 +619,8 @@ Section vset.
   
 End vset.
 
-
 (* ======================================================================= *)
-(** ** Swap two element of a vector *)
+(** ** Swap two elements of a vector *)
 Section vswap.
   Context {A : Type}.
   
@@ -544,7 +647,6 @@ Section vswap.
   Proof. intros. apply veq_iff_vnth; intros. unfold vswap. fin. Qed.
 
 End vswap.
-
 
 (* ======================================================================= *)
 (** ** Insert element to a vector *)
@@ -638,7 +740,7 @@ Section vinsert.
     erewrite !nth_v2f in H1. fin. rewrite H1. fin. Unshelve. fin. 
   Qed.
 
-  (** (vzero <<- Azero) = vzero *)
+  (** Invert 0 into vzero get vzero *)
   Lemma vinsert_vzero_eq0 : forall {n} i, @vinsert n vzero i Azero = vzero.
   Proof.
     intros. rewrite vinsert_eq_vinsert'.
@@ -647,7 +749,7 @@ Section vinsert.
     unfold vinsert',f2v,v2f; simpl. fin.
   Qed.
 
-  (** (a <<- x) = vzero -> x = Azero *)
+  (** If insert x into vector a get vzero, then x is 0 *)
   Lemma vinsert_eq0_imply_x0 {AeqDec : Dec (@eq A)} : forall {n} (a : @vec A n) i x,
       vinsert a i x = vzero -> x = Azero.
   Proof.
@@ -656,7 +758,7 @@ Section vinsert.
     symmetry. apply vnth_vinsert_eq.
   Qed.
 
-  (** (a <<- x) = vzero -> a = vzero *)
+  (** If insert x into vector _a_ get vzero, then _a_ is vzero *)
   Lemma vinsert_eq0_imply_v0 {AeqDec : Dec (@eq A)} : forall {n} (a : @vec A n) i x,
       vinsert a i x = vzero -> a = vzero.
   Proof.
@@ -669,7 +771,7 @@ Section vinsert.
       Unshelve. fin. fin.
   Qed.
 
-  (** (a <<- x) = vzero <-> a = vzero /\ x = Azero  *)
+  (** Insert x into vector _a_ get vzero, iff _a_ is vzero and _x_ is 0 *)
   Lemma vinsert_eq0_iff {AeqDec : Dec (@eq A)} : forall {n} (a : @vec A n) i x,
       vinsert a i x = vzero <-> (a = vzero /\ x = Azero).
   Proof.
@@ -679,7 +781,7 @@ Section vinsert.
     - subst. apply vinsert_vzero_eq0.
   Qed.
 
-  (** (a <<- x) <> vzero <-> a <> vzero \/ x <> Azero  *)
+  (** Insert x into vector _a_ is not vzero, iff _a_ is not vzero or _x_ is 0 *)
   Lemma vinsert_neq0_iff {AeqDec : Dec (@eq A)} : forall {n} (a : @vec A n) i x,
       vinsert a i x <> vzero <-> (a <> vzero \/ x <> Azero).
   Proof. intros. rewrite vinsert_eq0_iff. tauto. Qed.
@@ -693,9 +795,8 @@ Section test.
   (* Compute v2l (vinsert a #5 7). *)
 End test.    
 
-
 (* ======================================================================= *)
-(** ** Remove one element *)
+(** ** Remove one element at given position *)
 Section vremove.
   Context {A} {Azero : A}.
   Notation v2f := (v2f Azero).
@@ -874,89 +975,8 @@ Section vmap_vinsert_vremove.
 
 End vmap_vinsert_vremove.
 
-
 (* ======================================================================= *)
-(** ** Get head or tail element *)
-Section vhead_vtail.
-  Context {A} {Azero : A}.
-
-  (** Get head element *)
-  Definition vhead {n} (a : @vec A (S n)) : A := a.[fin0].
-
-  (** vhead a is = a.0 *)
-  Lemma vhead_spec : forall {n} (a : @vec A (S n)), vhead a = (v2f Azero a) 0.
-  Proof.
-    intros. unfold vhead. erewrite nth_v2f. f_equal.
-    apply fin_eq_iff; auto. Unshelve. lia.
-  Qed.
-
-  (** vhead a = a $ 0 *)
-  Lemma vhead_eq : forall {n} (a : @vec A (S n)), vhead a = a.[fin0].
-  Proof. auto. Qed.
-
-  
-  (** Get tail element *)
-  Definition vtail {n} (a : @vec A (S n)) : A := a.[#n].
-
-  (** vtail a = a.(n - 1) *)
-  Lemma vtail_spec : forall {n} (a : @vec A (S n)), vtail a = (v2f Azero a) n.
-  Proof.
-    intros. unfold vtail. erewrite nth_v2f. erewrite nat2finS_eq. f_equal.
-    Unshelve. lia.
-  Qed.
-
-  (** vtail a = a $ (n - 1) *)
-  Lemma vtail_eq : forall {n} (a : @vec A (S n)), vtail a = a.[#n].
-  Proof. auto. Qed.
-
-End vhead_vtail.
-
-
-(* ======================================================================= *)
-(** ** Get head or tail elements *)
-Section vheadN_vtailN.
-  Context {A} {Azero : A}.
-
-  (** Get head elements *)
-  Definition vheadN {m n} (a : @vec A (m + n)) : @vec A m :=
-    fun i => a.[fin2AddRangeR i].
-
-  (** i < m -> (vheadN a).i = (v2f a).i *)
-  Lemma vheadN_spec : forall {m n} (a : @vec A (m + n)) i,
-      i < m -> v2f Azero (vheadN a) i = (v2f Azero a) i.
-  Proof.
-    intros. unfold vheadN. erewrite !nth_v2f. f_equal.
-    apply fin_eq_iff; auto. Unshelve. all: try lia.
-  Qed.
-
-  (** (vheadN a).i = a.i *)
-  Lemma vnth_vheadN : forall {m n} (a : @vec A (m + n)) i,
-      (vheadN a).[i] = a.[fin2AddRangeR i].
-  Proof. auto. Qed.
-
-  
-  (** Get tail elements *)
-  Definition vtailN {m n} (a : @vec A (m + n)) : @vec A n :=
-    fun i => a.[fin2AddRangeAddL i].
-
-  (** i < n -> (vtailN a).i = (v2f a).(m + i) *)
-  Lemma vtailN_spec : forall {m n} (a : @vec A (m + n)) i,
-      i < n -> v2f Azero (vtailN a) i = (v2f Azero a) (m + i).
-  Proof.
-    intros. unfold vtailN. erewrite !nth_v2f. f_equal.
-    apply fin_eq_iff; auto. Unshelve. all: try lia.
-  Qed.
-
-  (** (vtailN a).i = a.(n + i) *)
-  Lemma vnth_vtailN : forall {m n} (a : @vec A (m + n)) i,
-      (vtailN a).[i] = a.[fin2AddRangeAddL i].
-  Proof. auto. Qed.
-
-End vheadN_vtailN.
-
-
-(* ======================================================================= *)
-(** ** Remove exact one element at head or tail *)
+(** ** Remove element at head or tail *)
 Section vremoveH_vremoveT.
   Context {A} {Azero : A}.
   Notation v2f := (v2f Azero).
@@ -1043,7 +1063,6 @@ Section vremoveH_vremoveT.
 
 End vremoveH_vremoveT.
 
-
 (* ======================================================================= *)
 (** ** Remove elements at head or tail *)
 Section vremoveHN_vremoveTN.
@@ -1124,9 +1143,8 @@ Section vremoveHN_vremoveTN.
 
 End vremoveHN_vremoveTN.
 
-
 (* ======================================================================= *)
-(** ** Construct vector with one element at the head or tail position *)
+(** ** Construct vector with a vector an an element at the head or tail *)
 Section vconsH_vconsT.
   Context {A} {Azero : A}.
   Notation v2f := (v2f Azero).
@@ -1316,9 +1334,8 @@ Section vconsH_vconsT.
   
 End vconsH_vconsT.
 
-
 (* ======================================================================= *)
-(** ** Construct vector with two vectors *)
+(** ** Construct vector by append two vectors *)
 Section vapp.
   Context {A} {Azero : A}.
   Notation vzero := (vzero Azero).
@@ -1418,63 +1435,26 @@ Section vapp_extra.
 End vapp_extra.
 
 
-(* ======================================================================= *)
-(** ** Construct vector from parts of a vector *)
-Section vslice.
-  Context {A} {Azero : A}.
-
-  (** {i<n}, {j<n}, {k:=S j-i} -> {i+k < n} *)
-  Definition vslice_idx {n} (i j : fin n)
-    (k : fin (S (fin2nat j) - (fin2nat i))) : fin n.
-    refine (nat2fin (fin2nat i + fin2nat k) _).
-    pose proof (fin2nat_lt k). pose proof (fin2nat_lt j).
-    apply nat_lt_sub_imply_lt_add in H. rewrite commutative.
-    apply nat_ltS_lt_lt with (b := fin2nat j); auto.
-  Defined.
-  
-  (** Get a slice from vector `v` which contain elements from v$i to v$j.
-      1. Include the i-th and j-th element
-      2. If i > i, then the result is `vec 0` *)
-  Definition vslice {n} (a : @vec A n) (i j : fin n) :
-    @vec A (S (fin2nat j) - (fin2nat i)) :=
-    fun k => a.[vslice_idx i j k].
-
-  Lemma vnth_vslice : forall {n} (a : @vec A n) (i j : fin n) k,
-      (vslice a i j).[k] = a.[vslice_idx i j k].
-  Proof. intros. auto. Qed.
-  
-End vslice.
-
-Section test.
-  Let n := 5.
-  Let a : vec n := l2v 9 [1;2;3;4;5].
-  (* Compute v2l (vslice a (nat2finS 1) (nat2finS 3)). *)
-End test.
-
-
-
+(* ######################################################################### *)
+(** * Predicate of vectors *)
 
 (* ======================================================================= *)
-(** ** A proposition which all elements of the vector hold *)
+(** ** All elements of the vector hold *)
 Section vforall.
   Context {A : Type}.
 
   (** Every element of `a` satisfy the `P` *)
   Definition vforall {n} (a : @vec A n) (P : A -> Prop) : Prop := forall i, P (a.[i]).
-  
 End vforall.
 
-
 (* ======================================================================= *)
-(** ** A proposition which at least one element of the vector holds *)
+(** ** At least one element of the vector holds *)
 Section vexist.
   Context {A : Type}.
 
   (** There exist element of `v` satisfy the `P` *)
   Definition vexist {n} (a : @vec A n) (P : A -> Prop) : Prop := exists i, P (a.[i]).
-  
 End vexist.
-
 
 (* ======================================================================= *)
 (** ** An element belongs to the vector *)
@@ -1515,7 +1495,6 @@ Section vmem.
   End AeqDec.
   
 End vmem.
-
 
 (* ======================================================================= *)
 (** ** An vector belongs to another vector *)
@@ -1564,9 +1543,7 @@ Section vmems.
     Qed.
     
   End AeqDec.
-  
 End vmems.
-
 
 (* ======================================================================= *)
 (** ** Two vectors are equivalent (i.e., contain each other) *)
@@ -1602,11 +1579,9 @@ Section vequiv.
       intros. unfold vequiv. destruct (vmems_dec a b), (vmems_dec b a); try tauto.
     Qed.
   End AeqDec.
-  
 End vequiv.
 
 Section test.
-
   Let a : vec 2 := l2v 9 [1;2].
   Let b : vec 3 := l2v 9 [1;2;1].
   Example vequiv_example1 : vequiv a b.
@@ -1624,7 +1599,6 @@ Section test.
   Qed.
 End test.
 
-
 (* (* ======================================================================= *) *)
 (* (** ** An vector belongs to one but not belong to another *) *)
 (* Section vdiff. *)
@@ -1638,6 +1612,8 @@ End test.
 (* End vmems. *)
 
 
+(* ######################################################################### *)
+(** * Folding of a vector *)
 
 (* ======================================================================= *)
 (** ** Folding of a vector *)
@@ -1663,6 +1639,10 @@ Section vfold.
   Qed.
   
 End vfold.
+
+
+(* ######################################################################### *)
+(** * Algebraic operations *)
 
 (* ======================================================================= *)
 (** ** Sum of a vector *)
@@ -2004,7 +1984,6 @@ Section vsum_ext.
   
 End vsum_ext.
 
-
 (* ======================================================================= *)
 (** ** Vector addition *)
 Section vadd.
@@ -2071,7 +2050,6 @@ Section vadd_extra.
   
 End vadd_extra.
 
-
 (** ** Vector opposition *)
 Section vopp.
   
@@ -2133,13 +2111,10 @@ Section vopp.
   (** - (a + b) = (- a) + (- b) *)
   Lemma vopp_vadd : forall {n} (a b : vec n), - (a + b) = (- a) + (- b).
   Proof. intros. rewrite group_opp_distr. apply commutative. Qed.
-
 End vopp.
-
 
 (** ** Vector subtraction *)
 Section vsub.
-
   (* Let's have an Abelian-Group *)
   Context `{AGroup A Aadd Azero}.
   Infix "+" := Aadd : A_scope.
@@ -2197,13 +2172,11 @@ Section vsub.
   (** a - b = 0 <-> a = b *)
   Lemma vsub_eq0_iff_eq : forall {n} (a b : vec n), a - b = vzero <-> a = b.
   Proof. intros. apply group_sub_eq0_iff_eq. Qed.
-
 End vsub.
 
 
 (** ** Vector scalar multiplication *)
 Section vcmul.
-  
   (* Let's have an Abelian-ring *)
   Context `{HARing : ARing A Aadd Azero Aopp Amul Aone}.
   Add Ring ring_inst : (make_ring_theory HARing).
@@ -2379,13 +2352,11 @@ Section vcmul.
         x \.* a = y \.* a -> x <> y -> a = vzero.
     Proof. intros. apply vcmul_sameV_imply_eqX_or_v0 in H; tauto. Qed.
   End Dec_Field.
-  
 End vcmul.
 
 
 (** ** Dot product *)
 Section vdot.
-  
   (* Let's have an Abelian-ring *)
   Context `{HARing : ARing A Aadd Azero Aopp Amul Aone}.
   Add Ring ring_inst : (make_ring_theory HARing).
@@ -2635,8 +2606,9 @@ Section vdot_extra.
   Add Ring ring_inst : (make_ring_theory HARing).
   Infix "*" := Amul : A_scope.
   Notation vdot := (@vdot _ Aadd Azero Amul).
+  Notation "< a , b >" := (vdot a b) : vec_scope.
   
-  (** <<a,D>, b> = <a, <D,b> *)
+  (** < <a,D>, b> = <a, <D,b> > *)
   (* For example:
      (a1,a2,a3) [D11,D12] [b1]  记作 a*D*b，
                 [D21,D22] [b2]
@@ -2645,8 +2617,7 @@ Section vdot_extra.
              = (a1D11+a2D21+a3D31)b1 + (a1D12+a2D22+a3D32)b2
      a*(D*b) = a1 <row(D,1),b> + a2 <row(D,2),b> + a3 <row(D,3),b>
              = a1(D11b1+D12b2)+a2(D21b1+D22b2)+a3(D31b1+D32b2) *)
-  
-  Theorem vdot_assoc :
+  Lemma vdot_assoc :
     forall {r c} (a : @vec A c) (D : @vec (@vec A r) c) (b : @vec A r),
       vdot (fun j => vdot a (fun i => D i j)) b = vdot a (fun i => vdot (D i) b).
   Proof.
@@ -2661,8 +2632,12 @@ Section vdot_extra.
 
 End vdot_extra.
 
+
+(* ######################################################################### *)
+(** * Geometric operations *)
+
 (* ======================================================================= *)
-(** ** Euclidean norm (L2 norm), Length of vector *)
+(** ** Euclidean norm (i.e., L2 norm, length) *)
 Section vlen.
   (* Euclidean norm == Euclidean length (distance) = L2 norm == L2 distance *)
   
@@ -2874,10 +2849,8 @@ End vlen.
 
 #[export] Hint Resolve vlen_ge0 : vec.
 
-
 (* ======================================================================= *)
 (** ** Unit vector *)
-
 Section vunit.
   Context `{HARing : ARing}.
   Add Ring ring_inst : (make_ring_theory HARing).
@@ -2937,9 +2910,8 @@ Section vunit.
   (* vunit (mat2col (a * b) 0) *)
 End vunit.
 
-
 (* ======================================================================= *)
-(** ** Orthogonal vectors 正交的两个向量 *)
+(** ** Two vectors are orthogonal *)
 Section vorth.
   (* Two vectors, u and v, in an inner product space v, are orthogonal (also called 
      perpendicular) if their inner-product is zero. It can be denoted as `u ⟂ v` *)
@@ -2972,7 +2944,6 @@ Section vorth.
   Lemma vorth_comm : forall {n} (a b : vec n), a _|_ b -> b _|_ a.
   Proof. intros. unfold vorth in *. rewrite vdot_comm; auto. Qed.
 
-
   (* If equip a `Dec` and a `Field` *)
   Section Dec_Field.
     Context {AeqDec : Dec (@eq A)}.
@@ -2996,14 +2967,11 @@ Section vorth.
       - apply vorth_comm in H0. apply vorth_comm. apply vorth_vcmul_l; auto.
     Qed.
   End Dec_Field.
-  
 End vorth.
 
-
-
+(* ======================================================================= *)
 (** ** Projection component of a vector onto another *)
 Section vproj.
-  
   (* Let's have an field *)
   Context `{F:Field A Aadd Azero Aopp Amul Aone Ainv}.
   Add Field field_inst : (make_field_theory F).
@@ -3073,14 +3041,11 @@ Section vproj.
       apply vcmul_1_l. apply vdot_same_neq0_if_vnonzero; auto.
     Qed.
   End OrderedField.
-
 End vproj.
-
 
 (* ======================================================================= *)
 (** ** Perpendicular component of a vector respect to another *)
 Section vperp.
-  
   (* Let's have an field *)
   Context `{F:Field A Aadd Azero Aopp Amul Aone Ainv}.
   Add Field field_inst : (make_field_theory F).
@@ -3174,7 +3139,11 @@ End vperp.
 
 
 (* ======================================================================= *)
-(** ** Two vectors are parallel (on vnonzero version) *)
+(** ** Two vectors are collinear, parallel or antiparallel. *)
+(* https://en.wikipedia.org/wiki/Euclidean_vector
+   Two vectors are parallel if they have the same direction but not
+   necessarily the same magnitude, or antiparallel if they have opposite
+   direction but not necessarily the same magnitude *)
 
 (* 关于零向量的平行和垂直问题
   1. 来自《高等数学》的理论：
@@ -3203,59 +3172,17 @@ End vperp.
       两向量点乘为零，则它们垂直；两向量叉乘为零向量，则它们平行。
   (2) 在严格证明中，都加上非零向量这一假设条件。
   4. 本文的做法
-  (1) vnonzero 类型：表示非零向量。
-      在这个类型上定义平行、垂直、角度等。
-      换言之，零向量上未定义几何关系。
+  (1) 只在非零向量上定义平行、垂直、角度等。换言之，零向量上未定义几何关系。
  *)
-
-(* 一种方式是使用子类型 `vnonzero` 来实现 `vpara` 的版本。
-   这种做法的特点是：
-   1. `vpara`成了等价关系（因为排除了非零向量，而且将非零的条件封装到了类型中）
-   2. 同时也带来了一些构造上的繁琐性。因为返回该类型的函数必须要证明其满足非零的条件。
-   3. 同时也使得其他相关的函数都要使用 vnonzero 版本，可能过于复杂。
-   所以，当一个概念特别有应用需求时，才考虑用这种子类型的方式。
- *)
-Module demo_vpara_on_vnonzero.
-  Context `{HARing : ARing}.
-  Notation vcmul := (@vcmul _ Amul).
-  Infix "\.*" := vcmul : vec_scope.
-
-  (** Non-zero element *)
-  Record Anonzero :=
-    mknonzero {
-        nonzero :> A;
-        cond_nonzero : nonzero <> Azero
-      }.
-  
-  (** Non-zero vector *)
-  Record vnonzero n :=
-    mkvnonzero {
-        vnonzeroV :> @vec A n ;
-        vnonzero_cond : vnonzeroV <> vzero Azero
-      }.
-
-  (** Two non-zero vectors are parallel, when their components are proportional *)
-  Definition vpara {n} (a b : vnonzero n) : Prop :=
-    exists x : A, x \.* a = b.
-
-End demo_vpara_on_vnonzero.
-
-
-(* ======================================================================= *)
-(** ** Two vectors are collinear, parallel or antiparallel. *)
-(* https://en.wikipedia.org/wiki/Euclidean_vector
-   Two vectors are parallel if they have the same direction but not
-   necessarily the same magnitude, or antiparallel if they have opposite
-   direction but not necessarily the same magnitude *)
 Section vcoll_vpara_vantipara.
 
   (* 
      1. we need order relation to distinguish "x > 0 or x < 0" to define parallel
         and antiparallel
-     2. we need to prove the reflexivity of collinear, so need a nonzero coefficient
-        x, such as 1, thus need a field.
-     3. we need a coefficent x and 1/x to prove the symmetric of collinear, so we 
+     2. we need a coefficent x and 1/x to prove the symmetric of collinear, so we 
         need a field.
+     2. we need to prove the reflexivity of collinear, so need a nonzero coefficient
+        x, such as use 1 to prove 1 <> 0, thus need a field.
    *)
   Context `{HOrderedField
       : OrderedField A Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb}.

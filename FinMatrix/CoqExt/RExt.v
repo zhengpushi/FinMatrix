@@ -68,38 +68,6 @@ Require Export Hierarchy.
 
 Open Scope R_scope.
 
-
-(** ** Notations for R *)
-
-Notation "| r |" := (Rabs r) : R_scope.
-
-
-(* ######################################################################### *)
-(** ** Well-defined (or compatible, or proper morphism) of operations on R. *)
-
-Lemma Rplus_wd : Proper (eq ==> eq ==> eq) Rplus.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Ropp_wd : Proper (eq ==> eq) Ropp.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Rminus_wd : Proper (eq ==> eq ==> eq) Rminus.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Rmult_wd : Proper (eq ==> eq ==> eq) Rmult.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Rinv_wd : Proper (eq ==> eq) Rinv.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Rdiv_wd : Proper (eq ==> eq ==> eq) Rdiv.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Hint Resolve
-  Rplus_wd Ropp_wd Rminus_wd Rmult_wd Rinv_wd Rdiv_wd
-  : wd.
-
-
 (* ######################################################################### *)
 (** * Config the usage of Coq-Standard-Library Reals: Hints, Opaque, auto *)
 
@@ -279,7 +247,6 @@ Notation "x ??> y" := (Rlt_le_dec y x) : R_scope.
 (* These two notations have higher priority *)
 Infix "??<=" := (Rle_lt_dec) : R_scope.
 Infix "??<" := (Rlt_le_dec) : R_scope.
-
 
 (** ** Verify above notations are reasonable *)
 
@@ -714,6 +681,8 @@ End test.
 
 (* ======================================================================= *)
 (** ** About "absolute value" *)
+
+Notation "| r |" := (Rabs r) : R_scope.
 
 Lemma Rabs_neg_left : forall r, 0 <= r -> | -r | = r.
 Proof.
@@ -1360,6 +1329,19 @@ Section TEST_tac_le.
 
 End TEST_tac_le.
 
+(* ======================================================================= *)
+(** ** Examples which cannot automatically solved now *)
+
+(** This example comes from a proof about Carg in Complex. *)
+Goal forall a b r, a > 0 -> b <= r / a -> 0 <= r - b *a.
+Proof.
+  intros.
+  ra. (* No effect *)
+  apply Rmult_le_compat_r with (r:=a) in H0; ra.
+  unfold Rdiv in H0. rewrite Rmult_assoc in H0.
+  rewrite Rinv_l in H0; ra.
+Qed.
+
 
 (* ======================================================================= *)
 (** ** Compare with PI *)
@@ -1397,7 +1379,7 @@ End compare_with_PI.
 
 
 (* ======================================================================= *)
-(** ** These are old code early, need to be discarded gradually *)
+(** ** OLD CODE EARLY, they should be carefuly CHECKED and then DISCARDED *)
 
 (* (** a + b <> 0 *) *)
 (* Ltac plus_neq0 := *)
@@ -1658,17 +1640,17 @@ Qed.
     define them. Meanwhile, we tested their behaviors on negative numbers
     
     The behavior of "up" is this:
-        r∈[2.0,3.0) -> up(r)=3,
+        2.0 <= r < 3.0 -> up(r) = 3,
     and there is a lemma saying this:
         Check archimed. (* IZR (up r) > r /\ IZR (up r) - r <= 1 *)
 
     But we need the behavior of floor and ceiling are these below exactly:
     1. floor
-       r∈[2.0,3.0), floor(r)=2
+       2.0 <= r < 3.0 -> floor(r) = 2
        So, floor(r) = up(r) - 1
     2. ceiling
-       r∈(2.0,3.0), ceiling(r)=3
-       r=2.0, ceiling(r)=2
+       2.0 < r < 3.0 -> ceiling(r) = 3
+       r = 2.0 -> ceiling(r)=2
        So, if IZR(up(r))=r，then ceiling(r)=up(r)-1，else ceiling(r)=up(r).
 
     When talking about negative numbers, their behaviors are below:
@@ -1737,7 +1719,7 @@ Definition R2Z_ceiling (r : R) : Z :=
 
 (* Compute R2Z_floor 0.5 *)
 
-(** r∈[z,z+1.0) -> floor(r) = z *)
+(** z <= r < z+1.0 -> floor(r) = z *)
 Lemma R2Z_floor_spec : forall r z,
     IZR z <= r < IZR z + 1.0 -> R2Z_floor r = z.
 Proof.
@@ -1747,7 +1729,7 @@ Proof.
   rewrite plus_IZR. lra.
 Qed.
 
-(** (r=z -> ceiling r = z) /\ (r∈(z,z+1.0) -> ceiling r = z+1) *)
+(** (r=z -> ceiling r = z) /\ (z < r < z + 1.0 -> ceiling r = z+1) *)
 Lemma R2Z_ceiling_spec : forall r z,
     (r = IZR z -> R2Z_ceiling r = z) /\
       (IZR z < r < IZR z + 1.0 -> R2Z_ceiling r = (z+1)%Z).
@@ -1888,9 +1870,36 @@ Definition Rapprox (r1 r2 diff : R) : Prop := |r1 - r2| <= diff.
 Definition Rapproxb (r1 r2 diff : R) : bool := |r1 - r2| <=? diff.
 
 
-
 (* ######################################################################### *)
-(** * Mathematical Hierarchy *)
+(** * Mathematical Structure *)
+
+(* ======================================================================= *)
+(** ** Well-defined (or compatible, or proper morphism) of operations on R. *)
+
+Lemma Rplus_wd : Proper (eq ==> eq ==> eq) Rplus.
+Proof. simp_proper. intros; subst; ring. Qed.
+
+Lemma Ropp_wd : Proper (eq ==> eq) Ropp.
+Proof. simp_proper. intros; subst; ring. Qed.
+
+Lemma Rminus_wd : Proper (eq ==> eq ==> eq) Rminus.
+Proof. simp_proper. intros; subst; ring. Qed.
+
+Lemma Rmult_wd : Proper (eq ==> eq ==> eq) Rmult.
+Proof. simp_proper. intros; subst; ring. Qed.
+
+Lemma Rinv_wd : Proper (eq ==> eq) Rinv.
+Proof. simp_proper. intros; subst; ring. Qed.
+
+Lemma Rdiv_wd : Proper (eq ==> eq ==> eq) Rdiv.
+Proof. simp_proper. intros; subst; ring. Qed.
+
+Hint Resolve
+  Rplus_wd Ropp_wd Rminus_wd Rmult_wd Rinv_wd Rdiv_wd
+  : wd.
+
+(* ======================================================================= *)
+(** ** Useful structures *)
 
 #[export] Instance R_Order : Order Rlt Rle Rltb Rleb.
 Proof.
@@ -1921,20 +1930,6 @@ Qed.
   : OrderedField Rplus 0 Ropp Rmult 1 Rinv Rlt Rle Rltb Rleb.
 Proof.
   constructor. apply R_Field. apply R_OrderedARing.
-Qed.
-
-
-(* ######################################################################### *)
-(** * Examples which cannot automatically solved now *)
-
-(** This example is occurred in the proof about Carg in Complex. *)
-Goal forall a b r, a > 0 -> b <= r / a -> 0 <= r - b *a.
-Proof.
-  intros.
-  ra. (* No effect *)
-  apply Rmult_le_compat_r with (r:=a) in H0; ra.
-  unfold Rdiv in H0. rewrite Rmult_assoc in H0.
-  rewrite Rinv_l in H0; ra.
 Qed.
 
 
@@ -1990,6 +1985,34 @@ Proof.
   apply Rmult_eq_reg_l in H0; auto.
 Qed.
 
+(** Absolute function *)
+Lemma Rabs_pos_iff : forall x, |x| = x <-> x >= 0.
+Proof.
+  intros. split; intros.
+  - bdestruct (x >=? 0). lra. exfalso.
+    assert (x <= 0); try lra.
+    apply Rabs_left1 in H1. lra.
+  - apply Rabs_right. auto.
+Qed.
+
+Lemma Rabs_neg_iff : forall x, |x| = - x <-> x <= 0.
+Proof.
+  intros. split; intros.
+  - destruct (Rleb_reflect x 0); auto.
+    assert (x >= 0); try lra.
+    apply Rabs_right in H0. lra.
+  - apply Rabs_left1. auto.
+Qed.
+
+Lemma Rabs_le_rev : forall a b : R, |a| <= b -> - b <= a <= b.
+Proof.
+  intros. bdestruct (a <? 0).
+  - assert (|a| = -a). apply Rabs_neg_iff; ra. ra.
+  - assert (|a| = a). apply Rabs_pos_iff; ra. ra.
+Qed.
+
+Lemma mult_PI_gt0 : forall r, 0 < r -> 0 < r * PI.
+Proof. ra. Qed.  
 
 (** 算术-几何平均值不等式，简称 “算几不等式” *)
 (* 设 x1,x2,...,xn 为 n 个正实数，
@@ -2018,11 +2041,3 @@ Lemma Rineq3 : forall a b c : R,
     0 <= a -> 0 <= b -> 0 <= c ->
     (a + b + c) / 3 >= sqrt(a * b).
 Abort.
-
-
-
-(* ######################################################################### *)
-(** * Temporarily added lemmas, need to be arranged to proper places *)
-
-Lemma mult_PI_gt0 : forall r, 0 < r -> 0 < r * PI.
-Proof. ra. Qed.  

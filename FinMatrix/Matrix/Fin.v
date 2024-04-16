@@ -69,6 +69,9 @@ Require Import Extraction.
 (*   : fin. *)
 
 
+(* ######################################################################### *)
+(** * _fin_ type and basic operations *)
+
 (** ** Type of fin *)
 
 Declare Scope fin_scope.
@@ -321,6 +324,10 @@ Ltac fin2nat_inj :=
      end).
 
 
+
+(* ######################################################################### *)
+(** * Cast between _fin_ terms *)
+
 (** ** Cast between two [fin] type with actual equal range *)
 
 (** Cast from [fin n] type to [fin m] type if [n = m] *)
@@ -347,6 +354,8 @@ Proof.
   intros. unfold fin2fin,fin2nat,nat2fin. destruct i. apply fin_eq_iff; auto.
 Qed.
 
+(** ** [Fin n i] + [Fin n k] -> [Fin n (i+k)] *)
+
 (** {i<n} + {k<n} -> (i+k<n) ? {i+k<n} : {0<n} *)
 Definition fin2SameRangeAdd {n : nat} (i k:fin n) : fin (n).
   destruct (fin2nat i + fin2nat k ??< n)%nat as [E|E].
@@ -362,6 +371,8 @@ Lemma fin2nat_fin2SameRangeAdd : forall n (i k : fin n),
 Proof. intros. unfold fin2SameRangeAdd. fin. Qed.
 Hint Rewrite fin2nat_fin2SameRangeAdd : fin.
 
+(** ** [Fin n i] + [Fin n k] -> [Fin n (i-k)] *)
+
 (** {i<n} - {k<n} -> {i-k<n} *)
 Definition fin2SameRangeSub {n : nat} (i k:fin n) : fin (n).
   refine (nat2fin (fin2nat i - fin2nat k) _).
@@ -373,6 +384,8 @@ Lemma fin2nat_fin2SameRangeSub : forall n (i k : fin n),
     fin2nat (fin2SameRangeSub i k) = fin2nat i - fin2nat k.
 Proof. intros. unfold fin2SameRangeSub. simpl. auto. Qed.
 Hint Rewrite fin2nat_fin2SameRangeSub : fin.
+
+(** ** [Fin n i] -> [Fin n (S i)] *)
 
 (** {i<n} -> (S i<n) ? {S i<n} : {i<n} *)
 Definition fin2SameRangeSucc {n : nat} (i:fin n) : fin (n).
@@ -387,6 +400,8 @@ Lemma fin2nat_fin2SameRangeSucc : forall n (i : fin n),
 Proof. intros. unfold fin2SameRangeSucc. fin. Qed.
 Hint Rewrite fin2nat_fin2SameRangeSucc : fin.
 
+(** ** [Fin n i] -> [Fin n (pred i)] *)
+
 (** {i<n} -> (0 < i) ? {pred i<n} : {i<n} *)
 Definition fin2SameRangePred {n : nat} (i:fin n) : fin n.
   destruct (0 ??< fin2nat i)%nat.
@@ -400,7 +415,9 @@ Lemma fin2nat_fin2SameRangePred : forall n (i : fin n),
 Proof. intros. unfold fin2SameRangePred. fin. Qed.
 Hint Rewrite fin2nat_fin2SameRangePred : fin.
 
-(** Loop shift left : {i<n} << {k<n}. Eg: 0 1 2 =1=> 1 2 0  *)
+(** ** [Fin n i] -> [Fin n (loop-shift-left i with k)] *)
+
+(** Loop shift left {i<n} with {k<n}. Eg: 0 1 2 =1=> 1 2 0  *)
 Definition fin2SameRangeLSL {n : nat} (i k:fin n) : fin (n).
   destruct (n ??= 0)%nat.
   - subst; fin.
@@ -411,6 +428,8 @@ Defined.
 Lemma fin2nat_fin2SameRangeLSL : forall {n} (i k : fin n),
     fin2nat (fin2SameRangeLSL i k) = (n + fin2nat i + fin2nat k) mod n.
 Proof. intros. unfold fin2SameRangeLSL. fin. Qed.
+
+(** ** [Fin n i] -> [Fin n (loop-shift-right i with k)] *)
 
 (** Loop shift right : {i<n} <-> {k<n}. Eg: 0 1 2 =1=> 2 0 1  *)
 Definition fin2SameRangeLSR {n : nat} (i k:fin n) : fin (n).
@@ -424,6 +443,7 @@ Lemma fin2nat_fin2SameRangeLSR : forall {n} (i k : fin n),
     fin2nat (fin2SameRangeLSR i k) = (n + fin2nat i - fin2nat k) mod n.
 Proof. intros. unfold fin2SameRangeLSR. fin. Qed.
 
+(** ** [Fin n i] -> [Fin n (n - i)] *)
 
 (** {i < n} -> {n - i < n}  *)
 Definition fin2SameRangeRemain {n} (i : fin n) (E : 0 < fin2nat i) : fin n.
@@ -437,6 +457,7 @@ Lemma fin2nat_fin2SameRangeRemain : forall {n} (i : fin n) (E : 0 < fin2nat i),
     fin2nat (fin2SameRangeRemain i E) = n - fin2nat i.
 Proof. intros. unfold fin2SameRangeRemain. fin. Qed.
 
+(** ** [Fin n i] -> [Fin (S n) i] *)
 
 (** {i<n} -> {i<S n} *)
 Definition fin2SuccRange {n} (i:fin n) : fin (S n).
@@ -456,6 +477,7 @@ Lemma fin2SuccRange_nat2fin : forall n (i:nat) (E : i < n) (E0 : i < S n),
 Proof. intros. unfold fin2SuccRange, nat2finS. simpl. fin. Qed.
 Hint Rewrite fin2SuccRange_nat2fin : fin.
 
+(** ** [Fin (S n) i] -> [Fin n i] *)
 
 (** {i<S n} -> {i<n} *)
 Definition fin2PredRange {n} (i:fin (S n)) (H:fin2nat i < n) : fin n :=
@@ -481,6 +503,7 @@ Proof.
 Qed.
 Hint Rewrite fin2PredRange_fin2SuccRange : fin.
 
+(** ** [Fin n i] -> [Fin (m + n) i] *)
 
 (** {i < n} -> {i < m + n} *)
 Definition fin2AddRangeL {m n} (i : fin n) : fin (m + n).
@@ -493,7 +516,9 @@ Lemma fin2nat_fin2AddRangeL : forall m n (i : fin n),
 Proof. intros. auto. Qed.
 Hint Rewrite fin2nat_fin2AddRangeL : fin.
 
-(* {i < m + n} -> {i < m} *)
+(** ** [Fin (m + n) i] -> [Fin n i] *)
+
+(** {i < m + n} -> {i < m} *)
 Definition fin2AddRangeL' {m n} (i : fin (m + n)) (E : fin2nat i < n) : fin n :=
   nat2fin (fin2nat i) E.
 
@@ -508,6 +533,8 @@ Proof.
   destruct i as [i Hi]. apply fin_eq_iff; auto.
 Qed.
 
+(** ** [Fin m i] -> [Fin (m + n) i] *)
+
 (** {i < m} -> {i < m + n} *)
 Definition fin2AddRangeR {m n} (i : fin m) : fin (m + n).
   refine (nat2fin (fin2nat i) _).
@@ -518,6 +545,8 @@ Lemma fin2nat_fin2AddRangeR : forall m n (i : fin m),
     fin2nat (@fin2AddRangeR m n i) = fin2nat i.
 Proof. intros. auto. Qed.
 Hint Rewrite fin2nat_fin2AddRangeR : fin.
+
+(** ** [Fin (m + n) i] -> [Fin m i] *)
 
 (** {i < m + n} -> {i < m} *)
 Definition fin2AddRangeR' {m n} (i : fin (m + n)) (E : fin2nat i < m) : fin m :=
@@ -541,6 +570,8 @@ Proof.
   rewrite nat2fin_fin2nat. auto.
 Qed.
 
+(** ** [Fin n i] -> [Fin (m + n) (m + i)] *)
+
 (** {i < n} -> {m + i < m + n} *)
 Definition fin2AddRangeAddL {m n} (i : fin n) : fin (m + n).
   refine (nat2fin (m + fin2nat i) _).
@@ -550,6 +581,8 @@ Defined.
 Lemma fin2nat_fin2AddRangeAddL : forall {m n} (i : fin n),
     fin2nat (@fin2AddRangeAddL m n i) = m + fin2nat i.
 Proof. intros. auto. Qed.
+
+(** ** [Fin (m + n) (m + i)] -> [Fin n i] *)
 
 (** {m + i < m + n} -> {i < n} *)
 Definition fin2AddRangeAddL' {m n} (i : fin (m + n)) (E : m <= fin2nat i) : fin n.
@@ -577,6 +610,8 @@ Proof.
   destruct i as [i Ei]. simpl in *. apply fin_eq_iff; auto. lia.
 Qed.
   
+(** ** [Fin m i] -> [Fin (m + n) (i + n)] *)
+
 (** {i < m} -> {i + n < m + n} *)
 Definition fin2AddRangeAddR {m n} (i : fin m) : fin (m + n).
   refine (nat2fin (fin2nat i + n) _).
@@ -588,6 +623,8 @@ Lemma fin2nat_fin2AddRangeAddR : forall m n (i : fin m),
 Proof. intros. auto. Qed.
 Hint Rewrite fin2nat_fin2AddRangeAddR : fin.
   
+(** ** [Fin (m + n) (i + n)] -> [Fin m i] *)
+
 (** {i + n < m + n} -> {i < m} *)
 Definition fin2AddRangeAddR' {m n} (i:fin (m + n)) (E : n <= fin2nat i) : fin m.
   refine (nat2fin (fin2nat i - n) _).
@@ -614,6 +651,8 @@ Proof.
   destruct i as [i Hi]. simpl in *. apply fin_eq_iff; auto. lia.
 Qed.
 
+(** ** [Fin (S n) (S i)] -> [Fin n i] *)
+
 (** {S i < S n} -> {i < n} *)
 Definition fin2PredRangePred {n} (i:fin (S n)) (E : 0 < fin2nat i) : fin n.
   refine (nat2fin (pred (fin2nat i)) _).
@@ -625,6 +664,7 @@ Lemma fin2nat_fin2PredRangePred : forall n (i:fin (S n)) (E : 0 < fin2nat i),
 Proof. intros. unfold fin2PredRangePred. apply fin2nat_nat2fin. Qed.
 Hint Rewrite fin2nat_fin2PredRangePred : fin.
 
+(** ** [Fin n i] -> [Fin (S n) (S i)] *)
 
 (** {i < n} -> {S i < S n} *)
 Definition fin2SuccRangeSucc {n} (i:fin n) : fin (S n).
@@ -661,6 +701,10 @@ Lemma fin2SuccRangeSucc_nat2fin : forall n (i:nat) (E : i < n) (E0 : S i < S n),
   fin2SuccRangeSucc (nat2fin i E) = nat2fin (S i) E0.
 Proof. fin. Qed.
 Hint Rewrite fin2SuccRangeSucc_nat2fin : fin.
+
+
+(* ######################################################################### *)
+(** * Sequence of fin *)
 
 (** ** Sequence of fin *)
 Section finseq.

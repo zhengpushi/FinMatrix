@@ -42,24 +42,23 @@ Generalizable Variable A Aadd Azero Aopp Amul Aone Ainv.
 Open Scope mat_scope.
 
 
-(* ======================================================================= *)
-(** ** Matrix type *)
+(* ######################################################################### *)
+(** * Matrix type and basic operations *)
 
+(* ======================================================================= *)
+(** ** Definition of matrix type *)
+
+(** An r*c matrix over [A]  *)
 Notation mat A r c := (@vec (@vec A c) r).
 
-(** square matrix type *)
+(** An n-dimensional square matrix *)
 Notation smat A n := (mat A n n).
 
 (* Actually, mat A r c = forall A r c, fin r -> fin c -> A  *)
 (* Eval cbv in forall A r c, mat A r c. *)
 
-(** i1 = i2 -> j1 = j2 -> = M (Fin i1) (Fin j1) = M (Fin i2) (Fin j2) *)
-Lemma mnth_eq :
-  forall {A r c} (M : @mat A r c) i1 j1 i2 j2
-    (Hi1: i1 < r) (Hi2: i2 < r) (Hj1: j1 < c) (Hj2: j2 < c),
-    i1 = i2 -> j1 = j2 ->
-    M.[Fin i1 Hi1].[Fin j1 Hj1] = M.[Fin i2 Hi2].[Fin j2 Hj2].
-Proof. intros. subst. f_equal; apply fin_eq_iff; auto. Qed.
+(* ======================================================================= *)
+(** ** Get element of a matrix *)
 
 (* Note that: these notatiosn are dangerous.
    The reason can be found in the definition of `V.1` in file `Vector.v`
@@ -81,6 +80,14 @@ Notation "M .42" := (M.4.2) : mat_scope.
 Notation "M .43" := (M.4.3) : mat_scope.
 Notation "M .44" := (M.4.4) : mat_scope.
 
+(** i1 = i2 -> j1 = j2 -> = M (Fin i1) (Fin j1) = M (Fin i2) (Fin j2) *)
+Lemma mnth_eq :
+  forall {A r c} (M : @mat A r c) i1 j1 i2 j2
+    (Hi1: i1 < r) (Hi2: i2 < r) (Hj1: j1 < c) (Hj2: j2 < c),
+    i1 = i2 -> j1 = j2 ->
+    M.[Fin i1 Hi1].[Fin j1 Hj1] = M.[Fin i2 Hi2].[Fin j2 Hj2].
+Proof. intros. subst. f_equal; apply fin_eq_iff; auto. Qed.
+
 Lemma meq_iff_mnth : forall {A r c} (M N : mat A r c),
     M = N <-> (forall i j, M.[i].[j] = N.[i].[j]).
 Proof.
@@ -100,7 +107,6 @@ Proof.
     apply ex_not_not_all; auto. exists j. auto.
 Qed.
 
-
 (* ======================================================================= *)
 (** ** Get row and column of a matrix *)
 Section mrow_mcol.
@@ -113,7 +119,6 @@ Section mrow_mcol.
       (mrow M i).[j] = M.[i].[j].
   Proof. intros. auto. Qed.
 
-  
   Definition mcol {r c} (M : mat A r c) (j : fin c) : @vec A r := fun i => M i j.
   Notation "M &[ i ]" := (mcol M i) : mat_scope.
 
@@ -124,35 +129,105 @@ Section mrow_mcol.
 End mrow_mcol.
 Notation "M &[ i ]" := (mcol M i) : mat_scope.
 
-
 (* ======================================================================= *)
-(** ** Zero matrix *)
-Section mat0.
-  Context {A} {Azero : A}.
-  Definition mat0 {r c} : mat A r c := fun _ _ => Azero.
+(** ** matrix transpose *)
+Section mtrans.
+  Context {A} (Azero : A).
 
-  (** mat0[i,j] = 0 *)
-  Lemma mnth_mat0 : forall {r c} i j, (@mat0 r c).[i].[j] = Azero.
-  Proof. intros. auto. Qed.
-
-  (** row mat0 i = vzero *)
-  Lemma mrow_mat0 : forall {r c} i, (@mat0 r c).[i] = vzero Azero.
-  Proof. intros. auto. Qed.
-
-  (* col mat0 i = vzero *)
-  Lemma mcol_mat0 : forall {r c} j, (@mat0 r c)&[j] = vzero Azero.
-  Proof. intros. auto. Qed.
-End mat0.
-
-
-(* ======================================================================= *)
-(** ** Row vector and column vector *)
+  (* Definition mtrans_old {r c} (M : mat A r c) : mat A c r := *)
+  (*   vmap (fun j => mcol M j) (vfinseq c). *)
   
-(** Row/column vector type *)
+  Definition mtrans {r c} (M : mat A r c) : mat A c r := fun i j => M.[j].[i].
+  Notation "M \T" := (mtrans M) : mat_scope.
+
+  (** (M\T)[i,*] = M[*,i] *)
+  Lemma vnth_mtrans : forall {r c} (M : mat A r c) i, (M\T).[i] = fun j => M.[j].[i].
+  Proof. intros. auto. Qed.
+
+  (** (M\T)[i,j] = M[j,i] *)
+  Lemma mnth_mtrans : forall {r c} (M : mat A r c) i j, (M\T).[i].[j] = M.[j].[i].
+  Proof. intros. auto. Qed.
+
+  (** Transpose twice return back *)
+  Lemma mtrans_mtrans : forall {r c} (M : mat A r c), (M\T)\T = M.
+  Proof. intros. auto. Qed.
+
+  (** matrix transpose is injective *)
+  Lemma mtrans_inj : forall {r c : nat} (M1 M2 : mat A r c),
+      mtrans M1 = mtrans M2 -> M1 = M2.
+  Proof.
+    intros. rewrite meq_iff_mnth in H. rewrite meq_iff_mnth; intros.
+    specialize (H j i). auto.
+  Qed.
+
+  Lemma mcol_mtrans_eq_mrow : forall {r c} (M : mat A r c) (i : fin r),
+      (M\T)&[i] = M.[i].
+  Proof. auto. Qed.
+
+  Lemma mrow_mtrans_eq_mcol : forall {r c} (M : mat A r c) (j : fin c),
+      (M\T).[j] = M&[j].
+  Proof. auto. Qed.
+
+End mtrans.
+
+Notation "M \T" := (mtrans M) : mat_scope.
+
+(* ======================================================================= *)
+(** ** Get head or tail row *)
+Section mheadr_mtailr.
+  Context {A} {Azero : A}.
+
+  (** Get head row *)
+  Definition mheadr {r c} (M : @mat A (S r) c) : @vec A c := vhead M.
+
+  (** (mheadr M).j = M.0.j *)
+  Lemma vnth_mheadr : forall {r c} (M : @mat A (S r) c) j, (mheadr M).[j] = M.[fin0].[j].
+  Proof. auto. Qed.
+
+  
+  (** Get tail row *)
+  Definition mtailr {r c} (M : @mat A (S r) c) : @vec A c := vtail M.
+
+  (** (mtailr M).j = M.[n-1].[j] *)
+  Lemma vnth_mtailr : forall {r c} (M : @mat A (S r) c) j,
+      (mtailr M).[j] = M.[#r].[j].
+  Proof. auto. Qed.
+
+End mheadr_mtailr.
+
+(* ======================================================================= *)
+(** ** Get head or tail column *)
+Section mheadc_mtailc.
+  Context {A} {Azero : A}.
+
+  (** Get head column *)
+  Definition mheadc {r c} (M : @mat A r (S c)) : @vec A r := fun i => vhead (M.[i]).
+
+  (** (mheadc M).i = M.i.0 *)
+  Lemma vnth_mheadc : forall {r c} (M : @mat A r (S c)) i, (mheadc M).[i] = M.[i].[fin0].
+  Proof. auto. Qed.
+  
+  (** Get tail column *)
+  Definition mtailc {r c} (M : @mat A r (S c)) : @vec A r := fun i => vtail (M.[i]).
+
+  (** (mtailc M).i = M.i.(n-1) *)
+  Lemma vnth_mtailc : forall {r c} (M : @mat A r (S c)) i,
+      (mtailc M).[i] = M.[i].[#c].
+  Proof. auto. Qed.
+End mheadc_mtailc.
+
+
+(* ######################################################################### *)
+(** * Row vector and column vector *)
+  
+(* ======================================================================= *)
+(** ** Definition of row/column vector type *)
+
 Notation rvec A n := (mat A 1 n).
 Notation cvec A n := (mat A n 1).
 
-(** *** Convert between `cvec` and `vec *)
+(* ======================================================================= *)
+(** ** Convert between [cvec] and [vec] *)
 Section cvec_vec.
   Context {A : Type}.
   Notation cvec n := (cvec A n).
@@ -194,8 +269,8 @@ Section cvec_vec.
   
 End cvec_vec.
 
-
-(** *** Convert between `rvec` and `vec *)
+(* ======================================================================= *)
+(** ** Convert between [rvec] and [vec] *)
 Section rvec_vec.
   Context {A : Type}.
   Notation rvec n := (rvec A n).
@@ -222,8 +297,9 @@ Section rvec_vec.
   
 End rvec_vec.
 
+(* ======================================================================= *)
+(** ** Convert between [cvec] and [rvec]*)
 
-(** *** Convert between `cvec` and `rvec *)
 Lemma v2rv_cv2v : forall {A n} (M : cvec A n), v2rv (cv2v M) = fun i j => M.[j].[i].
 Proof.
   intros. apply meq_iff_mnth; intros. cbv. f_equal.
@@ -231,9 +307,36 @@ Proof.
 Qed.
 
 
+(* ######################################################################### *)
+(** * Make a matrix *)
+
 (* ======================================================================= *)
-(** ** Convert between `list of vectors` and mat *)
-Section vl2m_m2vl.
+(** ** Zero matrix *)
+Section mat0.
+  Context {A} {Azero : A}.
+  Definition mat0 {r c} : mat A r c := fun _ _ => Azero.
+  
+  (** mat0[i,j] = 0 *)
+  Lemma mnth_mat0 : forall {r c} i j, (@mat0 r c).[i].[j] = Azero.
+  Proof. intros. auto. Qed.
+
+  (** row mat0 i = vzero *)
+  Lemma mrow_mat0 : forall {r c} i, (@mat0 r c).[i] = vzero Azero.
+  Proof. intros. auto. Qed.
+
+  (* col mat0 i = vzero *)
+  Lemma mcol_mat0 : forall {r c} j, (@mat0 r c)&[j] = vzero Azero.
+  Proof. intros. auto. Qed.
+
+  (** mat0\T = mat0 *)
+  Lemma mtrans_mat0 : forall {r c : nat}, (@mat0 r c)\T = mat0.
+  Proof. intros. auto. Qed.
+  
+End mat0.
+
+(* ======================================================================= *)
+(** ** Convert between list of [rvec] and [mat] *)
+Section rvl2m_m2rvl.
   Context {A} (Azero : A).
   Notation mat r c := (mat A r c).
 
@@ -259,7 +362,13 @@ Section vl2m_m2vl.
     intros. unfold rvl2m, m2rvl. apply meq_iff_mnth; intros.
     rewrite nth_map_finseq with (E:=fin2nat_lt _). f_equal. apply fin_fin2nat.
   Qed.
+End rvl2m_m2rvl.
 
+(* ======================================================================= *)
+(** ** Convert between list of [cvec] and [mat] *)
+Section cvl2m_m2cvl.
+  Context {A} (Azero : A).
+  Notation mat r c := (mat A r c).
   (** mat to `list of column vectors` *)
   Definition m2cvl {r c} (M : mat r c) : list (@vec A r) :=
     map (fun i j => M j i) (finseq c).
@@ -284,12 +393,10 @@ Section vl2m_m2vl.
     rewrite nth_map_finseq with (E:=fin2nat_lt _). f_equal. apply fin_fin2nat.
   Qed.
 
-End vl2m_m2vl.
-
-
+End cvl2m_m2cvl.
   
 (* ======================================================================= *)
-(** ** Convert between nat-indexing-Function (f) and matrix *)
+(** ** Convert between function and [mat] *)
 Section f2m_m2f.
   Context {A} (Azero : A).
 
@@ -340,7 +447,6 @@ Section f2m_m2f.
     fin.
   Qed.
 
-
   Lemma f2m_m2f : forall {r c} (M : @mat A r c), f2m (m2f M) = M.
   Proof.
     intros. apply meq_iff_mnth; intros. rewrite mnth_f2m.
@@ -354,12 +460,10 @@ Section f2m_m2f.
     intros. rewrite nth_m2f with (Hi:=H)(Hj:=H0).
     rewrite mnth_f2m. fin.
   Qed.
-  
 End f2m_m2f.
 
-
 (* ======================================================================= *)
-(** ** Convert between dlist and mat *)
+(** ** Convert between [dlist] and [mat] *)
 Section l2m_m2l.
   Context {A} (Azero : A).
 
@@ -452,57 +556,6 @@ Section l2m_m2l.
   Proof. intros. exists (@l2m r c d). apply m2l_l2m; auto. Qed.
 
 End l2m_m2l.
-
-
-(* ======================================================================= *)
-(** ** matrix transpose *)
-Section mtrans.
-  Context {A} (Azero : A).
-
-  Notation mat0 := (@mat0 _ Azero).
-
-  (* Definition mtrans_old {r c} (M : mat A r c) : mat A c r := *)
-  (*   vmap (fun j => mcol M j) (vfinseq c). *)
-  
-  Definition mtrans {r c} (M : mat A r c) : mat A c r := fun i j => M.[j].[i].
-  Notation "M \T" := (mtrans M) : mat_scope.
-
-  (** (M\T)[i,*] = M[*,i] *)
-  Lemma vnth_mtrans : forall {r c} (M : mat A r c) i, (M\T).[i] = fun j => M.[j].[i].
-  Proof. intros. auto. Qed.
-
-  (** (M\T)[i,j] = M[j,i] *)
-  Lemma mnth_mtrans : forall {r c} (M : mat A r c) i j, (M\T).[i].[j] = M.[j].[i].
-  Proof. intros. auto. Qed.
-
-  (** Transpose twice return back *)
-  Lemma mtrans_mtrans : forall {r c} (M : mat A r c), (M\T)\T = M.
-  Proof. intros. auto. Qed.
-  
-  (** mat0\T = mat0 *)
-  Lemma mtrans_mat0 : forall {r c : nat}, (@mat0 r c)\T = mat0.
-  Proof. intros. auto. Qed.
-
-  (** matrix transpose is injective *)
-  Lemma mtrans_inj : forall {r c : nat} (M1 M2 : mat A r c),
-      mtrans M1 = mtrans M2 -> M1 = M2.
-  Proof.
-    intros. rewrite meq_iff_mnth in H. rewrite meq_iff_mnth; intros.
-    specialize (H j i). auto.
-  Qed.
-
-  Lemma mcol_mtrans_eq_mrow : forall {r c} (M : mat A r c) (i : fin r),
-      (M\T)&[i] = M.[i].
-  Proof. auto. Qed.
-
-  Lemma mrow_mtrans_eq_mcol : forall {r c} (M : mat A r c) (j : fin c),
-      (M\T).[j] = M&[j].
-  Proof. auto. Qed.
-
-End mtrans.
-
-Notation "M \T" := (mtrans M) : mat_scope.
-
   
 (* ======================================================================= *)
 (** ** Construct matrix with two matrices *)
@@ -519,7 +572,6 @@ Section mapp.
   Definition mappc {r c1 c2} (M : mat A r c1) (N : mat A r c2)
     : mat A r (c1 + c2) :=
     f2m (fun i j => if (j ??< c1)%nat then m2f M i j else m2f N i (j - c1)).
-  
 End mapp.
 
 Section test.
@@ -528,7 +580,6 @@ Section test.
   (* Compute m2l (mappr M N). *)
   (* Compute m2l (mappc M N). *)
 End test.
-
 
 (* ======================================================================= *)
 (** ** matrix with specific size *)
@@ -560,21 +611,55 @@ Section mat_specific.
   Definition mkmat_4_1 : mat A 4 1 := l2m [[a11];[a21];[a31];[a41]].
   Definition mkmat_4_4 : mat A 4 4 :=
     l2m [[a11;a12;a13;a14];[a21;a22;a23;a24];[a31;a32;a33;a34];[a41;a42;a43;a44]].
-  
 End mat_specific.
 
+(* ======================================================================= *)
+(** ** Make a diagonal matrix *)
+Section mdiag.
+  Context {A} (Azero:A).
+
+  (** A matrix is a diagonal matrix *)
+  Definition mdiag {n} (M : smat A n) : Prop :=
+    forall i j, i <> j -> M.[i].[j] = Azero.
+
+  (** Transpose of a diagonal matrix keep unchanged *)
+  Lemma mtrans_diag : forall {n} (M : smat A n), mdiag M -> M\T = M.
+  Proof.
+    intros. hnf in H. apply meq_iff_mnth; intros i j.
+    rewrite mnth_mtrans. destruct (i ??= j) as [E|E].
+    - apply fin2nat_inj in E; rewrite E. auto.
+    - apply fin2nat_inj_not in E. rewrite !H; auto.
+  Qed.
+
+  (** Construct a diagonal matrix *)
+  Definition mdiagMk {n} (a : @vec A n) : @smat A n :=
+    fun i j => if i ??= j then a.[i] else Azero.
+
+  (** mdiagMk is correct *)
+  Lemma mdiagMk_spec : forall {n} (a : @vec A n), mdiag (mdiagMk a).
+  Proof. intros. hnf. intros. unfold mdiagMk. fin. Qed.
+
+  (** (mdiagMk l)[i,i] = l[i] *)
+  Lemma mnth_mdiagMk_same : forall {n} (a : @vec A n) i, (mdiagMk a).[i].[i] = a.[i].
+  Proof. intros. unfold mdiagMk. fin. Qed.
+
+  (** (mdiagMk l)[i,j] = 0 *)
+  Lemma mnth_mdiagMk_diff : forall {n} (a : @vec A n) i j,
+      i <> j -> (mdiagMk a).[i].[j] = Azero.
+  Proof. intros. unfold mdiagMk. fin. Qed.
+
+End mdiag.
 
 (* ======================================================================= *)
-(** ** Matrix map *)
+(** ** Matrix by mapping one matrix *)
 Notation mmap f M := (vmap (vmap f) M).
 
 Lemma mnth_mmap : forall {A B} {r c} (M : mat A r c) (f:A -> B) i j,
     (mmap f M).[i].[j] = f (M.[i].[j]).
 Proof. intros. unfold mmap. auto. Qed.
 
-
 (* ======================================================================= *)
-(** ** Matrix map2 *)
+(** ** Matrix by mapping two matrices *)
 Notation mmap2 f M N := (vmap2 (vmap2 f) M N).
 
 Lemma mnth_mmap2 : forall {A B C} {r c} (M : mat A r c) (N : mat B r c)
@@ -591,56 +676,42 @@ Lemma mmap2_assoc `{Associative A Aadd} : forall {r c} (M N O : mat A r c),
 Proof. intros. apply meq_iff_mnth; intros. unfold mmap2. apply associative. Qed.
 
 
-(* ======================================================================= *)
-(** ** Get head or tail row *)
-Section mheadr_mtailr.
-  Context {A} {Azero : A}.
-
-  (** Get head row *)
-  Definition mheadr {r c} (M : @mat A (S r) c) : @vec A c := vhead M.
-
-  (** (mheadr M).j = M.0.j *)
-  Lemma vnth_mheadr : forall {r c} (M : @mat A (S r) c) j, (mheadr M).[j] = M.[fin0].[j].
-  Proof. auto. Qed.
-
-  
-  (** Get tail row *)
-  Definition mtailr {r c} (M : @mat A (S r) c) : @vec A c := vtail M.
-
-  (** (mtailr M).j = M.[n-1].[j] *)
-  Lemma vnth_mtailr : forall {r c} (M : @mat A (S r) c) j,
-      (mtailr M).[j] = M.[#r].[j].
-  Proof. auto. Qed.
-
-End mheadr_mtailr.
-
+(* ######################################################################### *)
+(** * Update a matrix *)
 
 (* ======================================================================= *)
-(** ** Get head or tail column *)
-Section mheadc_mtailc.
-  Context {A} {Azero : A}.
+(** ** Set row or column of a matrix *)
+Section mset.
+  Context {A} (Azero : A).
 
-  (** Get head column *)
-  Definition mheadc {r c} (M : @mat A r (S c)) : @vec A r := fun i => vhead (M.[i]).
+  (** set row *)
+  Definition msetr {r c} (M : mat A r c) (a : @vec A c) (i0 : fin r) : mat A r c :=
+    fun i j => if i ??= i0 then a.[j] else M.[i].[j].
 
-  (** (mheadc M).i = M.i.0 *)
-  Lemma vnth_mheadc : forall {r c} (M : @mat A r (S c)) i, (mheadc M).[i] = M.[i].[fin0].
-  Proof. auto. Qed.
+  Lemma mnth_msetr_same : forall {r c} (M : mat A r c) (a : @vec A c) (i0 : fin r) i j,
+      i = i0 -> (msetr M a i0).[i].[j] = a.[j].
+  Proof. intros. unfold msetr. fin. Qed.
 
-  
-  (** Get tail column *)
-  Definition mtailc {r c} (M : @mat A r (S c)) : @vec A r := fun i => vtail (M.[i]).
+  Lemma mnth_msetr_diff : forall {r c} (M : mat A r c) (a : @vec A c) (i0 : fin r) i j,
+      i <> i0 -> (msetr M a i0).[i].[j] = M.[i].[j].
+  Proof. intros. unfold msetr. fin. Qed.
 
-  (** (mtailc M).i = M.i.(n-1) *)
-  Lemma vnth_mtailc : forall {r c} (M : @mat A r (S c)) i,
-      (mtailc M).[i] = M.[i].[#c].
-  Proof. auto. Qed.
+  (** set column *)
+  Definition msetc {r c} (M : mat A r c) (a : @vec A r) (j0 : fin c) : mat A r c :=
+    fun i j => if j ??= j0 then a.[i] else M.[i].[j].
 
-End mheadc_mtailc.
+  Lemma mnth_msetc_same : forall {r c} (M : mat A r c) (a : @vec A r) (j0:fin c) i j,
+      j = j0 -> (msetc M a j0).[i].[j] = a.[i].
+  Proof. intros. unfold msetc. fin. Qed.
 
+  Lemma mnth_msetc_diff : forall {r c} (M : mat A r c) (a : @vec A r) (j0:fin c) i j,
+      j <> j0 -> (msetc M a j0).[i].[j] = M.[i].[j].
+  Proof. intros. unfold msetc. fin. Qed.
+
+End mset.
 
 (* ======================================================================= *)
-(** ** Remove exact one row at head or tail *)
+(** ** Remove one row at head or tail *)
 Section mremoverH_mremoverT.
   Context {A} {Azero : A}.
   Notation v2f := (v2f Azero).
@@ -669,9 +740,8 @@ Section mremoverH_mremoverT.
 
 End mremoverH_mremoverT.
 
-
 (* ======================================================================= *)
-(** ** Remove exact one column at head or tail *)
+(** ** Remove one column at head or tail *)
 Section mremovecH_mremovecT.
   Context {A} {Azero : A}.
   Notation v2f := (v2f Azero).
@@ -701,7 +771,6 @@ Section mremovecH_mremovecT.
   Proof. auto. Qed.
 
 End mremovecH_mremovecT.
-
 
 (* ======================================================================= *)
 (** ** Construct matrix from vector and matrix *)
@@ -1001,75 +1070,8 @@ Section test.
 End test.
 
 
-(* ======================================================================= *)
-(** ** matrix set row / column *)
-Section mset.
-  Context {A} (Azero : A).
-
-  (** set row *)
-  Definition msetr {r c} (M : mat A r c) (a : @vec A c) (i0 : fin r) : mat A r c :=
-    fun i j => if i ??= i0 then a.[j] else M.[i].[j].
-
-  Lemma mnth_msetr_same : forall {r c} (M : mat A r c) (a : @vec A c) (i0 : fin r) i j,
-      i = i0 -> (msetr M a i0).[i].[j] = a.[j].
-  Proof. intros. unfold msetr. fin. Qed.
-
-  Lemma mnth_msetr_diff : forall {r c} (M : mat A r c) (a : @vec A c) (i0 : fin r) i j,
-      i <> i0 -> (msetr M a i0).[i].[j] = M.[i].[j].
-  Proof. intros. unfold msetr. fin. Qed.
-
-  (** set column *)
-  Definition msetc {r c} (M : mat A r c) (a : @vec A r) (j0 : fin c) : mat A r c :=
-    fun i j => if j ??= j0 then a.[i] else M.[i].[j].
-
-  Lemma mnth_msetc_same : forall {r c} (M : mat A r c) (a : @vec A r) (j0:fin c) i j,
-      j = j0 -> (msetc M a j0).[i].[j] = a.[i].
-  Proof. intros. unfold msetc. fin. Qed.
-
-  Lemma mnth_msetc_diff : forall {r c} (M : mat A r c) (a : @vec A r) (j0:fin c) i j,
-      j <> j0 -> (msetc M a j0).[i].[j] = M.[i].[j].
-  Proof. intros. unfold msetc. fin. Qed.
-
-End mset.
-
-
-(* ======================================================================= *)
-(** ** Diagonal matrix *)
-Section mdiag.
-  Context {A} (Azero:A).
-
-  (** A matrix is a diagonal matrix *)
-  Definition mdiag {n} (M : smat A n) : Prop :=
-    forall i j, i <> j -> M.[i].[j] = Azero.
-
-  (** Transpose of a diagonal matrix keep unchanged *)
-  Lemma mtrans_diag : forall {n} (M : smat A n), mdiag M -> M\T = M.
-  Proof.
-    intros. hnf in H. apply meq_iff_mnth; intros i j.
-    rewrite mnth_mtrans. destruct (i ??= j) as [E|E].
-    - apply fin2nat_inj in E; rewrite E. auto.
-    - apply fin2nat_inj_not in E. rewrite !H; auto.
-  Qed.
-
-  (** Construct a diagonal matrix *)
-  Definition mdiagMk {n} (a : @vec A n) : @smat A n :=
-    fun i j => if i ??= j then a.[i] else Azero.
-
-  (** mdiagMk is correct *)
-  Lemma mdiagMk_spec : forall {n} (a : @vec A n), mdiag (mdiagMk a).
-  Proof. intros. hnf. intros. unfold mdiagMk. fin. Qed.
-
-  (** (mdiagMk l)[i,i] = l[i] *)
-  Lemma mnth_mdiagMk_same : forall {n} (a : @vec A n) i, (mdiagMk a).[i].[i] = a.[i].
-  Proof. intros. unfold mdiagMk. fin. Qed.
-
-  (** (mdiagMk l)[i,j] = 0 *)
-  Lemma mnth_mdiagMk_diff : forall {n} (a : @vec A n) i j,
-      i <> j -> (mdiagMk a).[i].[j] = Azero.
-  Proof. intros. unfold mdiagMk. fin. Qed.
-
-End mdiag.
-
+(* ######################################################################### *)
+(** * Algebraic operations *)
 
 (* ======================================================================= *)
 (** ** Matrix Addition *)
@@ -1156,8 +1158,6 @@ Section madd.
 End madd.
 
 
-(* ======================================================================= *)
-(** ** matrix algebra *)
 (* addition,opposition,subtraction, trace, scalar multiplication, multiplication *)
 Section malg.
 
@@ -1181,7 +1181,8 @@ Section malg.
   Infix "+" := madd : mat_scope.
   
   
-  (** *** Unit matrix *)
+  (* ======================================================================= *)
+  (** ** Unit matrix *)
   Section mat1.
     Definition mat1 {n} : smat n := fun i j => if i ??= j then 1 else 0.
     
@@ -1237,8 +1238,8 @@ Section malg.
       
   End mat1.
 
-
-  (** *** Matrix Trace *)
+  (* ======================================================================= *)
+  (** ** Matrix Trace *)
   Section mtrace.
     Definition mtrace {n : nat} (M : smat n) : A := vsum (fun i => M.[i].[i]).
     Notation "'tr' M" := (mtrace M).
@@ -1256,8 +1257,8 @@ Section malg.
   End mtrace.
   Notation "'tr' M" := (mtrace M).
 
-
-  (** *** Matrix Opposition *)
+  (* ======================================================================= *)
+  (** ** Matrix Opposition *)
   Section mopp.
     Notation vopp := (@vopp _ Aopp).
     Notation "- v" := (vopp v) : vec_scope.
@@ -1344,8 +1345,8 @@ Section malg.
   End mopp.
   Notation "- M" := (mopp M) : mat_scope.
   
-  
-  (** *** Matrix Subtraction *)
+  (* ======================================================================= *)
+  (** ** Matrix Subtraction *)
   Section msub.
     Notation msub M N := (M + (- N)).
     Infix "-" := msub : mat_scope.
@@ -1401,7 +1402,8 @@ Section malg.
   Notation "< v1 , v2 >" := (vdot v1 v2) : vec_scope.
 
   
-  (** *** Matrix Scalar Multiplication *)
+  (* ======================================================================= *)
+  (** ** Matrix Scalar Multiplication *)
   Section mcmul.
     Definition mcmul {r c : nat} (a : A) (M : mat r c) : mat r c := mmap (Amul a) M.
     Infix "\.*" := mcmul : mat_scope.
@@ -1519,7 +1521,8 @@ Section malg.
   Infix "\.*" := mcmul : mat_scope.
 
   
-  (** *** Matrix Multiplication *)
+  (* ======================================================================= *)
+  (** ** Matrix Multiplication *)
   Section mmul.
     (* structural-style *)
     Definition mmul_old {r c t : nat} (M : mat r c) (N : mat c t) : mat r t :=
@@ -1733,7 +1736,9 @@ Section malg.
   End mmul.
   Infix "*" := mmul : mat_scope.
   
-  (** *** Matrix multiply vector (column matrix) *)
+
+  (* ======================================================================= *)
+  (** ** Matrix multiply vector (column matrix) *)
   Section mmulv.
     Notation vec := (@vec A).
     Notation vopp := (@vopp _ Aopp).
@@ -1860,7 +1865,8 @@ Section malg.
   Infix "*v" := mmulv : mat_scope.
   
   
-  (** *** Vector (row matrix) multiply matrix *)
+  (* ======================================================================= *)
+  (** ** Vector (row matrix) multiply matrix *)
   Section mvmul.
     Notation vec := (@vec A).
     Notation vopp := (@vopp _ Aopp).
@@ -2029,7 +2035,8 @@ Section malg.
     
   End mmul_mmulv_mvmul.
   
-  (** *** Skew-symmetric matrix *)
+  (* ======================================================================= *)
+  (** ** Skew-symmetric matrix *)
   Section skew.
     
     (** Given matrix is skew-symmetric matrices *)
@@ -2102,8 +2109,8 @@ Section test.
 End test.
 
 
-(* ======================================================================= *)
-(** ** Elementary Row Transform *)
+(* ######################################################################### *)
+(** * Elementary Row Transform *)
 
 Section RowTrans.
   Context `{HARing : ARing}.
@@ -2119,14 +2126,16 @@ Section RowTrans.
   Notation mat1 := (@mat1 _ 0 1).
   Infix "*" := (@mmul _ Aadd 0 Amul _ _ _) : mat_scope.
 
-  (** *** 单元素矩阵 *)
+
+  (* ======================================================================= *)
+  (** ** Matrix with one given element *)
   
-  (** 在 (x,y) 是 a 的单元素阵 *)
+  (** An matrix which (x,y) element is _a_ *)
   Definition matOneElem {n} (x y : fin n) (a : A) : smat A n :=
     fun i j => if i ??= x then (if j ??= y then a else 0) else 0.
 
-
-  (** *** 行倍乘矩阵 *)
+  (* ======================================================================= *)
+  (** ** Row scaling *)
   
   (** 行倍乘矩阵
       作用：E(x,c) * M 的结果是 M 的第 x 行乘以 c 倍
@@ -2156,8 +2165,8 @@ Section RowTrans.
       mrowScale i c (M * N) = mrowScale i c M * N.
   Proof. intros. rewrite !mrowScale_eq. rewrite mmul_assoc; auto. Qed.
 
-
-  (** *** 行倍加矩阵 *)
+  (* ======================================================================= *)
+  (** ** Row addition with scaling *)
   
   (** 行倍加矩阵
       作用：E(x,y,c) * M 的结果是 M 的第 y 行的 c 倍加到第 x 行
@@ -2201,8 +2210,8 @@ Section RowTrans.
     - fin2nat_inj. subst. rewrite (mnth_mat1_diff j j0); auto. ring.
   Qed.
   
-
-  (** *** 行交换矩阵 *)
+  (* ======================================================================= *)
+  (** ** Row swapping *)
   
   (** 行交换矩阵
       作用：E(x,y) * M 的结果是 M 的第 x 行和第 y 行交换
@@ -2293,7 +2302,9 @@ Section test.
 End test.
 
 
-Module coordinate_transform_test.
+(* ######################################################################### *)
+(** * Test examples  *)
+Section test.
   Import Reals.
   Open Scope R.
   
@@ -2309,33 +2320,41 @@ Module coordinate_transform_test.
 
   Open Scope mat_scope.
 
-  Definition M : mat 2 3 := l2m [[1;3;1];[1;0;0]].
-  Definition N : mat 2 3 := l2m [[0;0;5];[7;5;0]].
-  Definition O : mat 2 3 := l2m [[1;3;6];[8;5;0]].
+  (* ======================================================================= *)
+  (** ** Examples for numerical matrix *)
+  Section proof_matrix_eq.
+    Let M : mat 2 3 := l2m [[1;3;1];[1;0;0]].
+    Let N : mat 2 3 := l2m [[0;0;5];[7;5;0]].
+    Let O : mat 2 3 := l2m [[1;3;6];[8;5;0]].
 
-  (** There are many wasy to finish the proof *)
-  
-  (* 1. use `m2l_inj` to convert the equation to `list` domain *)
-  Example madd_m1_m2_eq_m3 : M + N = O.
-  Proof. apply m2l_inj. cbv. list_eq; ring. Qed.
-  
-  (* 2. use `mnth` to compare elements. It is a bit complex *)
-  Example madd_m1_m2_eq_m3' : M + N = O.
-  Proof.
-    apply meq_iff_mnth; intros. rewrite mnth_madd. unfold M,N,O. destruct i,j.
-    repeat (try destruct i; try destruct i0; try lia; try (cbn; ring)).
-  Qed.
-  
-  Definition M4 : mat 2 3 := l2m [[1; 8;-3];[4;-2; 5]].
-  Definition M5 : mat 2 3 := l2m [[2;16;-6];[8;-4;10]].
-  Example mscale_2_m4_eq_m5 : 2 \.* M4 = M5.
-  Proof. apply m2l_inj. cbv. list_eq; ring. Qed.
-  
-  Definition M6 : mat 2 3 := l2m [[1;2;3];[0;-6;7]].
-  Definition M7 : mat 3 2 := l2m [[1;0];[2;-6];[3;7]].
-  Example mtrans_m6_eq_m7 : M6\T = M7.
-  Proof. apply m2l_inj. cbv. list_eq; ring. Qed.
+    (** There are many wasy to finish the proof *)
+    
+    (* 1. use `m2l_inj` to convert the equation to `list` domain *)
+    Goal M + N = O.
+    Proof. apply m2l_inj. cbv. list_eq; ring. Qed.
+    
+    (* 2. use `mnth` to compare elements. It is a bit complex *)
+    Goal M + N = O.
+    Proof.
+      apply meq_iff_mnth; intros. rewrite mnth_madd. unfold M,N,O. destruct i,j.
+      repeat (try destruct i; try destruct i0; try lia; try (cbn; ring)).
+    Qed.
+    
+    Let M4 : mat 2 3 := l2m [[1; 8;-3];[4;-2; 5]].
+    Let M5 : mat 2 3 := l2m [[2;16;-6];[8;-4;10]].
+    Goal 2 \.* M4 = M5.
+    Proof. apply m2l_inj. cbv. list_eq; ring. Qed.
+    
+    Let M6 : mat 2 3 := l2m [[1;2;3];[0;-6;7]].
+    Let M7 : mat 3 2 := l2m [[1;0];[2;-6];[3;7]].
+    Goal M6\T = M7.
+    Proof. apply m2l_inj. cbv. list_eq; ring. Qed.
+  End proof_matrix_eq.
 
+  (* ======================================================================= *)
+  (** ** Examples for symbol matrix *)
+
+  (** A equation in 3D coordinate transform *)
   Section Rbe.
     Variable θ ψ φ : R.
     Definition Rx (α : R) : mat 3 3 :=
@@ -2376,4 +2395,4 @@ Module coordinate_transform_test.
     Proof. apply m2l_inj. cbv. list_eq; ring. Qed.
   End Rbe.
   
-End coordinate_transform_test.
+End test.

@@ -23,8 +23,7 @@
      |v| = √<v, v>
  *)
 
-Require Export RExt.
-Require Export Ratan2.
+Require Export RExt Ratan2 RealFunction.
 Require Export MatrixModule.
 
 (* ######################################################################### *)

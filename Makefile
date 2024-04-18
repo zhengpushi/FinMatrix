@@ -6,7 +6,10 @@
 
 COQMAKEFILE ?= Makefile.coq
 
-HTML_EXTRA_DIR = doc/html-extra
+MY_HTML_ROOT = doc/FinMatrix
+MY_HTML_ROOT_WITH_VERSION = $(MY_HTML_ROOT)/v1.0
+
+HTML_EXTRA_DIR = html-extra
 COQDOCFLAGS ?= \
   --toc --toc-depth 2 --html --interpolate \
   --index indexpage \
@@ -22,24 +25,27 @@ all: $(COQMAKEFILE)
 $(COQMAKEFILE): _CoqProject
 	$(COQBIN)coq_makefile -f $^ -o $@
 
-clean: $(COQMAKEFILE)
-	$(MAKE) -f $^ cleanall
-
-cleanall: $(COQMAKEFILE)
-	$(MAKE) -f $^ cleanall
-	$(RM) $^ $^.conf
-
 html: $(COQMAKEFILE)
+	rm -rf html/
+	mkdir -p $(MY_HTML_ROOT_WITH_VERSION)
 	$(MAKE) -f $^ $@
-	cp $(HTML_EXTRA_DIR)/* html/ -R
-
-html.publish: html
-	tar -czf doc/html-publish/FinMatrix.html.tar.gz html/
+	mv html $(MY_HTML_ROOT_WITH_VERSION)
+	cp $(HTML_EXTRA_DIR)/index.html $(MY_HTML_ROOT)/
+	cp $(HTML_EXTRA_DIR)/header.html $(MY_HTML_ROOT_WITH_VERSION)/
+	cp $(HTML_EXTRA_DIR)/footer.html $(MY_HTML_ROOT_WITH_VERSION)/
+	cp $(HTML_EXTRA_DIR)/resources $(MY_HTML_ROOT_WITH_VERSION)/ -R
 
 install: $(COQMAKEFILE)
 	$(MAKE) -f $^ install
 
 uninstall: $(COQMAKEFILE)
 	$(MAKE) -f $^ uninstall
+
+clean: $(COQMAKEFILE)
+	$(MAKE) -f $^ cleanall
+
+cleanall: $(COQMAKEFILE)
+	$(MAKE) -f $^ cleanall
+	$(RM) $^ $^.conf
 
 .PHONY: all clean cleanall html install uninstall

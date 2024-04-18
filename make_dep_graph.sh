@@ -11,8 +11,9 @@
 # opam pin add coq 8.10.0
 # 2. The manual of dot is: https://www.graphviz.org/pdf/dotguide.pdf
 
+# Note, this path should be consistent with Makefile
+name=doc/FinMatrix/v1.0/dep_graph
 project_file=_CoqProject
-name=doc/dep_graph
 dot_file=${name}.dot
 pdf_file=${name}.pdf
 png_file=${name}.png

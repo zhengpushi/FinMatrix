@@ -1,8 +1,8 @@
 # FinMatrix
 Matrix by fin (finite set over nat) in Coq.
-* [Homepage](https://zhengpushi.github.io/projects/FinMatrix)
-* [Document](https://zhengpushi.github.io/projects/FinMatrix/html)
-* [github](https://github.com/zhengpushi/FinMatrix)
+* [Project Homepage](https://zhengpushi.github.io/projects/FinMatrix)
+* [Document Homepage](https://zhengpushi.github.io/projects/FinMatrix/html)
+* [Source Code in Github](https://github.com/zhengpushi/FinMatrix)
 
 ## Introduction
 We develop a formal matrix library `FinMatrix` in Coq, which contains : vector and matrix type, all basic vector operations and matrix operations, and lots of properties about them. It is designed polymorphic and hierarchy depended on element type and structure, and is computational supported for Coq to quick evaluate results of vector (or matrix) operations. The core idea and features are following:

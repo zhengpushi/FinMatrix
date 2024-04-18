@@ -6,7 +6,7 @@
 
 COQMAKEFILE ?= Makefile.coq
 
-HTML_EXTRA_DIR = html-extra
+HTML_EXTRA_DIR = doc/html-extra
 COQDOCFLAGS ?= \
   --toc --toc-depth 2 --html --interpolate \
   --index indexpage \
@@ -32,6 +32,9 @@ cleanall: $(COQMAKEFILE)
 html: $(COQMAKEFILE)
 	$(MAKE) -f $^ $@
 	cp $(HTML_EXTRA_DIR)/* html/ -R
+
+html.publish: html
+	tar -czf doc/html-publish/FinMatrix.html.tar.gz html/
 
 install: $(COQMAKEFILE)
 	$(MAKE) -f $^ install

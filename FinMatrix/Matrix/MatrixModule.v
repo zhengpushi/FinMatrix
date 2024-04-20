@@ -1208,6 +1208,68 @@ Module MonoidMatrixTheory (E : MonoidElementType).
   Open Scope vec_scope.
 
   (* ======================================================================= *)
+  (** ** Sum of a vector *)
+  Definition vsum {n} (a : vec n) := @vsum _ Aadd 0 _ a.
+  
+  (** (∀ i, a.i = b.i) -> Σa = Σb *)
+  Lemma vsum_eq : forall {n} (a b : vec n), (forall i, a.[i] = b.[i]) -> vsum a = vsum b.
+  Proof. intros. apply vsum_eq; intros; auto. Qed.
+
+  (** (∀ i, a.i = 0) -> Σa = 0 *)
+  Lemma vsum_eq0 : forall {n} (a : vec n), (forall i, a.[i] = 0) -> vsum a = 0.
+  Proof. intros. apply vsum_eq0; auto. Qed.
+
+  (** Convert `vsum` to `seqsum` *)
+  Lemma vsum_eq_seqsum : forall {n} (a : vec n),
+      vsum a = @seqsum _ Aadd 0 n (fun i => v2f a i).
+  Proof. intros. apply vsum_eq_seqsum. Qed.
+
+  (* (** Convert `vsum` to `seqsum` (succ form) *) *)
+  (* Lemma vsum_eq_seqsum_succ : forall {n} (a : vec (S n)), *)
+  (*     vsum a = ((@seqsum _ Aadd 0 (fun i => a $ (nat2finS i)) n) *)
+  (*               + a $ (nat2finS n))%A. *)
+  (* Proof. intros. apply vsum_eq_seqsum_succ. Qed. *)
+  
+  (** `vsum` of (S n) elements, equal to addition of Sum and tail *)
+  Lemma vsumS_tail : forall {n} (a : vec (S n)),
+      vsum a = (vsum (fun i => a.[fin2SuccRange i]) + a.[nat2finS n])%A.
+  Proof. intros. apply vsumS_tail; auto. Qed.
+
+  (** `vsum` of (S n) elements, equal to addition of head and Sum *)
+  Lemma vsumS_head : forall {n} (a : vec (S n)),
+      vsum a = (a.[nat2finS 0] + vsum (fun i => a.[fin2SuccRangeSucc i]))%A.
+  Proof. intros. apply vsumS_head; auto. Qed.
+
+  (** Σa + Σb = Σ(fun i => a.[i] + b.[i]) *)
+  Lemma vsum_add : forall {n} (a b : vec n),
+      (vsum a + vsum b)%A = vsum (fun i => a.[i] + b.[i])%A.
+  Proof. intros. apply vsum_add; auto. Qed.
+  
+  (** `vsum` which only one item is nonzero, then got this item. *)
+  Lemma vsum_unique : forall {n} (a : vec n) (x : A) i,
+      a.[i] = x -> (forall j, i <> j -> a.[j] = 0) -> vsum a = x.
+  Proof. intros. apply vsum_unique with (i:=i); auto. Qed.
+
+  (** `vsum` of the m+n elements equal to plus of two parts.
+      Σ[0,(m+n)] a = Σ[0,m](fun i=>a[i]) + Σ[m,m+n] (fun i=>a[m+i]) *)
+  Lemma vsum_plusIdx : forall m n (a : vec (m + n)),
+      vsum a = (vsum (fun i => a.[fin2AddRangeR i]) +
+                 vsum (fun i => a.[fin2AddRangeAddL i]))%A.
+  Proof. intros. apply vsum_plusIdx; auto. Qed.
+
+  (** The order of two nested summations can be exchanged.
+      ∑[i,0,r](∑[j,0,c] a.ij) = 
+      a00 + a01 + ... + a0c + 
+      a10 + a11 + ... + a1c + 
+      ...
+      ar0 + ar1 + ... + arc = 
+      ∑[j,0,c](∑[i,0,r] a.ij) *)
+  Lemma vsum_vsum : forall r c (a : @Vector.vec (vec c) r),
+      vsum (fun i => vsum (fun j => a.[i].[j])) =
+        vsum (fun j => vsum (fun i => a.[i].[j])).
+  Proof. intros. apply vsum_vsum. Qed.
+
+  (* ======================================================================= *)
   (** ** Vector addition *)
   
   Definition vadd {n} (a b : vec n) : vec n := vadd a b (Aadd:=Aadd).
@@ -1505,45 +1567,9 @@ Module RingMatrixTheory (E : RingElementType).
   Lemma vdot_cancel_l : forall {n} (a b : vec n),
       (forall c : vec n, <c, a> = <c, b>) -> a = b.
   Proof. intros. apply vdot_cancel_l in H; auto. Qed.
-  
 
   (* ======================================================================= *)
-  (** ** vsum *)
-  Definition vsum {n} (a : vec n) := @vsum _ Aadd 0 _ a.
-  
-  (** (∀ i, a.i = b.i) -> Σa = Σb *)
-  Lemma vsum_eq : forall {n} (a b : vec n), (forall i, a.[i] = b.[i]) -> vsum a = vsum b.
-  Proof. intros. apply vsum_eq; intros; auto. Qed.
-
-  (** (∀ i, a.i = 0) -> Σa = 0 *)
-  Lemma vsum_eq0 : forall {n} (a : vec n), (forall i, a.[i] = 0) -> vsum a = 0.
-  Proof. intros. apply vsum_eq0; auto. Qed.
-
-  (** Convert `vsum` to `seqsum` *)
-  Lemma vsum_eq_seqsum : forall {n} (a : vec n),
-      vsum a = @seqsum _ Aadd 0 n (fun i => v2f a i).
-  Proof. intros. apply vsum_eq_seqsum. Qed.
-
-  (* (** Convert `vsum` to `seqsum` (succ form) *) *)
-  (* Lemma vsum_eq_seqsum_succ : forall {n} (a : vec (S n)), *)
-  (*     vsum a = ((@seqsum _ Aadd 0 (fun i => a $ (nat2finS i)) n) *)
-  (*               + a $ (nat2finS n))%A. *)
-  (* Proof. intros. apply vsum_eq_seqsum_succ. Qed. *)
-  
-  (** `vsum` of (S n) elements, equal to addition of Sum and tail *)
-  Lemma vsumS_tail : forall {n} (a : vec (S n)),
-      vsum a = (vsum (fun i => a.[fin2SuccRange i]) + a.[nat2finS n])%A.
-  Proof. intros. apply vsumS_tail; auto. Qed.
-
-  (** `vsum` of (S n) elements, equal to addition of head and Sum *)
-  Lemma vsumS_head : forall {n} (a : vec (S n)),
-      vsum a = (a.[nat2finS 0] + vsum (fun i => a.[fin2SuccRangeSucc i]))%A.
-  Proof. intros. apply vsumS_head; auto. Qed.
-
-  (** Σa + Σb = Σ(fun i => a.[i] + b.[i]) *)
-  Lemma vsum_add : forall {n} (a b : vec n),
-      (vsum a + vsum b)%A = vsum (fun i => a.[i] + b.[i])%A.
-  Proof. intros. apply vsum_add; auto. Qed.
+  (** ** Properties of vsum *)
   
   (** - Σa = Σ(fun i => -a.[i]) *)
   Lemma vsum_opp : forall {n} (a : vec n),
@@ -1559,30 +1585,6 @@ Module RingMatrixTheory (E : RingElementType).
   Lemma vsum_cmul_r : forall {n} (a : vec n) x,
       vsum a * x = vsum (fun i => a.[i] * x).
   Proof. intros. apply vsum_cmul_r. Qed.
-  
-  (** `vsum` which only one item is nonzero, then got this item. *)
-  Lemma vsum_unique : forall {n} (a : vec n) (x : A) i,
-      a.[i] = x -> (forall j, i <> j -> a.[j] = 0) -> vsum a = x.
-  Proof. intros. apply vsum_unique with (i:=i); auto. Qed.
-
-  (** `vsum` of the m+n elements equal to plus of two parts.
-      Σ[0,(m+n)] a = Σ[0,m](fun i=>a[i]) + Σ[m,m+n] (fun i=>a[m+i]) *)
-  Lemma vsum_plusIdx : forall m n (a : vec (m + n)),
-      vsum a = (vsum (fun i => a.[fin2AddRangeR i]) +
-                 vsum (fun i => a.[fin2AddRangeAddL i]))%A.
-  Proof. intros. apply vsum_plusIdx; auto. Qed.
-
-  (** The order of two nested summations can be exchanged.
-      ∑[i,0,r](∑[j,0,c] a.ij) = 
-      a00 + a01 + ... + a0c + 
-      a10 + a11 + ... + a1c + 
-      ...
-      ar0 + ar1 + ... + arc = 
-      ∑[j,0,c](∑[i,0,r] a.ij) *)
-  Lemma vsum_vsum : forall r c (a : @Vector.vec (vec c) r),
-      vsum (fun i => vsum (fun j => a.[i].[j])) =
-        vsum (fun j => vsum (fun i => a.[i].[j])).
-  Proof. intros. apply vsum_vsum. Qed.
 
   (* ======================================================================= *)
   (** ** Unit vector *)
@@ -2228,6 +2230,7 @@ Module RingMatrixTheory (E : RingElementType).
   Lemma minvertible_imply_minvertibleR : forall {n} (M : smat n),
       minvertible M -> minvertibleR M.
   Proof. intros. apply minvertible_imply_minvertibleR; auto. Qed.
+
   
 End RingMatrixTheory.
 
@@ -2370,7 +2373,7 @@ Module FieldMatrixTheory (E : FieldElementType).
   (* ======================================================================= *)
   (** ** Perpendicular component of a vector respect to another *)
   
-  (** The perpendicular component of u respect to u *)
+  (** The perpendicular component of b respect to a *)
   Definition vperp {n} (a b : vec n) : vec n :=
     @vperp _ Aadd 0 Aopp Amul Ainv _ a b.
 
@@ -2865,6 +2868,7 @@ Module FieldMatrixTheory (E : FieldElementType).
   (* ======================================================================= *)
   (** ** Matrix Inversion (default method, JUST IS Notaiton of AM) *)
   Import AM.
+  Import MinvAMNotations.
 
   Notation minvertibleb := minvertiblebAM.
   Notation minvertible_iff_minvertibleb_true := minvertible_iff_minvertiblebAM_true.
@@ -2897,10 +2901,8 @@ Module FieldMatrixTheory (E : FieldElementType).
   (* ======================================================================= *)
   (** ** Orthonormal vectors 标准正交的向量组 *)
 
-  Import MinvAMNotations.
-
   (** All (different) columns of a matrix are orthogonal each other.
-      For example: [v1;v2;v3] => u_|_v2 && u_|_v3 && v_|_v3. *)
+      For example: [v1;v2;v3] => v1_|_v2 && v1_|_v3 && v2_|_v3. *)
   Definition mcolsOrth {r c} (M : mat r c) : Prop := mcolsOrth M.
 
   (** All (different) rows of a matrix are orthogonal each other. *)
@@ -2914,7 +2916,7 @@ Module FieldMatrixTheory (E : FieldElementType).
 
 
   (** All columns of a matrix are unit vector.
-      For example: [v1;v2;v3] => unit u && unit a && unit v3 *)
+      For example: [v1;v2;v3] => unit v1 && unit v2 && unit v3 *)
   Definition mcolsUnit {r c} (M : mat r c) : Prop := mcolsUnit M.
 
   (** All rows of a matrix are unit vector. *)
@@ -3060,12 +3062,12 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply GOn_mul_inv_r. Qed.
   
   (** <GOn, +, 1> is a monoid *)
-  Lemma Monoid_GOn : forall n, Monoid (@GOn_mul n) GOn_1.
-  Proof. intros. apply Monoid_GOn. Qed.
+  Lemma GOn_Monoid : forall n, Monoid (@GOn_mul n) GOn_1.
+  Proof. intros. apply GOn_Monoid. Qed.
 
   (** <GOn, +, 1, /x> is a group *)
-  Lemma Group_GOn : forall n, Group (@GOn_mul n) GOn_1 GOn_inv.
-  Proof. intros. apply Group_GOn. Qed.
+  Lemma GOn_Group : forall n, Group (@GOn_mul n) GOn_1 GOn_inv.
+  Proof. intros. apply GOn_Group. Qed.
 
   (** M \-1 = M \T *)
   Lemma GOn_imply_inv_eq_trans : forall {n} (M : @GOn n), M\-1 = (GOn_mat M) \T.
@@ -3114,8 +3116,8 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply SOn_mul_id_r. Qed.
   
   (** <SOn, +, 1> is a monoid *)
-  Lemma Monoid_SOn : forall n, Monoid (@SOn_mul n) SOn_1.
-  Proof. intros. apply Monoid_SOn. Qed.
+  Lemma SOn_Monoid : forall n, Monoid (@SOn_mul n) SOn_1.
+  Proof. intros. apply SOn_Monoid. Qed.
 
   (** Inverse operation of multiplication in GOn *)
   Definition SOn_inv {n} (M : @SOn n) : @SOn n := SOn_inv M.
@@ -3129,8 +3131,8 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply SOn_mul_inv_r. Qed.
 
   (** <SOn, +, 1, /x> is a group *)
-  Lemma Group_SOn : forall n, Group (@SOn_mul n) SOn_1 SOn_inv.
-  Proof. intros. apply Group_SOn. Qed.
+  Lemma SOn_Group : forall n, Group (@SOn_mul n) SOn_1 SOn_inv.
+  Proof. intros. apply SOn_Group. Qed.
 
   (** M \-1 = M \T *)
   Lemma SOn_minv_eq_trans : forall {n} (M : @SOn n), M\-1 = (GOn_mat M) \T.

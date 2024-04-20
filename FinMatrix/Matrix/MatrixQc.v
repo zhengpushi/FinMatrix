@@ -27,6 +27,20 @@ Open Scope mat_scope.
 (* ######################################################################### *)
 (** * Matrix theory applied to this type *)
 
+(** Cramer rule over list of Q type *)
+Definition cramerRuleListQ (n : nat) (C : dlist Q) (b : list Q) : list Q :=
+  let C' : smat n := l2m (dmap Q2Qc C) in
+  let b' : vec n := l2v (map Q2Qc b) in
+  let x' : vec n := cramerRule C' b' in
+  map Qc2Q (v2l x').
+
+(** Solve the equation with the form of C*x=b over list of Q type. *)
+Definition solveEqListQ (n : nat) (C : dlist Q) (b : list Q) : list Q :=
+  let C' : smat n := l2m (dmap Q2Qc C) in
+  let b' : vec n := l2v (map Q2Qc b) in
+  let x' : vec n := solveEq C' b' in
+  map Qc2Q (v2l x').
+
 
 (* ######################################################################### *)
 (** * Usage demo *)
@@ -63,5 +77,12 @@ Section test.
   (* Check mkGOn M. *)
   (* Check SOnP M. *)
   (* Check mkSOn M. *)
-  
+
+  (** Solve equation over list of Q type *)
+  Open Scope Q_scope.
+
+  Let C := [[1;2];[3;4]].
+  Let b := [5;6].
+  (* Compute solveEqListQ 2 C b.  (*   = [-4; 9 # 2] : list Q *) *)
+  (* Compute cramerRuleListQ 2 C b.  (*   = [-4; 9 # 2] : list Q *) *)
 End test.

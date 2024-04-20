@@ -760,7 +760,7 @@ Proof. intros. cbv. ring. Qed.
 
 
 (* ======================================================================= *)
-(** ** vangle2: exact angle for 2D vector (-π,π] *)
+(** ** 2D vector angle from one to another *)
 
 (* 
   1. vangle2 的动机：
@@ -1041,7 +1041,7 @@ Qed.
    (1) 相邻两个向量按相同次序的外积为第三个向量，即 i×j=k, j×k=i, k×i=j。
    (2) 相邻两个向量按相反次序的外积为第三个向量的取反，即 j×i=-k, etc. *)
 
-(** a \x b *)
+(** The cross product of 3D vectors a and b *)
 Definition v3cross (a b : vec 3) : vec 3 :=
   mkvec3
     (a.2 * b.3 - a.3 * b.2)%R

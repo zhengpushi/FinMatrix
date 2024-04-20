@@ -228,7 +228,7 @@ Notation cvec A n := (mat A n 1).
 
 (* ======================================================================= *)
 (** ** Convert between [cvec] and [vec] *)
-Section cvec_vec.
+Section cv2v_v2cv.
   Context {A : Type}.
   Notation cvec n := (cvec A n).
   
@@ -267,11 +267,11 @@ Section cvec_vec.
   Lemma vnth_cv2v : forall {n} (M : cvec n) i j, (cv2v M).[i] = M.[i].[j].
   Proof. intros. unfold cv2v. f_equal. rewrite (fin1_uniq j); auto. Qed.
   
-End cvec_vec.
+End cv2v_v2cv.
 
 (* ======================================================================= *)
 (** ** Convert between [rvec] and [vec] *)
-Section rvec_vec.
+Section rv2v_v2rv.
   Context {A : Type}.
   Notation rvec n := (rvec A n).
   
@@ -295,11 +295,11 @@ Section rvec_vec.
   Lemma vnth_v2rv : forall {n} (a : vec n) i, (v2rv a).[i]  = a.
   Proof. intros. unfold v2rv. auto. Qed.
   
-End rvec_vec.
+End rv2v_v2rv.
 
 (* ======================================================================= *)
-(** ** Convert between [cvec] and [rvec]*)
-
+(** ** Convert between [cvec] and [rvec] *)
+  
 Lemma v2rv_cv2v : forall {A n} (M : cvec A n), v2rv (cv2v M) = fun i j => M.[j].[i].
 Proof.
   intros. apply meq_iff_mnth; intros. cbv. f_equal.

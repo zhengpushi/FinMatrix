@@ -490,7 +490,7 @@ Module MatrixOrth (F : FieldElementType).
     Qed.
 
     (** <GOn, +, 1> is a monoid *)
-    Instance Monoid_GOn : forall n, Monoid (@GOn_mul n) GOn_1.
+    Instance GOn_Monoid : forall n, Monoid (@GOn_mul n) GOn_1.
     Proof.
       intros. constructor; constructor; intros.
       apply GOn_mul_assoc.
@@ -519,10 +519,10 @@ Module MatrixOrth (F : FieldElementType).
     Qed.
 
     (** <GOn, +, 1, /s> is a group *)
-    Theorem Group_GOn : forall n, Group (@GOn_mul n) GOn_1 GOn_inv.
+    Theorem GOn_Group : forall n, Group (@GOn_mul n) GOn_1 GOn_inv.
     Proof.
       intros. constructor.
-      apply Monoid_GOn.
+      apply GOn_Monoid.
       apply GOn_mul_inv_l.
       apply GOn_mul_inv_r.
     Qed.
@@ -628,7 +628,7 @@ Module MatrixOrth (F : FieldElementType).
     Qed.
     
     (** <SOn, +, 1> is a monoid *)
-    Lemma Monoid_SOn : forall n, Monoid (@SOn_mul n) SOn_1.
+    Lemma SOn_Monoid : forall n, Monoid (@SOn_mul n) SOn_1.
     Proof.
       intros. constructor; constructor; intros.
       apply SOn_mul_assoc.
@@ -659,10 +659,10 @@ Module MatrixOrth (F : FieldElementType).
     Qed.
 
     (** <SOn, +, 1, /s> is a group *)
-    Theorem Group_SOn : forall n, Group (@SOn_mul n) SOn_1 SOn_inv.
+    Theorem SOn_Group : forall n, Group (@SOn_mul n) SOn_1 SOn_inv.
     Proof.
       intros. constructor.
-      apply Monoid_SOn.
+      apply SOn_Monoid.
       apply SOn_mul_inv_l.
       apply SOn_mul_inv_r.
     Qed.

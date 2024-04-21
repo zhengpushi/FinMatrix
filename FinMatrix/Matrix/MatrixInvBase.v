@@ -356,7 +356,7 @@ Module Type Minv (E : FieldElementType).
   
   (** M\-1 * M = mat1 *)
   Axiom mmul_minv_l : forall {n} (M : smat n), minvertible M -> M\-1 * M = mat1.
-
+  
 End Minv.
 
 
@@ -498,5 +498,19 @@ Module MinvMore (F : FieldElementType) (M : Minv F).
     intros. unfold solveEq.
     rewrite <- mmulv_assoc. rewrite mmul_minv_r; auto. rewrite mmulv_1_l. auto.
   Qed.
+
+  (** Solve the equation with the form of C*x=b over list *)
+  Definition solveEqList (n : nat) (lC : dlist A) (lb : list A) : list A :=
+    let C : smat n := l2m 0 lC in
+    let b : vec n := l2v 0 lb in
+    let x := solveEq C b in
+    v2l x.
+
+  (** {solveEqList lC lb} = solveEq {lC} {lb} *)
+  Theorem solveEqList_spec : forall n (lC : dlist A) (lb : list A),
+      let C : smat n := l2m 0 lC in
+      let b : vec n := l2v 0 lb in
+      l2v 0 (solveEqList n lC lb) = solveEq C b.
+  Proof. intros. unfold solveEqList. rewrite l2v_v2l. auto. Qed.
   
 End MinvMore.

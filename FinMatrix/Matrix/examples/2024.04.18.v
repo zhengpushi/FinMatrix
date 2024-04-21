@@ -286,11 +286,115 @@ Section important_prop.
   (* : forall M : smat ?n, morth M <-> mrowsOrthonormal M *)
 End important_prop.
 
-(* 逆矩阵解方程的例子 *)
-Section inv_solve_equation.
-  Import MatrixQc.
-  Open Scope Q_scope.
+(* 解方程的例子 *)
+Section solve_equation.
+  Import MatrixQc.  Open Scope Q_scope.
+  Let C := [[6;0;1];[0;4;1];[-3;-2;1]].  Let b := [4;0;2].
 
-  Check cramerRuleListQ.
-  Check solveEqListQ.
-End inv_solve_equation.
+  (* 方法1: cramer rule *)
+  Compute cramerRuleListQ 3 C b. (* = [1 # 3; -1 # 2; 2] : list Q *)
+  
+  (* 方法2: $X = C^{-1} b$ *)
+  Compute solveEqListQ 3 C b.  (* = [1 # 3; -1 # 2; 2] : list Q *)
+  (* 实际上，方法2内部有两种做法，GE和AM，默认使用了GE而已 *)
+  Compute solveEqListGEQ 3 C b.
+  Compute solveEqListAMQ 3 C b.
+End solve_equation.
+
+(* 在Qc类型上，Eval cbv 与 Compute 的区别 *)
+Section cbv_Compute.
+  
+  (* 注意，
+     Eval cbv in xx
+     Compute xx
+     这二者的计算速度不同。
+     1. 如果都是常数，则二者都很快。
+        Compute xx 是 Eval vm_compute in xx 的缩写，它是编译为字节码后运行。
+     2. 如果含有 Variable，则二者都很慢，甚至卡死。
+        但是如果将某些运算设置为 Opaque，则 Eval cbv in xx 可以工作，但 Compute 仍然卡死。
+        并且，无论是否设置 Opaque 选项，Compute都会展开它们
+   *)
+  Import MatrixQc.
+  
+  (* 计算“常数构成的表达式” *)
+  Section ex1.
+    Let M : smat 2 := @l2m 2 2 (Q2Qc_dlist [[1;2];[3;4]]%Q).
+    
+    (* Compute |M|. *)
+    (* = {| this := -2; canon := Qred_involutive (-2) |} *)
+
+    (* Eval cbv in |M|. *)
+    (* = {| this := -2; canon := Qred_involutive (-2) |} *)
+
+    (* 如果执行了 Opaque 指令，则 Compute 仍然会展开，而 Eval cbv 会尊重这些指令 *)
+    Opaque Qcplus Qcopp Qcmult Q2Qc.
+
+    (* Compute |M|. *)
+    (* = {| this := -2; canon := Qred_involutive (-2) |} *)
+    
+    (* Eval cbv in |M|. *)
+    (* = (Q2Qc 0 + 1 * (Q2Qc 4 * 1) + - (Q2Qc 2 * (Q2Qc 3 * 1)))%Qc *)
+  End ex1.
+
+  (* 计算“含有变量的表达式” *)
+  Section ex2.
+    Variable q11 : Q.
+    Let M : smat 2 := @l2m 2 2 (Q2Qc_dlist [[q11;2];[3;4]]%Q).
+    
+    (* 直接计算，基本上会卡死 *)
+    (* Compute |M|. *)
+    (* Eval cbv in |M|. *)
+
+    (* 执行 Opaque 指令后，Eval cbv 可以运行 *)
+    Opaque Qcplus Qcopp Qcmult Q2Qc.
+    Eval cbv in |M|.
+    (* = (Q2Qc 0 + Q2Qc q11 * (Q2Qc 4 * 1) + - (Q2Qc 2 * (Q2Qc 3 * 1)))%Qc *)
+  End ex2.
+End cbv_Compute.
+
+(* 用 R 类型处理矩阵 *)
+Section solve_equation.
+  Import MatrixR.
+  
+  (* 优点：可处理无理数。此处，将 [6;0;1] 换成了 [6;0;PI] *)
+  Let C := [[6;0;PI];[0;4;1];[-3;-2;1]].
+  Let b := [4;0;2].
+
+  (* 缺点：计算结果展开太多，不直观 *)
+  Compute cramerRuleList 3 C b.
+  (* = [(((R1 + R1) * (R1 + R1) *
+   ((R1 + R1) * (R1 + R1) * (R1 * R1 + R0) + (- R1 * (- (R1 + R1) * R1 + R0) + R0)) +
+   (- R0 * (R0 * (R1 * R1 + R0) + (- R1 * ((R1 + R1) * R1 + R0) + R0)) +
+   ... *)
+
+  (* 另一种方法：交互式的进行，并利用 field_simplify 得到简洁的结果 *)
+  Variable x1 x2 x3 : A.
+  Goal cramerRuleList  3 C b = [x1;x2;x3].
+  Proof.
+    cbv; list_eq; field_simplify.
+(*
+  (-8 * PI + 24) / (12 * PI + 36) = x1
+goal 2 (ID 250) is:
+ (36 + PI * 12)%R <> 0
+goal 3 (ID 317) is:
+ -24 / (12 * PI + 36) = x2
+goal 4 (ID 333) is:
+ (36 + PI * 12)%R <> 0
+goal 5 (ID 400) is:
+ 96 / (12 * PI + 36) = x3
+goal 6 (ID 416) is:
+ (36 + PI * 12)%R <> 0
+ *)
+  Abort.
+
+  (* 可以看出，此处的分数并未消去公约数，但已经比较便于阅读了。
+     我们可以得解析解：
+     x1 = (-8 * PI + 24) / (12 * PI + 36);
+     x2 = -24 / (12 * PI + 36)
+     x3 = 96 / (12 * PI + 36)
+   *)
+
+  (* 同理，也可以使用 solveEqList 方法，但最好使用 NoCheck 版本 *)
+  Compute solveEqListNoCheck 3 C b.
+
+End solve_equation.

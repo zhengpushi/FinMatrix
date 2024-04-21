@@ -167,18 +167,14 @@ Section minv.
     apply mmul_det_cmul_adj_l. apply minvertible_iff_mdet_neq0 in H. auto.
   Qed.
 
-  
-  (* ======================================================================= *)
-  (** ** Inverse matrix (don't check the inversibility) *)
 
-  (* Note: the purpose of this function is to support evaluation of 
-     inverse matrix formulas by avoiding opaque `dec`, which will
-     prevent the computation *)
-  
-  (** Inverse matrix (don't check the inversibility) *)
+  (* ======================================================================= *)
+  (** ** Inverse matrix (No-check version) *)
+
+  (** Inverse matrix (won't check the inversibility) *)
   Definition minvNoCheck {n} (M : smat n) := (/ mdetEx M) \.* (madj M).
 
-  (** If `M` is invertible, the function `minvNoCheck` is equivalent to `M\-1\ *)
+  (** If `M` is invertible, then [minvNoCheckAM] is equivalent to [minvAM] *)
   Lemma minvNoCheck_spec : forall {n} (M : smat n), minvertible M -> minvNoCheck M = M\-1.
   Proof.
     intros. unfold minvNoCheck, minv in *.
@@ -438,6 +434,18 @@ Module MinvAM (E : FieldElementType) <: Minv E.
   (** M\-1 * M = mat1 *)
   Lemma mmul_minv_l : forall {n} (M : smat n), minvertible M -> M\-1 * M = mat1.
   Proof. intros. apply mmul_minv_l; auto. Qed.
+
+
+  (* ======================================================================= *)
+  (** ** Inverse matrix (No-check version) *)
+
+  (** Inverse matrix (won't check the inversibility) *)
+  Definition minvNoCheck {n} (M : smat n) :=
+    @minvNoCheck _ Aadd 0 Aopp Amul 1 Ainv _ M.
+
+  (** If `M` is invertible, then [minvNoCheckAM] is equivalent to [minvAM] *)
+  Lemma minvNoCheck_spec : forall {n} (M : smat n), minvertible M -> minvNoCheck M = M\-1.
+  Proof. intros. apply minvNoCheck_spec; auto. Qed.
   
 End MinvAM.
 
@@ -457,22 +465,33 @@ Module MinvMoreAM (E : FieldElementType).
   Notation mdet3 := (@mdet3 _ Aadd Aopp Amul).
   Notation mdet4 := (@mdet4 _ Aadd Aopp Amul).
   Notation cramerRule := (@cramerRule _ Aadd 0 Aopp Amul 1 Ainv).
-  
+
+
   (* ======================================================================= *)
-  (** ** Inverse matrix (don't check the inversibility) *)
+  (** ** Solve equation by inverse matrix without check the inversibility *)
 
-  (* Note: the purpose of this function is to support evaluation of  *)
-(*      inverse matrix formulas by avoiding opaque `dec`, which will *)
-(*      prevent the computation *)
-  
-  (** Inverse matrix (don't check the inversibility) *)
-  Definition minvNoCheck {n} (M : smat n) :=
-    @minvNoCheck _ Aadd 0 Aopp Amul 1 Ainv _ M.
+  (** Solve the equation with the form of C*x=b, but without check the inversibility. *)
+  Definition solveEqNoCheck {n} (C : smat n) (b : vec n) : vec n :=
+    (minvNoCheck C) *v b.
 
-  (** If `M` is invertible, the function `minvNoCheck` is equivalent to `M\-1\ *)
-  Lemma minvNoCheck_spec : forall {n} (M : smat n),
-      minvertible M -> minvNoCheck M = M\-1.
-  Proof. intros. apply minvNoCheck_spec; auto. Qed.
+  (** minvertible C -> solveEqNoCheck C b = solveEq C b *)
+  Theorem solveEqNoCheck_spec : forall {n} (C : smat n) (b : @vec A n),
+      minvertible C -> solveEqNoCheck C b = solveEq C b.
+  Proof. intros. unfold solveEqNoCheck. rewrite minvNoCheck_spec; auto. Qed.
+
+  (** Solve the equation with the form of C*x=b over list, but without check the 
+      inversibility *)
+  Definition solveEqListNoCheck (n : nat) (lC : dlist A) (lb : list A) : list A :=
+    let C : smat n := l2m 0 lC in
+    let b : vec n := l2v 0 lb in
+    let x := solveEqNoCheck C b in
+    v2l x.
+
+  (** minvertible {lC} -> {solveEqListNoCheck lC lb} = solveEqList {lC} {lb} *)
+  Theorem solveEqListNoCheck_spec : forall n (lC : dlist A) (lb : list A),
+      let C : smat n := l2m 0 lC in
+      minvertible C -> solveEqListNoCheck n lC lb = solveEqList n lC lb.
+  Proof. intros. unfold solveEqListNoCheck. rewrite solveEqNoCheck_spec; auto. Qed.
 
   
   (* ======================================================================= *)

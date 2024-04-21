@@ -28,18 +28,51 @@ Open Scope mat_scope.
 (** * Matrix theory applied to this type *)
 
 (** Cramer rule over list of Q type *)
-Definition cramerRuleListQ (n : nat) (C : dlist Q) (b : list Q) : list Q :=
-  let C' : smat n := l2m (dmap Q2Qc C) in
-  let b' : vec n := l2v (map Q2Qc b) in
-  let x' : vec n := cramerRule C' b' in
-  map Qc2Q (v2l x').
+Definition cramerRuleListQ (n : nat) (lC : dlist Q) (lb : list Q) : list Q :=
+  let lC' := dmap Q2Qc lC in
+  let lb' := map Q2Qc lb in
+  let lx' := cramerRuleList n lC' lb' in
+  map Qc2Q lx'.
 
-(** Solve the equation with the form of C*x=b over list of Q type. *)
-Definition solveEqListQ (n : nat) (C : dlist Q) (b : list Q) : list Q :=
-  let C' : smat n := l2m (dmap Q2Qc C) in
-  let b' : vec n := l2v (map Q2Qc b) in
-  let x' : vec n := solveEq C' b' in
-  map Qc2Q (v2l x').
+(* {cramerRuleListQ n lC lb} = cramerRuleList n {lC} {lb} *)
+Lemma cramerRuleListQ_spec : forall (n : nat) (lC : dlist Q) (lb : list Q),
+    map Q2Qc (cramerRuleListQ n lC lb) = cramerRuleList n (dmap Q2Qc lC) (map Q2Qc lb).
+Proof.
+  intros. unfold cramerRuleListQ. rewrite map_map.
+  apply ListExt.map_id. intros. apply Q2Qc_Qc2Q.
+Qed.
+
+(** Solve the equation with the form of C*x=b by GE over list of Q type. *)
+Definition solveEqListGEQ (n : nat) (lC : dlist Q) (lb : list Q) : list Q :=
+  let lC' := dmap Q2Qc lC in
+  let lb' := map Q2Qc lb in
+  let lx' := solveEqListGE n lC' lb' in
+  map Qc2Q lx'.
+
+(** {solveEqListGEQ n lC lb} = solveEqListGE n {lC} {lb} *)
+Lemma solveEqListGEQ_spec : forall (n : nat) (lC : dlist Q) (lb : list Q),
+    map Q2Qc (solveEqListGEQ n lC lb) = solveEqListGE n (dmap Q2Qc lC) (map Q2Qc lb).
+Proof.
+  intros. unfold solveEqListGEQ. rewrite map_map.
+  apply ListExt.map_id. intros. apply Q2Qc_Qc2Q.
+Qed.
+
+(** Solve the equation with the form of C*x=b by AM over list of Q type. *)
+Definition solveEqListAMQ (n : nat) (lC : dlist Q) (lb : list Q) : list Q :=
+  let lC' := dmap Q2Qc lC in
+  let lb' := map Q2Qc lb in
+  let lx' := solveEqListAM n lC' lb' in
+  map Qc2Q lx'.
+
+(** {solveEqListAMQ n lC lb} = solveEqListAM n {lC} {lb} *)
+Lemma solveEqListAMQ_spec : forall (n : nat) (lC : dlist Q) (lb : list Q),
+    map Q2Qc (solveEqListAMQ n lC lb) = solveEqListAM n (dmap Q2Qc lC) (map Q2Qc lb).
+Proof.
+  intros. unfold solveEqListAMQ. rewrite map_map.
+  apply ListExt.map_id. intros. apply Q2Qc_Qc2Q.
+Qed.
+
+Notation solveEqListQ := solveEqListGEQ.
 
 
 (* ######################################################################### *)
@@ -83,6 +116,8 @@ Section test.
 
   Let C := [[1;2];[3;4]].
   Let b := [5;6].
+  (* Compute cramerRuleListQ 2 C b. (*   = [-4; 9 # 2] : list Q *) *)
+  (* Compute solveEqListGEQ 2 C b.  (*   = [-4; 9 # 2] : list Q *) *)
+  (* Compute solveEqListAMQ 2 C b.  (*   = [-4; 9 # 2] : list Q *) *)
   (* Compute solveEqListQ 2 C b.  (*   = [-4; 9 # 2] : list Q *) *)
-  (* Compute cramerRuleListQ 2 C b.  (*   = [-4; 9 # 2] : list Q *) *)
 End test.

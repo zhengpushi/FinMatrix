@@ -2440,12 +2440,23 @@ Module FieldMatrixTheory (E : FieldElementType).
   (** Cramer rule, which can solve the equation with the form of C*x=b.
       Note, the result is valid only when |C| is not zero *)
   Definition cramerRule {n} (C : smat n) (b : vec n) : vec n :=
-    @cramerRule _ Aadd 0 Aopp Amul 1 Ainv AeqDec n C b.
+    @cramerRule _ Aadd 0 Aopp Amul 1 Ainv n C b.
 
   (** C *v (cramerRule C b) = b *)
   Lemma cramerRule_spec : forall {n} (C : smat n) (b : vec n),
   |C| <> 0 -> C *v (cramerRule C b) = b.
   Proof. intros. apply cramerRule_spec; auto. Qed.
+
+  (** Cramer rule over list *)
+  Definition cramerRuleList (n : nat) (lC : dlist A) (lb : list A) : list A :=
+    @cramerRuleList _ Aadd 0 Aopp Amul 1 Ainv n lC lb.
+
+  (** {cramerRuleList lC lb} = cramerRule {lC} {lb} *)
+  Lemma cramerRuleList_spec : forall n (lC : dlist A) (lb : list A),
+      let C : smat n := l2m lC in
+      let b : vec n := l2v lb in
+      l2v (cramerRuleList n lC lb) = cramerRule C b.
+  Proof. intros. apply cramerRuleList_spec. Qed.
   
   (* ======================================================================= *)
   (** ** Invertible matrix *)
@@ -2696,6 +2707,17 @@ Module FieldMatrixTheory (E : FieldElementType).
       minvertible C -> C *v (solveEqGE C b) = b.
   Proof. intros. apply solveEq_spec; auto. Qed.
 
+  (** Solve the equation with the form of C*x=b over list *)
+  Definition solveEqListGE (n : nat) (lC : dlist A) (lb : list A) : list A :=
+    solveEqList n lC lb.
+
+  (** {solveEqListGE lC lb} = solveEq {lC} {lb} *)
+  Lemma solveEqListGE_spec : forall n (lC : dlist A) (lb : list A),
+      let C : smat n := l2m lC in
+      let b : vec n := l2v lb in
+      l2v (solveEqList n lC lb) = solveEqGE C b.
+  Proof. intros. apply solveEqList_spec. Qed.
+
   (* ======================================================================= *)
   (** ** Matrix Inversion by AM *)
   Import AM.
@@ -2865,6 +2887,47 @@ Module FieldMatrixTheory (E : FieldElementType).
       minvertible C -> C *v (solveEqAM C b) = b.
   Proof. intros. apply solveEq_spec; auto. Qed.
 
+  (** Solve the equation with the form of C*x=b over list *)
+  Definition solveEqListAM (n : nat) (lC : dlist A) (lb : list A) : list A :=
+    solveEqList n lC lb.
+
+  (** {solveEqListAM lC lb} = solveEq {lC} {lb} *)
+  Lemma solveEqListAM_spec : forall n (lC : dlist A) (lb : list A),
+      let C : smat n := l2m lC in
+      let b : vec n := l2v lb in
+      l2v (solveEqList n lC lb) = solveEqAM C b.
+  Proof. intros. apply solveEqList_spec. Qed.
+
+  
+  (** Inverse matrix (won't check the inversibility) *)
+  Definition minvNoCheckAM {n} (M : smat n) : smat n := minvNoCheck M.
+
+  (** If `M` is invertible, then [minvNoCheckAM] is equivalent to [minvAM] *)
+  Lemma minvNoCheckAM_spec : forall {n} (M : smat n),
+      minvertible M -> minvNoCheckAM M = M\-1.
+  Proof. intros. apply minvNoCheck_spec; auto. Qed.
+
+  (** Solve the equation with the form of C*x=b, but without check the inversibility. *)
+  Definition solveEqNoCheckAM {n} (C : smat n) (b : vec n) : vec n :=
+    (minvNoCheckAM C) *v b.
+
+  (** minvertible C -> solveEqNoCheckAM C b = solveEqAM C b *)
+  Theorem solveEqNoCheckAM_spec : forall {n} (C : smat n) (b : vec n),
+      minvertible C -> solveEqNoCheckAM C b = solveEqAM C b.
+  Proof. intros. apply solveEqNoCheck_spec; auto. Qed.
+
+  (** Solve the equation with the form of C*x=b over list, but without check the 
+      inversibility *)
+  Definition solveEqListNoCheckAM (n : nat) (lC : dlist A) (lb : list A) : list A :=
+    solveEqListNoCheck n lC lb.
+
+  (** minvertible {lC} -> {solveEqListNoCheckAM lC lb} = solveEqListAM {lC} {lb} *)
+  Theorem solveEqListNoCheckAM_spec : forall n (lC : dlist A) (lb : list A),
+      let C : smat n := l2m lC in
+      minvertible C -> solveEqListNoCheckAM n lC lb = solveEqListAM n lC lb.
+  Proof. intros. apply solveEqListNoCheck_spec; auto. Qed.
+  
+
   (* ======================================================================= *)
   (** ** Matrix Inversion (default method, JUST IS Notaiton of AM) *)
   Import AM.
@@ -2895,8 +2958,18 @@ Module FieldMatrixTheory (E : FieldElementType).
   Notation minvertiblebList_spec := minvertiblebListAM_spec.
   Notation minvList := minvListAM.
   Notation minvList_spec := minvListAM_spec.
-  Notation solveEq := solveEqAM.
-  Notation solveEq_spec := solveEqAM_spec.
+
+  (* tips: we use GE model to solve equation for smaller time complexicity *)
+  Notation solveEq := solveEqGE.
+  Notation solveEq_spec := solveEqGE_spec.
+
+  (* tips: only AM has NoCheck version *)  
+  Notation minvNoCheck := minvNoCheckAM.
+  Notation minvNoCheck_spec := minvNoCheckAM_spec.
+  Notation solveEqNoCheck := solveEqNoCheckAM.
+  Notation solveEqNoCheck_spec := solveEqNoCheckAM_spec.
+  Notation solveEqListNoCheck := solveEqListNoCheckAM.
+  Notation solveEqListNoCheck_spec := solveEqListNoCheckAM_spec.
 
   (* ======================================================================= *)
   (** ** Orthonormal vectors 标准正交的向量组 *)

@@ -1167,16 +1167,13 @@ Section madj.
   (** Cramer rule, which can solve the equation with the form of C*x=b.
       Note, the result is valid only when |C| is not zero *)
   Definition cramerRule {n} (C : smat n) (b : @vec A n) : @vec A n :=
-    let D := mdetEx C in
-    if Aeqdec D 0
-    then vzero 0
-    else (fun i => mdetEx (msetc C b i) / D).
+    fun i => mdetEx (msetc C b i) / (mdetEx C).
 
   (** C *v (cramerRule C b) = b, (The dimension is `S n`) *)
   Lemma cramerRule_eq_S : forall {n} (C : smat (S n)) (b : @vec A (S n)),
   |C| <> 0 -> C *v (cramerRule C b) = b.
   Proof.
-    intros. unfold cramerRule. rewrite !mdetEx_eq_mdet. destruct Aeqdec; [easy|].
+    intros. unfold cramerRule. rewrite !mdetEx_eq_mdet.
     remember (msetc C b) as B. apply veq_iff_vnth; intros.
     rewrite vnth_mmulv. unfold vdot. unfold vmap2.
     rewrite vsum_eq with (b:=fun j => (/|C| * (C.[i].[j] * |B j|))%A).
@@ -1210,9 +1207,23 @@ Section madj.
   |C| <> 0 -> C *v (cramerRule C b) = b.
   Proof.
     intros. destruct n.
-    - cbv. apply veq_iff_vnth; intros. fin.
+    - cbv. apply v0eq.
     - apply cramerRule_eq_S. auto.
   Qed.
+
+  (** Cramer rule over list *)
+  Definition cramerRuleList (n : nat) (lC : dlist A) (lb : list A) : list A :=
+    let C : smat n := l2m 0 lC in
+    let b : vec n := l2v 0 lb in
+    let x := cramerRule C b in
+    v2l x.
+
+  (** {cramerRuleList lC lb} = cramerRule {lC} {lb} *)
+  Theorem cramerRuleList_spec : forall n (lC : dlist A) (lb : list A),
+      let C : smat n := l2m 0 lC in
+      let b : vec n := l2v 0 lb in
+      l2v 0 (cramerRuleList n lC lb) = cramerRule C b.
+  Proof. intros. unfold cramerRuleList. rewrite l2v_v2l. auto. Qed.
   
 End madj.
 
@@ -1220,20 +1231,22 @@ Section test.
   Import QcExt.
   
   Notation cramerRule := (@cramerRule _ Qcplus 0 Qcopp Qcmult 1 Qcinv).
+  Notation cramerRuleList := (@cramerRuleList _ Qcplus 0 Qcopp Qcmult 1 Qcinv).
   Notation mdetEx := (@mdetEx _ Qcplus 0 Qcopp Qcmult 1).
 
-  Let M1 : smat Qc 2 := l2m 0 (Q2Qc_dlist [[1;2];[3;4]]%Q).
-  Let b1 : @vec Qc 2 := l2v 0 (Q2Qc_list [5;6]%Q).
-  (* Compute v2l (cramerRule M1 b1). *)
+  Let lC1 := Q2Qc_dlist [[1;2];[3;4]]%Q.
+  Let lb1 := Q2Qc_list [5;6]%Q.
+  Let C1 : smat Qc 2 := l2m 0 lC1.
+  Let b1 : @vec Qc 2 := l2v 0 lb1.
+  (* Compute v2l (cramerRule C1 b1). *)
+  (* Compute cramerRuleList 2 lC1 lb1. *)
 
-  Let M2 : smat Qc 5 :=
-        l2m 0 (Q2Qc_dlist
-                 [[1;2;3;4;5];
-                  [2;4;3;5;1];
-                  [3;1;5;2;4];
-                  [4;5;2;3;1];
-                  [5;4;1;2;3]]%Q).
-  Let b2 : @vec Qc 5 := l2v 0 (Q2Qc_list [1;2;3;5;4]%Q).
-  (* Compute v2l (cramerRule M2 b2). *)
-  
+  Let lC2 := Q2Qc_dlist
+               [[1;2;3;4;5];
+                [2;4;3;5;1];
+                [3;1;5;2;4];
+                [4;5;2;3;1];
+                [5;4;1;2;3]]%Q.
+  Let lb2 := Q2Qc_list [1;2;3;5;4]%Q.
+  (* Compute cramerRuleList 5 lC2 lb2. *)
 End test.

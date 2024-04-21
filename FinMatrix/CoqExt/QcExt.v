@@ -186,6 +186,24 @@ Definition Qc2Q_list l := map Qc2Q l.
 (** dlist Qc to dlist Q *)
 Definition Qc2Q_dlist dl := map Qc2Q_list dl.
 
+(** If two Q type value are equal, then its canonical form are equal *)
+Lemma Qcmake_inversion : forall (q1 q2 : Q) (H1 : Qred q1 = q1) (H2 : Qred q2 = q2),
+    q1 = q2 -> Qcmake q1 H1 = Qcmake q2 H2.
+Proof.
+  intros.
+  f_equal.  (* Tips, f_equal has no effect on recrods of dependent types  *)
+  subst. 
+  f_equal. apply proof_irrelevance.
+Qed.
+
+(** Q2Qc (Qc2Q qc) = qc *)
+Lemma Q2Qc_Qc2Q : forall (qc : Qc), Q2Qc (Qc2Q qc) = qc.
+Proof.
+  intros. unfold Qc2Q. unfold Q2Qc. destruct qc. simpl.
+  f_equal.  (* Tips, f_equal has no effect on recrods of dependent types  *)
+  apply Qcmake_inversion. auto.
+Qed.
+
 
 (* ######################################################################### *)
 (** ** Properties for Qeqb and Qeq *)

@@ -8,7 +8,8 @@
   date      : 2023.12
 
   content   :
-  1. minvertible
+  1. invertible, left invertible, right invertible
+     https://en.wikipedia.org/wiki/Invertible_matrix
   2. interface for matrix inversion
  *)
 

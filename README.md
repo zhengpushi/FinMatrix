@@ -1,7 +1,6 @@
 # FinMatrix
 Matrix by fin (finite set over nat) in Coq.
 * [Project Homepage](https://zhengpushi.github.io/projects/FinMatrix)
-* [Document Homepage](https://zhengpushi.github.io/projects/FinMatrix/html)
 * [Source Code in Github](https://github.com/zhengpushi/FinMatrix)
 
 ## Introduction
@@ -44,7 +43,6 @@ We develop a formal matrix library `FinMatrix` in Coq, which contains : vector a
 `FinMatrix` is different with existing works.
 * [CoqMatrix](https://github.com/zhengpushi/CoqMatrix/) is a recent formal matrix library which is contain 6 different models, and it is aiming to integration and comparison. This library is a good place for experimenting variety of different models. However, there have not too much rich vector / matrix theories are developed.
 * [matrix](https://math-comp.github.io/htmldoc_2_2_0/mathcomp.algebra.matrix.html) in [Mathcomp](https://math-comp.github.io/) is a popular formal matrix library which have rich theories. However, this library also has some drawbacks.
-  * The element type must be a `ringType` (i.e. have a ring structure), so its polymorphism is restricted. For example, a given `A : Type` type cannot form a matrix, and neither can a type such as `nat`.
   * There are two kinds of vector, row vector is a $1\times n$ matrix, column vector is a $n\times 1$ matrix. That means, vector is a derived concept from matrix. But our `FinMatrix` library provided a standalone vector type, and related vector theory.
   * High rank matrix is not supported. For example, $n_1\times n_2\times n_3$ matrix is not supoorted.
   * Most of matrix operations are not computational. For example, `Compute` command cannot get a friendly simple result when we want get an element from a constant matrix, and it just return a complicated expression. I guess it is related with its `lock` mechanism which I not very familiar. Another possible reason is due to its complicated hierarchy.

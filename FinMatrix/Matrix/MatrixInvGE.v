@@ -47,7 +47,7 @@ Section minv.
   Infix "*" := mmul : mat_scope.
   Notation mmulv := (@mmulv _ Aadd 0 Amul).
   Infix "*v" := mmulv : mat_scope.
-  Notation minvertible := (@minvertible _ Aadd 0 Amul 1).
+  Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
   Notation msingular := (@msingular _ Aadd 0 Amul 1).
 
   Notation rowEchelon := (@rowEchelon _ Aadd 0 Aopp Amul Ainv _).
@@ -59,7 +59,7 @@ Section minv.
   (** ** Check matrix invertibility *)
 
   (** Check the invertibility of matrix `M` *)
-  Definition minvertibleb {n} : smat n -> bool :=
+  Definition minvtbleb {n} : smat n -> bool :=
     match n with
     | O => fun _ => true   (* zero-dims matrix is considered invertible *)
     | S n' =>
@@ -82,16 +82,16 @@ Section minv.
   Proof.
   Admitted.
   
-  (** minvertible M <-> minvertibleb M = true *)
-  Lemma minvertible_iff_minvertibleb_true : forall {n} (M : smat n),
-      minvertible M <-> minvertibleb M = true.
+  (** minvtble M <-> minvtbleb M = true *)
+  Lemma minvtble_iff_minvtbleb_true : forall {n} (M : smat n),
+      minvtble M <-> minvtbleb M = true.
   Proof.
     intros. split; intros.
     - hnf in H. destruct H as [M' [Hl Hr]]. destruct n; auto.
       apply (mmul_eq1_imply_rowEchelon_Some_r) in Hl. destruct Hl as [[l1 M1]].
-      unfold minvertibleb. rewrite H. auto.
-    - apply minvertible_iff_minvertibleL. hnf.
-      unfold minvertibleb in H. destruct n.
+      unfold minvtbleb. rewrite H. auto.
+    - apply minvtble_iff_minvtbleL. hnf.
+      unfold minvtbleb in H. destruct n.
       + exists M. apply v0eq.
       + destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
         destruct (minRowEchelon M1 (S n)) as [l2 M2] eqn:T2.
@@ -103,11 +103,11 @@ Section minv.
         * apply rowEchelon_NormedLowerTriangle in T1. auto.
   Qed.
   
-  (** msingular M <-> minvertibleb M = false *)
-  Lemma msingular_iff_minvertibleb_false : forall {n} (M : smat n),
-      msingular M <-> minvertibleb M = false.
+  (** msingular M <-> minvtbleb M = false *)
+  Lemma msingular_iff_minvtbleb_false : forall {n} (M : smat n),
+      msingular M <-> minvtbleb M = false.
   Proof.
-    intros. unfold msingular. rewrite minvertible_iff_minvertibleb_true.
+    intros. unfold msingular. rewrite minvtble_iff_minvtbleb_true.
     rewrite not_true_iff_false. tauto.
   Qed.
 
@@ -130,11 +130,11 @@ Section minv.
     end.
   
   (** `minvo` return `Some`, iff M is invertible *)
-  Lemma minvo_Some_iff_minvertible : forall {n} (M : smat n),
-      (exists M', minvo M = Some M') <-> minvertible M.
+  Lemma minvo_Some_iff_minvtble : forall {n} (M : smat n),
+      (exists M', minvo M = Some M') <-> minvtble M.
   Proof.
-    intros. rewrite minvertible_iff_minvertibleb_true.
-    unfold minvo, minvertibleb. destruct n.
+    intros. rewrite minvtble_iff_minvtbleb_true.
+    unfold minvo, minvtbleb. destruct n.
     - split; intros; auto. exists M. f_equal. apply v0eq.
     - split; intros.
       + destruct H as [M' H]. destruct rowEchelon as [[l1 M1]|]; try easy.
@@ -146,7 +146,7 @@ Section minv.
   Lemma minvo_None_iff_msingular : forall {n} (M : smat n),
       minvo M = None <-> msingular M.
   Proof.
-    intros. unfold msingular. rewrite <- minvo_Some_iff_minvertible.
+    intros. unfold msingular. rewrite <- minvo_Some_iff_minvtble.
     unfold minvo. destruct n.
     - split; intros; try easy. destruct H. exists mat1; auto.
     - split; intros; try easy.
@@ -234,10 +234,10 @@ Section minv.
   Qed.
   
   (** M\-1 * M = mat1 *)
-  Lemma mmul_minv_l : forall {n} (M : smat n), minvertible M -> M\-1 * M = mat1.
+  Lemma mmul_minv_l : forall {n} (M : smat n), minvtble M -> M\-1 * M = mat1.
   Proof.
-    intros. apply minvertible_iff_minvertibleb_true in H as H1.
-    unfold minvertibleb, minv in *. destruct n. apply v0eq.
+    intros. apply minvtble_iff_minvtbleb_true in H as H1.
+    unfold minvtbleb, minv in *. destruct n. apply v0eq.
     destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
     destruct minRowEchelon as [l2 M2] eqn:T2.
     rewrite rowOps2mat_app. rewrite mmul_assoc.
@@ -280,7 +280,7 @@ Module MinvGE (E : FieldElementType) <: Minv E.
     Infix "*v" := mmulv : mat_scope.
   End GENotations.
   
-  Notation minvertible := (@minvertible _ Aadd 0 Amul 1).
+  Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
   Notation msingular := (@msingular _ Aadd 0 Amul 1).
 
   Notation rowEchelon := (@rowEchelon _ Aadd 0 Aopp Amul Ainv _).
@@ -292,8 +292,8 @@ Module MinvGE (E : FieldElementType) <: Minv E.
   (** ** Check matrix invertibility *)
 
   (** Check the invertibility of matrix `M` *)
-  Definition minvertibleb {n} (M : smat n) : bool :=
-    @minvertibleb _ Aadd 0 Aopp Amul Ainv _ _ M.
+  Definition minvtbleb {n} (M : smat n) : bool :=
+    @minvtbleb _ Aadd 0 Aopp Amul Ainv _ _ M.
 
   (* M * N = mat1 -> (exists (l1, M1), rowEchelon M (S n) = Some (l1,M1) *)
   Lemma mmul_eq1_imply_rowEchelon_Some_l : forall {n} (M N : smat (S n)),
@@ -305,15 +305,15 @@ Module MinvGE (E : FieldElementType) <: Minv E.
       M * N = mat1 -> (exists '(l1, N1), rowEchelon N (S n) = Some (l1, N1)).
   Proof. intros. apply mmul_eq1_imply_rowEchelon_Some_r in H; auto. Qed.
   
-  (** minvertible M <-> minvertibleb M = true *)
-  Lemma minvertible_iff_minvertibleb_true : forall {n} (M : smat n),
-      minvertible M <-> minvertibleb M = true.
-  Proof. intros. apply minvertible_iff_minvertibleb_true. Qed.
+  (** minvtble M <-> minvtbleb M = true *)
+  Lemma minvtble_iff_minvtbleb_true : forall {n} (M : smat n),
+      minvtble M <-> minvtbleb M = true.
+  Proof. intros. apply minvtble_iff_minvtbleb_true. Qed.
   
-  (** msingular M <-> minvertibleb M = false *)
-  Lemma msingular_iff_minvertibleb_false : forall {n} (M : smat n),
-      msingular M <-> minvertibleb M = false.
-  Proof. intros. apply msingular_iff_minvertibleb_false. Qed.
+  (** msingular M <-> minvtbleb M = false *)
+  Lemma msingular_iff_minvtbleb_false : forall {n} (M : smat n),
+      msingular M <-> minvtbleb M = false.
+  Proof. intros. apply msingular_iff_minvtbleb_false. Qed.
 
 
   (* ******************************************************************* *)
@@ -324,9 +324,9 @@ Module MinvGE (E : FieldElementType) <: Minv E.
     @minvo _ Aadd 0 Aopp Amul 1 Ainv _ _ M.
 
   (** `minvo` return `Some`, iff M is invertible *)
-  Lemma minvo_Some_iff_minvertible : forall {n} (M : smat n),
-      (exists M', minvo M = Some M') <-> minvertible M.
-  Proof. intros. apply minvo_Some_iff_minvertible. Qed.
+  Lemma minvo_Some_iff_minvtble : forall {n} (M : smat n),
+      (exists M', minvo M = Some M') <-> minvtble M.
+  Proof. intros. apply minvo_Some_iff_minvtble. Qed.
 
   (** `minvo` return `None`, iff M is singular *)
   Lemma minvo_None_iff_msingular : forall {n} (M : smat n),
@@ -360,7 +360,7 @@ Module MinvGE (E : FieldElementType) <: Minv E.
   Proof. intros. apply minvo_None_imply_minv; auto. Qed.
   
   (** M\-1 * M = mat1 *)
-  Lemma mmul_minv_l : forall {n} (M : smat n), minvertible M -> M\-1 * M = mat1.
+  Lemma mmul_minv_l : forall {n} (M : smat n), minvtble M -> M\-1 * M = mat1.
   Proof. intros. apply mmul_minv_l; auto. Qed.
   
 End MinvGE.
@@ -402,7 +402,7 @@ Section test_Qc.
     Let d2 := Q2Qc_dlist [[-1;-1;2];[0;-1;1];[2;4;-5]]%Q.
     (* Note, we need the `Q2Qc` function to typing term of `Qc` type *)
     
-    (* Compute minvertiblebList 3 d1. *)
+    (* Compute minvtblebList 3 d1. *)
     (* Compute minvList 3 d1. *)
     (* Compute minvList 3 d2. *)
 
@@ -422,8 +422,8 @@ Section test_Qc.
   Open Scope Q_scope.
 
   (** Check matrix invertibility with rational number lists *)
-  Definition minvertiblebListQ (n : nat) (d : dlist Q) : bool :=
-    minvertiblebList n (Q2Qc_dlist d).
+  Definition minvtblebListQ (n : nat) (d : dlist Q) : bool :=
+    minvtblebList n (Q2Qc_dlist d).
   
   (** Inverse matrix with rational number lists *)
   Definition minvListQ (n : nat) (dl : dlist Q) : dlist Q :=
@@ -438,7 +438,7 @@ Section test_Qc.
     Let d1 := [[1;3;1];[2;1;1];[2;2;1]].
     Let d2 := [[-1;-1;2];[0;-1;1];[2;4;-5]].
     
-    (* Compute minvertiblebListQ 3 d1. *)
+    (* Compute minvtblebListQ 3 d1. *)
     (* Compute minvListQ 3 d1. *)
     (* Compute minvListQ 3 d2. *)
     (* Note, we get a friendly experience for typing and printing *)
@@ -540,7 +540,7 @@ Section test_Qc.
            [0.1361;0.5132;0.0497;0.1112;0.9561;0.1690;0.1890;0.7757];
            [0.8693;0.4018;0.9027;0.7803;0.5752;0.6491;0.6868;0.4868]].
 
-    (* Time Compute minvertiblebListQ 8 d1. (* 0.15s *) *)
+    (* Time Compute minvtblebListQ 8 d1. (* 0.15s *) *)
     (* Time Compute minvListQ 5 d1. (* 0.34 *) *)
     (* Time Compute minvListQ 6 d1. (* 1.28 *) *)
     (* Time Compute minvListQ 7 d1. (* 4.8 *) *)

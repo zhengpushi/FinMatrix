@@ -2210,26 +2210,26 @@ Module RingMatrixTheory (E : RingElementType).
   (** ** Invertible matrix *)
 
   (** A square matrix is invertible, if exists an inverse matrix *)
-  Definition minvertible {n} (M : smat n) : Prop := @minvertible _ Aadd 0 Amul 1 _ M.
+  Definition minvtble {n} (M : smat n) : Prop := @minvtble _ Aadd 0 Amul 1 _ M.
 
   (** The matrix `M` has a left inverse under matrix multiplication *)
-  Definition minvertibleL {n} (M : smat n) : Prop := @minvertibleL _ Aadd 0 Amul 1 _ M.
+  Definition minvtbleL {n} (M : smat n) : Prop := @minvtbleL _ Aadd 0 Amul 1 _ M.
 
   (** The matrix `M` has a right inverse under matrix multiplication *)
-  Definition minvertibleR {n} (M : smat n) : Prop := @minvertibleR _ Aadd 0 Amul 1 _ M.
+  Definition minvtbleR {n} (M : smat n) : Prop := @minvtbleR _ Aadd 0 Amul 1 _ M.
   
   (** The matrix `M` is singular (degenerate, not invertible) *)
-  Definition msingular {n} (M : smat n) : Prop := ~(minvertible M).
+  Definition msingular {n} (M : smat n) : Prop := ~(minvtble M).
 
   (** matrix `M` is invertible, imply `M` is left invertible *)
-  Lemma minvertible_imply_minvertibleL : forall {n} (M : smat n),
-      minvertible M -> minvertibleL M.
-  Proof. intros. apply minvertible_imply_minvertibleL; auto. Qed.
+  Lemma minvtble_imply_minvtbleL : forall {n} (M : smat n),
+      minvtble M -> minvtbleL M.
+  Proof. intros. apply minvtble_imply_minvtbleL; auto. Qed.
 
   (** matrix `M` is invertible, imply `M` is right invertible *)
-  Lemma minvertible_imply_minvertibleR : forall {n} (M : smat n),
-      minvertible M -> minvertibleR M.
-  Proof. intros. apply minvertible_imply_minvertibleR; auto. Qed.
+  Lemma minvtble_imply_minvtbleR : forall {n} (M : smat n),
+      minvtble M -> minvtbleR M.
+  Proof. intros. apply minvtble_imply_minvtbleR; auto. Qed.
 
   
 End RingMatrixTheory.
@@ -2462,84 +2462,84 @@ Module FieldMatrixTheory (E : FieldElementType).
   (** ** Invertible matrix *)
 
   (** matrix `M` is left invertible, if and only if the determinant is not zero *)
-  Lemma minvertibleL_iff_mdet_neq0 : forall {n} (M : smat n), minvertibleL M <-> |M| <> 0.
-  Proof. intros. apply minvertibleL_iff_mdet_neq0. Qed.
+  Lemma minvtbleL_iff_mdet_neq0 : forall {n} (M : smat n), minvtbleL M <-> |M| <> 0.
+  Proof. intros. apply minvtbleL_iff_mdet_neq0. Qed.
 
   (** matrix `M` is right invertible, if and only if the determinant is not zero *)
-  Lemma minvertibleR_iff_mdet_neq0 : forall {n} (M : smat n), minvertibleR M <-> |M| <> 0.
-  Proof. intros. apply minvertibleR_iff_mdet_neq0. Qed.
+  Lemma minvtbleR_iff_mdet_neq0 : forall {n} (M : smat n), minvtbleR M <-> |M| <> 0.
+  Proof. intros. apply minvtbleR_iff_mdet_neq0. Qed.
 
   (** A matrix `M` is invertible, if and only if the determinant is not zero *)
-  Lemma minvertible_iff_mdet_neq0 : forall {n} (M : smat n), minvertible M <-> |M| <> 0.
-  Proof. intros. apply minvertible_iff_mdet_neq0. Qed.
+  Lemma minvtble_iff_mdet_neq0 : forall {n} (M : smat n), minvtble M <-> |M| <> 0.
+  Proof. intros. apply minvtble_iff_mdet_neq0. Qed.
 
   (** matrix `M` is left invertible, imply `M` is invertible *)
-  Lemma minvertibleL_imply_minvertible : forall {n} (M : smat n),
-      minvertibleL M -> minvertible M.
-  Proof. intros. apply minvertibleL_imply_minvertible; auto. Qed.
+  Lemma minvtbleL_imply_minvtble : forall {n} (M : smat n),
+      minvtbleL M -> minvtble M.
+  Proof. intros. apply minvtbleL_imply_minvtble; auto. Qed.
 
   (** matrix `M` is right invertible, imply `M` is invertible *)
-  Lemma minvertibleR_imply_minvertible : forall {n} (M : smat n),
-      minvertibleR M -> minvertible M.
-  Proof. intros. apply minvertibleR_imply_minvertible; auto. Qed.
+  Lemma minvtbleR_imply_minvtble : forall {n} (M : smat n),
+      minvtbleR M -> minvtble M.
+  Proof. intros. apply minvtbleR_imply_minvtble; auto. Qed.
 
   (** matrix `M` is invertible, if and only if `M` is left invertible *)
-  Lemma minvertible_iff_minvertibleL : forall {n} (M : smat n),
-      minvertible M <-> minvertibleL M.
-  Proof. intros. apply minvertible_iff_minvertibleL. Qed.
+  Lemma minvtble_iff_minvtbleL : forall {n} (M : smat n),
+      minvtble M <-> minvtbleL M.
+  Proof. intros. apply minvtble_iff_minvtbleL. Qed.
 
   (** matrix `M` is invertible, if and only if `M` is right invertible *)
-  Lemma minvertible_iff_minvertibleR : forall {n} (M : smat n),
-      minvertible M <-> minvertibleR M.
-  Proof. intros. apply minvertible_iff_minvertibleR. Qed.
+  Lemma minvtble_iff_minvtbleR : forall {n} (M : smat n),
+      minvtble M <-> minvtbleR M.
+  Proof. intros. apply minvtble_iff_minvtbleR. Qed.
 
   (** matrix `M` is left invertible, if and only if `M` is right invertible *)
-  Lemma minvertibleL_iff_minvertibleR : forall {n} (M : smat n),
-      minvertibleL M <-> minvertibleR M.
-  Proof. intros. apply minvertibleL_iff_minvertibleR. Qed.
+  Lemma minvtbleL_iff_minvtbleR : forall {n} (M : smat n),
+      minvtbleL M <-> minvtbleR M.
+  Proof. intros. apply minvtbleL_iff_minvtbleR. Qed.
 
   (** `M * N = mat1` imply `M` is invertible *)
-  Lemma mmul_eq1_imply_minvertible_l : forall {n} (M N : smat n),
-      M * N = mat1 -> minvertible M.
-  Proof. intros. apply mmul_eq1_imply_minvertible_l in H; auto. Qed.
+  Lemma mmul_eq1_imply_minvtble_l : forall {n} (M N : smat n),
+      M * N = mat1 -> minvtble M.
+  Proof. intros. apply mmul_eq1_imply_minvtble_l in H; auto. Qed.
 
   (** `M * N = mat1` imply `N` is invertible *)
-  Lemma mmul_eq1_imply_minvertible_r : forall {n} (M N : smat n),
-      M * N = mat1 -> minvertible N.
-  Proof. intros. apply mmul_eq1_imply_minvertible_r in H; auto. Qed.
+  Lemma mmul_eq1_imply_minvtble_r : forall {n} (M N : smat n),
+      M * N = mat1 -> minvtble N.
+  Proof. intros. apply mmul_eq1_imply_minvtble_r in H; auto. Qed.
 
   (** Transpose preserve `invertible` property *)
-  Lemma mtrans_minvertible : forall n (M : smat n),
-      minvertible M -> minvertible (M\T).
-  Proof. intros. apply mtrans_minvertible; auto. Qed.
+  Lemma mtrans_minvtble : forall n (M : smat n),
+      minvtble M -> minvtble (M\T).
+  Proof. intros. apply mtrans_minvtble; auto. Qed.
 
   (** Multiplication preserve `invertible` property *)
-  Lemma mmul_minvertible: forall {n} (M N : smat n), 
-      minvertible M -> minvertible N -> minvertible (M * N).
-  Proof. intros. apply mmul_minvertible; auto. Qed.
+  Lemma mmul_minvtble: forall {n} (M N : smat n), 
+      minvtble M -> minvtble N -> minvtble (M * N).
+  Proof. intros. apply mmul_minvtble; auto. Qed.
 
   (** mat1 is invertible *)
-  Lemma mat1_minvertible : forall {n}, minvertible (@mat1 n).
-  Proof. intros. apply mat1_minvertible; auto. Qed.
+  Lemma mat1_minvtble : forall {n}, minvtble (@mat1 n).
+  Proof. intros. apply mat1_minvtble; auto. Qed.
 
   (** Left cancellation law of matrix multiplication *)
   Lemma mmul_cancel_l : forall {r c} (M : smat r) (N1 N2 : mat r c) ,
-      minvertible M -> M * N1 = M * N2 -> N1 = N2.
+      minvtble M -> M * N1 = M * N2 -> N1 = N2.
   Proof. intros. apply mmul_cancel_l in H0; auto. Qed.
 
   (** Right cancellation law of matrix multiplication *)
   Lemma mmul_cancel_r : forall {r c} (M : smat c) (N1 N2 : mat r c) ,
-      minvertible M -> N1 * M = N2 * M -> N1 = N2.
+      minvtble M -> N1 * M = N2 * M -> N1 = N2.
   Proof. intros. apply mmul_cancel_r in H0; auto. Qed.
 
   (** Cancellation law of matrix multiply vector *)
   Lemma mmulv_cancel : forall {n} (M : smat n) (a b : vec n),
-      minvertible M -> M *v a = M *v b -> a = b.
+      minvtble M -> M *v a = M *v b -> a = b.
   Proof. intros. apply mmulv_cancel in H0; auto. Qed.
 
   (** Cancellation law of vector multipliy matrix *)
   Lemma mvmul_cancel : forall {n} (M : smat n) (a b : vec n),
-      minvertible M -> a v* M = b v* M -> a = b.
+      minvtble M -> a v* M = b v* M -> a = b.
   Proof. intros. apply mvmul_cancel in H0; auto. Qed.
 
   (** N1 * M = mat1 -> N2 * M = mat1 -> N1 = N2 *)
@@ -2572,25 +2572,25 @@ Module FieldMatrixTheory (E : FieldElementType).
   Import GE.
 
   (** Check the invertibility of matrix `M` *)
-  Definition minvertiblebGE {n} (M : smat n) : bool := minvertibleb M.
+  Definition minvtblebGE {n} (M : smat n) : bool := minvtbleb M.
 
-  (** minvertible M <-> minvertiblebGE M = true *)
-  Lemma minvertible_iff_minvertiblebGE_true : forall {n} (M : smat n),
-      minvertible M <-> minvertiblebGE M = true.
-  Proof. intros. apply minvertible_iff_minvertibleb_true. Qed.
+  (** minvtble M <-> minvtblebGE M = true *)
+  Lemma minvtble_iff_minvtblebGE_true : forall {n} (M : smat n),
+      minvtble M <-> minvtblebGE M = true.
+  Proof. intros. apply minvtble_iff_minvtbleb_true. Qed.
   
-  (** msingular M <-> minvertiblebGE M = false *)
-  Lemma msingular_iff_minvertiblebGE_false : forall {n} (M : smat n),
-      msingular M <-> minvertiblebGE M = false.
-  Proof. intros. apply msingular_iff_minvertibleb_false. Qed.
+  (** msingular M <-> minvtblebGE M = false *)
+  Lemma msingular_iff_minvtblebGE_false : forall {n} (M : smat n),
+      msingular M <-> minvtblebGE M = false.
+  Proof. intros. apply msingular_iff_minvtbleb_false. Qed.
 
   (** Inverse matrix (option version) *)
   Definition minvoGE {n} (M : smat n) : option (smat n) := minvo M.
 
   (** `minvoGE` return `Some`, iff M is invertible *)
-  Lemma minvoGE_Some_iff_minvertible : forall {n} (M : smat n),
-      (exists M', minvoGE M = Some M') <-> minvertible M.
-  Proof. intros. apply minvo_Some_iff_minvertible. Qed.
+  Lemma minvoGE_Some_iff_minvtble : forall {n} (M : smat n),
+      (exists M', minvoGE M = Some M') <-> minvtble M.
+  Proof. intros. apply minvo_Some_iff_minvtble. Qed.
 
   (** `minvoGE` return `None`, iff M is singular *)
   Lemma minvoGE_None_iff_msingular : forall {n} (M : smat n),
@@ -2625,27 +2625,27 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply minvo_None_imply_minv; auto. Qed.
   
   (** M\-1 * M = mat1 *)
-  Lemma mmul_minvGE_l : forall {n} (M : smat n), minvertible M -> M\-1 * M = mat1.
+  Lemma mmul_minvGE_l : forall {n} (M : smat n), minvtble M -> M\-1 * M = mat1.
   Proof. intros. apply mmul_minv_l; auto. Qed.
 
 
-  (** M * N = mat1 -> minvertiblebGE M = true *)
-  Lemma mmul_eq1_imply_minvertiblebGE_true_l : forall {n} (M N : smat n),
-      M * N = mat1 -> minvertiblebGE M = true.
-  Proof. intros. apply mmul_eq1_imply_minvertibleb_true_l in H; auto. Qed.
+  (** M * N = mat1 -> minvtblebGE M = true *)
+  Lemma mmul_eq1_imply_minvtblebGE_true_l : forall {n} (M N : smat n),
+      M * N = mat1 -> minvtblebGE M = true.
+  Proof. intros. apply mmul_eq1_imply_minvtbleb_true_l in H; auto. Qed.
 
-  (** M * N = mat1 -> minvertiblebGE N = true. *)
-  Lemma mmul_eq1_imply_minvertiblebGE_true_r : forall {n} (M N : smat n),
-      M * N = mat1 -> minvertiblebGE N = true.
-  Proof. intros. apply mmul_eq1_imply_minvertibleb_true_r in H; auto. Qed.
+  (** M * N = mat1 -> minvtblebGE N = true. *)
+  Lemma mmul_eq1_imply_minvtblebGE_true_r : forall {n} (M N : smat n),
+      M * N = mat1 -> minvtblebGE N = true.
+  Proof. intros. apply mmul_eq1_imply_minvtbleb_true_r in H; auto. Qed.
 
-  (** minvertible M -> minvertible (M \-1) *)
-  Lemma minvGE_minvertible : forall {n} (M : smat n),
-      minvertible M -> minvertible (M\-1).
-  Proof. intros. apply minv_minvertible; auto. Qed.
+  (** minvtble M -> minvtble (M \-1) *)
+  Lemma minvGE_minvtble : forall {n} (M : smat n),
+      minvtble M -> minvtble (M\-1).
+  Proof. intros. apply minv_minvtble; auto. Qed.
   
   (** M * M\-1 = mat1 *)
-  Lemma mmul_minvGE_r : forall {n} (M : smat n), minvertible M -> M * M\-1 = mat1.
+  Lemma mmul_minvGE_r : forall {n} (M : smat n), minvtble M -> M * M\-1 = mat1.
   Proof. intros. apply mmul_minv_r; auto. Qed.
   
   (** M * N = mat1 -> M \-1 = N *)
@@ -2660,42 +2660,42 @@ Module FieldMatrixTheory (E : FieldElementType).
   Lemma minvGE_mat1 : forall n, @minv n mat1 = mat1.
   Proof. intros. apply minv_mat1. Qed.
 
-  (** minvertible M -> M \-1 \-1 = M *)
-  Lemma minvGE_minvGE : forall n (M : smat n), minvertible M -> M \-1 \-1 = M.
+  (** minvtble M -> M \-1 \-1 = M *)
+  Lemma minvGE_minvGE : forall n (M : smat n), minvtble M -> M \-1 \-1 = M.
   Proof. intros. apply minv_minv; auto. Qed.
 
   (** (M * N)\-1 = (N\-1) * (M\-1) *)
   Lemma minvGE_mmul : forall n (M N : smat n),
-      minvertible M -> minvertible N -> (M * N)\-1 = N\-1 * M\-1.
+      minvtble M -> minvtble N -> (M * N)\-1 = N\-1 * M\-1.
   Proof. intros. apply minv_mmul; auto. Qed.
 
   (** (M \T) \-1 = (M \-1) \T *)
   Lemma minvGE_mtrans : forall n (M : smat n),
-      minvertible M -> (M \T) \-1 = (M \-1) \T.
+      minvtble M -> (M \T) \-1 = (M \-1) \T.
   Proof. intros. apply minv_mtrans; auto. Qed.
 
   (** |M \-1| = / |M| *)
-  Lemma mdet_minvGE : forall {n} (M : smat n), minvertible M -> |M\-1| = / |M|.
+  Lemma mdet_minvGE : forall {n} (M : smat n), minvtble M -> |M\-1| = / |M|.
   Proof. intros. apply mdet_minv; auto. Qed.
   
   (** Check matrix invertibility with lists as input *)
-  Definition minvertiblebListGE (n : nat) (dl : dlist A) : bool :=
-    minvertiblebList n dl.
+  Definition minvtblebListGE (n : nat) (dl : dlist A) : bool :=
+    minvtblebList n dl.
 
   (** Inverse matrix with lists for input and output *)
   Definition minvListGE (n : nat) (dl : dlist A) : dlist A :=
     minvList n dl.
 
-  (** `minvertiblebListGE` is equal to `minvertiblebGE`, by definition *)
-  Lemma minvertiblebListGE_spec : forall (n : nat) (dl : dlist A),
-      minvertiblebListGE n dl = @minvertiblebGE n (l2m dl).
-  Proof. intros. apply minvertiblebList_spec. Qed.
+  (** `minvtblebListGE` is equal to `minvtblebGE`, by definition *)
+  Lemma minvtblebListGE_spec : forall (n : nat) (dl : dlist A),
+      minvtblebListGE n dl = @minvtblebGE n (l2m dl).
+  Proof. intros. apply minvtblebList_spec. Qed.
 
   (** The matrix of [minvListGE dl] is the inverse of the matrix of [dl] *)
   Lemma minvListGE_spec : forall (n : nat) (dl : dlist A),
       let M : smat n := l2m dl in
       let M' : smat n := l2m (minvListGE n dl) in
-      minvertiblebListGE n dl = true ->
+      minvtblebListGE n dl = true ->
       M' * M = mat1.
   Proof. intros. apply minvList_spec; auto. Qed.
 
@@ -2704,7 +2704,7 @@ Module FieldMatrixTheory (E : FieldElementType).
 
   (** C *v (solveEqGE C b) = b *)
   Lemma solveEqGE_spec : forall {n} (C : smat n) (b : vec n),
-      minvertible C -> C *v (solveEqGE C b) = b.
+      minvtble C -> C *v (solveEqGE C b) = b.
   Proof. intros. apply solveEq_spec; auto. Qed.
 
   (** Solve the equation with the form of C*x=b over list *)
@@ -2723,25 +2723,25 @@ Module FieldMatrixTheory (E : FieldElementType).
   Import AM.
   
   (** Check the invertibility of matrix `M` *)
-  Definition minvertiblebAM {n} (M : smat n) : bool := minvertibleb M.
+  Definition minvtblebAM {n} (M : smat n) : bool := minvtbleb M.
 
-  (** minvertible M <-> minvertiblebAM M = true *)
-  Lemma minvertible_iff_minvertiblebAM_true : forall {n} (M : smat n),
-      minvertible M <-> minvertiblebAM M = true.
-  Proof. intros. apply minvertible_iff_minvertibleb_true. Qed.
+  (** minvtble M <-> minvtblebAM M = true *)
+  Lemma minvtble_iff_minvtblebAM_true : forall {n} (M : smat n),
+      minvtble M <-> minvtblebAM M = true.
+  Proof. intros. apply minvtble_iff_minvtbleb_true. Qed.
   
-  (** msingular M <-> minvertiblebAM M = false *)
-  Lemma msingular_iff_minvertiblebAM_false : forall {n} (M : smat n),
-      msingular M <-> minvertiblebAM M = false.
-  Proof. intros. apply msingular_iff_minvertibleb_false. Qed.
+  (** msingular M <-> minvtblebAM M = false *)
+  Lemma msingular_iff_minvtblebAM_false : forall {n} (M : smat n),
+      msingular M <-> minvtblebAM M = false.
+  Proof. intros. apply msingular_iff_minvtbleb_false. Qed.
 
   (** Inverse matrix (option version) *)
   Definition minvoAM {n} (M : smat n) : option (smat n) := minvo M.
 
   (** `minvoAM` return `Some`, iff M is invertible *)
-  Lemma minvoAM_Some_iff_minvertible : forall {n} (M : smat n),
-      (exists M', minvoAM M = Some M') <-> minvertible M.
-  Proof. intros. apply minvo_Some_iff_minvertible. Qed.
+  Lemma minvoAM_Some_iff_minvtble : forall {n} (M : smat n),
+      (exists M', minvoAM M = Some M') <-> minvtble M.
+  Proof. intros. apply minvo_Some_iff_minvtble. Qed.
 
   (** `minvoAM` return `None`, iff M is singular *)
   Lemma minvoAM_None_iff_msingular : forall {n} (M : smat n),
@@ -2776,56 +2776,56 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply minvo_None_imply_minv; auto. Qed.
   
   (** M\-1 * M = mat1 *)
-  Lemma mmul_minvAM_l : forall {n} (M : smat n), minvertible M -> M\-1 * M = mat1.
+  Lemma mmul_minvAM_l : forall {n} (M : smat n), minvtble M -> M\-1 * M = mat1.
   Proof. intros. apply mmul_minv_l; auto. Qed.
 
   
   (** Formula of inversion matrix on dimension-1 *)
   Definition minvAM1 (M : smat 1) : smat 1 := minv1 M.
 
-  (** minvertible M -> minvAM1 M = M\-1 *)
-  Lemma minvAM1_eq_minvAM : forall M, minvertible M -> minvAM1 M = M\-1.
+  (** minvtble M -> minvAM1 M = M\-1 *)
+  Lemma minvAM1_eq_minvAM : forall M, minvtble M -> minvAM1 M = M\-1.
   Proof. intros. apply minv1_eq_minv; auto. Qed.
 
   (** Formula of inversion matrix on dimension-2 *)
   Definition minvAM2 (M : smat 2) : smat 2 := minv2 M.
 
-  (** minvertible M -> minv2 M = M\-1 *)
-  Lemma minvAM2_eq_minvAM : forall M, minvertible M -> minvAM2 M = M\-1.
+  (** minvtble M -> minv2 M = M\-1 *)
+  Lemma minvAM2_eq_minvAM : forall M, minvtble M -> minvAM2 M = M\-1.
   Proof. intros. apply minv2_eq_minv; auto. Qed.
   
   (** Formula of inversion matrix on dimension-3 *)
   Definition minvAM3 (M : smat 3) : smat 3 := minv3 M.
   
-  (** minvertible M -> minv3 M = M\-1 *)
-  Lemma minvAM3_eq_minvAM : forall M, minvertible M -> minvAM3 M = M\-1.
+  (** minvtble M -> minv3 M = M\-1 *)
+  Lemma minvAM3_eq_minvAM : forall M, minvtble M -> minvAM3 M = M\-1.
   Proof. intros. apply minv3_eq_minv; auto. Qed.
 
   (** Formula of inversion matrix on dimension-4 *)
   Definition minvAM4 (M : smat 4) : smat 4 := minv4 M.
   
-  (** minvertible M -> minv4 M = M\-1 *)
-  Lemma minvAM4_eq_minvAM : forall M, minvertible M -> minvAM4 M = M\-1.
+  (** minvtble M -> minv4 M = M\-1 *)
+  Lemma minvAM4_eq_minvAM : forall M, minvtble M -> minvAM4 M = M\-1.
   Proof. intros. apply minv4_eq_minv; auto. Qed.
 
 
-  (** M * N = mat1 -> minvertiblebAM M = true *)
-  Lemma mmul_eq1_imply_minvertiblebAM_true_l : forall {n} (M N : smat n),
-      M * N = mat1 -> minvertiblebAM M = true.
-  Proof. intros. apply mmul_eq1_imply_minvertibleb_true_l in H; auto. Qed.
+  (** M * N = mat1 -> minvtblebAM M = true *)
+  Lemma mmul_eq1_imply_minvtblebAM_true_l : forall {n} (M N : smat n),
+      M * N = mat1 -> minvtblebAM M = true.
+  Proof. intros. apply mmul_eq1_imply_minvtbleb_true_l in H; auto. Qed.
 
-  (** M * N = mat1 -> minvertiblebAM N = true. *)
-  Lemma mmul_eq1_imply_minvertiblebAM_true_r : forall {n} (M N : smat n),
-      M * N = mat1 -> minvertiblebAM N = true.
-  Proof. intros. apply mmul_eq1_imply_minvertibleb_true_r in H; auto. Qed.
+  (** M * N = mat1 -> minvtblebAM N = true. *)
+  Lemma mmul_eq1_imply_minvtblebAM_true_r : forall {n} (M N : smat n),
+      M * N = mat1 -> minvtblebAM N = true.
+  Proof. intros. apply mmul_eq1_imply_minvtbleb_true_r in H; auto. Qed.
 
-  (** minvertible M -> minvertible (M \-1) *)
-  Lemma minvAM_minvertible : forall {n} (M : smat n),
-      minvertible M -> minvertible (M\-1).
-  Proof. intros. apply minv_minvertible; auto. Qed.
+  (** minvtble M -> minvtble (M \-1) *)
+  Lemma minvAM_minvtble : forall {n} (M : smat n),
+      minvtble M -> minvtble (M\-1).
+  Proof. intros. apply minv_minvtble; auto. Qed.
   
   (** M * M\-1 = mat1 *)
-  Lemma mmul_minvAM_r : forall {n} (M : smat n), minvertible M -> M * M\-1 = mat1.
+  Lemma mmul_minvAM_r : forall {n} (M : smat n), minvtble M -> M * M\-1 = mat1.
   Proof. intros. apply mmul_minv_r; auto. Qed.
   
   (** M * N = mat1 -> M \-1 = N *)
@@ -2840,42 +2840,42 @@ Module FieldMatrixTheory (E : FieldElementType).
   Lemma minvAM_mat1 : forall n, @minv n mat1 = mat1.
   Proof. intros. apply minv_mat1. Qed.
 
-  (** minvertible M -> M \-1 \-1 = M *)
-  Lemma minvAM_minvAM : forall n (M : smat n), minvertible M -> M \-1 \-1 = M.
+  (** minvtble M -> M \-1 \-1 = M *)
+  Lemma minvAM_minvAM : forall n (M : smat n), minvtble M -> M \-1 \-1 = M.
   Proof. intros. apply minv_minv; auto. Qed.
 
   (** (M * N)\-1 = (N\-1) * (M\-1) *)
   Lemma minvAM_mmul : forall n (M N : smat n),
-      minvertible M -> minvertible N -> (M * N)\-1 = N\-1 * M\-1.
+      minvtble M -> minvtble N -> (M * N)\-1 = N\-1 * M\-1.
   Proof. intros. apply minv_mmul; auto. Qed.
 
   (** (M \T) \-1 = (M \-1) \T *)
   Lemma minvAM_mtrans : forall n (M : smat n),
-      minvertible M -> (M \T) \-1 = (M \-1) \T.
+      minvtble M -> (M \T) \-1 = (M \-1) \T.
   Proof. intros. apply minv_mtrans; auto. Qed.
 
   (** |M \-1| = / |M| *)
-  Lemma mdet_minvAM : forall {n} (M : smat n), minvertible M -> |M\-1| = / |M|.
+  Lemma mdet_minvAM : forall {n} (M : smat n), minvtble M -> |M\-1| = / |M|.
   Proof. intros. apply mdet_minv; auto. Qed.
   
   (** Check matrix invertibility with lists as input *)
-  Definition minvertiblebListAM (n : nat) (dl : dlist A) : bool :=
-    minvertiblebList n dl.
+  Definition minvtblebListAM (n : nat) (dl : dlist A) : bool :=
+    minvtblebList n dl.
 
   (** Inverse matrix with lists for input and output *)
   Definition minvListAM (n : nat) (dl : dlist A) : dlist A :=
     minvList n dl.
 
-  (** `minvertiblebListAM` is equal to `minvertiblebAM`, by definition *)
-  Lemma minvertiblebListAM_spec : forall (n : nat) (dl : dlist A),
-      minvertiblebListAM n dl = @minvertiblebAM n (l2m dl).
-  Proof. intros. apply minvertiblebList_spec. Qed.
+  (** `minvtblebListAM` is equal to `minvtblebAM`, by definition *)
+  Lemma minvtblebListAM_spec : forall (n : nat) (dl : dlist A),
+      minvtblebListAM n dl = @minvtblebAM n (l2m dl).
+  Proof. intros. apply minvtblebList_spec. Qed.
 
   (** The matrix of [minvListAM dl] is the inverse of the matrix of [dl] *)
   Lemma minvListAM_spec : forall (n : nat) (dl : dlist A),
       let M : smat n := l2m dl in
       let M' : smat n := l2m (minvListAM n dl) in
-      minvertiblebListAM n dl = true ->
+      minvtblebListAM n dl = true ->
       M' * M = mat1.
   Proof. intros. apply minvList_spec; auto. Qed.
 
@@ -2884,7 +2884,7 @@ Module FieldMatrixTheory (E : FieldElementType).
 
   (** C *v (solveEqAM C b) = b *)
   Lemma solveEqAM_spec : forall {n} (C : smat n) (b : vec n),
-      minvertible C -> C *v (solveEqAM C b) = b.
+      minvtble C -> C *v (solveEqAM C b) = b.
   Proof. intros. apply solveEq_spec; auto. Qed.
 
   (** Solve the equation with the form of C*x=b over list *)
@@ -2904,16 +2904,16 @@ Module FieldMatrixTheory (E : FieldElementType).
 
   (** If `M` is invertible, then [minvNoCheckAM] is equivalent to [minvAM] *)
   Lemma minvNoCheckAM_spec : forall {n} (M : smat n),
-      minvertible M -> minvNoCheckAM M = M\-1.
+      minvtble M -> minvNoCheckAM M = M\-1.
   Proof. intros. apply minvNoCheck_spec; auto. Qed.
 
   (** Solve the equation with the form of C*x=b, but without check the inversibility. *)
   Definition solveEqNoCheckAM {n} (C : smat n) (b : vec n) : vec n :=
     (minvNoCheckAM C) *v b.
 
-  (** minvertible C -> solveEqNoCheckAM C b = solveEqAM C b *)
+  (** minvtble C -> solveEqNoCheckAM C b = solveEqAM C b *)
   Theorem solveEqNoCheckAM_spec : forall {n} (C : smat n) (b : vec n),
-      minvertible C -> solveEqNoCheckAM C b = solveEqAM C b.
+      minvtble C -> solveEqNoCheckAM C b = solveEqAM C b.
   Proof. intros. apply solveEqNoCheck_spec; auto. Qed.
 
   (** Solve the equation with the form of C*x=b over list, but without check the 
@@ -2921,10 +2921,10 @@ Module FieldMatrixTheory (E : FieldElementType).
   Definition solveEqListNoCheckAM (n : nat) (lC : dlist A) (lb : list A) : list A :=
     solveEqListNoCheck n lC lb.
 
-  (** minvertible {lC} -> {solveEqListNoCheckAM lC lb} = solveEqListAM {lC} {lb} *)
+  (** minvtble {lC} -> {solveEqListNoCheckAM lC lb} = solveEqListAM {lC} {lb} *)
   Theorem solveEqListNoCheckAM_spec : forall n (lC : dlist A) (lb : list A),
       let C : smat n := l2m lC in
-      minvertible C -> solveEqListNoCheckAM n lC lb = solveEqListAM n lC lb.
+      minvtble C -> solveEqListNoCheckAM n lC lb = solveEqListAM n lC lb.
   Proof. intros. apply solveEqListNoCheck_spec; auto. Qed.
   
 
@@ -2933,11 +2933,11 @@ Module FieldMatrixTheory (E : FieldElementType).
   Import AM.
   Import MinvAMNotations.
 
-  Notation minvertibleb := minvertiblebAM.
-  Notation minvertible_iff_minvertibleb_true := minvertible_iff_minvertiblebAM_true.
-  Notation msingular_iff_minvertibleb_false := msingular_iff_minvertiblebAM_false.
+  Notation minvtbleb := minvtblebAM.
+  Notation minvtble_iff_minvtbleb_true := minvtble_iff_minvtblebAM_true.
+  Notation msingular_iff_minvtbleb_false := msingular_iff_minvtblebAM_false.
   Notation minvo := minvoAM.
-  Notation minvo_Some_iff_minvertible := minvoAM_Some_iff_minvertible.
+  Notation minvo_Some_iff_minvtble := minvoAM_Some_iff_minvtble.
   Notation minvo_None_iff_msingular := minvoAM_None_iff_msingular.
   Notation minvo_Some_imply_eq1_l := minvoAM_Some_imply_eq1_l.
   Notation minvo_Some_imply_eq1_r := minvoAM_Some_imply_eq1_r.
@@ -2946,7 +2946,7 @@ Module FieldMatrixTheory (E : FieldElementType).
   Notation minvo_None_imply_minv := minvoAM_None_imply_minv.
   Notation mmul_minv_l := mmul_minvAM_l.
   Notation mmul_minv_r := mmul_minvAM_r.
-  Notation minv_minvertible := minvAM_minvertible.
+  Notation minv_minvtble := minvAM_minvtble.
   Notation mmul_eq1_imply_minv_l := mmul_eq1_imply_minvAM_l.
   Notation mmul_eq1_imply_minv_r := mmul_eq1_imply_minvAM_r.
   Notation minv_mat1 := minvAM_mat1.
@@ -2954,8 +2954,8 @@ Module FieldMatrixTheory (E : FieldElementType).
   Notation minv_mmul := minvAM_mmul.
   Notation minv_mtrans := minvAM_mtrans.
   Notation mdet_minv := mdet_minvAM.
-  Notation minvertiblebList := minvertiblebListAM.
-  Notation minvertiblebList_spec := minvertiblebListAM_spec.
+  Notation minvtblebList := minvtblebListAM.
+  Notation minvtblebList_spec := minvtblebListAM_spec.
   Notation minvList := minvListAM.
   Notation minvList_spec := minvListAM_spec.
 
@@ -3041,8 +3041,8 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply mcolsOrthonormal_iff_mrowsOrthonormal. Qed.
 
   (** orthogonal M -> invertible M *)
-  Lemma morth_invertible : forall {n} (M : smat n), morth M -> minvertible M.
-  Proof. intros. apply morth_invertible; auto. Qed.
+  Lemma morth_minvtble : forall {n} (M : smat n), morth M -> minvtble M.
+  Proof. intros. apply morth_minvtble; auto. Qed.
 
   (** orthogonal M -> M \-1 = M \T *)
   Lemma morth_imply_minv_eq_trans : forall {n} (M : smat n), morth M -> M\-1 = M \T.
@@ -3050,7 +3050,7 @@ Module FieldMatrixTheory (E : FieldElementType).
 
   (** M \-1 = M \T -> orthogonal M *)
   Lemma minv_eq_trans_imply_morth : forall {n} (M : smat n),
-      minvertible M -> M\-1 = M \T -> morth M.
+      minvtble M -> M\-1 = M \T -> morth M.
   Proof. intros. apply minv_eq_trans_imply_morth; auto. Qed.
 
   (** orthogonal M <-> M \T * M = mat1 *)

@@ -48,10 +48,10 @@ Open Scope mat_scope.
 (* ======================================================================= *)
 (** ** Definition of matrix type *)
 
-(** An r*c matrix over [A]  *)
+(** An r*c matrix over A type  *)
 Notation mat A r c := (@vec (@vec A c) r).
 
-(** An n-dimensional square matrix *)
+(** An n-dimensional square matrix over A type *)
 Notation smat A n := (mat A n n).
 
 (* Actually, mat A r c = forall A r c, fin r -> fin c -> A  *)

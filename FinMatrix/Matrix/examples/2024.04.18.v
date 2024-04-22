@@ -64,7 +64,7 @@ Section vec_monoid_nat.
 
   (* 创建向量 *)
   Let a : vec 5 := l2v [1;2;3;4;5;6;7].
-  Let b : vec 5 := fun i => match (fin2nat i) with 1 => 3 | _ => 0 end.
+  Let b : vec 5 := f2v (fun i => match i with 1 => 3 | _ => 0 end).
   Compute v2l a.  (* = [1; 2; 3; 4; 5] : list A *)
   Compute v2l b.  (* = [0; 3; 0; 0; 0] *)
 
@@ -107,7 +107,7 @@ Section mat_monoid_nat.
   Compute m2l M. (* = [[1; 2; 3]; [4; 0; 0]] : dlist A *)
 
   (* 创建系数矩阵 *)
-  Let N : mat 3 3 := fun i j => if (i ??= j)%fin then 1 else 0.
+  Let N : mat 3 3 := f2m (fun i j => if (i ??= j) then 1 else 0).
   Compute m2l N.  (* = [[1; 0; 0]; [0; 1; 0]; [0; 0; 1]] : dlist A *)
 
   (* 取出元素 *)
@@ -296,7 +296,7 @@ Section solve_equation.
   
   (* 方法2: $X = C^{-1} b$ *)
   Compute solveEqListQ 3 C b.  (* = [1 # 3; -1 # 2; 2] : list Q *)
-  (* 实际上，方法2内部有两种做法，GE和AM，默认使用了GE而已 *)
+  (* 实际上，方法2内部有两种做法，GE和AM，默认使用GE *)
   Compute solveEqListGEQ 3 C b.
   Compute solveEqListAMQ 3 C b.
 End solve_equation.
@@ -398,3 +398,185 @@ goal 6 (ID 416) is:
   Compute solveEqListNoCheck 3 C b.
 
 End solve_equation.
+
+(* SPICE的应用 *)
+Section SPICE.
+  Import MatrixR.
+  Variable n b : nat.             (* n个节点，b条支路 *)
+  Variable A : mat n b.         (* 关联矩阵 *)
+  Variable U : cvec b.          (* 支路电压 *)
+  Variable I : cvec b.          (* 支路电流 *)
+  Variable Is : cvec n.         (* 注入电流 *)
+  Variable Un : cvec n.         (* 节点电压 *)
+  Variable G : smat b.          (* 支路导纳矩阵 *)
+  Definition Y := A * G * A\T.      (* 节点导纳矩阵 *)
+  Hypotheses KCL : A * I = Is.      (* KCL关系 *)
+  Hypotheses KVL : A\T * Un = U.   (* KVL关系 *)
+  Hypotheses H1 : G * U = I.         (* 通过导纳描述支路的约束方程 *)
+
+  Lemma eq4 : G * A\T * Un = I.
+  Proof. rewrite <- H1. rewrite <- KVL. rewrite mmul_assoc. auto. Qed.
+
+  Lemma eq5 : A * G * A\T * Un = Is.
+  Proof. rewrite <- KCL. rewrite !mmul_assoc, <- (mmul_assoc G), eq4. auto. Qed.
+
+  Lemma eq6 : Y * Un = Is.
+  Proof. unfold Y. rewrite eq5. auto. Qed.
+End SPICE.
+
+(* 有限集Fin *)
+Module fin.
+  Import Extraction.
+  
+  (* 本文的实现。参考了 mathcomp.ordinal 的定义和记号 *)
+  Module FinMatrix.
+    Inductive fin (n : nat) := Fin (i : nat) (E : i < n).
+    Notation "''I_' n" := (fin n)  (at level 8).
+    Extraction fin.
+  End FinMatrix.
+
+  (* 等价于使用sig，但是使用 Inductive 可避免因过于多态的 sig 类型而带来不必要的复杂性 *)
+  Module by_sig.
+    Definition fin (n : nat) := {i | i < n}.
+  End by_sig.
+
+  (* 使用 unit 表示 fin 0 *)
+  Module DPIA.
+    Definition fin (n : nat) := match n with O => unit |  _ => {i : nat | i < n} end.
+    Extraction fin.
+  End DPIA.
+
+  (* 使用冗余的下标 *)
+  Module method3.
+    Definition fin (n : nat) := {i | i <= n}.
+    Extraction fin.
+    (* 特点：
+       1. fin 0 = {0}
+          fin 1 = {0,1}
+          fin 2 = {0,1,2}
+     *)
+  End method3.
+
+  (* Coq标准库 *)
+  Module CoqStdLib.
+    Import Coq.Vectors.Fin.
+    Print t.
+    Inductive t : nat -> Set := F1 n : t (S n) | FS n (x : t n) : t (S n).
+    Extraction t.
+  End CoqStdLib.
+End fin.
+
+(* 向量 *)
+Module vector.
+  Import Vector.
+
+  Print vec.
+  Locate ".[".
+  
+End vector.
+
+(* 矩阵 *)
+Module matrix.
+  Import Matrix.
+
+  Print mat.
+
+  Variable A : Type.  Variable r c : nat.
+  Compute mat A r c. (* = 'I_r -> 'I_c -> A : Type *)
+
+  Goal mat A r c = ('I_r -> 'I_c -> A).
+  Proof. reflexivity. Qed.
+
+  Definition mat_old := list (list A).
+  
+  Print mtrans.
+
+  Variable M : @vec (@vec (@vec A 5) 4) 3. (* 元素为 A 的 3*4*5 维的矩阵 *)
+  Check M : @vec (@mat A 4 5) 3.           (* 元素为 mat A 4 5 的 3 维向量 *)
+  Check M : @mat (@vec A 5) 3 4.           (* 元素为 vec A 5 的 3*4 维的矩阵 *)
+
+  (* 测试代码抽取，以矩阵加法为例 *)
+  Recursive Extraction madd.
+(* type fin = int
+
+   type 'a vec = fin -> 'a
+
+   let vmap2 f _ a b i =
+
+   let madd aadd r c m n =
+       vmap2 (vmap2 aadd c) r m n
+ *)
+  
+End matrix.
+
+(* algebraic_structure *)
+Section algebraic_structure.
+  Import Hierarchy.
+  Context `{SGroup}. Infix "+" := Aadd.
+  
+  Goal forall a b c k, a = k -> (a + b) + c = k + (b + c).
+  Proof. intros. sgroup. Qed.
+
+  Context `{HASGroup : ASGroup A Aadd}.
+  Goal forall a0 a1 a2 a3, a0 + (a1 + a2) + a3 = a3 + (a0 + a2) + a1.
+  Proof. intros. asgroup. Qed.
+End algebraic_structure.
+
+Module compare_mathcomp.
+  From mathcomp Require Import matrix fintype.
+
+  (* 测试表达式求值 *)
+  (* Variable A : Type. *)
+  (* Variable  *)
+  Let M : 'M_(2,3) := @const_mx nat 2 3 2.
+
+  (* 转置 *)
+  Open Scope ring_scope.
+  Check M^T.
+
+  (* 难以求值 *)
+  Goal M ord0 ord0 = 2.
+    cbv.
+    destruct const_mx_key.
+    simpl.
+    Abort.
+
+  
+
+  (* 测试代码抽取，以矩阵加法为例 *)
+  (* Recursive Extraction addmx. *)
+  (* 
+type __ = Obj.t
+let __ = let rec f _ = Obj.repr f in Obj.repr f
+
+module Finite =
+  type sort = __
+ end
+
+type ordinal = int
+
+type 'rT finfun_on =
+| Finfun_nil
+| Finfun_cons of Finite.sort * Finite.sort list * 'rT * 'rT finfun_on
+
+type 'rT finfun_of = 'rT finfun_on
+
+type 'r matrix = 'r finfun_of
+
+let mx_val _ _ a =
+  a
+
+let matrix_of_fun m n k =
+  locked_with k (matrix_of_fun_def m n)
+
+let fun_of_matrix m n a i j =
+  fun_of_fin (prod_finType (ordinal_finType m) (ordinal_finType n)) (mx_val m n a) (Obj.magic (i, j))
+
+let map2_mx f m n a b =
+  matrix_of_fun m n map2_mx_key (fun i j ->
+    f (fun_of_matrix m n a (Obj.magic i) (Obj.magic j)) (fun_of_matrix m n b (Obj.magic i) (Obj.magic j)))
+
+let addmx v m n =
+  map2_mx (GRing.add v) m n
+ *)
+End compare_mathcomp.

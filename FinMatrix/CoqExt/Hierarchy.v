@@ -912,7 +912,7 @@ Section test.
   Goal a + b + c = a + k. progress sgroup. Abort.
   Goal a + b + c = a + b + k. progress sgroup. Abort.
   Goal a + b + c = k + c. progress sgroup. Abort.
-  Goal a + b + c = k + b + c. progress sgroup. Abort.
+  Goal (a + b) + c = k + (b + c). progress sgroup. Abort.
 
   (* 3 levels *)
   Goal a + b + c + d = a + k. progress sgroup. Abort.

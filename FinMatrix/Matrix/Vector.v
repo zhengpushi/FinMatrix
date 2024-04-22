@@ -49,6 +49,7 @@ Open Scope vec_scope.
 (* ======================================================================= *)
 (** ** Definition of vector type [vec] *)
 
+(** A n-dimensional vector over A type *)
 Definition vec {A : Type} (n : nat) := fin n -> A.
 
 (* ======================================================================= *)

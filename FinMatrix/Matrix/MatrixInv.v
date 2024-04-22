@@ -48,24 +48,24 @@ Module test_inv_ocaml.
   Module GE := MinvMoreGE FieldElementTypeR.
 
   Import AM.
-  Definition minvertiblebAM {n} := @minvertibleb n.
+  Definition minvtblebAM {n} := @minvtbleb n.
   Definition minvoAM {n} := @minvo n.
   Definition minvAM {n} := @minv n.
   Definition minvListAM {n} := @minvList n.
   
   Import GE.
-  Definition minvertiblebGE {n} := @minvertibleb n.
+  Definition minvtblebGE {n} := @minvtbleb n.
   Definition minvoGE {n} := @minvo n.
   Definition minvGE {n} := @minv n.
   Definition minvListGE {n} := @minvList n.
 
   (* Recursive Extraction *)
-  (*   minvertiblebGE minvoGE minvGE minvListGE *)
-  (*   minvertiblebAM minvoAM minvAM minvListAM. *)
+  (*   minvtblebGE minvoGE minvGE minvListGE *)
+  (*   minvtblebAM minvoAM minvAM minvListAM. *)
 
   (* Extraction "ocaml_test/matrix.ml" *)
-  (*   minvertiblebGE minvoGE minvGE minvListGE *)
-  (*   minvertiblebAM minvoAM minvAM minvListAM. *)
+  (*   minvtblebGE minvoGE minvGE minvListGE *)
+  (*   minvtblebAM minvoAM minvAM minvListAM. *)
 End test_inv_ocaml.
 
 

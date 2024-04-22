@@ -279,9 +279,9 @@ Module MatrixOrth (F : FieldElementType).
     Definition morth {n} (M : smat n) : Prop := M\T * M = mat1.
 
     (** orthogonal M -> invertible M *)
-    Lemma morth_invertible : forall {n} (M : smat n),  morth M -> minvertible M.
+    Lemma morth_minvtble : forall {n} (M : smat n),  morth M -> minvtble M.
     Proof.
-      intros. rewrite minvertible_iff_minvertibleL.
+      intros. rewrite minvtble_iff_minvtbleL.
       hnf in *. exists (M\T). auto.
     Qed.
 
@@ -292,7 +292,7 @@ Module MatrixOrth (F : FieldElementType).
 
     (** M\-1 = M\T -> orthogonal M *)
     Lemma minv_eq_trans_imply_morth : forall {n} (M : smat n),
-        minvertible M -> minv M = M\T -> morth M.
+        minvtble M -> minv M = M\T -> morth M.
     Proof. intros. hnf. rewrite <- H0. apply mmul_minv_l; auto. Qed.
 
     (** orthogonal M <-> M\T * M = mat1 *)
@@ -305,7 +305,7 @@ Module MatrixOrth (F : FieldElementType).
         morth M <-> M * M\T = mat1.
     Proof.
       intros. hnf. split; intros H; auto.
-      - pose proof (morth_invertible M H).
+      - pose proof (morth_minvtble M H).
         apply morth_imply_minv_eq_trans in H. rewrite <- H.
         apply mmul_minv_r; auto.
       - hnf. rewrite mmul_eq1_comm; auto.
@@ -682,7 +682,7 @@ Module MatrixOrth (F : FieldElementType).
     Proof.
       intros. rewrite <- SOn_minv_eq_trans. apply mmul_minv_l.
       destruct M as [[M H] H1]. simpl in *.
-      apply minvertible_iff_mdet_neq0. rewrite H1.
+      apply minvtble_iff_mdet_neq0. rewrite H1.
       apply field_1_neq_0; auto.
     Qed.
 

@@ -140,9 +140,9 @@
  *)
 
 
-Require Export Hierarchy.
-Require Export Matrix.
-Require Export MatrixInvAM.
+Require Import Hierarchy.
+Require Import Matrix.
+Require Import MatrixInvAM.
 
 Generalizable Variable A Aadd Aopp Amul Ainv Alt Ale Altb Aleb a2r.
 

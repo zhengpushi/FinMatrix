@@ -2571,6 +2571,47 @@ Module FieldMatrixTheory (E : FieldElementType).
   (** ** Matrix inversion by GE (Gauss Elimination) *)
   Import GE.
 
+  (** 行变换列表转换为矩阵 *)
+  Definition rowOps2mat {n} (l : list (@RowOp A n)) : smat (S n) :=
+    rowOps2mat l.
+
+  (** rowOps2mat (l1 ++ l2) = rowOps2mat l1 * rowOps2mat l2 *)
+  Lemma rowOps2mat_app : forall {n} (l1 l2 : list (@RowOp A n)),
+      rowOps2mat (l1 ++ l2) = rowOps2mat l1 * rowOps2mat l2.
+  Proof. intros. apply rowOps2mat_app. Qed.
+  
+  (** 行变换列表转换为反作用的矩阵。即，rowOps2mat的逆矩阵 *)
+  Definition rowOps2matInv {n} (l : list (@RowOp A n)) : smat (S n) :=
+    rowOps2matInv l.
+
+  (** rowOps2matInv (l1 ++ l2) = rowOps2matInv l2 * rowOps2matInv l1 *)
+  Lemma rowOps2matInv_app : forall {n} (l1 l2 : list (@RowOp A n)),
+      rowOps2matInv (l1 ++ l2) = rowOps2matInv l2 * rowOps2matInv l1.
+  Proof. intros. apply rowOps2matInv_app. Qed.
+
+  (** rowOps2matInv l * rowOps2mat l = mat1 *)
+  Lemma mmul_rowOps2matInv_rowOps2mat_eq1 : forall {n} (l : list (@RowOp A n)),
+      Forall (@roValid _ 0 _) l -> rowOps2matInv l * rowOps2mat l = mat1.
+  Proof. intros. apply mmul_rowOps2matInv_rowOps2mat_eq1; auto. Qed.
+
+  (** rowOps2mat l * rowOps2matInv l = mat1 *)
+  Lemma mmul_rowOps2mat_rowOps2matInv_eq1 : forall {n} (l : list (@RowOp A n)),
+      Forall (@roValid _ 0 _) l -> rowOps2mat l * rowOps2matInv l = mat1.
+  Proof. intros. apply mmul_rowOps2mat_rowOps2matInv_eq1; auto. Qed.
+
+  (* (** 将矩阵M的第 j 列的后 x 行元素变为 0。当 j=#0时，x=n *) *)
+  (* Notation elimDown := (@elimDown _ Aadd 0 Aopp Amul). *)
+
+  (* (** 将矩阵M的第 j 列的前 x 行元素变为 0。当 j=#(S n)时，x=S n *) *)
+  (* Notation elimUp := (@elimUp _ Aadd 0 Aopp Amul). *)
+
+  (* (** 将矩阵M的后 x 行化为标准上三角形。参数 x 最大为维数 *) *)
+  (* Notation rowEchelon := (@rowEchelon _ Aadd 0 Aopp Amul Ainv). *)
+
+  (* (** 将矩阵 M 的前 x 行(列)化为行最简阶梯形。当 x 为 S n 时表示整个矩阵 *) *)
+  (* Notation minRowEchelon := (@minRowEchelon _ Aadd 0 Aopp Amul). *)
+
+    
   (** Check the invertibility of matrix `M` *)
   Definition minvtblebGE {n} (M : smat n) : bool := minvtbleb M.
 

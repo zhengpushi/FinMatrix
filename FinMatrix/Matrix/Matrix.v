@@ -2137,13 +2137,13 @@ Section RowTrans.
   (* ======================================================================= *)
   (** ** Row scaling *)
   
-  (** 行倍乘矩阵
+  (** 行数乘矩阵
       作用：E(x,c) * M 的结果是 M 的第 x 行乘以 c 倍
       形式：第 (x,x) 的元素是 c, 其余是单位阵 *)
   Definition matRowScale {n} (x : fin n) (c : A) : smat A n :=
     fun (i j : fin n) => if i ??= j then (if i ??= x then c else 1) else 0.
 
-  (** 行倍乘：矩阵 M 的第 x 行乘以 c 倍 *)
+  (** 行数乘：矩阵 M 的第 x 行乘以 c 倍 *)
   Definition mrowScale {n} (x : fin n) (c : A) (M : smat A n) : smat A n :=
     fun i j => if i ??= x then (c * M i j)%A else M i j.
 

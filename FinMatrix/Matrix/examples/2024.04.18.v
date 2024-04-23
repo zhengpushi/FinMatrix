@@ -174,7 +174,7 @@ Section mat_ring_Z.
   Compute m2l (madj M).   (* = [[-3; 6; -3]; [6; -12; 6]; [-3; 6; -3]] *)
 
   (* 谓词：一个方阵是可逆的 *)
-  Check minvertible M.
+  Check minvtble M.
   (* 谓词：一个方阵是奇异的 *)
   Check msingular M.
 
@@ -245,7 +245,7 @@ Section mat_field_R.
   Check cramerRule.  (* : smat ?n -> vec ?n -> vec ?n *)
 
   (* Check the invertibility of matrix `M` *)
-  Check minvertiblebGE.  (* : smat ?n -> bool *)
+  Check minvtblebGE.  (* : smat ?n -> bool *)
   (* Inverse matrix (option version) *)
   Check minvoGE.    (* : smat ?n -> option (smat ?n) *)
   (* Inverse matrix (with identity matrix as default value) *)
@@ -256,7 +256,7 @@ Section mat_field_R.
   Check solveEqGE.     (* : smat ?n -> vec ?n -> vec ?n *)
 
   (* Check the invertibility of matrix `M` *)
-  Check minvertiblebAM.  (* : smat ?n -> bool *)
+  Check minvtblebAM.  (* : smat ?n -> bool *)
   (* Inverse matrix (option version) *)
   Check minvoAM.    (* : smat ?n -> option (smat ?n) *)
   (* Inverse matrix (with identity matrix as default value) *)
@@ -580,3 +580,92 @@ let addmx v m n =
   map2_mx (GRing.add v) m n
  *)
 End compare_mathcomp.
+
+
+(* Gauss Elimination *)
+Section GE.
+  Import MatrixQc.
+
+  Let A : smat 3 := l2m (Q2Qc_dlist [[0;-2;1];[3;0;-2];[-2;3;0]]%Q).
+
+  (* {1,2}, P1=[[0;1;0];[1;0;0];[0;0;1]], Q1=[[0;1;0];[1;0;0];[0;0;1]] *)
+  Let ro1 : @RowOp Qc 2 := ROswap #0 #1.
+  Let P1 : smat 3 := rowOps2mat [ro1].
+  Let Q1 : smat 3 := rowOps2matInv [ro1].
+  Compute m2l P1. Compute m2l (P1*A). Compute m2l Q1.
+  Compute m2l (P1 * Q1).
+
+  (* (1/3)*{1}, P2=[[1/3;0;0];[0;1;0];[0;0;1]], Q2=[[3;0;0];[0;1;0];[0;0;1] *)
+  Let ro2 : @RowOp Qc 2 := ROscale #0 (Q2Qc (1/3)).
+  Let P2 : smat 3 := rowOps2mat [ro2].
+  Let Q2 : smat 3 := rowOps2matInv [ro2].
+  Compute m2l P2. Compute m2l (P2*P1*A). Compute m2l Q2.
+  Compute m2l (P2 * Q2).
+
+  (* {3}+(2)*{1}, P3=[[1;0;0];[0;1;0];[2;0;1]], Q3=[[1;0;0];[0;1;0];[-2;0;1]] *)
+  Let ro3 : @RowOp Qc 2 := ROadd #2 #0 (Q2Qc 2).
+  Let P3 : smat 3 := rowOps2mat [ro3].
+  Let Q3 : smat 3 := rowOps2matInv [ro3].
+  Compute m2l P3. Compute m2l (P3*P2*P1*A). Compute m2l Q3.
+  Compute m2l (P3 * Q3).
+
+  (* (-1/2)*{2}, P4=[[1;0;0];[0;-1/2;0];[0;0;1]], Q4=[[1;0;0];[0;-2;0];[0;0;1]] *)
+  Let ro4 : @RowOp Qc 2 := @ROscale _ 2 #1 (Q2Qc (-1/2)).
+  Let P4 : smat 3 := rowOps2mat [ro4].
+  Let Q4 : smat 3 := rowOps2matInv [ro4].
+  Compute m2l P4. Compute m2l (P4*P3*P2*P1*A). Compute m2l Q4.
+
+  (* {3}+(-3)*{2}, P5=[[1;0;0];[0;1;0];[0;-3;1]], Q5=[[1;0;0];[0;1;0];[0;3;1]] *)
+  Let ro5 : @RowOp Qc 2 := @ROadd _ 2 #2 #1 (Q2Qc (-3)).
+  Let P5 : smat 3 := rowOps2mat [ro5].
+  Let Q5 : smat 3 := rowOps2matInv [ro5].
+  Compute m2l P5. Compute m2l (P5*P4*P3*P2*P1*A). Compute m2l Q5.
+
+  (* 6*{3}, P6=[[1;0;0];[0;1;0];[0;0;6]], Q7=[[1;0;0];[0;1;0];[0;0;1/6]] *)
+  Let ro6 : @RowOp Qc 2 := @ROscale _ 2 #2 (Q2Qc 6).
+  Let P6 : smat 3 := rowOps2mat [ro6].
+  Let Q6 : smat 3 := rowOps2matInv [ro6].
+  Compute m2l P6. Compute m2l (P6*P5*P4*P3*P2*P1*A). Compute m2l Q6.
+
+  (* {2}+(1/2)*{3}, P7=[[1;0;0];[0;1;1/2];[0;0;1]], Q7=[[1;0;0];[0;1;-1/2];[0;0;1]] *)
+  Let ro7 : @RowOp Qc 2 := @ROadd _ 2 #1 #2 (Q2Qc (1/2)).
+  Let P7 : smat 3 := rowOps2mat [ro7].
+  Let Q7 : smat 3 := rowOps2matInv [ro7].
+  Compute m2l P7. Compute m2l (P7*P6*P5*P4*P3*P2*P1*A). Compute m2l Q7.
+
+  (* {1}+(2/3)*{3}, P8=[[1;0;2/3];[0;1;0];[0;0;1]], Q8=[[1;0;-2/3];[0;1;0];[0;0;1]] *)
+  Let ro8 : @RowOp Qc 2 := @ROadd _ 2 #0 #2 (Q2Qc (2/3)).
+  Let P8 : smat 3 := rowOps2mat [ro8].
+  Let Q8 : smat 3 := rowOps2matInv [ro8].
+  Compute m2l P8. Compute m2l (P8*P7*P6*P5*P4*P3*P2*P1*A). Compute m2l Q8.
+
+  Let P := P8*P7*P6*P5*P4*P3*P2*P1.
+  Let Q := Q1*Q2*Q3*Q4*Q5*Q6*Q7*Q8.
+  Compute m2l P.
+  Compute m2l Q.
+  
+  Lemma eq1 : P * A = mat1.
+  Proof. Admitted.
+
+  Lemma eq2 : A = Q * mat1.
+  (* Proof. meq. Qed. *)
+  Proof. Admitted.
+
+  Goal minvtble A.
+  Proof.
+    hnf. exists P. split. apply eq1.
+    (* 要证明 A * P = mat1，
+       转化为 Q * mat1 * P = mat1，
+       转化为 Q * P = mat1。 *)
+    rewrite eq2. rewrite mmul_1_r.
+    unfold P,Q.
+    unfold P1,P2,P3,P4,P5,P6,P7,P8.
+    unfold Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8.
+    rewrite <- !rowOps2matInv_app.
+    rewrite !mmul_assoc.
+    rewrite <- !rowOps2mat_app.
+    rewrite mmul_rowOps2matInv_rowOps2mat_eq1. auto.
+    repeat constructor; hnf; try easy.
+  Qed.
+  
+End GE.

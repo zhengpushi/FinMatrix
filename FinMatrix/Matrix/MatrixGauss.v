@@ -688,7 +688,7 @@ Section GaussElim.
      递归时i    3 2 1 (0)   4 3 2 1 (0)
      递归时n-i  1 2 3       0 1 2 3
    *)
-  (* 将矩阵M的后 x 行化为标准上三角形。
+  (* 将矩阵M的后 x 行化为单位上三角形。
      参数 x 最大为维数，递归时 x 递减，而 (维数-x) 递增。*)
   Fixpoint rowEchelon {n} (M : smat (S n)) (x : nat)
     : option (list RowOp * smat (S n)) :=
@@ -888,18 +888,6 @@ Section GaussElim.
         apply field_inv_neq0_iff. unfold mrowSwap. fin.
         apply firstNonzero_imply_nonzero in Hi. auto. fin. fin.
   Qed.
-
-  (* (** 对 M 行变换得到 (l, M')，则 [l]' * M' = M *) *)
-  (* Lemma rowEchelon_imply_eq_inv : *)
-  (*   forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp), *)
-  (*     rowEchelon M x = Some (l, M') -> rowOps2matInv l * M' = M. *)
-  (* Proof. *)
-  (*   intros. apply rowEchelon_imply_eq in H as H'. rewrite <- H'. *)
-  (*   rewrite <- mmul_assoc. rewrite mmul_rowOps2matInv_rowOps2mat_eq1. *)
-  (*   rewrite mmul_1_l; auto. *)
-  (*   apply rowEchelon_imply_rowOpValid in H. auto. *)
-  (* Qed. *)
-
 
   (** 对 M 行变换得到 (l, M')，则 [l]' * M' = M *)
   Lemma rowEchelon_imply_eq_inv :  forall {n} (M M' : smat (S n)) (l : list RowOp),

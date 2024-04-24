@@ -160,7 +160,8 @@ Module Export method3.
       | [] => [[a]]
       | hl :: tl => (a :: l) :: (map (cons hl) (permOne a tl))
       end.
-    
+
+    (** Permutation of a list *)
     Fixpoint perm (l : list A) : list (list A) :=
       match l with
       | [] => [[]]
@@ -168,7 +169,12 @@ Module Export method3.
       end.
   End def.
 
+  (* Compute permOne 1 [2;3]. *)
+  (* = [[1; 2; 3]; [2; 1; 3]; [2; 3; 1]] : dlist nat *)
+
   (* Compute perm [1;2;3]. *)
+  (* = [[1; 2; 3]; [2; 1; 3]; [2; 3; 1]; [1; 3; 2]; [3; 1; 2]; [3; 2; 1]] : dlist nat *)
+  
 
   Section props.
     Context {A : Type}.
@@ -389,8 +395,9 @@ Section mdet.
     (* 求和 *)
     fold_left Aadd (map item rowIds) 0.
 
-  (* 该命题见丘老师《高等代数》P35，我暂时未实现其证明 *)
+  (* 上述两种算法等价 *)
   Axiom mdet'_eq_mdet : forall {n} (M : smat n), mdet' M = mdet M.
+  (* 该命题的证明见丘维声老师《高等代数》P35，我暂时未完成验证 *)
 
   (* |M\T| = |M| *)
   Lemma mdet_mtrans : forall {n} (M : smat n), |M\T| = |M|.

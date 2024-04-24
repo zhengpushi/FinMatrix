@@ -373,7 +373,7 @@ Section GaussElim.
 
   (** 方阵 M 的前 x 列的左下角(不含对角线)是 0。当 x = n 时，整个矩阵左下角是 0 *)
   Definition mLeftLowerZeros {n} (M : smat n) (x : nat) : Prop :=
-    forall (i j : fin n), fin2nat j < x -> fin2nat j < fin2nat i -> M i j = 0.
+    forall (i j : fin n), fin2nat j < x -> fin2nat j < fin2nat i -> M.[i].[j] = 0.
 
   Lemma mLeftLowerZeros_less : forall {n} (M : smat (S n)) (x : nat),
       mLeftLowerZeros M (S x) -> mLeftLowerZeros M x.
@@ -390,8 +390,8 @@ Section GaussElim.
   Qed.
 
   
-  (** 方阵 M 是下三角矩阵（即，左下角都是0）  *)
-  Definition mLowerTriangle {n} (M : smat n) : Prop :=
+  (** 方阵 M 是上三角矩阵（即，左下角都是0）  *)
+  Definition mUpperTrig {n} (M : smat n) : Prop :=
     mLeftLowerZeros M n.
   
   Lemma mat1_mLeftLowerZeros : forall {n}, mLeftLowerZeros (@mat1 n) n.
@@ -400,8 +400,8 @@ Section GaussElim.
     assert (fin2nat i <> fin2nat j); try lia. fin.
   Qed.
   
-  Lemma mat1_mLowerTriangle : forall {n}, mLowerTriangle (@mat1 n).
-  Proof. intros. unfold mLowerTriangle. apply mat1_mLeftLowerZeros. Qed.
+  Lemma mat1_mUpperTrig : forall {n}, mUpperTrig (@mat1 n).
+  Proof. intros. unfold mUpperTrig. apply mat1_mLeftLowerZeros. Qed.
 
   
   (** 方阵 M 的前 x 行/列的对角线都是 1。当 x=n 时，整个矩阵的对角线是 1 *)
@@ -419,17 +419,17 @@ Section GaussElim.
   Proof. intros. unfold mDiagonalOnes. apply mat1_mDiagonalOne. Qed.
 
   
-  (** 归一化的下三角矩阵：对角线全1，左下角全0 *)
-  Definition mNormedLowerTriangle {n} (M : smat n) := 
-    mLowerTriangle M /\ mDiagonalOnes M.
+  (** 方阵 M 是单位上三角矩阵（即，左下角全0 + 对角线全1）*)
+  Definition mUnitUpperTrig {n} (M : smat n) := 
+    mUpperTrig M /\ mDiagonalOnes M.
 
-  (* 归一化上三角矩阵，任意下面的行的倍数加到上面，仍然是归一化上三角矩阵 *)
-  Lemma mrowAdd_keep_NormedLowerTriangle : forall {n} (M : smat (S n)) (i j : fin (S n)),
-      mNormedLowerTriangle M ->
+  (** 单位上三角矩阵，任意下面的行的倍数加到上面，仍然是单位上三角矩阵 *)
+  Lemma mrowAdd_mUnitUpperTrig : forall {n} (M : smat (S n)) (i j : fin (S n)),
+      mUnitUpperTrig M ->
       fin2nat i < fin2nat j ->
-      mNormedLowerTriangle (mrowAdd i j (- (M i j))%A M).
+      mUnitUpperTrig (mrowAdd i j (- (M i j))%A M).
   Proof.
-    intros. unfold mNormedLowerTriangle in *. destruct H. split; hnf in *; intros.
+    intros. unfold mUnitUpperTrig in *. destruct H. split; hnf in *; intros.
     - unfold mrowAdd; fin. subst.
       rewrite !(H _ j0); auto. ring.
       pose proof (fin2nat_lt j). lia.
@@ -541,7 +541,7 @@ Section GaussElim.
     end.
   
   (** 对 M 向下消元得到 (l, M')，则 l 都是有效的 *)
-  Lemma elimDown_imply_rowOpValid :
+  Lemma elimDown_rowOpValid :
     forall (x : nat) {n} (M M' : smat (S n)) (j : fin (S n)) (l : list RowOp),
       x < S n - fin2nat j -> elimDown M x j = (l, M') -> Forall roValid l.
   Proof.
@@ -561,7 +561,7 @@ Section GaussElim.
   Qed.
 
   (** 对 M 向下消元得到 (l, M')，则 [l] * M = M' *)
-  Lemma elimDown_imply_eq :
+  Lemma elimDown_eq :
     forall (x : nat) {n} (M M' : smat (S n)) (j : fin (S n)) (l : list RowOp),
       elimDown M x j = (l, M') -> rowOps2mat l * M = M'.
   Proof.
@@ -578,7 +578,7 @@ Section GaussElim.
   Qed.
 
   (* 若M[y,y]=1，则对第y列的 后 x 行向下消元后，前S n - x行的所有元素保持不变 *)
-  Lemma elimDown_former_row_keep :
+  Lemma elimDown_keep_former_row :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : fin (S n)),
       elimDown M x y = (l, M') ->
       M y y = 1 ->
@@ -609,21 +609,21 @@ Section GaussElim.
     - simpl in H.
       destruct (Aeqdec (M #(n - x) y) 0) as [E|E].
       + destruct (fin2nat i ??= n - x)%nat as [E1|E1].
-        * apply elimDown_former_row_keep with (i:=i)(j:=y) in H; auto; try lia.
+        * apply elimDown_keep_former_row with (i:=i)(j:=y) in H; auto; try lia.
           subst. rewrite H. rewrite <- E1 in E. rewrite nat2finS_fin2nat in E; auto.
         * apply IHx with (i:=i) in H; auto; try lia.
       + destruct elimDown as [l2 M2] eqn: T2.
         inversion H. rewrite <- H5.
         replace (S n - S x) with (n - x) in H2 by lia.
         destruct (fin2nat i ??= n - x)%nat as [E1|E1].
-        * apply elimDown_former_row_keep with (i:=i)(j:=y) in T2; auto; try lia.
+        * apply elimDown_keep_former_row with (i:=i)(j:=y) in T2; auto; try lia.
           ** rewrite T2. unfold mrowAdd; fin. rewrite H0. rewrite <- E0. fin.
           ** unfold mrowAdd; fin.
         * apply IHx with (i:=i) in T2; auto; try lia. unfold mrowAdd; fin.
   Qed.
 
   (* 若 M 的前 y 列左下方都是0，则对后 x 行向下消元后，M' 的前 y 列左下方都是0 *)
-  Lemma elimDown_keep_lowerLeftZeros:
+  Lemma elimDown_mLowerLeftZeros_aux:
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : fin (S n)),
       elimDown M x y = (l, M') ->
       mLeftLowerZeros M (fin2nat y) ->
@@ -644,11 +644,11 @@ Section GaussElim.
           ** hnf; intros. unfold mrowAdd; fin.
              rewrite !(H0 _ j0); auto. ring.
           ** unfold mrowAdd; fin.
-        * apply elimDown_former_row_keep with (i:=i)(j:=j) in T2; auto; try lia.
+        * apply elimDown_keep_former_row with (i:=i)(j:=j) in T2; auto; try lia.
   Qed.
 
   (** 若 M 前 x 列左下是0，则对 M 的后 S n - S x 列消元后的 M' 的前 S x 列左下是 0 *)
-  Lemma elimDown_kepp_LeftLowerZeros :
+  Lemma elimDown_mLeftLowerZeros :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
       elimDown M (S n - S x) #x = (l, M') ->
       x < S n ->
@@ -660,7 +660,7 @@ Section GaussElim.
     (* 两种情况：在 x 列，在 x 列左侧 *)
     destruct (fin2nat j ??= x)%nat as [E|E].
     - apply elimDown_latter_row_0 with (i:=i) in H; auto; subst; fin.
-    - apply elimDown_keep_lowerLeftZeros in H; auto; fin.
+    - apply elimDown_mLowerLeftZeros_aux in H; auto; fin.
       rewrite H; auto.
       pose proof (fin2nat_lt j). lia.
   Qed.
@@ -720,7 +720,7 @@ Section GaussElim.
     end.
 
   (** 对 M 行变换得到 (l, M')，则 [l] * M = M' *)
-  Lemma rowEchelon_imply_eq : forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
+  Lemma rowEchelon_eq : forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
       rowEchelon M x = Some (l, M') -> rowOps2mat l * M = M'.
   Proof.
     induction x; intros.
@@ -734,21 +734,21 @@ Section GaussElim.
         destruct elimDown as [l3 M3] eqn:T3.
         destruct rowEchelon as [[l4 M4]|] eqn:T4; try easy.
         apply IHx in T4. inversion H. rewrite <- H2, <- T4.
-        apply elimDown_imply_eq in T3. rewrite <- T3.
+        apply elimDown_eq in T3. rewrite <- T3.
         rewrite !rowOps2mat_app. simpl. rewrite !mmul_assoc. f_equal. f_equal.
         rewrite <- mrowScale_mmul. rewrite mmul_1_l. auto.
       + (* i 不是当前行，需要换行 *)
         destruct elimDown as [l3 M3] eqn:T3.
         destruct (rowEchelon M3 x) as [[l4 M4]|] eqn:T4; try easy.
         apply IHx in T4. inversion H. rewrite <- H2, <- T4.
-        apply elimDown_imply_eq in T3. rewrite <- T3.
+        apply elimDown_eq in T3. rewrite <- T3.
         rewrite !rowOps2mat_app. simpl. rewrite !mmul_assoc. f_equal. f_equal.
         rewrite <- mrowScale_mmul. rewrite <- mrowSwap_mmul. rewrite mmul_1_l. auto.
   Qed.
 
   (** M 的前 S n - x 列左下角是0，且将 M 的后 x 行变换上三角得到 (l, M')，
       则 M' 的所有列的左下角是 0 *)
-  Lemma rowEchelon_LeftLowerZeros :
+  Lemma rowEchelon_mLeftLowerZeros :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
       rowEchelon M x = Some (l, M') ->
       x <= S n ->
@@ -766,7 +766,7 @@ Section GaussElim.
         destruct rowEchelon as [[l4 M4]|] eqn:T4; try easy.
         inv H. apply IHx in T4; auto; try lia; clear IHx.
         replace x with (S n - (S (n - x))) in T3 at 4 by lia.
-        apply elimDown_kepp_LeftLowerZeros in T3; try lia.
+        apply elimDown_mLeftLowerZeros in T3; try lia.
         * replace (S (n - x)) with (S n - x) in T3 by lia; auto.
         * unfold mrowScale; fin.
           (* 确保元素非零时才能消去除法逆元 *)
@@ -777,7 +777,7 @@ Section GaussElim.
         destruct rowEchelon as [[l4 M4]|] eqn:T4; try easy.
         inv H. apply IHx in T4; auto; try lia; clear IHx.
         replace x with (S n - (S (n - x))) in T3 at 6 by lia.
-        apply elimDown_kepp_LeftLowerZeros in T3; try lia.
+        apply elimDown_mLeftLowerZeros in T3; try lia.
         * replace (S (n - x)) with (S n - x) in T3 by lia; auto.
         * unfold mrowScale; fin.
           (* 确保元素非零时才能消去除法逆元 *)
@@ -788,17 +788,17 @@ Section GaussElim.
           ** rewrite (H1 _ j); fin.
   Qed.
 
-  (** 化行阶梯矩阵得到了下三角矩阵 *)
-  Lemma rowEchelon_LowerTriangle : forall {n} (M M' : smat (S n)) (l : list RowOp),
-      rowEchelon M (S n) = Some (l, M') -> mLowerTriangle M'.
+  (** 化行阶梯矩阵得到了上三角矩阵 *)
+  Lemma rowEchelon_mUpperTrig : forall {n} (M M' : smat (S n)) (l : list RowOp),
+      rowEchelon M (S n) = Some (l, M') -> mUpperTrig M'.
   Proof.
-    intros. apply rowEchelon_LeftLowerZeros in H; auto.
+    intros. apply rowEchelon_mLeftLowerZeros in H; auto.
     hnf; intros. lia.
   Qed.
   
   (** M 的前 S n - x 个对角线元素是1，且将 M 的后 x 行变换上三角得到 (l, M')，
       则 M' 的所有对角线都是1 *)
-  Lemma rowEchelon_DiagonalOne :
+  Lemma rowEchelon_mDiagonalOne :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
       rowEchelon M x = Some (l, M') ->
       mDiagonalOne M (S n - x) ->
@@ -818,7 +818,7 @@ Section GaussElim.
         apply IHx in T4; clear IHx; try lia.
         * inversion H; clear H. rewrite <- H4. auto.
         * hnf; intros.
-          apply elimDown_former_row_keep with (i:=i0)(j:=i0) in T3; fin.
+          apply elimDown_keep_former_row with (i:=i0)(j:=i0) in T3; fin.
           ** rewrite T3. unfold mrowScale; fin.
              *** rewrite <- E0. fin. rewrite field_mulInvL; auto.
                  rewrite <- E0 in *. fin.
@@ -832,7 +832,7 @@ Section GaussElim.
         apply IHx in T4; clear IHx; try lia.
         * inversion H; clear H. rewrite <- H4. auto.
         * hnf; intros.
-          apply elimDown_former_row_keep with (i:=i0)(j:=i0) in T3; fin.
+          apply elimDown_keep_former_row with (i:=i0)(j:=i0) in T3; fin.
           ** rewrite T3. unfold mrowScale, mrowSwap; fin.
              *** rewrite <- E0. fin. rewrite field_mulInvL; auto.
                  apply firstNonzero_imply_nonzero in Hi.
@@ -848,15 +848,15 @@ Section GaussElim.
   Qed.
   
   (** 化行阶梯矩阵得到的矩阵的对角线都是 1 *)
-  Lemma rowEchelon_DiagonalOnes : forall {n} (M M' : smat (S n)) (l : list RowOp),
+  Lemma rowEchelon_mDiagonalOnes : forall {n} (M M' : smat (S n)) (l : list RowOp),
       rowEchelon M (S n) = Some (l, M') -> mDiagonalOnes M'.
   Proof.
-    intros. unfold mDiagonalOnes. apply rowEchelon_DiagonalOne in H; auto.
+    intros. unfold mDiagonalOnes. apply rowEchelon_mDiagonalOne in H; auto.
     hnf; lia.
   Qed.
 
   (** 对 M 行变换得到 (l, M')，则 l 都是有效的 *)
-  Lemma rowEchelon_imply_rowOpValid :
+  Lemma rowEchelon_rowOpValid :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
       x <= S n -> rowEchelon M x = Some (l, M') -> Forall roValid l.
   Proof.
@@ -871,7 +871,7 @@ Section GaussElim.
         destruct elimDown as [l3 M3] eqn:T3.
         destruct rowEchelon as [[l4 M4]|] eqn:T4; try easy. inversion H0.
         apply IHx in T4 as T4'.
-        apply elimDown_imply_rowOpValid in T3.
+        apply elimDown_rowOpValid in T3.
         apply Forall_app. split; auto.
         apply Forall_app. split; auto.
         repeat constructor. unfold roValid.
@@ -881,7 +881,7 @@ Section GaussElim.
         destruct elimDown as [l3 M3] eqn:T3.
         destruct (rowEchelon M3 x) as [[l4 M4]|] eqn:T4; try easy.
         apply IHx in T4 as T4'. inversion H0.
-        apply elimDown_imply_rowOpValid in T3.
+        apply elimDown_rowOpValid in T3.
         apply Forall_app. split; auto.
         apply Forall_app. split; auto.
         repeat constructor. unfold roValid.
@@ -890,33 +890,33 @@ Section GaussElim.
   Qed.
 
   (** 对 M 行变换得到 (l, M')，则 [l]' * M' = M *)
-  Lemma rowEchelon_imply_eq_inv :  forall {n} (M M' : smat (S n)) (l : list RowOp),
+  Lemma rowEchelon_eq_inv :  forall {n} (M M' : smat (S n)) (l : list RowOp),
       rowEchelon M (S n) = Some (l, M')  -> rowOps2matInv l * M' = M.
   Proof.
-    intros. apply rowEchelon_imply_eq in H as H'. rewrite <- H'.
+    intros. apply rowEchelon_eq in H as H'. rewrite <- H'.
     rewrite <- mmul_assoc. rewrite mmul_rowOps2matInv_rowOps2mat_eq1.
     rewrite mmul_1_l; auto.
-    apply rowEchelon_imply_rowOpValid in H. auto. lia.
+    apply rowEchelon_rowOpValid in H. auto. lia.
   Qed.
   
-  (** 化行阶梯矩阵得到的矩阵是规范的的下三角矩阵 *)
-  Lemma rowEchelon_NormedLowerTriangle : forall {n} (M M' : smat (S n)) (l : list RowOp),
-      rowEchelon M (S n) = Some (l, M') -> mNormedLowerTriangle M'.
+  (** 化行阶梯矩阵得到的矩阵是单位上三角矩阵 *)
+  Lemma rowEchelon_mUnitUpperTrig : forall {n} (M M' : smat (S n)) (l : list RowOp),
+      rowEchelon M (S n) = Some (l, M') -> mUnitUpperTrig M'.
   Proof.
     intros. hnf. split.
-    apply rowEchelon_LowerTriangle in H; auto.
-    apply rowEchelon_DiagonalOnes in H; auto.
+    apply rowEchelon_mUpperTrig in H; auto.
+    apply rowEchelon_mDiagonalOnes in H; auto.
   Qed.
 
-  (** 化行阶梯形满足乘法不变式，并且结果矩阵是规范的下三角矩阵 *)
+  (** 化行阶梯形满足乘法不变式，并且结果矩阵是规范的上三角矩阵 *)
   Theorem rowEchelon_spec :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
       rowEchelon M (S n) = Some (l, M') ->
-      (rowOps2mat l * M = M') /\ mNormedLowerTriangle M'.
+      (rowOps2mat l * M = M') /\ mUnitUpperTrig M'.
   Proof.
     intros. split.
-    apply rowEchelon_imply_eq in H; auto.
-    apply rowEchelon_NormedLowerTriangle in H; auto.
+    apply rowEchelon_eq in H; auto.
+    apply rowEchelon_mUnitUpperTrig in H; auto.
   Qed.
 
 
@@ -975,7 +975,7 @@ Section GaussElim.
     end.
 
   (** 对 M 向上消元得到 (l, M')，则 [l] * M = M' *)
-  Lemma elimUp_imply_eq :
+  Lemma elimUp_eq :
     forall (x : nat) {n} (M M' : smat (S n)) (j : fin (S n)) (l : list RowOp),
       elimUp M x j = (l, M') -> rowOps2mat l * M = M'.
   Proof.
@@ -992,7 +992,7 @@ Section GaussElim.
   Qed.
   
   (** 对 M 向上消元得到 (l, M')，则 l 都是有效的 *)
-  Lemma elimUp_imply_rowOpValid :
+  Lemma elimUp_rowOpValid :
     forall (x : nat) {n} (M M' : smat (S n)) (j : fin (S n)) (l : list RowOp),
       x <= fin2nat j ->     (* 前 x 行，行号不超过 j *)
       elimUp M x j = (l, M') -> Forall roValid l.
@@ -1010,12 +1010,12 @@ Section GaussElim.
         pose proof (fin2nat_lt j). fin.
   Qed.
 
-  (** 对 M 向上消元保持下三角矩阵 *)
-  Lemma elimUp_keep_NormedLowerTriangle :
+  (** 对 M 向上消元保持单位上三角矩阵 *)
+  Lemma elimUp_mUnitUpperTrig :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (j : fin (S n)),
       elimUp M x j = (l, M') ->
       x <= fin2nat j ->     (* 前 x 行，行号不超过 j *)
-      mNormedLowerTriangle M -> mNormedLowerTriangle M'.
+      mUnitUpperTrig M -> mUnitUpperTrig M'.
   Proof.
     induction x; intros.
     - simpl in H. inv H. auto.
@@ -1024,7 +1024,7 @@ Section GaussElim.
       + apply IHx in H; auto; try lia.
       + destruct elimUp as [l2 M2] eqn: T2. inv H.
         apply IHx in T2; auto; try lia.
-        apply mrowAdd_keep_NormedLowerTriangle; auto. fin.
+        apply mrowAdd_mUnitUpperTrig; auto. fin.
         pose proof (fin2nat_lt j). lia.
   Qed.
 
@@ -1047,10 +1047,10 @@ Section GaussElim.
   Qed.
   
   (* 上消元后该列上方元素为 0 *)
-  Lemma elimUp_upper_rows_to_0 :
+  Lemma elimUp_upper_rows_0 :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : fin (S n)),
       elimUp M x y = (l, M') ->
-      mNormedLowerTriangle M ->
+      mUnitUpperTrig M ->
       x <= fin2nat y ->     (* 前 x 行，行号不超过 y *)
       (forall i : fin (S n), fin2nat i < x -> M' i y = 0).
   Proof.
@@ -1069,17 +1069,17 @@ Section GaussElim.
         apply elimUp_keep_lower_rows with (i:=i)(j:=y) in T2; try lia. rewrite T2.
         unfold mrowAdd; fin. rewrite H01; auto; try lia; fin.
       + apply IHx with (i:=i) in T2; auto; try lia.
-        apply mrowAdd_keep_NormedLowerTriangle; auto. split; auto.
+        apply mrowAdd_mUnitUpperTrig; auto. split; auto.
         fin. pose proof (fin2nat_lt y). lia.
   Qed.
 
   (** 若 M 的后 L 列的右上角都是 0，则上消元后，M' 的后 L 列的右上角都是 0 *)
-  Lemma elimUp_keep_upperRightZeros :
+  Lemma elimUp_mUpperRightZeros_aux :
     forall (x L : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : fin (S n)),
       elimUp M x y = (l, M') ->
       x <= fin2nat y ->
       L < S n - fin2nat y ->
-      mNormedLowerTriangle M ->
+      mUnitUpperTrig M ->
       mRightUpperZeros M L ->
       mRightUpperZeros M' L.
   Proof.
@@ -1091,25 +1091,25 @@ Section GaussElim.
     - destruct elimUp as [l2 M2] eqn: T2. inv H.
       hnf; intros.
       apply IHx with (L:=L) in T2; auto; try lia.
-      + apply mrowAdd_keep_NormedLowerTriangle; auto. fin.
+      + apply mrowAdd_mUnitUpperTrig; auto. fin.
       + hnf; intros. unfold mrowAdd; fin.
         rewrite !(H3 _ j0); try lia. ring.
   Qed.
   
   (** 若 M 的后 (S n - S y) 列的右上角都是 0，则上消元后，S n - y 列的右上角都是 0 *)
-  Lemma elimUp_keep_upperRightZeros_S:
+  Lemma elimUp_mUpperRightZeros:
     forall {n} (M M' : smat (S n)) (l : list RowOp) (y : nat),
       elimUp M y #y = (l, M') ->
       y < S n ->
-      mNormedLowerTriangle M ->
+      mUnitUpperTrig M ->
       mRightUpperZeros M (S n - S y) ->
       mRightUpperZeros M' (S n - y).
   Proof.
     intros. hnf; intros.
     replace (S n - (S n - y)) with y in H3 by lia.
     destruct (fin2nat j ??= y)%nat as [E|E].
-    - subst. apply elimUp_upper_rows_to_0 with (i:=i) in H; auto; fin.
-    - apply elimUp_keep_upperRightZeros with (L:=S n - S y) in H; auto; fin.
+    - subst. apply elimUp_upper_rows_0 with (i:=i) in H; auto; fin.
+    - apply elimUp_mUpperRightZeros_aux with (L:=S n - S y) in H; auto; fin.
       rewrite H; auto. lia.
   Qed.
   
@@ -1139,7 +1139,7 @@ Section GaussElim.
     end.
 
   (** 对 M 最简行变换得到 (l, M')，则 [l] * M = M' *)
-  Lemma minRowEchelon_imply_eq : forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
+  Lemma minRowEchelon_eq : forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
       minRowEchelon M x = (l, M') -> rowOps2mat l * M = M'.
   Proof.
     induction x; intros; simpl in *.
@@ -1147,31 +1147,31 @@ Section GaussElim.
     - destruct elimUp as [l1 M1] eqn : T1.
       destruct minRowEchelon as [l2 M2] eqn : T2.
       apply IHx in T2. inv H.
-      apply elimUp_imply_eq in T1. rewrite <- T1.
+      apply elimUp_eq in T1. rewrite <- T1.
       rewrite rowOps2mat_app. apply mmul_assoc.
   Qed.
 
   (* minRowEchelon 保持上三角 *)
-  Lemma minRowEchelon_keep_NormedLowerTriangle :
+  Lemma minRowEchelon_mUnitUpperTrig :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
       minRowEchelon M x = (l, M') ->
       x <= S n ->
-      mNormedLowerTriangle M ->
-      mNormedLowerTriangle M'.
+      mUnitUpperTrig M ->
+      mUnitUpperTrig M'.
   Proof.
     induction x; intros; simpl in H. inv H; auto.
     destruct elimUp as [l1 M1] eqn : T1.
     destruct minRowEchelon as [l2 M2] eqn : T2. inv H.
     apply IHx in T2; auto; try lia.
-    apply elimUp_keep_NormedLowerTriangle in T1; auto. fin.
+    apply elimUp_mUnitUpperTrig in T1; auto. fin.
   Qed.
   
   (** 若 M 的 后 S n - x 列的右上角都是0，则对 M 最简行变换得到的 M' 的右上角都是0 *)
-  Lemma minRowEchelon_RightUpperZeros :
+  Lemma minRowEchelon_mRightUpperZeros :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
       minRowEchelon M x = (l, M') ->
       x <= S n ->
-      mNormedLowerTriangle M ->
+      mUnitUpperTrig M ->
       mRightUpperZeros M (S n - x) ->
       mRightUpperZeros M' (S n).
   Proof.
@@ -1179,12 +1179,12 @@ Section GaussElim.
     destruct elimUp as [l1 M1] eqn : T1.
     destruct minRowEchelon as [l2 M2] eqn : T2. inv H.
     apply IHx in T2; auto; try lia.
-    - apply elimUp_keep_NormedLowerTriangle in T1; auto. fin.
-    - apply elimUp_keep_upperRightZeros_S in T1; auto.
+    - apply elimUp_mUnitUpperTrig in T1; auto. fin.
+    - apply elimUp_mUpperRightZeros in T1; auto.
   Qed.
 
   (** 对 M 向下消元得到 (l, M')，则 l 都是有效的 *)
-  Lemma minRowEchelon_imply_rowOpValid :
+  Lemma minRowEchelon_rowOpValid :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
       minRowEchelon M x = (l, M') -> x <= S n -> Forall roValid l.
   Proof.
@@ -1192,42 +1192,42 @@ Section GaussElim.
     destruct elimUp as [l1 M1] eqn : T1.
     destruct minRowEchelon as [l2 M2] eqn : T2. inv H.
     apply IHx in T2; auto; try lia.
-    apply elimUp_imply_rowOpValid in T1 as T1'; fin.
+    apply elimUp_rowOpValid in T1 as T1'; fin.
     apply Forall_app. split; auto.
   Qed.
   
   (** 对 M 最简行变换得到 (l, M')，则 [l]' * M' = M *)
-  Lemma minRowEchelon_imply_eq_inv : forall {n} (M M' : smat (S n)) (l : list RowOp),
+  Lemma minRowEchelon_eq_inv : forall {n} (M M' : smat (S n)) (l : list RowOp),
       minRowEchelon M (S n) = (l, M') -> rowOps2matInv l * M' = M.
   Proof.
-    intros. apply minRowEchelon_imply_eq in H as H'. rewrite <- H'.
+    intros. apply minRowEchelon_eq in H as H'. rewrite <- H'.
     rewrite <- mmul_assoc. rewrite mmul_rowOps2matInv_rowOps2mat_eq1.
     rewrite mmul_1_l; auto.
-    apply minRowEchelon_imply_rowOpValid in H; fin.
+    apply minRowEchelon_rowOpValid in H; fin.
   Qed.
   
   (** 对 M 最简行变换得到 (l, M')，则 M' 是单位阵 *)
-  Lemma minRowEchelon_imply_mat1 : forall {n} (M M' : smat (S n)) (l : list RowOp),
+  Lemma minRowEchelon_mat1 : forall {n} (M M' : smat (S n)) (l : list RowOp),
       minRowEchelon M (S n) = (l, M') ->
-      mNormedLowerTriangle M -> M' = mat1.
+      mUnitUpperTrig M -> M' = mat1.
   Proof.
     intros. apply meq_iff_mnth; intros. 
     (* 分别处理：左下角、对角线、右上角 *)
     destruct (j ??< i).
     - (* 左下角 *)
       rewrite mat1_mLeftLowerZeros; auto; fin.
-      apply minRowEchelon_keep_NormedLowerTriangle in H; auto.
+      apply minRowEchelon_mUnitUpperTrig in H; auto.
       hnf in H. destruct H. rewrite H; auto; fin.
     - destruct (j ??= i) as [E|E].
       + (* 对角线 *)
-        apply minRowEchelon_keep_NormedLowerTriangle in H; auto.
+        apply minRowEchelon_mUnitUpperTrig in H; auto.
         apply fin2nat_inj in E; subst.
         rewrite mat1_mDiagonalOne; fin.
         hnf in H. destruct H. rewrite H1; auto; fin.
       + (* 右上角 *)
         assert (fin2nat i < fin2nat j) by lia.
         rewrite mat1_mRightUpperZeros; auto; fin.
-        apply minRowEchelon_RightUpperZeros in H; auto; fin.
+        apply minRowEchelon_mRightUpperZeros in H; auto; fin.
         * rewrite H; auto; try lia.
         * hnf; intros. pose proof (fin2nat_lt j0). lia.
   Qed.

@@ -95,12 +95,12 @@ Section minv.
       + exists M. apply v0eq.
       + destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
         destruct (minRowEchelon M1 (S n)) as [l2 M2] eqn:T2.
-        apply minRowEchelon_imply_eq in T2 as H3.
-        apply rowEchelon_imply_eq in T1 as H4.
-        apply minRowEchelon_imply_mat1 in T2 as H5.
+        apply minRowEchelon_eq in T2 as H3.
+        apply rowEchelon_eq in T1 as H4.
+        apply minRowEchelon_mat1 in T2 as H5.
         * subst. rewrite <- mmul_assoc in H5.
           exists (rowOps2mat l2 * rowOps2mat l1); auto.
-        * apply rowEchelon_NormedLowerTriangle in T1. auto.
+        * apply rowEchelon_mUnitUpperTrig in T1. auto.
   Qed.
   
   (** msingular M <-> minvtbleb M = false *)
@@ -164,11 +164,11 @@ Section minv.
     - destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
       destruct minRowEchelon as [l2 M2] eqn:T2. inv H.
       copy T1. copy T2.
-      apply rowEchelon_imply_eq in T1.
-      apply minRowEchelon_imply_eq in T2.
+      apply rowEchelon_eq in T1.
+      apply minRowEchelon_eq in T2.
       rewrite rowOps2mat_app. rewrite mmul_assoc. rewrite T1,T2.
-      apply minRowEchelon_imply_mat1 in HC0; auto.
-      apply rowEchelon_NormedLowerTriangle in HC; auto.
+      apply minRowEchelon_mat1 in HC0; auto.
+      apply rowEchelon_mUnitUpperTrig in HC; auto.
   Qed.
 
   (** If `minvo M` return `Some M'`, then `M * M' = mat1` *)
@@ -185,17 +185,17 @@ Section minv.
     - apply v0eq.
     - destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
       destruct minRowEchelon as [l2 M2] eqn:T2.
-      apply rowEchelon_imply_eq_inv in T1 as T1'.
-      apply minRowEchelon_imply_eq_inv in T2 as T2'.
-      apply minRowEchelon_imply_mat1 in T2 as T2''; auto.
-      2:{ apply rowEchelon_NormedLowerTriangle in T1; auto. }
+      apply rowEchelon_eq_inv in T1 as T1'.
+      apply minRowEchelon_eq_inv in T2 as T2'.
+      apply minRowEchelon_mat1 in T2 as T2''; auto.
+      2:{ apply rowEchelon_mUnitUpperTrig in T1; auto. }
       rewrite <- T1'. rewrite <- T2'. rewrite T2''.
       inversion H. rewrite mmul_1_r.
       rewrite <- rowOps2matInv_app.
       rewrite mmul_rowOps2matInv_rowOps2mat_eq1. auto.
       apply Forall_app. split.
-      apply minRowEchelon_imply_rowOpValid in T2; auto.
-      apply rowEchelon_imply_rowOpValid in T1; auto.
+      apply minRowEchelon_rowOpValid in T2; auto.
+      apply rowEchelon_rowOpValid in T1; auto.
   Qed.
 
   (* ******************************************************************* *)
@@ -241,10 +241,10 @@ Section minv.
     destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
     destruct minRowEchelon as [l2 M2] eqn:T2.
     rewrite rowOps2mat_app. rewrite mmul_assoc.
-    apply rowEchelon_imply_eq in T1 as T1'. rewrite T1'.
-    apply minRowEchelon_imply_eq in T2 as T2'. rewrite T2'.
-    apply minRowEchelon_imply_mat1 in T2; auto.
-    apply rowEchelon_NormedLowerTriangle in T1; auto.
+    apply rowEchelon_eq in T1 as T1'. rewrite T1'.
+    apply minRowEchelon_eq in T2 as T2'. rewrite T2'.
+    apply minRowEchelon_mat1 in T2; auto.
+    apply rowEchelon_mUnitUpperTrig in T1; auto.
   Qed.
   
 End minv.

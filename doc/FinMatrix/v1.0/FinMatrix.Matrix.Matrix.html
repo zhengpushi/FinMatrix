@@ -66,7 +66,7 @@ Control the scope
 
 <div class="paragraph"> </div>
 
- An r*c matrix over <span class="inlinecode"><a class="idref" href="FinMatrix.Matrix.ElementType.html#ElementTypeFun.A"><span class="id" title="definition">A</span></a></span>  
+ An r*c matrix over A type  
 </div>
 <div class="code">
 <span class="id" title="keyword">Notation</span> <a id="mat" class="idref" href="#mat"><span class="id" title="abbreviation">mat</span></a> <span class="id" title="var">A</span> <span class="id" title="var">r</span> <span class="id" title="var">c</span> := (@<a class="idref" href="FinMatrix.Matrix.Vector.html#vec"><span class="id" title="definition">vec</span></a> (@<a class="idref" href="FinMatrix.Matrix.Vector.html#vec"><span class="id" title="definition">vec</span></a> <span class="id" title="var">A</span> <span class="id" title="var">c</span>) <span class="id" title="var">r</span>).<br/>
@@ -75,7 +75,7 @@ Control the scope
 </div>
 
 <div class="doc">
-An n-dimensional square matrix 
+An n-dimensional square matrix over A type 
 </div>
 <div class="code">
 <span class="id" title="keyword">Notation</span> <a id="smat" class="idref" href="#smat"><span class="id" title="abbreviation">smat</span></a> <span class="id" title="var">A</span> <span class="id" title="var">n</span> := (<a class="idref" href="FinMatrix.Matrix.Matrix.html#mat"><span class="id" title="abbreviation">mat</span></a> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span>).<br/>
@@ -390,9 +390,9 @@ Get tail column
 
 </div>
 <div class="code">
-<span class="id" title="keyword">Section</span> <a id="cvec_vec" class="idref" href="#cvec_vec"><span class="id" title="section">cvec_vec</span></a>.<br/>
+<span class="id" title="keyword">Section</span> <a id="cv2v_v2cv" class="idref" href="#cv2v_v2cv"><span class="id" title="section">cv2v_v2cv</span></a>.<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<a id="A:114" class="idref" href="#A:114"><span class="id" title="binder">A</span></a> : <span class="id" title="keyword">Type</span>}.<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="cvec" class="idref" href="#cvec"><span class="id" title="abbreviation">cvec</span></a> <span class="id" title="var">n</span> := (<a class="idref" href="FinMatrix.Matrix.Matrix.html#cvec"><span class="id" title="abbreviation">cvec</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#cvec_vec.A"><span class="id" title="variable">A</span></a> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="cvec" class="idref" href="#cvec"><span class="id" title="abbreviation">cvec</span></a> <span class="id" title="var">n</span> := (<a class="idref" href="FinMatrix.Matrix.Matrix.html#cvec"><span class="id" title="abbreviation">cvec</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#cv2v_v2cv.A"><span class="id" title="variable">A</span></a> <span class="id" title="var">n</span>).<br/>
 
 <br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="cv2v" class="idref" href="#cv2v"><span class="id" title="definition">cv2v</span></a> {<a id="n:115" class="idref" href="#n:115"><span class="id" title="binder">n</span></a>} (<a id="M:116" class="idref" href="#M:116"><span class="id" title="binder">M</span></a> : <a class="idref" href="FinMatrix.Matrix.Matrix.html#cvec"><span class="id" title="abbreviation">cvec</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#n:115"><span class="id" title="variable">n</span></a>) : <a class="idref" href="FinMatrix.Matrix.Vector.html#vec"><span class="id" title="definition">vec</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#n:115"><span class="id" title="variable">n</span></a> := <span class="id" title="keyword">fun</span> <a id="i:117" class="idref" href="#i:117"><span class="id" title="binder">i</span></a> =&gt; <a class="idref" href="FinMatrix.Matrix.Matrix.html#M:116"><span class="id" title="variable">M</span></a><a class="idref" href="FinMatrix.Matrix.Vector.html#a5e5993c284de1484da0ad106cf3b987"><span class="id" title="notation">.[</span></a><a class="idref" href="FinMatrix.Matrix.Matrix.html#i:117"><span class="id" title="variable">i</span></a><a class="idref" href="FinMatrix.Matrix.Vector.html#a5e5993c284de1484da0ad106cf3b987"><span class="id" title="notation">].[</span></a><a class="idref" href="FinMatrix.Matrix.Fin.html#fin0"><span class="id" title="definition">fin0</span></a><a class="idref" href="FinMatrix.Matrix.Vector.html#a5e5993c284de1484da0ad106cf3b987"><span class="id" title="notation">]</span></a>.<br/>
@@ -438,7 +438,7 @@ Get tail column
 &nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="FinMatrix.Matrix.Matrix.html#cv2v"><span class="id" title="definition">cv2v</span></a>. <span class="id" title="tactic">f_equal</span>. <span class="id" title="tactic">rewrite</span> (<a class="idref" href="FinMatrix.Matrix.Fin.html#fin1_uniq"><span class="id" title="lemma">fin1_uniq</span></a> <span class="id" title="var">j</span>); <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
-<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.Matrix.Matrix.html#cvec_vec"><span class="id" title="section">cvec_vec</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.Matrix.Matrix.html#cv2v_v2cv"><span class="id" title="section">cv2v_v2cv</span></a>.<br/>
 
 <br/>
 </div>
@@ -448,9 +448,9 @@ Get tail column
 
 </div>
 <div class="code">
-<span class="id" title="keyword">Section</span> <a id="rvec_vec" class="idref" href="#rvec_vec"><span class="id" title="section">rvec_vec</span></a>.<br/>
+<span class="id" title="keyword">Section</span> <a id="rv2v_v2rv" class="idref" href="#rv2v_v2rv"><span class="id" title="section">rv2v_v2rv</span></a>.<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<a id="A:146" class="idref" href="#A:146"><span class="id" title="binder">A</span></a> : <span class="id" title="keyword">Type</span>}.<br/>
-&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="rvec" class="idref" href="#rvec"><span class="id" title="abbreviation">rvec</span></a> <span class="id" title="var">n</span> := (<a class="idref" href="FinMatrix.Matrix.Matrix.html#rvec"><span class="id" title="abbreviation">rvec</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#rvec_vec.A"><span class="id" title="variable">A</span></a> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="rvec" class="idref" href="#rvec"><span class="id" title="abbreviation">rvec</span></a> <span class="id" title="var">n</span> := (<a class="idref" href="FinMatrix.Matrix.Matrix.html#rvec"><span class="id" title="abbreviation">rvec</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#rv2v_v2rv.A"><span class="id" title="variable">A</span></a> <span class="id" title="var">n</span>).<br/>
 
 <br/>
 &nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="rv2v" class="idref" href="#rv2v"><span class="id" title="definition">rv2v</span></a> {<a id="n:147" class="idref" href="#n:147"><span class="id" title="binder">n</span></a>} (<a id="M:148" class="idref" href="#M:148"><span class="id" title="binder">M</span></a> : <a class="idref" href="FinMatrix.Matrix.Matrix.html#rvec"><span class="id" title="abbreviation">rvec</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#n:147"><span class="id" title="variable">n</span></a>) : <a class="idref" href="FinMatrix.Matrix.Vector.html#vec"><span class="id" title="definition">vec</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#n:147"><span class="id" title="variable">n</span></a> := <span class="id" title="keyword">fun</span> <a id="i:149" class="idref" href="#i:149"><span class="id" title="binder">i</span></a> =&gt; <a class="idref" href="FinMatrix.Matrix.Matrix.html#M:148"><span class="id" title="variable">M</span></a><a class="idref" href="FinMatrix.Matrix.Vector.html#a5e5993c284de1484da0ad106cf3b987"><span class="id" title="notation">.[</span></a><a class="idref" href="FinMatrix.Matrix.Fin.html#fin0"><span class="id" title="definition">fin0</span></a><a class="idref" href="FinMatrix.Matrix.Vector.html#a5e5993c284de1484da0ad106cf3b987"><span class="id" title="notation">].[</span></a><a class="idref" href="FinMatrix.Matrix.Matrix.html#i:149"><span class="id" title="variable">i</span></a><a class="idref" href="FinMatrix.Matrix.Vector.html#a5e5993c284de1484da0ad106cf3b987"><span class="id" title="notation">]</span></a>.<br/>
@@ -478,7 +478,7 @@ Get tail column
 &nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="FinMatrix.Matrix.Matrix.html#v2rv"><span class="id" title="definition">v2rv</span></a>. <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
-<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.Matrix.Matrix.html#rvec_vec"><span class="id" title="section">rvec_vec</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.Matrix.Matrix.html#rv2v_v2rv"><span class="id" title="section">rv2v_v2rv</span></a>.<br/>
 
 <br/>
 </div>
@@ -3539,7 +3539,7 @@ x * M = M -&gt; x = 1 \/ M = 0
 
 <div class="paragraph"> </div>
 
- 行倍乘矩阵
+ 行数乘矩阵
       作用：E(x,c) * M 的结果是 M 的第 x 行乘以 c 倍
       形式：第 (x,x) 的元素是 c, 其余是单位阵 
 </div>
@@ -3551,7 +3551,7 @@ x * M = M -&gt; x = 1 \/ M = 0
 </div>
 
 <div class="doc">
-行倍乘：矩阵 M 的第 x 行乘以 c 倍 
+行数乘：矩阵 M 的第 x 行乘以 c 倍 
 </div>
 <div class="code">
 &nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="mrowScale" class="idref" href="#mrowScale"><span class="id" title="definition">mrowScale</span></a> {<a id="n:1321" class="idref" href="#n:1321"><span class="id" title="binder">n</span></a>} (<a id="x:1322" class="idref" href="#x:1322"><span class="id" title="binder">x</span></a> : <a class="idref" href="FinMatrix.Matrix.Fin.html#fin"><span class="id" title="inductive">fin</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#n:1321"><span class="id" title="variable">n</span></a>) (<a id="c:1323" class="idref" href="#c:1323"><span class="id" title="binder">c</span></a> : <a class="idref" href="FinMatrix.Matrix.Matrix.html#RowTrans.A"><span class="id" title="variable">A</span></a>) (<a id="M:1324" class="idref" href="#M:1324"><span class="id" title="binder">M</span></a> : <a class="idref" href="FinMatrix.Matrix.Matrix.html#smat"><span class="id" title="abbreviation">smat</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#RowTrans.A"><span class="id" title="variable">A</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#n:1321"><span class="id" title="variable">n</span></a>) : <a class="idref" href="FinMatrix.Matrix.Matrix.html#smat"><span class="id" title="abbreviation">smat</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#RowTrans.A"><span class="id" title="variable">A</span></a> <a class="idref" href="FinMatrix.Matrix.Matrix.html#n:1321"><span class="id" title="variable">n</span></a> :=<br/>

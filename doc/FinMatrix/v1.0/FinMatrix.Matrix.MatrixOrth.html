@@ -31,9 +31,9 @@
 <div class="code">
 
 <br/>
-<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#"><span class="id" title="library">Hierarchy</span></a>.<br/>
-<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.Matrix.Matrix.html#"><span class="id" title="library">Matrix</span></a>.<br/>
-<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.Matrix.MatrixInvAM.html#"><span class="id" title="library">MatrixInvAM</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#"><span class="id" title="library">Hierarchy</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="FinMatrix.Matrix.Matrix.html#"><span class="id" title="library">Matrix</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="FinMatrix.Matrix.MatrixInvAM.html#"><span class="id" title="library">MatrixInvAM</span></a>.<br/>
 
 <br/>
 <span class="id" title="keyword">Generalizable Variable</span> <span class="id" title="var">A</span> <span class="id" title="var">Aadd</span> <span class="id" title="var">Aopp</span> <span class="id" title="var">Amul</span> <span class="id" title="var">Ainv</span> <span class="id" title="var">Alt</span> <span class="id" title="var">Ale</span> <span class="id" title="var">Altb</span> <span class="id" title="var">Aleb</span> <span class="id" title="var">a2r</span>.<br/>
@@ -42,7 +42,7 @@
 </div>
 
 <div class="doc">
-<a id="lab608"></a><h1 class="section">Orthogonal Matrix</h1>
+<a id="lab609"></a><h1 class="section">Orthogonal Matrix</h1>
 
 <div class="paragraph"> </div>
 
@@ -79,7 +79,7 @@
 </div>
 
 <div class="doc">
-<a id="lab609"></a><h2 class="section">Orthonormal vectors 标准正交的向量组</h2>
+<a id="lab610"></a><h2 class="section">Orthonormal vectors 标准正交的向量组</h2>
 
 </div>
 <div class="code">
@@ -204,7 +204,7 @@ mcolsOrthonormal M -&gt; mrowsOrthonormal (M\T)
 </div>
 
 <div class="doc">
-<a id="lab610"></a><h2 class="section">Orthogonal matrix</h2>
+<a id="lab611"></a><h2 class="section">Orthogonal matrix</h2>
 
 </div>
 <div class="code">
@@ -226,9 +226,9 @@ An orthogonal matrix
 orthogonal M -&gt; invertible M 
 </div>
 <div class="code">
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="MatrixOrth.morth_invertible" class="idref" href="#MatrixOrth.morth_invertible"><span class="id" title="lemma">morth_invertible</span></a> : <span class="id" title="keyword">forall</span> {<a id="n:45" class="idref" href="#n:45"><span class="id" title="binder">n</span></a>} (<a id="M:46" class="idref" href="#M:46"><span class="id" title="binder">M</span></a> : <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.smat"><span class="id" title="abbreviation">smat</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#n:45"><span class="id" title="variable">n</span></a>),  <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.morth"><span class="id" title="definition">morth</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:46"><span class="id" title="variable">M</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.minvertible"><span class="id" title="abbreviation">minvertible</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:46"><span class="id" title="variable">M</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="MatrixOrth.morth_minvtble" class="idref" href="#MatrixOrth.morth_minvtble"><span class="id" title="lemma">morth_minvtble</span></a> : <span class="id" title="keyword">forall</span> {<a id="n:45" class="idref" href="#n:45"><span class="id" title="binder">n</span></a>} (<a id="M:46" class="idref" href="#M:46"><span class="id" title="binder">M</span></a> : <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.smat"><span class="id" title="abbreviation">smat</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#n:45"><span class="id" title="variable">n</span></a>),  <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.morth"><span class="id" title="definition">morth</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:46"><span class="id" title="variable">M</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.minvtble"><span class="id" title="abbreviation">minvtble</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:46"><span class="id" title="variable">M</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">rewrite</span> <a class="idref" href="FinMatrix.Matrix.MatrixInvBase.html#minvertible_iff_minvertibleL"><span class="id" title="lemma">minvertible_iff_minvertibleL</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">rewrite</span> <a class="idref" href="FinMatrix.Matrix.MatrixInvBase.html#minvtble_iff_minvtbleL"><span class="id" title="lemma">minvtble_iff_minvtbleL</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> *. <span class="id" title="tactic">exists</span> (<span class="id" title="var">M</span><a class="idref" href="FinMatrix.Matrix.Matrix.html#860872e28e81a28873cda94ac06ff06a"><span class="id" title="notation">\</span></a><a class="idref" href="FinMatrix.Matrix.Matrix.html#860872e28e81a28873cda94ac06ff06a"><span class="id" title="notation">T</span></a>). <span class="id" title="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
 
@@ -251,7 +251,7 @@ M\-1 = M\T -&gt; orthogonal M
 </div>
 <div class="code">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="MatrixOrth.minv_eq_trans_imply_morth" class="idref" href="#MatrixOrth.minv_eq_trans_imply_morth"><span class="id" title="lemma">minv_eq_trans_imply_morth</span></a> : <span class="id" title="keyword">forall</span> {<a id="n:49" class="idref" href="#n:49"><span class="id" title="binder">n</span></a>} (<a id="M:50" class="idref" href="#M:50"><span class="id" title="binder">M</span></a> : <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.smat"><span class="id" title="abbreviation">smat</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#n:49"><span class="id" title="variable">n</span></a>),<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.minvertible"><span class="id" title="abbreviation">minvertible</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:50"><span class="id" title="variable">M</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.minv"><span class="id" title="definition">minv</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:50"><span class="id" title="variable">M</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:50"><span class="id" title="variable">M</span></a><a class="idref" href="FinMatrix.Matrix.Matrix.html#860872e28e81a28873cda94ac06ff06a"><span class="id" title="notation">\</span></a><a class="idref" href="FinMatrix.Matrix.Matrix.html#860872e28e81a28873cda94ac06ff06a"><span class="id" title="notation">T</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.morth"><span class="id" title="definition">morth</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:50"><span class="id" title="variable">M</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.minvtble"><span class="id" title="abbreviation">minvtble</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:50"><span class="id" title="variable">M</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.minv"><span class="id" title="definition">minv</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:50"><span class="id" title="variable">M</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:50"><span class="id" title="variable">M</span></a><a class="idref" href="FinMatrix.Matrix.Matrix.html#860872e28e81a28873cda94ac06ff06a"><span class="id" title="notation">\</span></a><a class="idref" href="FinMatrix.Matrix.Matrix.html#860872e28e81a28873cda94ac06ff06a"><span class="id" title="notation">T</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.morth"><span class="id" title="definition">morth</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:50"><span class="id" title="variable">M</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">H0</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.mmul_minv_l"><span class="id" title="lemma">mmul_minv_l</span></a>; <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
@@ -276,7 +276,7 @@ orthogonal M &lt;-&gt; M * M\T = mat1
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.morth"><span class="id" title="definition">morth</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:54"><span class="id" title="variable">M</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:54"><span class="id" title="variable">M</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixInvAM.html#600760a382d1a6c57cf49bbff085ea80"><span class="id" title="notation">*</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#M:54"><span class="id" title="variable">M</span></a><a class="idref" href="FinMatrix.Matrix.Matrix.html#860872e28e81a28873cda94ac06ff06a"><span class="id" title="notation">\</span></a><a class="idref" href="FinMatrix.Matrix.Matrix.html#860872e28e81a28873cda94ac06ff06a"><span class="id" title="notation">T</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.mat1"><span class="id" title="abbreviation">mat1</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">auto</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.morth_invertible"><span class="id" title="lemma">morth_invertible</span></a> <span class="id" title="var">M</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.morth_minvtble"><span class="id" title="lemma">morth_minvtble</span></a> <span class="id" title="var">M</span> <span class="id" title="var">H</span>).<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.morth_imply_minv_eq_trans"><span class="id" title="lemma">morth_imply_minv_eq_trans</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">H</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.mmul_minv_r"><span class="id" title="lemma">mmul_minv_r</span></a>; <span class="id" title="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">rewrite</span> <a class="idref" href="FinMatrix.Matrix.MatrixInvBase.html#mmul_eq1_comm"><span class="id" title="lemma">mmul_eq1_comm</span></a>; <span class="id" title="tactic">auto</span>.<br/>
@@ -481,7 +481,7 @@ Transformation by orthogonal matrix will keep zero.
 </div>
 
 <div class="doc">
-<a id="lab611"></a><h2 class="section">O(n): General Orthogonal Group, General Linear Group</h2>
+<a id="lab612"></a><h2 class="section">O(n): General Orthogonal Group, General Linear Group</h2>
 
 </div>
 <div class="code">
@@ -607,7 +607,7 @@ GOn_1 is right-identity-element of GOn_mul operation
 &lt;GOn, +, 1&gt; is a monoid 
 </div>
 <div class="code">
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="MatrixOrth.Monoid_GOn" class="idref" href="#MatrixOrth.Monoid_GOn"><span class="id" title="instance">Monoid_GOn</span></a> : <span class="id" title="keyword">forall</span> <a id="n:111" class="idref" href="#n:111"><span class="id" title="binder">n</span></a>, <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Monoid"><span class="id" title="class">Monoid</span></a> (@<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_mul"><span class="id" title="definition">GOn_mul</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#n:111"><span class="id" title="variable">n</span></a>) <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_1"><span class="id" title="definition">GOn_1</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="MatrixOrth.GOn_Monoid" class="idref" href="#MatrixOrth.GOn_Monoid"><span class="id" title="instance">GOn_Monoid</span></a> : <span class="id" title="keyword">forall</span> <a id="n:111" class="idref" href="#n:111"><span class="id" title="binder">n</span></a>, <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Monoid"><span class="id" title="class">Monoid</span></a> (@<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_mul"><span class="id" title="definition">GOn_mul</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#n:111"><span class="id" title="variable">n</span></a>) <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_1"><span class="id" title="definition">GOn_1</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_mul_assoc"><span class="id" title="lemma">GOn_mul_assoc</span></a>.<br/>
@@ -660,10 +660,10 @@ GOn_inv is right-inversion of &lt;GOn_mul,GOn_1&gt;
 &lt;GOn, +, 1, /s&gt; is a group 
 </div>
 <div class="code">
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Theorem</span> <a id="MatrixOrth.Group_GOn" class="idref" href="#MatrixOrth.Group_GOn"><span class="id" title="lemma">Group_GOn</span></a> : <span class="id" title="keyword">forall</span> <a id="n:116" class="idref" href="#n:116"><span class="id" title="binder">n</span></a>, <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Group"><span class="id" title="class">Group</span></a> (@<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_mul"><span class="id" title="definition">GOn_mul</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#n:116"><span class="id" title="variable">n</span></a>) <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_1"><span class="id" title="definition">GOn_1</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_inv"><span class="id" title="definition">GOn_inv</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Theorem</span> <a id="MatrixOrth.GOn_Group" class="idref" href="#MatrixOrth.GOn_Group"><span class="id" title="lemma">GOn_Group</span></a> : <span class="id" title="keyword">forall</span> <a id="n:116" class="idref" href="#n:116"><span class="id" title="binder">n</span></a>, <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Group"><span class="id" title="class">Group</span></a> (@<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_mul"><span class="id" title="definition">GOn_mul</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#n:116"><span class="id" title="variable">n</span></a>) <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_1"><span class="id" title="definition">GOn_1</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_inv"><span class="id" title="definition">GOn_inv</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">constructor</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.Monoid_GOn"><span class="id" title="instance">Monoid_GOn</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_Monoid"><span class="id" title="instance">GOn_Monoid</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_mul_inv_l"><span class="id" title="lemma">GOn_mul_inv_l</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.GOn_mul_inv_r"><span class="id" title="lemma">GOn_mul_inv_r</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
@@ -672,7 +672,7 @@ GOn_inv is right-inversion of &lt;GOn_mul,GOn_1&gt;
 </div>
 
 <div class="doc">
-<a id="lab612"></a><h2 class="section">Extract the properties of GOn to its carrier</h2>
+<a id="lab613"></a><h2 class="section">Extract the properties of GOn to its carrier</h2>
 
 </div>
 <div class="code">
@@ -699,7 +699,7 @@ M\-1 = M\T
 </div>
 
 <div class="doc">
-<a id="lab613"></a><h2 class="section">SO(n): Special Orthogonal Group, Rotation Group</h2>
+<a id="lab614"></a><h2 class="section">SO(n): Special Orthogonal Group, Rotation Group</h2>
 
 </div>
 <div class="code">
@@ -849,7 +849,7 @@ SOn_1 is right-identity-element of SOn_mul operation
 &lt;SOn, +, 1&gt; is a monoid 
 </div>
 <div class="code">
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="MatrixOrth.Monoid_SOn" class="idref" href="#MatrixOrth.Monoid_SOn"><span class="id" title="lemma">Monoid_SOn</span></a> : <span class="id" title="keyword">forall</span> <a id="n:148" class="idref" href="#n:148"><span class="id" title="binder">n</span></a>, <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Monoid"><span class="id" title="class">Monoid</span></a> (@<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_mul"><span class="id" title="definition">SOn_mul</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#n:148"><span class="id" title="variable">n</span></a>) <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_1"><span class="id" title="definition">SOn_1</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="MatrixOrth.SOn_Monoid" class="idref" href="#MatrixOrth.SOn_Monoid"><span class="id" title="lemma">SOn_Monoid</span></a> : <span class="id" title="keyword">forall</span> <a id="n:148" class="idref" href="#n:148"><span class="id" title="binder">n</span></a>, <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Monoid"><span class="id" title="class">Monoid</span></a> (@<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_mul"><span class="id" title="definition">SOn_mul</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#n:148"><span class="id" title="variable">n</span></a>) <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_1"><span class="id" title="definition">SOn_1</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_mul_assoc"><span class="id" title="lemma">SOn_mul_assoc</span></a>.<br/>
@@ -898,10 +898,10 @@ SOn_inv is right-inversion of &lt;SOn_mul,SOn_1&gt;
 &lt;SOn, +, 1, /s&gt; is a group 
 </div>
 <div class="code">
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Theorem</span> <a id="MatrixOrth.Group_SOn" class="idref" href="#MatrixOrth.Group_SOn"><span class="id" title="lemma">Group_SOn</span></a> : <span class="id" title="keyword">forall</span> <a id="n:153" class="idref" href="#n:153"><span class="id" title="binder">n</span></a>, <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Group"><span class="id" title="class">Group</span></a> (@<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_mul"><span class="id" title="definition">SOn_mul</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#n:153"><span class="id" title="variable">n</span></a>) <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_1"><span class="id" title="definition">SOn_1</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_inv"><span class="id" title="definition">SOn_inv</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Theorem</span> <a id="MatrixOrth.SOn_Group" class="idref" href="#MatrixOrth.SOn_Group"><span class="id" title="lemma">SOn_Group</span></a> : <span class="id" title="keyword">forall</span> <a id="n:153" class="idref" href="#n:153"><span class="id" title="binder">n</span></a>, <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Group"><span class="id" title="class">Group</span></a> (@<a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_mul"><span class="id" title="definition">SOn_mul</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#n:153"><span class="id" title="variable">n</span></a>) <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_1"><span class="id" title="definition">SOn_1</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_inv"><span class="id" title="definition">SOn_inv</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">constructor</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.Monoid_SOn"><span class="id" title="lemma">Monoid_SOn</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_Monoid"><span class="id" title="lemma">SOn_Monoid</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_mul_inv_l"><span class="id" title="lemma">SOn_mul_inv_l</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_mul_inv_r"><span class="id" title="lemma">SOn_mul_inv_r</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
@@ -910,7 +910,7 @@ SOn_inv is right-inversion of &lt;SOn_mul,SOn_1&gt;
 </div>
 
 <div class="doc">
-<a id="lab614"></a><h2 class="section">Extract the properties of SOn to its carrier</h2>
+<a id="lab615"></a><h2 class="section">Extract the properties of SOn to its carrier</h2>
 
 <div class="paragraph"> </div>
 
@@ -934,7 +934,7 @@ M\T * M = mat1
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">rewrite</span> &lt;- <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.SOn_minv_eq_trans"><span class="id" title="lemma">SOn_minv_eq_trans</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixOrth.html#MatrixOrth.mmul_minv_l"><span class="id" title="lemma">mmul_minv_l</span></a>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">M</span> <span class="id" title="keyword">as</span> [[<span class="id" title="var">M</span> <span class="id" title="var">H</span>] <span class="id" title="var">H1</span>]. <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixInvBase.html#minvertible_iff_mdet_neq0"><span class="id" title="lemma">minvertible_iff_mdet_neq0</span></a>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.Matrix.MatrixInvBase.html#minvtble_iff_mdet_neq0"><span class="id" title="lemma">minvtble_iff_mdet_neq0</span></a>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H1</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#field_1_neq_0"><span class="id" title="method">field_1_neq_0</span></a>; <span class="id" title="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
 

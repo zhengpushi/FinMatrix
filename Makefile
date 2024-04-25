@@ -27,7 +27,8 @@ $(COQMAKEFILE): _CoqProject
 
 html: $(COQMAKEFILE)
 	rm -rf html/
-	mkdir -p $(MY_HTML_ROOT_WITH_VERSION)
+	rm -rf $(MY_HTML_ROOT_WITH_VERSION)
+	mkdir -p $(MY_HTML_ROOT)
 	$(MAKE) -f $^ $@
 	mv html $(MY_HTML_ROOT_WITH_VERSION)
 	cp $(HTML_EXTRA_DIR)/index.html $(MY_HTML_ROOT)/

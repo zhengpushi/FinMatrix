@@ -349,7 +349,9 @@ Section mdet.
   Notation mmul := (@mmul _ Aadd 0 Amul).
   Infix "*" := mmul : mat_scope.
   Notation mat1 := (@mat1 _ 0 1).
-  (* Notation seqsum := (@seqsum _ Aadd 0). *)
+  Notation seqsum := (@seqsum _ Aadd 0).
+  Notation seqprod := (@seqprod _ Amul 1).
+  Notation ronum := (@ronum nat Nat.ltb).
 
   (** n阶行列式的完全展开式 (行下标固定，列下标来自于全排列）*)
 
@@ -365,8 +367,8 @@ Section mdet.
           let colIds := perm (seq 0 n)%nat in
           (* 每个式 *)
           let item (l:list nat) : A :=
-            (let x := @seqsum _ Amul 1 n (fun i => M.[#i].[#(nth i l 0)%nat]) in
-             if odd (ronum l (Altb:=Nat.ltb)) then - x else x) in
+            (let x := seqprod n (fun i => M.[#i].[#(nth i l 0)%nat]) in
+             if odd (ronum l) then - x else x) in
           (* 求和 *)
           fold_left Aadd (map item colIds) 0
     end.
@@ -377,8 +379,8 @@ Section mdet.
     let colIds : dlist nat := perm (seq 0 n)%nat in
     (* 每个项 *)
     let item (l : list nat) : A :=
-      (let x := @seqsum _ Amul 1 n (fun i => (m2f 0 M) i (nth i l 0%nat)) in
-       if odd (ronum l (Altb:=Nat.ltb)) then - x else x) in
+      (let x := seqprod n (fun i => (m2f 0 M) i (nth i l 0%nat)) in
+       if odd (ronum l) then - x else x) in
     (* 求和 *)
     fold_left Aadd (map item colIds) 0.
 
@@ -390,8 +392,8 @@ Section mdet.
     let rowIds : dlist nat := perm (seq 0 n)%nat in
     (* 每个项 *)
     let item (l : list nat) : A :=
-      (let x := @seqsum _ Amul 1 n (fun j => (m2f 0 M) (nth j l 0%nat) j) in
-       if odd (ronum l (Altb:=Nat.ltb)) then - x else x) in
+      (let x := seqprod n (fun j => (m2f 0 M) (nth j l 0%nat) j) in
+       if odd (ronum l) then - x else x) in
     (* 求和 *)
     fold_left Aadd (map item rowIds) 0.
 
@@ -399,7 +401,7 @@ Section mdet.
   Axiom mdet'_eq_mdet : forall {n} (M : smat n), mdet' M = mdet M.
   (* 该命题的证明见丘维声老师《高等代数》P35，我暂时未完成验证 *)
 
-  (* |M\T| = |M| *)
+  (** Property 1: |M\T| = |M| *)
   Lemma mdet_mtrans : forall {n} (M : smat n), |M\T| = |M|.
   Proof.
     intros. rewrite <- mdet'_eq_mdet at 1.
@@ -408,7 +410,7 @@ Section mdet.
     destruct (odd (ronum a)).
     - f_equal. apply seqsum_eq; intros.
       erewrite !nth_m2f, mnth_mtrans; auto.
-    - apply seqsum_eq; intros. erewrite !nth_m2f, mnth_mtrans; auto.
+    - apply seqprod_eq; intros. erewrite !nth_m2f, mnth_mtrans; auto.
       Unshelve. all: auto.
       apply perm_index_lt; auto.
       apply perm_index_lt; auto.
@@ -422,19 +424,87 @@ Section mdet.
   (* |mat1| = 1 *)
   Lemma mdet_mat1 : forall {n}, |@mat1 n| = 1.
   Proof.
-  Admitted.
-  
-  (* 行列式一行的公因子可以提出去 *)
-  Lemma mdet_row_coef : forall {n} (M1 M2 : smat n) (i : fin n) (x : A),
-      (forall j, j <> i -> M1.[j] = M2.[j]) ->
-      (M1.[i] = x \.* M2.[i])%V ->
-      |M1| = (x * |M2|)%A.
+    induction n; simpl.
+    - unfold mdet. simpl. ring.
+    - unfold mdet in *. simpl.
   Admitted.
 
-  (* 某一行是两组数的和，则行列式等于两个行列式的和，它们的这一行分别是这两组数 *)
+  (** g (f a1 + ... + f an + b) = gf a1 + ... + gf an + g b *)
+  Lemma fold_left_map :
+    forall {A B} (l : list A) (fadd : B -> B -> B) (b : B) (f : A -> B) (g : B -> B)
+      (homo: forall b1 b2, g (fadd b1 b2) = fadd (g b1) (g b2)),
+      g (fold_left fadd (map f l) b) =
+        fold_left fadd (map (fun x => g (f x)) l) (g b).
+  Proof.
+    clear. intros A B l.
+    induction l; intros; simpl; auto.
+    rewrite IHl; auto. f_equal. auto.
+  Qed.
+
+  (** h (f a1 + ... + f an + b1) (g a1 + ... + g an + b2) = 
+      hfg a1 + ... + hfg an + h b1 b2 *)
+  Lemma fold_left_map_map :
+    forall {A B} (l : list A) (fadd : B -> B -> B) (b1 b2 : B) (f g : A -> B)
+      (h : B -> B -> B)
+      (homo: forall b1 b2 b3 b4, h (fadd b1 b3) (fadd b2 b4) = fadd (h b1 b2) (h b3 b4)),
+      h (fold_left fadd (map f l) b1) (fold_left fadd (map g l) b2) =
+        fold_left fadd (map (fun x => h (f x) (g x)) l) (h b1 b2).
+  Proof.
+    clear. intros A B l.
+    induction l; intros; simpl; auto.
+    rewrite IHl; auto. f_equal. auto.
+  Qed.
+  
+  (** Property 2 : | M with x*row(M,i) | = x * |M| *)
+  Lemma mdet_row_scale : forall {n} (M1 M2 : smat n) (i : fin n) (x : A),
+      (forall j, j <> i -> M1.[j] = M2.[j]) ->
+      (M1.[i] = x \.* M2.[i])%V -> |M1| = (x * |M2|)%A.
+  Proof.
+    intros. unfold mdet.
+    rewrite fold_left_map.
+    2:{ intros; ring. }
+    f_equal; try ring. apply map_ext_in; intros.
+    assert (seqprod n (fun i0 : nat => m2f 0 M1 i0 (nth i0 a O)) =
+              (x * seqprod n (fun i0 : nat => m2f 0 M2 i0 (nth i0 a O)))%A).
+    - rewrite seqprod_cmul_l with (j:=fin2nat i); [|fin].
+      apply seqprod_eq; intros.
+      assert (i0 < n) as Hi by lia.
+      assert (nth i0 a O < n) as Hj. apply perm_index_lt; auto.
+      bdestruct (i0 =? fin2nat i).
+      + rewrite !nth_m2f with (Hi:=Hi)(Hj:=Hj).
+        replace (nat2fin i0 Hi) with i. rewrite H0; auto. subst; fin.
+      + rewrite !nth_m2f with (Hi:=Hi)(Hj:=Hj). rewrite H; auto.
+        intro; destruct H3; subst; fin.
+    - destruct (odd (ronum a)) eqn:E; auto.
+      rewrite H2. ring.
+  Qed.
+
+  (** Property 3: 若某一行是两组数的和，则行列式等于两个行列式的和，
+      它们的这一行分别是这两组数 *)
   Lemma mdet_row_add : forall {n} (M1 M2 M : smat n) (i : fin n),
       (forall j, j <> i -> M1.[j] = M.[j] /\ M2.[j] = M.[j]) ->
       (M1.[i] + M2.[i])%V = M.[i] -> |M| = (|M1| + |M2|)%A.
+  Proof.
+    intros. unfold mdet.
+    rewrite fold_left_map_map.
+    2:{ intros; ring. }
+    f_equal; try ring. apply map_ext_in; intros.
+    assert (seqprod n (fun i0 : nat => m2f 0 M i0 (nth i0 a O)) =
+              (seqprod n (fun i0 : nat => m2f 0 M1 i0 (nth i0 a O)) +
+                 seqprod n (fun i0 : nat => m2f 0 M2 i0 (nth i0 a O)))%A).
+    (* - ? *)
+    (*   rewrite seqprod_cmul_l with (j:=fin2nat i); [|fin]. *)
+    (*   apply seqprod_eq; intros. *)
+    (*   assert (i0 < n) as Hi by lia. *)
+    (*   assert (nth i0 a O < n) as Hj. apply perm_index_lt; auto. *)
+    (*   bdestruct (i0 =? fin2nat i). *)
+    (*   + rewrite !nth_m2f with (Hi:=Hi)(Hj:=Hj). *)
+    (*     replace (nat2fin i0 Hi) with i. rewrite H0; auto. subst; fin. *)
+    (*   + rewrite !nth_m2f with (Hi:=Hi)(Hj:=Hj). rewrite H; auto. *)
+    (*     intro; destruct H3; subst; fin. *)
+    (* - destruct (odd (ronum a)) eqn:E; auto. *)
+    (*   rewrite H2. ring. *)
+  (* Qed. *)
   Admitted.
   
   (* 两行互换，行列式反号 *)

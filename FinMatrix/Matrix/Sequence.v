@@ -170,12 +170,15 @@ Section seqfold.
 End seqfold.
 
 (* ######################################################################### *)
-(** * Sum of a sequence *)
+(** * Sum/Product of a sequence *)
 
-(** ** Basic properties for sequence sum *)
-Section seqsum.
-  
-  Context `{HAMonoid : AMonoid}.
+(** ** Basic properties for sequence sum/product *)
+Section seqsum_seqprod.
+
+  (** *** Sequence product *)
+
+  (* Let's have a monoid structure *)
+  Context `{HMonoid : Monoid}.
   Notation "0" := Azero : A_scope.
   Infix "+" := Aadd : A_scope.
   
@@ -188,7 +191,7 @@ Section seqsum.
     end.
   Definition seqsum (n : nat) (f : nat -> A) : A := seqsumAux n f 0.
 
-  (* seqsumAux可以替换初始值 *)
+  (** Replace the inital value of seqsumAux *)
   Lemma seqsumAux_rebase : forall n f a, seqsumAux n f a = seqsumAux n f 0 + a.
   Proof.
     induction n; intros; simpl. amonoid.
@@ -196,7 +199,7 @@ Section seqsum.
   Qed.
   
   (* seqsum with length 0 equal to 0 *)
-  Lemma seqsum0 : forall f, seqsum 0 f = 0.
+  Lemma seqsum_len0 : forall f, seqsum 0 f = 0.
   Proof. intros. auto. Qed.
 
   (** Sum a sequence of (S n) elements, equal to addition of Sum and tail *)
@@ -224,27 +227,8 @@ Section seqsum.
   Lemma seqsum_eq : forall (n : nat) (f g : nat -> A),
       (forall i, i < n -> f i = g i) -> seqsum n f = seqsum n g.
   Proof.
-    induction n; intros; simpl. rewrite !seqsum0. auto.
+    induction n; intros; simpl. rewrite !seqsum_len0. auto.
     rewrite !seqsumS_tail. rewrite IHn with (g:=g); auto. f_equal; auto.
-  Qed.
-
-  (* (** Sum of a sequence given by `l2f l` equal to folding of `l` *) *)
-  (* Lemma seqsum_l2f : forall (l : list A) n, *)
-  (*     length l = n -> *)
-  (*     seqsum n (@l2f _ Azero n l) = fold_right Aadd Azero l. *)
-  (* Proof. *)
-  (*   unfold l2f. induction l; intros. *)
-  (*   - simpl in H. subst; simpl. auto. *)
-  (*   - destruct n; simpl in H. lia. rewrite seqsumS_head. rewrite IHl; auto. *)
-  (* Qed. *)
-
-  
-  (** Sum with plus of two sequence equal to plus with two sum. *)
-  Lemma seqsum_add : forall (n : nat) (f g : nat -> A),
-      seqsum n f + seqsum n g = seqsum n (fun i => f i + g i).
-  Proof.
-    induction n; intros; simpl. rewrite !seqsum0. amonoid.
-    rewrite !seqsumS_tail. rewrite <- IHn; auto. amonoid.
   Qed.
 
   (** Sum a sequence which only one item is nonzero, then got this item. *)
@@ -264,7 +248,7 @@ Section seqsum.
   Proof.
     (* induction on `n` is simpler than on `m` *)
     intros. induction n.
-    - rewrite seqsum0. rewrite Nat.add_0_r. amonoid.
+    - rewrite seqsum_len0. rewrite Nat.add_0_r. amonoid.
     - replace (m + S n)%nat with (S (m + n))%nat; auto.
       rewrite !seqsumS_tail. rewrite IHn. amonoid.
   Qed.
@@ -279,9 +263,31 @@ Section seqsum.
       seqsum (m + n) f = seqsum m g + seqsum n h.
   Proof.
     intros. induction n; simpl.
-    - rewrite seqsum0. rewrite Nat.add_0_r. amonoid. apply seqsum_eq. auto.
+    - rewrite seqsum_len0. rewrite Nat.add_0_r. amonoid. apply seqsum_eq. auto.
     - replace (m + S n)%nat with (S (m + n))%nat; auto.
       rewrite !seqsumS_tail. rewrite IHn; auto. agroup.
+  Qed.
+
+  (** Sum the m+1+n elements equal to plus of three parts.
+      Σ[i,0,(m+1+n)] f(i) = Σ[i,0,m] f(i) + f(m) + Σ[i,0,n] f(S (m + i)) *)
+  Lemma seqsum_plusIdx_three : forall m n f,
+      seqsum (m + S n) f = seqsum m f + f m + seqsum n (fun i => f (S (m + i))%nat). 
+  Proof.
+    intros. rewrite seqsum_plusIdx. rewrite associative. f_equal.
+    rewrite seqsumS_head. f_equal.
+    - f_equal. lia.
+    - apply seqsum_eq; intros. f_equal. lia.
+  Qed.
+
+  (* Let's have an abelian monoid *)
+  Context `{HAMonoid : AMonoid A Aadd 0}.
+  
+  (** Sum with plus of two sequence equal to plus with two sum. *)
+  Lemma seqsum_add : forall (n : nat) (f g : nat -> A),
+      seqsum n f + seqsum n g = seqsum n (fun i => f i + g i).
+  Proof.
+    induction n; intros; simpl. rewrite !seqsum_len0. amonoid.
+    rewrite !seqsumS_tail. rewrite <- IHn; auto. amonoid.
   Qed.
   
   (** The order of two nested summations can be exchanged.
@@ -296,9 +302,9 @@ Section seqsum.
         seqsum c (fun j => seqsum r (fun i => f i j)).
   Proof.
     induction r; intros.
-    - rewrite !seqsum0. rewrite seqsum_eq0; auto.
-    - rewrite seqsumS_tail. rewrite IHr. rewrite seqsum_add. apply seqsum_eq; intros.
-      rewrite seqsumS_tail. auto.
+    - rewrite !seqsum_len0. rewrite seqsum_eq0; auto.
+    - rewrite seqsumS_tail. rewrite IHr. rewrite seqsum_add.
+      apply seqsum_eq; intros. rewrite seqsumS_tail. auto.
   Qed.
 
   
@@ -311,7 +317,7 @@ Section seqsum.
       - (seqsum n f) = seqsum n (fun i => - f i).
   Proof.
     induction n; intros; simpl.
-    - rewrite !seqsum0. agroup.
+    - rewrite !seqsum_len0. agroup.
     - rewrite !seqsumS_tail. rewrite <- IHn; auto. agroup.
   Qed.
 
@@ -319,6 +325,7 @@ Section seqsum.
   (** Let's have an abelian ring structure *)
   Context `{HARing : ARing A Aadd Azero Aopp Amul Aone}.
   Add Ring ring_inst : (make_ring_theory HARing).
+  Notation "1" := Aone : A_scope.
   Infix "*" := Amul : A_scope.
   
   (** Scalar multiplication of the sum of a sequence (simple form). *)
@@ -326,7 +333,7 @@ Section seqsum.
       k * seqsum n f = seqsum n (fun i => k * f i).
   Proof.
     induction n; intros; simpl.
-    - rewrite !seqsum0. ring.
+    - rewrite !seqsum_len0. ring.
     - rewrite !seqsumS_tail. ring_simplify. rewrite <- IHn. ring.
   Qed.
 
@@ -334,9 +341,8 @@ Section seqsum.
   Lemma seqsum_cmul_r : forall (n : nat) (f : nat -> A) (k : A),
       seqsum n f * k = seqsum n (fun i => f i * k).
   Proof.
-    induction n; intros; simpl.
-    - rewrite !seqsum0. ring.
-    - rewrite !seqsumS_tail. ring_simplify. rewrite <- IHn. ring.
+    intros. rewrite commutative. rewrite seqsum_cmul_l.
+    apply seqsum_eq; intros; ring.
   Qed.
   
   (** Product two sum equal to sum of products.
@@ -350,15 +356,128 @@ Section seqsum.
       seqsum m f * seqsum n g = seqsum (m * n) (fun i => f (i / n) * g (i mod n)).
   Proof.
     induction m; intros; simpl.
-    - rewrite !seqsum0. ring.
+    - rewrite !seqsum_len0. ring.
     - replace (n + m * n)%nat with (m * n + n)%nat by ring.
       rewrite seqsum_plusIdx. rewrite <- IHm; auto.
       rewrite seqsumS_tail. ring_simplify. agroup.
       rewrite seqsum_cmul_l. apply seqsum_eq; intros.
       rewrite add_mul_div; auto. rewrite add_mul_mod; auto.
   Qed.
+
+
+  (** *** Sequence product *)
+
+  (** Product of a sequence.
+      ∏(n,f) = f[0] * (... (f[n-2] * (f[n-1] * 1)) ...)  *)
+  Fixpoint seqprodAux (n : nat) (f : nat -> A) (acc : A) : A :=
+    match n with
+    | O => acc
+    | S n' => seqprodAux n' f (f n' * acc)
+    end.
+  Definition seqprod (n : nat) (f : nat -> A) : A := seqprodAux n f 1.
+
+  (** Replace the inital value of seqprodAux *)
+  Lemma seqprodAux_rebase : forall n f a, seqprodAux n f a = seqprodAux n f 1 * a.
+  Proof.
+    induction n; intros; simpl. ring.
+    rewrite IHn. rewrite IHn with (a:=f n * 1). ring.
+  Qed.
   
-End seqsum.
+  (** seqprod with length 0 equal to 1 *)
+  Lemma seqprod_len0 : forall f, seqprod 0 f = 1.
+  Proof. intros. auto. Qed.
+
+  (** Prod a sequence of (S n) elements, equal to addition of Prod and tail *)
+  Lemma seqprodS_tail : forall f n, seqprod (S n) f = seqprod n f * f n.
+  Proof. unfold seqprod. intros; simpl. rewrite seqprodAux_rebase. ring. Qed.
+  
+  (** Prod a sequence of (S n) elements, equal to addition of head and Prod *)
+  Lemma seqprodS_head : forall n f, seqprod (S n) f = f O * seqprod n (fun i => f (S i)).
+  Proof.
+    unfold seqprod. induction n; intros; simpl. auto.
+    rewrite seqprodAux_rebase with (a:=(f (S n) * 1)).
+    rewrite <- !associative. rewrite <- IHn. simpl.
+    rewrite seqprodAux_rebase.
+    rewrite seqprodAux_rebase with (a:=(f n * 1)). ring.
+  Qed.
+
+  (** Product of a sequence which every element is one get one. *)
+  Lemma seqprod_eq1 : forall (n : nat) (f : nat -> A), 
+      (forall i, i < n -> f i = 1) -> seqprod n f = 1.
+  Proof.
+    unfold seqprod. induction n; simpl; intros. auto.
+    rewrite seqprodAux_rebase. rewrite IHn; auto. rewrite H; auto. ring.
+  Qed.
+
+  (** Two sequences are equal, imply the prod are equal. *)
+  Lemma seqprod_eq : forall (n : nat) (f g : nat -> A),
+      (forall i, i < n -> f i = g i) -> seqprod n f = seqprod n g.
+  Proof.
+    induction n; intros; simpl. rewrite !seqprod_len0. auto.
+    rewrite !seqprodS_tail. rewrite IHn with (g:=g); auto. f_equal; auto.
+  Qed.
+
+  (** Prod a sequence which only one item is non-one, then got this item. *)
+  Lemma seqprod_unique : forall (n : nat) (f : nat -> A) (a : A) (i : nat), 
+      i < n -> f i = a -> (forall j, j < n -> j <> i -> f j = 1) -> seqprod n f = a.
+  Proof.
+    induction n; intros. lia.
+    rewrite seqprodS_tail. bdestruct (i =? n).
+    - subst. rewrite seqprod_eq1. ring. intros. apply H1; lia.
+    - rewrite IHn with (a:=a)(i:=i); auto; try lia. rewrite H1; auto. ring.
+  Qed.
+
+  (** Prod the m+n elements equal to plus of two parts.
+      ∏[i,0,(m+n)] f(i) = ∏[i,0,m] f(i) * ∏[i,0,n] f(m + i). *)
+  Lemma seqprod_plusIdx : forall m n f,
+      seqprod (m + n) f = seqprod m f * seqprod n (fun i => f (m + i)%nat). 
+  Proof.
+    (* induction on `n` is simpler than on `m` *)
+    intros. induction n.
+    - rewrite seqprod_len0. rewrite Nat.add_0_r. ring.
+    - replace (m + S n)%nat with (S (m + n))%nat; auto.
+      rewrite !seqprodS_tail. rewrite IHn. ring.
+  Qed.
+
+  (** Prod the m+1+n elements equal to product of three parts.
+      ∏[i,0,(m+1+n)] f(i) = ∏[i,0,m] f(i) * f(m) * ∏[i,0,n] f(S (m + i)) *)
+  Lemma seqprod_plusIdx_three : forall m n f,
+      seqprod (m + S n) f = seqprod m f * f m * seqprod n (fun i => f (S (m + i))%nat). 
+  Proof.
+    intros. rewrite seqprod_plusIdx. rewrite associative. f_equal.
+    rewrite seqprodS_head. f_equal.
+    - f_equal. lia.
+    - apply seqprod_eq; intros. f_equal. lia.
+  Qed.
+  
+  (** Scalar multiplication of the prod of a sequence (simple form). *)
+  Lemma seqprod_cmul_l : forall (n : nat) (f : nat -> A) (k : A) (j : nat),
+      j < n ->
+      k * seqprod n f =
+        seqprod n (fun i => if i =? j then (k * f i) else f i).
+  Proof.
+    induction n; intros; simpl. lia.
+    rewrite !seqprodS_tail. ring_simplify.
+    bdestruct (j =? n).
+    - subst.
+      rewrite Nat.eqb_refl. pose aringMulAMonoid. amonoid.
+      apply seqprod_eq; intros.
+      bdestruct (i =? n); auto; lia.
+    - rewrite <- IHn; try lia. f_equal.
+      bdestruct (n =? j); auto. subst; easy.
+  Qed.
+
+  (** Scalar multiplication of the prod of a sequence (simple form). *)
+  Lemma seqprod_cmul_r : forall (n : nat) (f : nat -> A) (k : A) (j : nat),
+      j < n ->
+      seqprod n f * k =
+        seqprod n (fun i => if i =? j then (f i * k) else f i).
+  Proof.
+    intros. rewrite commutative. rewrite seqprod_cmul_l with (j:=j); auto.
+    apply seqprod_eq; intros. bdestruct (i =? j); ring.
+  Qed.
+  
+End seqsum_seqprod.
 
 (** ** Scalar multiplication of a sequence with different type. *)
 Section seqsum_ext.

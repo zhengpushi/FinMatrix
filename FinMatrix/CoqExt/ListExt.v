@@ -1230,7 +1230,7 @@ Section ldot.
   (** l1 . l2 = l2 . l1 *)
   Lemma ldot_comm : forall (l1 l2 : list A), ldot l1 l2 = ldot l2 l1.
   Proof.
-    intros. unfold ldot. pose proof (aringAMonoid). rewrite map2_comm. auto.
+    intros. unfold ldot. pose proof (aringMulAMonoid). rewrite map2_comm. auto.
   Qed.
   
   (** [] . l = 0 *)

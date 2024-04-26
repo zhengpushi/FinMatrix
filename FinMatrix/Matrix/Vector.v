@@ -574,7 +574,7 @@ Section vslice.
     refine (nat2fin (fin2nat i + fin2nat k) _).
     pose proof (fin2nat_lt k). pose proof (fin2nat_lt j).
     apply nat_lt_sub_imply_lt_add in H. rewrite commutative.
-    apply nat_ltS_lt_lt with (b := fin2nat j); auto.
+    apply nat_ltS_lt_lt with (m := fin2nat j); auto.
   Defined.
   
   (** Get a slice from vector `v` which contain elements from v$i to v$j.
@@ -660,8 +660,7 @@ Section vinsert.
     intros j. destruct (j ??< i) as [E|E].
     - refine (a.[fin2PredRange j _]).
       apply Nat.lt_le_trans with (fin2nat i); auto.
-      (* apply PeanoNat.lt_n_Sm_le. *)
-      apply Arith_prebase.lt_n_Sm_le.
+      apply nat_lt_n_Sm_le.
       apply fin2nat_lt.
     - destruct (j ??= i) as [E1|E1].
       + apply x.
@@ -2090,7 +2089,10 @@ Section vopp.
 
   (** - (- a) = a *)
   Lemma vopp_vopp : forall {n} (a : vec n), - (- a) = a.
-  Proof. intros. apply group_opp_opp. Qed.
+  Proof.
+    (* intros. apply group_opp_opp. *)
+    intros. pose proof (vadd_AGroup n). agroup.
+  Qed.
 
   (** a = - b <-> - a = b *)
   Lemma vopp_exchange : forall {n} (a b : vec n), a = - b <-> - a = b.

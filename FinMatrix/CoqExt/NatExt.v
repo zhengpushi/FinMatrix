@@ -6,6 +6,9 @@
   purpose   : auxiliary library for nat.
   author    : ZhengPu Shi
   date      : 2021.05
+
+  remark    :
+  1. naming of nat variable: n, m, k, p, q, r
  *)
 
 Require Import Basic.
@@ -49,12 +52,12 @@ Infix "??<=" := (@dec _ _ nat_le_Dec) : nat_scope.
 Lemma nat_le_refl : forall n : nat, n <= n.
 Proof. intros. lia. Qed.
 
-(* a <= b <-> "Ale" (derived from lt) *)
-Lemma nat_le_iff_Ale : forall (a b : nat), a <= b <-> (a < b \/ a = b).
+(* n <= m <-> "Ale" (derived from lt) *)
+Lemma nat_le_iff_Ale : forall (n m : nat), n <= m <-> (n < m \/ n = m).
 Proof. intros. lia. Qed.
 
 Section test.
-  Goal forall a b : nat, {a = b} + {a <> b}.
+  Goal forall n m : nat, {n = m} + {n <> m}.
   Proof. intros. apply Aeqdec. Abort.
   
 End test.
@@ -69,7 +72,7 @@ Qed.
 
 Section test.
 
-  Goal forall a b : nat, a <= b \/ b < a.
+  Goal forall n m : nat, n <= m \/ m < n.
   Proof. intros. apply le_connected. Qed.
 
 End test.
@@ -139,32 +142,30 @@ End loop_shift.
 (* Automation *)
 (*******************************)
 
+(** n + n = 2 * n *)
 Lemma double_mult : forall (n : nat), (n + n = 2 * n).
-Proof.
-  intros. lia.
-Qed.
+Proof. intros. lia. Qed.
 
-Lemma pow_two_succ_l : forall x, 2^x * 2 = 2 ^ (x + 1).
+(** (2 ^ n) * 2 = 2 ^ (n + 1) *)
+Lemma pow_two_succ_l : forall n, (2 ^ n) * 2 = 2 ^ (n + 1).
 Proof.
   intros. rewrite Nat.mul_comm. rewrite <- Nat.pow_succ_r'. rewrite Nat.add_1_r. auto.
 Qed.
 
-Lemma pow_two_succ_r : forall x, 2 * 2^x = 2 ^ (x + 1).
-Proof.
-  intros. rewrite <- Nat.pow_succ_r'. rewrite Nat.add_1_r. auto.
-Qed.
+(** 2 * (2 ^ n) = 2 ^ (n + 1) *)
+Lemma pow_two_succ_r : forall n, 2 * (2 ^ n) = 2 ^ (n + 1).
+Proof. intros. rewrite <- Nat.pow_succ_r'. rewrite Nat.add_1_r. auto. Qed.
 
-Lemma double_pow : forall (n : nat), 2^n + 2^n = 2^(n+1). 
-Proof.
-  intros. rewrite double_mult. rewrite pow_two_succ_r. reflexivity.
-Qed.
+(** 2 ^ n + 2 ^ n = 2 ^ (n + 1)  *)
+Lemma double_pow : forall (n : nat), 2 ^ n + 2 ^ n = 2 ^ (n + 1). 
+Proof. intros. rewrite double_mult. rewrite pow_two_succ_r. reflexivity. Qed.
 
-Lemma pow_components : forall (a b m n : nat), a = b -> m = n -> a^m = b^n.
-Proof.
-  intuition.
-Qed.
+(** a = b -> n = m -> a ^ n = b ^ m  *)
+Lemma pow_components : forall (a b m n : nat), a = b -> n = m -> a ^ n = b ^ m.
+Proof. intuition. Qed.
 
-Ltac unify_pows_two :=
+(** Simplify terms contain "2 ^ n" *)
+Ltac pow_two :=
   repeat match goal with
     (* NB: this first thing is potentially a bad idea, do not do with 2^1 *)
     | [ |- context[ 4%nat ]]                  => replace 4%nat with (2^2)%nat 
@@ -189,6 +190,7 @@ Ltac is_nat_equality :=
                 end
   end.
 
+
 (* ######################################################################### *)
 (** * Useful bdestruct tactic with the help of reflection *)
 
@@ -197,7 +199,7 @@ Ltac is_nat_equality :=
 Notation  "a >=? b" := (b <=? a) (at level 70) : nat_scope.
 Notation  "a >? b"  := (b <? a) (at level 70) : nat_scope.
 
-(* 证明自然数不等式 *)
+(** Prove inequality of nat *)
 Ltac solve_nat_ineq :=
   match goal with
   (* H: _ = true *)
@@ -211,14 +213,8 @@ Ltac solve_nat_ineq :=
 
 (** Proposition and boolean are reflected. *)
 
-(* Lemma nat_eqb_reflect : forall x y, reflect (x = y) (x =? y). *)
-(* Proof. *)
-(*   intros x y. apply iff_reflect. symmetry. *)
-(*   apply Nat.eqb_eq. *)
-(* Defined. *)
-
 Lemma nat_eqb_reflect : forall x y, reflect (x = y) (x =? y).
-Proof. intros x y. apply Nat.eqb_spec. Qed.
+Proof. intros x y. apply Nat.eqb_spec. Defined.
 
 (* Compute Nat.eqb_spec 0 3. *)
 (* Compute nat_eqb_reflect 0 3. *)
@@ -229,93 +225,102 @@ Proof. intros x y. apply iff_reflect. symmetry. apply Nat.ltb_lt. Defined.
 Lemma nat_leb_reflect : forall x y, reflect (x <= y) (x <=? y).
 Proof. intros x y. apply iff_reflect. symmetry. apply Nat.leb_le. Defined.
 
+(* These lemmas are automatically used. *)
 #[export] Hint Resolve nat_eqb_reflect nat_ltb_reflect nat_leb_reflect : bdestruct.
-(* #[export] Hint Resolve nat_eqb_reflect Nat.ltb_spec0 Nat.leb_spec0 : bdestruct. *)
-
-(** These theorems are automatic used. *)
 
 (** This tactic makes quick, easy-to-read work of our running example. *)
 Example reflect_example2: forall a, (if a <? 5 then a else 2) < 6.
 Proof.
-  intros. bdestruct (a <? 5);  (* instead of: [destruct (ltb_reflect a 5)]. *)
-  lia.
+  intros.
+  (* destruct (ltb_reflect a 5). *)
+  bdestruct (a <? 5).
+  all: lia.
 Qed.
 
 
 (* ######################################################################### *)
 (** * Lost or deprecated lemmas and new lemmas *)
 
+(** n <> 0 -> 0 < n *)
 Lemma neq_0_lt_stt : forall n : nat, n <> 0 -> 0 < n.
 Proof. lia. Qed.
 
-(** Coq.Arith.Lt.lt_S_n is deprecated since Coq 8.16.
-    1. although coqc suggest us to use Nat.succ_lt_mono,
-       but that is a  a bidirectional version, not exactly same as lt_S_n.
-    2. from Coq 8.16, there is a same lemma Arith_prebase.lt_S_n,
-       but it not exist in Coq 8.13,8.14.
+(** S n < S m -> n < m *)
+(* Coq.Arith.Lt.lt_S_n is deprecated since Coq 8.16.
+   1. although coqc suggest us to use Nat.succ_lt_mono,
+   but that is a  a bidirectional version, not exactly same as lt_S_n.
+   2. from Coq 8.16, there is a same lemma Arith_prebase.lt_S_n,
+   but it not exist in Coq 8.13,8.14.
 *)
 Definition lt_S_n: forall n m : nat, S n < S m -> n < m.
+Proof. intros. apply Nat.succ_lt_mono. auto. Qed.
+
+(** 0 < n < S m -> pred n < m *)
+Lemma pred_lt : forall n m : nat, 0 < n < S m -> pred n < m.
+Proof. lia. Qed.
+
+(** n < m -> m > n *)
+Lemma lt_imply_gt : forall n m : nat, n < m -> m > n.
+Proof. lia. Qed.
+
+(** n > m -> m < n *)
+Lemma gt_imply_lt : forall n m : nat, n > m -> m < n.
+Proof. lia. Qed.
+
+Lemma lt_ge_dec : forall n m : nat, {n < m} + {n >= m}.
+Proof. intros. destruct (le_gt_dec m n); auto. Defined.
+
+(** n >= m -> n <> m -> n > m *)
+Lemma nat_ge_neq_imply_gt : forall n m : nat, n >= m -> n <> m -> n > m.
+Proof. lia. Qed.
+
+(** n <= m -> n <> m -> n < m *)
+Lemma nat_le_neq_imply_lt : forall n m : nat, n <= m -> n <> m -> n < m.
+Proof. lia. Qed.
+
+(** n > m -> n <> 0 *)
+Lemma nat_gt_imply_neq0 : forall n m : nat, n > m -> n <> 0.
+Proof. lia. Qed.
+
+(** n < m -> m <> 0 *)
+Lemma nat_lt_imply_neq0 : forall n m : nat, n < m -> m <> 0.
+Proof. intros. lia. Qed.
+
+(** m <= n -> n < m + k -> n - m < k *)
+Lemma le_ltAdd_imply_subLt_l : forall m k n : nat, m <= n -> n < m + k -> n - m < k.
+Proof. intros. lia. Qed.
+
+(** m <= n -> n < k + m -> n - m < k *)
+Lemma le_ltAdd_imply_subLt_r : forall m k n : nat, m <= n -> n < k + m -> n - m < k.
+Proof. intros. lia. Qed.
+
+(** 0 < n -> 0 < m -> n - m < n *)
+Lemma nat_sub_lt : forall n m : nat, 0 < n -> 0 < m -> n - m < n.
+Proof. intros. lia. Qed.
+
+(** n < m - k -> n + k < m *)
+Lemma nat_lt_sub_imply_lt_add : forall n m k : nat, n < m - k -> n + k < m.
+Proof. lia. Qed.
+
+(** n < S m -> m < k -> n < k *)
+Lemma nat_ltS_lt_lt : forall n m k : nat, n < S m -> m < k -> n < k.
+Proof. lia. Qed.
+
+(** n < m -> m < S k -> n < k *)
+Lemma nat_lt_ltS_lt : forall n m k : nat, n < m -> m < S k -> n < k.
+Proof. lia. Qed.
+
+(** n < S m -> n <= m *)
+Lemma nat_lt_n_Sm_le : forall n m : nat, n < S m -> n <= m.
 Proof.
-  intros. apply Nat.succ_lt_mono. auto.
+  intros.
+  (* Coq 8.19.0 *)
+  (* apply PeanoNat.lt_n_Sm_le. *)
+  (* Coq 8.18.0 *)
+  (* apply Arith_prebase.lt_n_Sm_le. *)
+  (* Arith_prebase.lt_n_Sm_le:  *)
+  lia.
 Qed.
-
-(* 0 < x < S n -> pred x < n *)
-Lemma pred_lt : forall x n : nat, 0 < x < S n -> pred x < n.
-Proof.
-  intros. destruct H. destruct x. easy.
-  rewrite Nat.pred_succ. apply Nat.succ_lt_mono; auto.
-Qed.
-
-(** m < n -> n > m *)
-Lemma lt_imply_gt : forall m n : nat, m < n -> n > m.
-Proof. intros. lia. Qed.
-
-(** m > n -> n < m *)
-Lemma gt_imply_lt : forall m n : nat, m > n -> n < m.
-Proof. intros. lia. Qed.
-
-Lemma lt_ge_dec : forall x y : nat, {x < y} + {x >= y}.
-Proof. intros. destruct (le_gt_dec y x); auto. Defined.
-
-(** m >= n -> m <> n -> m > n *)
-Lemma nat_ge_neq_imply_gt : forall m n : nat, m >= n -> m <> n -> m > n.
-Proof. intros. lia. Qed.
-
-(** m <= n -> m <> n -> m < n *)
-Lemma nat_le_neq_imply_lt : forall m n : nat, m <= n -> m <> n -> m < n.
-Proof. intros. lia. Qed.
-
-(** m > n -> m <> 0 *)
-Lemma nat_gt_imply_neq0 : forall m n : nat, m > n -> m <> 0.
-Proof. intros. lia. Qed.
-
-(** m < n -> n <> 0 *)
-Lemma nat_lt_imply_neq0 : forall m n : nat, m < n -> n <> 0.
-Proof. intros. lia. Qed.
-
-(** m <= i -> i < m + n -> i - m < n *)
-Lemma le_ltAdd_imply_subLt_L : forall m n i : nat, m <= i -> i < m + n -> i - m < n.
-Proof. intros. lia. Qed.
-
-(** n <= i -> i < m + n -> i - n < m *)
-Lemma le_ltAdd_imply_subLt_R : forall m n i : nat, n <= i -> i < m + n -> i - n < m.
-Proof. intros. lia. Qed.
-
-(** 0 < i -> 0 < n -> n - i < n. *)
-Lemma nat_sub_lt : forall n i : nat, 0 < i -> 0 < n -> n - i < n.
-Proof. intros. lia. Qed.
-
-(** a < b - c -> a + c < b *)
-Lemma nat_lt_sub_imply_lt_add : forall a b c : nat, a < b - c -> a + c < b.
-Proof. lia. Qed.
-
-(** a < S b -> b < c -> a < c *)
-Lemma nat_ltS_lt_lt : forall a b c : nat, a < S b -> b < c -> a < c.
-Proof. lia. Qed.
-
-(** a < b -> b < S c -> a < c *)
-Lemma nat_lt_ltS_lt : forall a b c : nat, a < b -> b < S c -> a < c.
-Proof. lia. Qed.
 
 
 (* ######################################################################### *)

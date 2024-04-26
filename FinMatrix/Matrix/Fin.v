@@ -587,7 +587,8 @@ Proof. intros. auto. Qed.
 (** {m + i < m + n} -> {i < n} *)
 Definition fin2AddRangeAddL' {m n} (i : fin (m + n)) (E : m <= fin2nat i) : fin n.
   refine (nat2fin (fin2nat i - m) _).
-  pose proof (fin2nat_lt i). apply le_ltAdd_imply_subLt_L; auto.
+  pose proof (fin2nat_lt i).
+  apply le_ltAdd_imply_subLt_l; auto.
 Defined.
 
 Lemma fin2nat_fin2AddRangeAddL' : forall {m n} (i:fin (m + n)) (E : m <= fin2nat i),
@@ -628,7 +629,7 @@ Hint Rewrite fin2nat_fin2AddRangeAddR : fin.
 (** {i + n < m + n} -> {i < m} *)
 Definition fin2AddRangeAddR' {m n} (i:fin (m + n)) (E : n <= fin2nat i) : fin m.
   refine (nat2fin (fin2nat i - n) _).
-  pose proof (fin2nat_lt i). apply le_ltAdd_imply_subLt_R; auto.
+  pose proof (fin2nat_lt i). apply le_ltAdd_imply_subLt_r; auto.
 Defined.
 
 Lemma fin2nat_fin2AddRangeAddR' : forall {m n} (i : fin (m + n)) (E : n <= fin2nat i),

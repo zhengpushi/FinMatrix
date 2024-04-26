@@ -2111,8 +2111,8 @@ End Examples.
 Class ARing {A} Aadd Azero Aopp Amul Aone := {
     aringRing :: @Ring A Aadd Azero Aopp Amul Aone;
     aringMulComm :: Commutative Amul;
-    aringAMonoid :: AMonoid Amul Aone;
-    aringASGroup :: ASGroup Amul
+    aringMulAMonoid :: AMonoid Amul Aone;
+    aringMulASGroup :: ASGroup Amul
   }.
 
 (** ** Instances *)

@@ -137,12 +137,14 @@ Section vec_ring_Z.
   (* 向量求和 *)
   Compute vsum u.            (* = 0 *)
 
-  (* 谓词：一个向量是单位向量 *)
-  Check vunit u.
-  (* 谓词：两个向量是正交的（二维和三维上也称垂直） *)
-  Check u _|_ v.
+  (* 谓词：一个向量是单位向量。定义为：与自身的点积为1 *)
+  Check vunit u.             (* : Prop  *)
+  Print Vector.vunit.        (* forall a : vec n, <a, a> = 1 *)
+  (* 谓词：两个向量是正交的（二维和三维上也称垂直）。定义为：点积为0 *)
+  Check u _|_ v.             (* : Prop  *)
+  Print Vector.vorth.        (* forall a b : vec n, <a, b> = 0 *)
 
-  (* <向量加法, 零向量, 向量取反> 构成交换群，可用群论自动完成部分证明 *)
+  (* <向量加法, 零向量, 向量取反> 构成交换群，可用群论自动化证明。见 vsub_xx *)
   Check vadd_AGroup.   (* : forall n : nat, AGroup vadd vzero vopp *)
 End vec_ring_Z.
 
@@ -173,12 +175,13 @@ Section mat_ring_Z.
   (* 方阵的伴随矩阵(adjoint matrix) *)
   Compute m2l (madj M).   (* = [[-3; 6; -3]; [6; -12; 6]; [-3; 6; -3]] *)
 
-  (* 谓词：一个方阵是可逆的 *)
+  (* 谓词：一个方阵是可逆的。定义为：存在M'，使得 M'*M=I 并且 M*M'=I *)
   Check minvtble M.
-  (* 谓词：一个方阵是奇异的 *)
+  Print MatrixInvBase.minvtble. (* forall M, exists M', M * M' = I /\ M' * M = I *)
+  (* 谓词：一个方阵是奇异的。定义为：不是“可逆的” *)
   Check msingular M.
 
-  (* <矩阵加法, 零矩阵, 矩阵取反> 构成交换群，可用群论自动完成部分证明 *)
+  (* <矩阵加法, 零矩阵, 矩阵取反> 构成交换群，可用群论自动化证明 *)
   Check madd_AGroup.   (* : forall r c : nat, AGroup madd mat0 mopp *)
 End mat_ring_Z.
 
@@ -186,7 +189,6 @@ End mat_ring_Z.
 Section vec_field_R.
   Import MatrixR. Open Scope vec_scope.
   Variable n : nat. Variable a b : vec n.
-  Variable c1 c2 : vec 2. Variable c3 c4 : vec 3.
 
   (* The projection component of a onto b *)
   Check vproj.     (* : vec ?n -> vec ?n -> vec ?n *)
@@ -201,19 +203,34 @@ Section vec_field_R.
   (* Two non-zero vectors are antiparallel, if negative proportional *)
   Check a //- b.     Check vantipara a b.
   (* Length of a vector *)
-  Check || a ||.        Check vlen a.
+  Check || a ||. (* : R *)    Check vlen a.
+  Print Vector.vlen.
+  (* 原本只在实数域定义了长度，现在扩展为任意的度量空间内 *)
 
-  (* Normalization of a non-zero *)
-  Check vnorm a.
+  (* Normalization of a non-zero vector *)
+  Check vnorm a.     (* : vec n *)
   (* The angle between vector a and b, Here, $\theta \in [0,\pi]$ *)
-  Check a /_ b.   Check vangle a b.
+  Check a /_ b.  (* : R *)   Check vangle a b.
 
   (* 2D vector angle from one to another. Here, $\theta \in (-\pi,\pi]$ *)
-  Check c1 /2_ c2.   Check vangle2 c1 c2.
+  Variable c1 c2 : vec 2.
+  Check c1 /2_ c2.  (* : R *) Check vangle2 c1 c2.
 
   (* The cross product of 3D vectors *)
-  Check c3 \x c4.    Check v3cross c3 c4.
+  Variable c3 c4 : vec 3.
+  Check c3 \x c4.  (* : vec 3 *)   Check v3cross c3 c4.
 End vec_field_R.
+
+Section vec_Qc.
+  Import MatrixQc.
+  Variable n : nat.
+  Variable u : vec n.
+  Check || u ||.
+  (* Qc上的向量可定义度量空间，度量函数为 a2r *)
+  Search a2r.
+  Print Hierarchy.ConvertToR.
+End vec_Qc.
+
 
 (* Matrix over field $\langle \mathbb{R},+,0,-x,*,1,/x\rangle$ *)
 Section mat_field_R.
@@ -274,6 +291,9 @@ Section important_prop.
   (* : forall (r c : nat) (a : Vector.vec r),
        vsum (fun i : 'I_r => vsum (fun j : 'I_c => a i j)) =
        vsum (fun j : 'I_c => vsum (fun i : 'I_r => a i j)) *)
+  Check forall (r c : nat) (a : @Vector.vec (@Vector.vec R c) r),
+       vsum (fun i : 'I_r => vsum (fun j : 'I_c => a i j)) =
+       vsum (fun j : 'I_c => vsum (fun i : 'I_r => a i j)).
   
   Check morth_keep_v3cross_det1.
   (* : forall (M : smat 3) (a b : vec 3),

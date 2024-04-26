@@ -47,3 +47,18 @@ We develop a formal matrix library `FinMatrix` in Coq, which contains : vector a
   * High rank matrix is not supported. For example, $n_1\times n_2\times n_3$ matrix is not supoorted.
   * Most of matrix operations are not computational. For example, `Compute` command cannot get a friendly simple result when we want get an element from a constant matrix, and it just return a complicated expression. I guess it is related with its `lock` mechanism which I not very familiar. Another possible reason is due to its complicated hierarchy.
 * `nat-index-matrix` is a formal matrix library used in Verified Quantum Computing by Robert Rand. An old website is [University of Maryland](https://www.cs.umd.edu/~rrand/vqc/index.html), and a newer website is [University of Chicago](https://rand.cs.uchicago.edu/vqc/index.html). It uses a simple matrix type definition which is `Definition mat (r c : nat) := nat -> nat -> C`. Here, they use complex number (`C` type) as element type. Another thing is that the matrix equality must be Setoid equal, thus bring many proof burden to enable rewriting. Moreover, because `r` and `c` are dummy type parameters, such that `mat 3 4` and `mat 2 5` could not be distinguished by Coq type system.
+
+## Installation
+* From `opam`
+  We are happy to announced that `FinMatrix` has been submitted to `Coq-Package Index`
+  ```
+  opam install coq-finmatrix
+  ```
+* From source code
+  ```
+  make
+  make install
+  ```
+
+## Usage
+1. example usage can be found in `./FinMatrix/examples/`

@@ -1,123 +1,84 @@
 (* 
-   purpose  : examples in presentation
+   purpose  : example usage for FinMatrix
    author   : ZhengPu Shi
-   date     : 2024.04.18
+   date     : 2024.04.26
  *)
 
-Require MatrixNat MatrixZ MatrixQc MatrixR.
-
-(* 有限集类型，用于表示向量、矩阵等的下标 *)
-Section ex_fin.
-  (* 导入库 *)
-  Import Fin.
-
-  (* 有限集类型，“小于 n 的自然数类型” 记作 'I_n *)
-  Print fin.
-  (* Inductive fin (n : nat) : Set :=  Fin : forall i : nat, i < n -> 'I_n. *)
-  
-  (* 每个 'I_n 对象都需要 i < n 的证明 *)
-  Check @Fin 3 1. (* Fin 1 : 1 < 3 -> 'I_3 *)
-
-  (* 'I_3 类型只能是以下的这三个项 *)
-  Check @Fin 3 0 _ : 'I_3.
-  Check @Fin 3 1 _ : 'I_3.
-  Check @Fin 3 2 _ : 'I_3.
-
-  (* 由于证明无关性， @Fin n i H1 和 @Fin n i H2 相等 *)
-  Goal forall n i (H1 H2 : i < n), @Fin n i H1 = @Fin n i H2.
-  Proof. intros. f_equal. apply proof_irrelevance. Qed.
-
-  (* 如何构造一个 'I_n 对象？ *)
-  
-  (* 'I_0 对象会证明所有命题 *)
-  Goal forall P : Prop, fin 0 -> P.
-  Proof. intros. destruct H. lia. Qed.
-
-  (* 可用 nat2finS 构造 'I_(S n) 类型的项，记作 #i *)
-  Check @nat2finS 2 1.  (* #1 : 'I_3 *)
-  Check #1 : 'I_3.      (* #1 : 'I_3 *)
-
-  (** 一些可能碰到的问题 *)
-  
-  (* 当 i 不小于 n 时， 使用默认值 @Fin n 0。需要特别注意！ *)
-  Compute #5 : 'I_3.  (* = Fin 0 (Nat.lt_0_succ 2) : 'I_3 *)
-
-  (* fin n 是依赖类型，即，类型依赖于值的一种类型。
-     优点之一是更强的类型描述能力，缺点之一是太强的类型约束 *)
-  Variable i1 : fin 3.
-  Check i1 : fin (1 + 2). (* 由于 1 + 2 可归约到 3，这是合法的 *)
-  
-  Variable n m : nat. Variable i2 : fin (n + m).
-  Fail Check i2 : fin (m + n).
-  (* The term "i2" has type "'I_(n + m)" while it is expected to have type "'I_(m + n)". *)
-  (* Coq无法自动利用 n + m = m + n 这一事实。
-     因为该等式只在全称量词下成立，而类型检查算法也许无法处理 *)
-
-  (* 可以 cast_fin 函数来转换 *)
-  Variable H : n + m = m + n.
-  Check cast_fin H i2 : fin (m + n).
-End ex_fin.
+From FinMatrix Require MatrixNat MatrixZ MatrixQc MatrixR MatrixC.
 
 (* Vector over monoid $\langle \mathbb{N},+,0\rangle$ *)
 Section vec_monoid_nat.
-  Import MatrixNat.  Open Scope vec_scope.
+  Import MatrixNat.
+  Open Scope vec_scope.
 
-  (* 创建向量 *)
+  (* Create vector by a list *)
   Let a : vec 5 := l2v [1;2;3;4;5;6;7].
-  Let b : vec 5 := f2v (fun i => match i with 1 => 3 | _ => 0 end).
   Compute v2l a.  (* = [1; 2; 3; 4; 5] : list A *)
+
+  (* Create matrix by a nat-indexing-function *)
+  Let b : vec 5 := f2v (fun i => match i with 1 => 3 | _ => 0 end).
   Compute v2l b.  (* = [0; 3; 0; 0; 0] *)
 
-  (* 取元素，两种 notation *)
-  Compute a.[#1].  (* = 2 *) (* #1 是第2个元素，下标从0开始，计算机惯例 *)
-  Compute a.2.      (* = 2 *) (* .2 是第2个元素，下标从1开始，数学惯例 *)
+  (* Get element, there are two notations with different convention *)
 
-  (* 向量加法 *)
+  (* #1 is second element, index-start-at-0, computer convention *)
+  Compute a.[#1].  (* = 2 *) 
+
+  (* .2 is second element, index-start-at-1, mathematical convention *)
+  Compute a.2.      (* = 2 *) 
+
+  (* vector addition *)
   Compute v2l (a + b).   (* = [1; 5; 3; 4; 5] : list A *)
 
-  (* 元素求和 *)
+  (* sum of a vector *)
   Compute vsum a.  (* = 15 *)
 End vec_monoid_nat.
 
 (* Conversion between $\mathtf{vec,cvec,rvec}$ *)
 Section vec_cvec_rvec.
-  Import MatrixNat.  Open Scope vec_scope.
+  Import MatrixNat.
+  Open Scope vec_scope.
 
-  (* 创建 向量、列矩阵、行矩阵 *)
+  (* Create vector, column vector(matrix), row vector(matrix) *)
   Let a : vec 3 := l2v [1;2;3].
   Let b : cvec 3 := l2m [[4];[5];[6]].
   Let c : rvec 3 := l2m [[7;8;9]].
 
-  (* 向量 <-> 列矩阵 *)
+  (* vector <-> column vector *)
   Check v2cv a.  (* v2cv a : cvec 3 *)
   Check cv2v b.  (* cv2v b : vec 3 *)
   
-  (* 向量 <-> 行矩阵 *)
+  (* vector <-> row vector *)
   Check v2rv a.  (* v2rv a : rvec 3 *)
   Check rv2v c.  (* rv2v c : vec 3 *)
-  
 End vec_cvec_rvec.
 
 (* Matrix over monoid $\langle \mathbb{N},+,0\rangle$ *)
 Section mat_monoid_nat.
-  Import MatrixNat.  Open Scope mat_scope.
+  Import MatrixNat.
+  Open Scope mat_scope.
 
-  (* 创建稠密矩阵 *)
+  (* Create matrix by a list *)
    Let M : mat 2 3 := l2m [[1;2;3];[4]].
   Compute m2l M. (* = [[1; 2; 3]; [4; 0; 0]] : dlist A *)
 
-  (* 创建系数矩阵 *)
+  (* Create matrix by a nat-indexing-function *)
   Let N : mat 3 3 := f2m (fun i j => if (i ??= j) then 1 else 0).
   Compute m2l N.  (* = [[1; 0; 0]; [0; 1; 0]; [0; 0; 1]] : dlist A *)
 
-  (* 取出元素 *)
+  (* Get element *)
   Compute M.[#0].[#1].  (* = 2 : A *)    Compute M.1.2.  (* = 2 : A *)
-  (* 矩阵加法 *)
+
+  (* Matrix addition *)
   Compute m2l (N + N).  (* = [[2; 0; 0]; [0; 2; 0]; [0; 0; 2]] : dlist A *)
-  (* 矩阵转置 *)
+
+  (* Matrix transpose *)
   Compute m2l (M\T).   (* = [[1; 4]; [2; 0]; [3; 0]] : dlist A *)
-  (* 创建对角矩阵 *)
-  Compute m2l (mdiagMk (@l2v 3 [1;2;3])). (* = [[1; 0; 0]; [0; 2; 0]; [0; 0; 3]] : dlist A *)
+
+  (* Create a diagonal matrix *)
+  Compute m2l (mdiagMk (@l2v 3 [1;2;3])).
+  (* = [[1; 0; 0]; [0; 2; 0]; [0; 0; 3]] : dlist A *)
+  
 End mat_monoid_nat.
 
 (* Vector over ring $\langle \mathbb{Z},+,0,-x,*,1\rangle$ *)
@@ -126,25 +87,31 @@ Section vec_ring_Z.
   Let u := @l2v 3 [1;2;-3].  (*  u = [1; 2; -3] *)
   Let v := @f2v 3 (fun i => -1 + nat2Z i)%Z. (* v = [-1; 0; 1] *)
 
-  (* 向量取反 *)
+  (* Vector negation *)
   Compute v2l (- u).         (* = [-1; -2; 3] *)
-  (* 向量减法 *)
+  (* Vector subtraction *)
   Compute v2l (u - v).       (* = [2; 2; -4] *)
-  (* 向量数乘 *)
+  (* Vector scalar multiplication *)
   Compute v2l (5 \.* u).     (* = [5; 10; -15] *)
-  (* 向量点乘 *)
+  (* Vector dot product *)
   Compute <u, v>.            (* = -4 *)
-  (* 向量求和 *)
+  (* Sum of a vector *)
   Compute vsum u.            (* = 0 *)
 
-  (* 谓词：一个向量是单位向量。定义为：与自身的点积为1 *)
+  (* Predicate: A vector is a unit vector. 
+     Defined as: the dot product with itself is 1 *)
   Check vunit u.             (* : Prop  *)
   Print Vector.vunit.        (* forall a : vec n, <a, a> = 1 *)
-  (* 谓词：两个向量是正交的（二维和三维上也称垂直）。定义为：点积为0 *)
+  
+  (* Predicate: Two vectors are orthogonal (also called perpendicular in two 
+     and three dimensions). 
+     Defined as: dot product is 0 *)
   Check u _|_ v.             (* : Prop  *)
   Print Vector.vorth.        (* forall a b : vec n, <a, b> = 0 *)
 
-  (* <向量加法, 零向量, 向量取反> 构成交换群，可用群论自动化证明。见 vsub_xx *)
+
+  (* <Vector addition, zero vector, vector negation> forms a commutative 
+     group, which can be used to help proof by group theory. See vsub_xx *)
   Check vadd_AGroup.   (* : forall n : nat, AGroup vadd vzero vopp *)
 End vec_ring_Z.
 
@@ -155,33 +122,37 @@ Section mat_ring_Z.
   Let N := @l2m 3 3 [[1;4;5];[2;3;8];[9;7;6]].
   Let a := @l2v 3 [1;2;3].
 
-  (* 矩阵取反 *)
+  (* Matrix negation *)
   Compute m2l (- M).     (* = [[-1; -2; -3]; [-4; -5; -6]; [-7; -8; -9]] *)
-  (* 矩阵减法 *)
+  (* Matrix subtraction *)
   Compute m2l (M - N).   (* = [[0; -2; -2]; [2; 2; -2]; [-2; 1; 3]] *)
-  (* 矩阵数乘 *)
+  (* Matrix scalar multiplication *)
   Compute m2l (5 \.* M). (* = [[5; 10; 15]; [20; 25; 30]; [35; 40; 45]] *)
-  (* 矩阵乘法 *)
+  (* Matrix multiplication *)
   Compute m2l (M * N).   (* = [[32; 31; 39]; [68; 73; 96]; [104; 115; 153]] *)
-  (* 矩阵乘向量(向量先被转换为列矩阵) *)
+  (* Matrix multiplied by vector (vector is first converted to column matrix) *)
   Compute v2l (M *v a).  (* = [14; 32; 50] : list A *)
-  (* 向量乘矩阵(向量先被转换为行矩阵) *)
+  (* Vector multiplied by matrix (vector is first converted to row matrix) *)
   Compute v2l (a v* M).  (* = [30; 36; 42] : list A *)
 
-  (* 方阵的迹 *)
+  (* traces of the square array *)
   Compute mtrace M.  (* = 15 *)     Compute tr M.
-  (* 方阵的行列式 *)
+  (* Determinant of square matrix *)
   Compute mdet N.    (* = 137 *)    Compute |N|.
-  (* 方阵的伴随矩阵(adjoint matrix) *)
+  (* Adjoint matrix of square matrix *)
   Compute m2l (madj M).   (* = [[-3; 6; -3]; [6; -12; 6]; [-3; 6; -3]] *)
 
-  (* 谓词：一个方阵是可逆的。定义为：存在M'，使得 M'*M=I 并且 M*M'=I *)
+  (* Predicate: A square matrix is ​​invertible. 
+     Defined as: exists M' such that M'*M=I and M*M'=I *)
   Check minvtble M.
   Print MatrixInvBase.minvtble. (* forall M, exists M', M * M' = I /\ M' * M = I *)
-  (* 谓词：一个方阵是奇异的。定义为：不是“可逆的” *)
+
+  (* Predicate: A square matrix is ​​singular. 
+     Defined as: not invertible *)
   Check msingular M.
 
-  (* <矩阵加法, 零矩阵, 矩阵取反> 构成交换群，可用群论自动化证明 *)
+  (* <Matrix addition, zero matrix, matrix negation> forms a commutative group, 
+     which can be used to help proof by group theory *)
   Check madd_AGroup.   (* : forall r c : nat, AGroup madd mat0 mopp *)
 End mat_ring_Z.
 
@@ -202,10 +173,12 @@ Section vec_field_R.
   Check a //+ b.     Check vpara a b.
   (* Two non-zero vectors are antiparallel, if negative proportional *)
   Check a //- b.     Check vantipara a b.
+
   (* Length of a vector *)
   Check || a ||. (* : R *)    Check vlen a.
   Print Vector.vlen.
-  (* 原本只在实数域定义了长度，现在扩展为任意的度量空间内 *)
+  (* In the earlier version, the vector length was only defined over the real 
+     number. But now it is extended to any metric space. For example, over Qc *)
 
   (* Normalization of a non-zero vector *)
   Check vnorm a.     (* : vec n *)
@@ -226,7 +199,8 @@ Section vec_Qc.
   Variable n : nat.
   Variable u : vec n.
   Check || u ||.
-  (* Qc上的向量可定义度量空间，度量函数为 a2r *)
+  
+  (* The vector on Qc can define the metric space, and the metric function is a2r *)
   Search a2r.
   Print Hierarchy.ConvertToR.
 End vec_Qc.
@@ -236,9 +210,9 @@ End vec_Qc.
 Section mat_field_R.
   Import MatrixR. Open Scope mat_scope.
 
-  (** 矩阵在几何方面的应用 *)
+  (** Applications of matrices in geometry *)
   
-  (* 谓词：一个矩阵是正交的 *)
+  (* Predicate: A matrix is ​​orthogonal *)
   Check morth.       (* : smat ?n -> Prop *)
 
   (** Orthogonal matrix will keep length. *)
@@ -256,7 +230,8 @@ Section mat_field_R.
   (* <SO(n), M+N, mat1, M\T> is a group *)
   Check SOn_Group.  (* : forall n : nat, Group SOn_mul SOn_1 SOn_inv *)
 
-  (** 矩阵在代数方面的应用，比如利用逆矩阵解方程 *)
+  (** Applications of matrices in algebra, such as using inverse
+      matrices to solve equations *)
   
   (* Cramer rule, which can solve the equation with the form of A*x=b *)
   Check cramerRule.  (* : smat ?n -> vec ?n -> vec ?n *)
@@ -284,7 +259,7 @@ Section mat_field_R.
   Check solveEqAM.     (* : smat ?n -> vec ?n -> vec ?n *)
 End mat_field_R.
 
-(* 一些重要的数学性质 *)
+(* Some important mathematical properties *)
 Section important_prop.
   Import MatrixR.
   Check vsum_vsum.
@@ -306,37 +281,41 @@ Section important_prop.
   (* : forall M : smat ?n, morth M <-> mrowsOrthonormal M *)
 End important_prop.
 
-(* 解方程的例子 *)
+(* Example of solving equations*)
 Section solve_equation.
   Import MatrixQc.  Open Scope Q_scope.
   Let C := [[6;0;1];[0;4;1];[-3;-2;1]].  Let b := [4;0;2].
 
-  (* 方法1: cramer rule *)
+  (* Method 1: cramer rule *)
   Compute cramerRuleListQ 3 C b. (* = [1 # 3; -1 # 2; 2] : list Q *)
   
-  (* 方法2: $X = C^{-1} b$ *)
+  (* Method 2: $X = C^{-1} b$ *)
   Compute solveEqListQ 3 C b.  (* = [1 # 3; -1 # 2; 2] : list Q *)
-  (* 实际上，方法2内部有两种做法，GE和AM，默认使用GE *)
+
+  (* Actually, there are two methods inside method 2, GE and AM, and GE
+     is used by default *)
   Compute solveEqListGEQ 3 C b.
   Compute solveEqListAMQ 3 C b.
 End solve_equation.
 
-(* 在Qc类型上，Eval cbv 与 Compute 的区别 *)
+(* The difference between Eval cbv and Compute in Qc type *)
 Section cbv_Compute.
   
-  (* 注意，
-     Eval cbv in xx
-     Compute xx
-     这二者的计算速度不同。
-     1. 如果都是常数，则二者都很快。
-        Compute xx 是 Eval vm_compute in xx 的缩写，它是编译为字节码后运行。
-     2. 如果含有 Variable，则二者都很慢，甚至卡死。
-        但是如果将某些运算设置为 Opaque，则 Eval cbv in xx 可以工作，但 Compute 仍然卡死。
-        并且，无论是否设置 Opaque 选项，Compute都会展开它们
-   *)
+  (* NOTE:
+       Eval cbv in xx
+       Compute xx
+     These two evaluation has different speed.
+     1. If both are constants, both are fast.
+        `Compute xx` is abbreviation of `Eval vm_compute in xx`,
+        It is compiled to bytecode and then run.
+     2. If Variable is included, both will be slow or even stuck.  
+        But if I set some operations to Opaque, `Eval cbv in xx` works, but
+        `Compute xx` still gets stuck.  
+        And, `Compute xx` will unfold them, regardless of whether the `Opaque` option 
+        is set or not *)
   Import MatrixQc.
   
-  (* 计算“常数构成的表达式” *)
+  (* Evaluates expression formed by constants *)
   Section ex1.
     Let M : smat 2 := @l2m 2 2 (Q2Qc_dlist [[1;2];[3;4]]%Q).
     
@@ -346,7 +325,9 @@ Section cbv_Compute.
     (* Eval cbv in |M|. *)
     (* = {| this := -2; canon := Qred_involutive (-2) |} *)
 
-    (* 如果执行了 Opaque 指令，则 Compute 仍然会展开，而 Eval cbv 会尊重这些指令 *)
+    (* If `Opaque xx` directives are executed, then:
+       `Compute xx` will still unfold them;
+       `Eval cbv xx` will respect these directives *)
     Opaque Qcplus Qcopp Qcmult Q2Qc.
 
     (* Compute |M|. *)
@@ -356,38 +337,38 @@ Section cbv_Compute.
     (* = (Q2Qc 0 + 1 * (Q2Qc 4 * 1) + - (Q2Qc 2 * (Q2Qc 3 * 1)))%Qc *)
   End ex1.
 
-  (* 计算“含有变量的表达式” *)
+(* Evaluates expression containing variables *)
   Section ex2.
     Variable q11 : Q.
     Let M : smat 2 := @l2m 2 2 (Q2Qc_dlist [[q11;2];[3;4]]%Q).
     
-    (* 直接计算，基本上会卡死 *)
+    (* Direct calculation will basically get stuck *)
     (* Compute |M|. *)
     (* Eval cbv in |M|. *)
 
-    (* 执行 Opaque 指令后，Eval cbv 可以运行 *)
+    (* After executing the Opaque command, `Eval cbv xx` can run well *)
     Opaque Qcplus Qcopp Qcmult Q2Qc.
     Eval cbv in |M|.
     (* = (Q2Qc 0 + Q2Qc q11 * (Q2Qc 4 * 1) + - (Q2Qc 2 * (Q2Qc 3 * 1)))%Qc *)
   End ex2.
 End cbv_Compute.
 
-(* 用 R 类型处理矩阵 *)
+(* Working with matrices using R types *)
 Section solve_equation.
   Import MatrixR.
   
-  (* 优点：可处理无理数。此处，将 [6;0;1] 换成了 [6;0;PI] *)
+  (* Advantages: Can handle irrational numbers. Here, [6;0;1] is replaced by [6;0;PI] *)
   Let C := [[6;0;PI];[0;4;1];[-3;-2;1]].
   Let b := [4;0;2].
 
-  (* 缺点：计算结果展开太多，不直观 *)
+  (* Disadvantage: The calculation results are expanded too much and are not intuitive *)
   Compute cramerRuleList 3 C b.
   (* = [(((R1 + R1) * (R1 + R1) *
    ((R1 + R1) * (R1 + R1) * (R1 * R1 + R0) + (- R1 * (- (R1 + R1) * R1 + R0) + R0)) +
    (- R0 * (R0 * (R1 * R1 + R0) + (- R1 * ((R1 + R1) * R1 + R0) + R0)) +
    ... *)
 
-  (* 另一种方法：交互式的进行，并利用 field_simplify 得到简洁的结果 *)
+  (* Another way: do it interactively and use field_simplify to get concise results *)
   Variable x1 x2 x3 : A.
   Goal cramerRuleList  3 C b = [x1;x2;x3].
   Proof.
@@ -407,32 +388,35 @@ goal 6 (ID 416) is:
  *)
   Abort.
 
-  (* 可以看出，此处的分数并未消去公约数，但已经比较便于阅读了。
-     我们可以得解析解：
+  (* It can be seen that the common denominator has not been eliminated
+     in the fraction here, but it is already easier to read.  
+     We can get the analytical solution:
      x1 = (-8 * PI + 24) / (12 * PI + 36);
      x2 = -24 / (12 * PI + 36)
      x3 = 96 / (12 * PI + 36)
    *)
 
-  (* 同理，也可以使用 solveEqList 方法，但最好使用 NoCheck 版本 *)
+  (* Similarly, we can use the solveEqList method, but it is best to use the 
+     NoCheck version *)
   Compute solveEqListNoCheck 3 C b.
 
 End solve_equation.
 
-(* SPICE的应用 *)
+(* Verification of NA (nodal analysis) equations in SPICE system *)
 Section SPICE.
   Import MatrixR.
-  Variable n b : nat.             (* n个节点，b条支路 *)
-  Variable A : mat n b.         (* 关联矩阵 *)
-  Variable U : cvec b.          (* 支路电压 *)
-  Variable I : cvec b.          (* 支路电流 *)
-  Variable Is : cvec n.         (* 注入电流 *)
-  Variable Un : cvec n.         (* 节点电压 *)
-  Variable G : smat b.          (* 支路导纳矩阵 *)
-  Definition Y := A * G * A\T.      (* 节点导纳矩阵 *)
-  Hypotheses KCL : A * I = Is.      (* KCL关系 *)
-  Hypotheses KVL : A\T * Un = U.   (* KVL关系 *)
-  Hypotheses H1 : G * U = I.         (* 通过导纳描述支路的约束方程 *)
+  Variable n b : nat.             (* n nodes，b branches *)
+  Variable A : mat n b.         (* association matrix *)
+  Variable U : cvec b.          (* branch voltage *)
+  Variable I : cvec b.          (* branch current *)
+  Variable Is : cvec n.         (* injection current *)
+  Variable Un : cvec n.         (* node voltage *)
+  Variable G : smat b.          (* branch admittance matrix *)
+  Definition Y := A * G * A\T.   (* nodal admittance matrix *)
+  Hypotheses KCL : A * I = Is.   (* KCL law *)
+  Hypotheses KVL : A\T * Un = U. (* KVL law *)
+  Hypotheses H1 : G * U = I.     (* Constraint equation describing the branch 
+                                    through admittance *)
 
   Lemma eq4 : G * A\T * Un = I.
   Proof. rewrite <- H1. rewrite <- KVL. rewrite mmul_assoc. auto. Qed.
@@ -444,40 +428,41 @@ Section SPICE.
   Proof. unfold Y. rewrite eq5. auto. Qed.
 End SPICE.
 
-(* 有限集Fin *)
+(* finite set *)
 Module fin.
   Import Extraction.
   
-  (* 本文的实现。参考了 mathcomp.ordinal 的定义和记号 *)
+  (* Our definition, which have refer to the notation of mathcomp.ordinal *)
   Module FinMatrix.
     Inductive fin (n : nat) := Fin (i : nat) (E : i < n).
     Notation "''I_' n" := (fin n)  (at level 8).
     Extraction fin.
   End FinMatrix.
 
-  (* 等价于使用sig，但是使用 Inductive 可避免因过于多态的 sig 类型而带来不必要的复杂性 *)
+  (* It is equivalent to using sig, but using Inductive avoids unnecessary 
+     complexity caused by an overly polymorphic sig type *)
   Module by_sig.
     Definition fin (n : nat) := {i | i < n}.
   End by_sig.
 
-  (* 使用 unit 表示 fin 0 *)
-  Module DPIA.
+  (* Another definition, use `unit` to represent `fin 0` *)
+  Module by_MaYingYing.
     Definition fin (n : nat) := match n with O => unit |  _ => {i : nat | i < n} end.
     Extraction fin.
-  End DPIA.
+  End by_MaYingYing.
 
-  (* 使用冗余的下标 *)
+  (* Another choice, use an redundant index *)
   Module method3.
     Definition fin (n : nat) := {i | i <= n}.
     Extraction fin.
-    (* 特点：
-       1. fin 0 = {0}
-          fin 1 = {0,1}
-          fin 2 = {0,1,2}
+    (* Here:
+         fin 0 = {0}
+         fin 1 = {0,1}
+         fin 2 = {0,1,2}
      *)
   End method3.
 
-  (* Coq标准库 *)
+  (* Coq standard library *)
   Module CoqStdLib.
     Import Coq.Vectors.Fin.
     Print t.
@@ -486,17 +471,17 @@ Module fin.
   End CoqStdLib.
 End fin.
 
-(* 向量 *)
-Module vector.
+(* Polymorphic vector *)
+Section vector.
   Import Vector.
 
   Print vec.
+  Search vec.
   Locate ".[".
-  
 End vector.
 
-(* 矩阵 *)
-Module matrix.
+(* Polymorphic matrix *)
+Section matrix.
   Import Matrix.
 
   Print mat.
@@ -511,11 +496,15 @@ Module matrix.
   
   Print mtrans.
 
-  Variable M : @vec (@vec (@vec A 5) 4) 3. (* 元素为 A 的 3*4*5 维的矩阵 *)
-  Check M : @vec (@mat A 4 5) 3.           (* 元素为 mat A 4 5 的 3 维向量 *)
-  Check M : @mat (@vec A 5) 3 4.           (* 元素为 vec A 5 的 3*4 维的矩阵 *)
+  (* An example of tensor, there are no conversion burden between different types *)
+  Variable M : @vec (@vec (@vec A 5) 4) 3. (* A 3*4*5-dimensional tensor over A *)
+  Check M : @vec (@mat A 4 5) 3.           (* A 3-dimensional vector over `mat A 4 5` *)
+  Check M : @mat (@vec A 5) 3 4.           (* A 3*4-dimensional matrix over `vec A 5` *)
+End matrix.
 
-  (* 测试代码抽取，以矩阵加法为例 *)
+(* Test code extraction, taking matrix addition as an example *)
+Module matrix_ocaml_extraction.
+  Import Matrix.
   Recursive Extraction madd.
 (* type fin = int
 
@@ -526,8 +515,7 @@ Module matrix.
    let madd aadd r c m n =
        vmap2 (vmap2 aadd c) r m n
  *)
-  
-End matrix.
+End matrix_ocaml_extraction.
 
 (* algebraic_structure *)
 Section algebraic_structure.
@@ -545,16 +533,13 @@ End algebraic_structure.
 Module compare_mathcomp.
   From mathcomp Require Import matrix fintype.
 
-  (* 测试表达式求值 *)
+  (* Test expression evaluation *)
   (* Variable A : Type. *)
   (* Variable  *)
   Let M : 'M_(2,3) := @const_mx nat 2 3 2.
 
-  (* 转置 *)
-  Open Scope ring_scope.
-  Check M^T.
-
-  (* 难以求值 *)
+  (* The expression "get the (0,0)th element of a 2*3 constant matrix"
+     cannot be evaluated *)
   Goal M ord0 ord0 = 2.
     cbv.
     destruct const_mx_key.
@@ -563,7 +548,10 @@ Module compare_mathcomp.
 
   
 
-  (* 测试代码抽取，以矩阵加法为例 *)
+  (** Test code extraction, taking matrix addition as an example.
+      1. there are magic code.
+      2. the implemention is too complex *)
+  
   (* Recursive Extraction addmx. *)
   (* 
 type __ = Obj.t
@@ -674,9 +662,9 @@ Section GE.
   Goal minvtble A.
   Proof.
     hnf. exists P. split. apply eq1.
-    (* 要证明 A * P = mat1，
-       转化为 Q * mat1 * P = mat1，
-       转化为 Q * P = mat1。 *)
+    (* To prove A * P = mat1, 
+       convert to Q * mat1 * P = mat1, 
+       convert to Q * P = mat1. *)
     rewrite eq2. rewrite mmul_1_r.
     unfold P,Q.
     unfold P1,P2,P3,P4,P5,P6,P7,P8.

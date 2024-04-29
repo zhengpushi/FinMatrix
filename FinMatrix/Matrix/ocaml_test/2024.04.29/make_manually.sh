@@ -53,7 +53,8 @@ cat test.ml >> matrix.ml
 make
 
 # copy output to parent directory
-cp matrix ../
+cp matrix.byte ../
+cp matrix.opt ../
 
 # remove intermediate files and directories
 cd ../

@@ -33,40 +33,9 @@
 
 Require Export MatrixInvAM.
 Require Export MatrixInvGE.
-Require Import ExtrOcamlBasic ExtrOcamlNatInt MyExtrOCamlR.
 
 
 Generalizable Variable A Aadd Azero Aopp Amul Aone Ainv.
-
-
-(* ############################################################################ *)
-(** * OCaml Extraction of matrix inversion *)
-
-Module test_inv_ocaml.
-  (* short name *)
-  Module AM := MinvMoreAM FieldElementTypeR.
-  Module GE := MinvMoreGE FieldElementTypeR.
-
-  Import AM.
-  Definition minvtblebAM {n} := @minvtbleb n.
-  Definition minvoAM {n} := @minvo n.
-  Definition minvAM {n} := @minv n.
-  Definition minvListAM {n} := @minvList n.
-  
-  Import GE.
-  Definition minvtblebGE {n} := @minvtbleb n.
-  Definition minvoGE {n} := @minvo n.
-  Definition minvGE {n} := @minv n.
-  Definition minvListGE {n} := @minvList n.
-
-  (* Recursive Extraction *)
-  (*   minvtblebGE minvoGE minvGE minvListGE *)
-  (*   minvtblebAM minvoAM minvAM minvListAM. *)
-
-  (* Extraction "ocaml_test/matrix.ml" *)
-  (*   minvtblebGE minvoGE minvGE minvListGE *)
-  (*   minvtblebAM minvoAM minvAM minvListAM. *)
-End test_inv_ocaml.
 
 
 (* ############################################################################ *)

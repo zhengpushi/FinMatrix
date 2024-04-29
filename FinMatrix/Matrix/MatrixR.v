@@ -25,6 +25,7 @@
 
 Require Export RExt Ratan2 RealFunction.
 Require Export MatrixModule.
+Require Import ExtrOcamlBasic ExtrOcamlNatInt MyExtrOCamlR.
 
 (* ######################################################################### *)
 (** * Matrix theory come from common implementations *)
@@ -36,6 +37,43 @@ Open Scope R_scope.
 Open Scope vec_scope.
 Open Scope mat_scope.
 
+
+
+(* ############################################################################ *)
+(** * OCaml Extraction of matrix inversion *)
+
+Recursive Extraction
+  mmul
+  minvtblebGE minvoGE minvGE minvListGE
+  minvtblebAM minvoAM minvAM minvListAM.
+
+Extraction "ocaml_test/matrix.ml"
+  mmul
+  minvtblebGE minvoGE minvGE minvListGE
+  minvtblebAM minvoAM minvAM minvListAM.
+
+(* Module test_inv_ocaml. *)
+(*   (* short name *) *)
+(*   Module AM := MinvMoreAM FieldElementTypeR. *)
+(*   Module GE := MinvMoreGE FieldElementTypeR. *)
+
+(*   Import AM. *)
+(*   Definition minvtblebAM {n} := @minvtbleb n. *)
+(*   Definition minvoAM {n} := @minvo n. *)
+(*   Definition minvAM {n} := @minv n. *)
+(*   Definition minvListAM {n} := @minvList n. *)
+  
+(*   Import GE. *)
+(*   Definition minvtblebGE {n} := @minvtbleb n. *)
+(*   Definition minvoGE {n} := @minvo n. *)
+(*   Definition minvGE {n} := @minv n. *)
+(*   Definition minvListGE {n} := @minvList n. *)
+
+
+(*   Extraction "ocaml_test/matrix.ml" *)
+(*     minvtblebGE minvoGE minvGE minvListGE *)
+(*     minvtblebAM minvoAM minvAM minvListAM mmul. *)
+(* End test_inv_ocaml. *)
 
 (* ######################################################################### *)
 (** * Matrix theory applied to this type *)

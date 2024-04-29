@@ -62,7 +62,12 @@ Section test.
   
 End test.
 
+(** add AMonoid *)
+#[export] Instance nat_add_AMonoid : AMonoid add 0.
+Proof. repeat constructor; intros; lia. Qed.
 
+
+(** (<, <=, <?, <=?) is an Order *)
 #[export] Instance nat_Order : Order lt le ltb leb.
 Proof.
   constructor; intros; try lia.

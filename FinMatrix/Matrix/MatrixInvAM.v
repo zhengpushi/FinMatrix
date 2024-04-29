@@ -188,11 +188,11 @@ Section minv.
   (* Note: the purpose of this function is to support quickly evaluation *)
 
   (** Get (i,j) element of inverse matrix of matrix `M` *)
-  Definition minvElement {n} (M : smat (S n)) (i j : fin (S n)) : A :=
+  Definition minvElement {n} (M : smat (S n)) (i j : 'I_(S n)) : A :=
     ((/ (mdetEx M)) * mcofactorEx M j i)%A.
 
   (** If `M` is invertible, minvElement M i j = (M\-1).[i].[j] *)
-  Lemma minvElement_spec : forall {n} (M : smat (S n)) (i j : fin (S n)),
+  Lemma minvElement_spec : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
       minvtble M -> minvElement M i j = (M\-1).[i].[j].
   Proof.
     intros. unfold minvElement, minv in *.
@@ -500,11 +500,11 @@ Module MinvMoreAM (E : FieldElementType).
   (* Note: the purpose of this function is to support quickly evaluation *)
 
   (** Get (i,j) element of inverse matrix of matrix `M` *)
-  Definition minvElement {n} (M : smat (S n)) (i j : fin (S n)) : A :=
+  Definition minvElement {n} (M : smat (S n)) (i j : 'I_(S n)) : A :=
     @minvElement _ Aadd 0 Aopp Amul 1 Ainv _ M i j.
 
   (** If `M` is invertible, minvElement M i j = (M\-1).[i].[j] *)
-  Lemma minvElement_spec : forall {n} (M : smat (S n)) (i j : fin (S n)),
+  Lemma minvElement_spec : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
       minvtble M -> minvElement M i j = (M\-1).[i].[j].
   Proof. intros. apply minvElement_spec; auto. Qed.
 

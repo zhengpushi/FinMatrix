@@ -54,7 +54,7 @@ Notation mat A r c := (@vec (@vec A c) r).
 (** An n-dimensional square matrix over A type *)
 Notation smat A n := (mat A n n).
 
-(* Actually, mat A r c = forall A r c, fin r -> fin c -> A  *)
+(* Actually, mat A r c = forall A r c, 'I_r -> 'I_c -> A  *)
 (* Eval cbv in forall A r c, mat A r c. *)
 
 (* ======================================================================= *)
@@ -80,12 +80,12 @@ Notation "M .42" := (M.4.2) : mat_scope.
 Notation "M .43" := (M.4.3) : mat_scope.
 Notation "M .44" := (M.4.4) : mat_scope.
 
-(** i1 = i2 -> j1 = j2 -> = M (Fin i1) (Fin j1) = M (Fin i2) (Fin j2) *)
+(** i1 = i2 -> j1 = j2 -> = M (nat2fin i1) (nat2fin j1) = M (nat2fin i2) (nat2fin j2) *)
 Lemma mnth_eq :
   forall {A r c} (M : @mat A r c) i1 j1 i2 j2
     (Hi1: i1 < r) (Hi2: i2 < r) (Hj1: j1 < c) (Hj2: j2 < c),
     i1 = i2 -> j1 = j2 ->
-    M.[Fin i1 Hi1].[Fin j1 Hj1] = M.[Fin i2 Hi2].[Fin j2 Hj2].
+    M.[nat2fin i1 Hi1].[nat2fin j1 Hj1] = M.[nat2fin i2 Hi2].[nat2fin j2 Hj2].
 Proof. intros. subst. f_equal; apply fin_eq_iff; auto. Qed.
 
 Lemma meq_iff_mnth : forall {A r c} (M N : mat A r c),
@@ -113,16 +113,16 @@ Section mrow_mcol.
   Context {A} {Azero : A}.
   Notation vzero := (vzero Azero).
 
-  Definition mrow {r c} (M : mat A r c) (i : fin r) : @vec A c := M i.
+  Definition mrow {r c} (M : mat A r c) (i : 'I_r) : @vec A c := M i.
 
-  Lemma vnth_mrow : forall {r c} (M : mat A r c) (i : fin r) (j : fin c),
+  Lemma vnth_mrow : forall {r c} (M : mat A r c) (i : 'I_r) (j : 'I_c),
       (mrow M i).[j] = M.[i].[j].
   Proof. intros. auto. Qed.
 
-  Definition mcol {r c} (M : mat A r c) (j : fin c) : @vec A r := fun i => M i j.
+  Definition mcol {r c} (M : mat A r c) (j : 'I_c) : @vec A r := fun i => M i j.
   Notation "M &[ i ]" := (mcol M i) : mat_scope.
 
-  Lemma vnth_mcol : forall {r c} (M : mat A r c) (i : fin r) (j : fin c),
+  Lemma vnth_mcol : forall {r c} (M : mat A r c) (i : 'I_r) (j : 'I_c),
       M&[j].[i] = M.[i].[j].
   Proof. intros. auto. Qed.
 
@@ -160,11 +160,11 @@ Section mtrans.
     specialize (H j i). auto.
   Qed.
 
-  Lemma mcol_mtrans_eq_mrow : forall {r c} (M : mat A r c) (i : fin r),
+  Lemma mcol_mtrans_eq_mrow : forall {r c} (M : mat A r c) (i : 'I_r),
       (M\T)&[i] = M.[i].
   Proof. auto. Qed.
 
-  Lemma mrow_mtrans_eq_mcol : forall {r c} (M : mat A r c) (j : fin c),
+  Lemma mrow_mtrans_eq_mcol : forall {r c} (M : mat A r c) (j : 'I_c),
       (M\T).[j] = M&[j].
   Proof. auto. Qed.
 
@@ -346,7 +346,7 @@ Section rvl2m_m2rvl.
 
   (** `list of row vectors` to mat *)
   Definition rvl2m {r c} (l : list (@vec A c)) : mat r c :=
-    fun i => nth (fin2nat i) l (vzero Azero).
+    fun i => nth i l (vzero Azero).
 
   Lemma m2rvl_rvl2m : forall {r c} (l : list (@vec A c)),
       length l = r -> @m2rvl r c (rvl2m l) = l.
@@ -375,7 +375,7 @@ Section cvl2m_m2cvl.
   
   (** `list of column vectors` to mat *)
   Definition cvl2m {r c} (l : list (@vec A r)) : mat r c :=
-    fun i j  => (nth (fin2nat j) l (vzero Azero)).[i].
+    fun i j  => (nth j l (vzero Azero)).[i].
   
   Lemma m2cvl_cvl2m : forall {r c} (l : list (@vec A r)),
       length l = c -> @m2cvl r c (cvl2m l) = l.
@@ -411,14 +411,14 @@ Section f2m_m2f.
     apply f2v_inj with (i:=j) in H; auto.
   Qed.
 
-  (** (f2m f).[i].[j] = f (fin2nat i) (fin2nat j) *)
+  (** (f2m f).[i].[j] = f i j *)
   Lemma mnth_f2m : forall {r c} (f : nat -> nat -> A) i j,
-      (@f2m r c f) i j = f (fin2nat i) (fin2nat j).
+      (@f2m r c f) i j = f i j.
   Proof. auto. Qed.
     
-  (** (f2m f).[i] = f2v (f (fin2nat i)) *)
+  (** (f2m f).[i] = f2v (f i) *)
   Lemma vnth_f2m : forall {r c} (f : nat -> nat -> A) i,
-      (@f2m r c f).[i] = f2v (f (fin2nat i)).
+      (@f2m r c f).[i] = f2v (f i).
   Proof. auto. Qed.
 
 
@@ -442,7 +442,7 @@ Section f2m_m2f.
       (forall i j, i < r -> j < c -> (m2f M1) i j = (m2f M2) i j) -> M1 = M2.
   Proof.
     intros. apply meq_iff_mnth; intros.
-    specialize (H (fin2nat i) (fin2nat j) (fin2nat_lt _) (fin2nat_lt _)).
+    specialize (H i j (fin2nat_lt _) (fin2nat_lt _)).
     rewrite !nth_m2f with (Hi:=fin2nat_lt _)(Hj:=fin2nat_lt _) in H.
     fin.
   Qed.
@@ -506,7 +506,7 @@ Section l2m_m2l.
 
   Lemma mnth_l2m : forall {r c} (d : dlist A) i j,
       length d = r -> width d c ->
-      (@l2m r c d).[i].[j] = nth (fin2nat j) (nth (fin2nat i) d []) Azero.
+      (@l2m r c d).[i].[j] = nth j (nth i d []) Azero.
   Proof.
     intros. unfold l2m. rewrite vnth_l2v.
     rewrite nth_map with (n:=r)(Azero:=[]); auto; fin.
@@ -627,8 +627,8 @@ Section mdiag.
   Proof.
     intros. hnf in H. apply meq_iff_mnth; intros i j.
     rewrite mnth_mtrans. destruct (i ??= j) as [E|E].
-    - apply fin2nat_inj in E; rewrite E. auto.
-    - apply fin2nat_inj_not in E. rewrite !H; auto.
+    - apply fin2nat_eq_iff in E; rewrite E. auto.
+    - apply fin2nat_neq_iff in E. rewrite !H; auto.
   Qed.
 
   (** Construct a diagonal matrix *)
@@ -685,26 +685,26 @@ Section mset.
   Context {A} (Azero : A).
 
   (** set row *)
-  Definition msetr {r c} (M : mat A r c) (a : @vec A c) (i0 : fin r) : mat A r c :=
+  Definition msetr {r c} (M : mat A r c) (a : @vec A c) (i0 : 'I_r) : mat A r c :=
     fun i j => if i ??= i0 then a.[j] else M.[i].[j].
 
-  Lemma mnth_msetr_same : forall {r c} (M : mat A r c) (a : @vec A c) (i0 : fin r) i j,
+  Lemma mnth_msetr_same : forall {r c} (M : mat A r c) (a : @vec A c) (i0 : 'I_r) i j,
       i = i0 -> (msetr M a i0).[i].[j] = a.[j].
   Proof. intros. unfold msetr. fin. Qed.
 
-  Lemma mnth_msetr_diff : forall {r c} (M : mat A r c) (a : @vec A c) (i0 : fin r) i j,
+  Lemma mnth_msetr_diff : forall {r c} (M : mat A r c) (a : @vec A c) (i0 : 'I_r) i j,
       i <> i0 -> (msetr M a i0).[i].[j] = M.[i].[j].
   Proof. intros. unfold msetr. fin. Qed.
 
   (** set column *)
-  Definition msetc {r c} (M : mat A r c) (a : @vec A r) (j0 : fin c) : mat A r c :=
+  Definition msetc {r c} (M : mat A r c) (a : @vec A r) (j0 : 'I_c) : mat A r c :=
     fun i j => if j ??= j0 then a.[i] else M.[i].[j].
 
-  Lemma mnth_msetc_same : forall {r c} (M : mat A r c) (a : @vec A r) (j0:fin c) i j,
+  Lemma mnth_msetc_same : forall {r c} (M : mat A r c) (a : @vec A r) (j0 : 'I_c) i j,
       j = j0 -> (msetc M a j0).[i].[j] = a.[i].
   Proof. intros. unfold msetc. fin. Qed.
 
-  Lemma mnth_msetc_diff : forall {r c} (M : mat A r c) (a : @vec A r) (j0:fin c) i j,
+  Lemma mnth_msetc_diff : forall {r c} (M : mat A r c) (a : @vec A r) (j0 : 'I_c) i j,
       j <> j0 -> (msetc M a j0).[i].[j] = M.[i].[j].
   Proof. intros. unfold msetc. fin. Qed.
 
@@ -786,7 +786,7 @@ Section mcons.
   Proof. intros. unfold mconsrH. rewrite vnth_vconsH_0; auto. Qed.
   
   Lemma mnth_mconsrH_gt0 :
-    forall {r c} (a : @vec A c) (M : mat A r c) i j (H : 0 < fin2nat i),
+    forall {r c} (a : @vec A c) (M : mat A r c) (i : 'I_(S r)) (j : 'I_c) (H : 0 < i),
       (mconsrH a M).[i].[j] = M.[fin2PredRangePred i H].[j].
   Proof.
     intros. unfold mconsrH. erewrite vnth_vconsH_gt0. f_equal.
@@ -797,7 +797,7 @@ Section mcons.
   Proof. intros. auto. Qed.
 
   Lemma vnth_mconsrH_gt0 :
-    forall {r c} (a : vec c) (M : mat A r c) (i : fin (S r)) (H : 0 < fin2nat i),
+    forall {r c} (a : vec c) (M : mat A r c) (i : 'I_(S r)) (H : 0 < i),
       (mconsrH a M).[i] = M.[fin2PredRangePred i H].
   Proof.
     intros. unfold mconsrH. erewrite vnth_vconsH_gt0. auto.
@@ -813,7 +813,7 @@ Section mcons.
     intros. unfold fa,fM,faM,m2f,mconsrH. split; intros; auto; f_equal.
     assert (i < S r) by lia. rewrite nth_v2f with (H:=H1).
     assert (i - 1 < r) by lia. rewrite nth_v2f with (H:=H2).
-    assert (0 < fin2nat (nat2fin i H1)) by (simpl; lia).
+    assert (0 < nat2fin i H1) by (simpl; lia).
     rewrite vnth_vconsH_gt0 with (H:= H3); auto. f_equal.
     apply fin_eq_iff; auto. simpl. lia.
   Qed.
@@ -853,7 +853,7 @@ Section mcons.
     intros. unfold mconsrT. erewrite vnth_vconsT_lt. f_equal.
   Qed.
 
-  Lemma mcol_mconsrT : forall {r c} (M : mat A r c) (a : @vec A c) (j : fin c),
+  Lemma mcol_mconsrT : forall {r c} (M : mat A r c) (a : @vec A c) (j : 'I_c),
       (mconsrT M a)&[j] = vconsT M&[j] a.[j].
   Proof.
     intros. apply veq_iff_vnth; intros.
@@ -865,7 +865,7 @@ Section mcons.
   Proof. intros. unfold mconsrT. rewrite vnth_vconsT_n; auto. Qed.
 
   Lemma vnth_mconsrT_lt :
-    forall {r c} (M : mat A r c) (a : @vec A c) (i : fin (S r)) (H : fin2nat i < r),
+    forall {r c} (M : mat A r c) (a : @vec A c) (i : 'I_(S r)) (H : fin2nat i < r),
       (mconsrT M a).[i] = M.[fin2PredRange i H].
   Proof. intros. unfold mconsrT. rewrite vnth_vconsT_lt with (H:=H). auto. Qed.
 
@@ -887,7 +887,7 @@ Section mcons.
   Definition mconscH {r c} (a : @vec A r) (M : mat A r c) : mat A r (S c) :=
     @vmap2 A (vec c) (vec (S c)) vconsH r a M.
 
-  Lemma vnth_mconscH : forall {r c} (M : mat A (S r) c) (a : vec (S r)) (i : fin (S r)),
+  Lemma vnth_mconscH : forall {r c} (M : mat A (S r) c) (a : vec (S r)) (i : 'I_(S r)),
       (mconscH a M).[i] = vconsH (a.[i]) (M.[i]).
   Proof. intros. auto. Qed.
   
@@ -975,7 +975,7 @@ Section mcons.
   Qed.
 
   Lemma mcol_mconscT_lt :
-    forall {r c} (M : mat A r c) (a : @vec A r) (j : fin (S c)) (H : fin2nat j < c),
+    forall {r c} (M : mat A r c) (a : @vec A r) (j : 'I_(S c)) (H : fin2nat j < c),
       (mconscT M a)&[j] = M&[fin2PredRange j H].
   Proof.
     intros. apply veq_iff_vnth; intros. rewrite !vnth_mcol.
@@ -1029,7 +1029,7 @@ Section mcsh.
 
   (** left shift column. *)
   (* [[1;2;3];[4;5;6];[7;8;9] ==1==> [[2;3;0];[5;6;0];[8;9;0] *)
-  Definition mcshl {r c} (M : mat A r c) (k : fin c) : mat A r c :=
+  Definition mcshl {r c} (M : mat A r c) (k : 'I_c) : mat A r c :=
     fun i j =>
       if (fin2nat j + fin2nat k ??< c)%nat
       then M.[i].[fin2SameRangeAdd j k]
@@ -1037,7 +1037,7 @@ Section mcsh.
 
   (** right shift column. *)
   (* [[1;2;3];[4;5;6];[7;8;9] ==1==> [[0;1;2];[0;4;5];[0;7;8] *)
-  Definition mcshr {r c} (M : mat A r c) (k : fin c) : mat A r c :=
+  Definition mcshr {r c} (M : mat A r c) (k : 'I_c) : mat A r c :=
     fun i j =>
       if (fin2nat k ??<= fin2nat j)%nat
       then M.[i].[fin2SameRangeSub j k]
@@ -1045,12 +1045,12 @@ Section mcsh.
 
   (** loop shift left of column. *)
   (* [[1;2;3];[4;5;6];[7;8;9] ==1==> [[2;3;1];[5;6;4];[8;9;7] *)
-  Definition mclsl {r c} (M : @mat A r c) (k : fin c) : @mat A r c :=
+  Definition mclsl {r c} (M : @mat A r c) (k : 'I_c) : @mat A r c :=
     fun i j => M.[i].[fin2SameRangeLSL j k].
 
   (** loop shift right of column *)
   (* [[1;2;3];[4;5;6];[7;8;9] ==1==> [[3;1;2];[6;4;5];[9;7;8] *)
-  Definition mclsr {r c} (M : @mat A r c) (k : fin c) : @mat A r c :=
+  Definition mclsr {r c} (M : @mat A r c) (k : 'I_c) : @mat A r c :=
     fun i j => M.[i].[fin2SameRangeLSR j k].
 
 End mcsh.
@@ -1212,11 +1212,11 @@ Section malg.
       intros. subst. apply meq_iff_mnth; intros. rewrite mnth_mconscT.
       unfold vconsT, mconsrT, vconsT. fin; try rewrite vnth_vzero.
       - rewrite mnth_mat1_diff; auto.
-        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_inj_not in H; auto.
+        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
       - rewrite mnth_mat1_diff; auto.
-        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_inj_not in H; auto.
+        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
       - pose proof (fin2nat_lt i). pose proof (fin2nat_lt j).
-        assert (fin2nat i = fin2nat j) by lia. apply fin2nat_inj in H1.
+        assert (fin2nat i = fin2nat j) by lia. apply fin2nat_eq_iff in H1.
         subst. rewrite mnth_mat1_same. auto.
     Qed.
 
@@ -1228,11 +1228,11 @@ Section malg.
       intros. subst. apply meq_iff_mnth; intros. rewrite mnth_mconsrT.
       unfold vconsT, mconscT, vconsT, mcol, vmap2. fin; try rewrite vnth_vzero.
       - rewrite mnth_mat1_diff; auto.
-        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_inj_not in H; auto.
+        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
       - rewrite mnth_mat1_diff; auto.
-        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_inj_not in H; auto.
+        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
       - pose proof (fin2nat_lt i). pose proof (fin2nat_lt j).
-        assert (fin2nat i = fin2nat j) by lia. apply fin2nat_inj in H1.
+        assert (fin2nat i = fin2nat j) by lia. apply fin2nat_eq_iff in H1.
         subst. rewrite mnth_mat1_same. auto.
     Qed.
       
@@ -1475,9 +1475,9 @@ Section malg.
     Proof.
       intros. apply meq_iff_mnth; intros. rewrite mnth_mcmul.
       destruct (i ??= j) as [E|E]; fin.
-      - apply fin2nat_inj in E; rewrite E.
+      - apply fin2nat_eq_iff in E; rewrite E.
         rewrite mnth_mdiagMk_same. rewrite mnth_mat1_same, vnth_vrepeat. ring.
-      - apply fin2nat_inj_not in E.
+      - apply fin2nat_neq_iff in E.
         rewrite mnth_mat1_diff, mnth_mdiagMk_diff; auto. ring.
     Qed.
     
@@ -2131,7 +2131,7 @@ Section RowTrans.
   (** ** Matrix with one given element *)
   
   (** An matrix which (x,y) element is _a_ *)
-  Definition matOneElem {n} (x y : fin n) (a : A) : smat A n :=
+  Definition matOneElem {n} (x y : 'I_n) (a : A) : smat A n :=
     fun i j => if i ??= x then (if j ??= y then a else 0) else 0.
 
   (* ======================================================================= *)
@@ -2140,20 +2140,20 @@ Section RowTrans.
   (** 行数乘矩阵
       作用：E(x,c) * M 的结果是 M 的第 x 行乘以 c 倍
       形式：第 (x,x) 的元素是 c, 其余是单位阵 *)
-  Definition matRowScale {n} (x : fin n) (c : A) : smat A n :=
-    fun (i j : fin n) => if i ??= j then (if i ??= x then c else 1) else 0.
+  Definition matRowScale {n} (x : 'I_n) (c : A) : smat A n :=
+    fun (i j : 'I_n) => if i ??= j then (if i ??= x then c else 1) else 0.
 
   (** 行数乘：矩阵 M 的第 x 行乘以 c 倍 *)
-  Definition mrowScale {n} (x : fin n) (c : A) (M : smat A n) : smat A n :=
+  Definition mrowScale {n} (x : 'I_n) (c : A) (M : smat A n) : smat A n :=
     fun i j => if i ??= x then (c * M i j)%A else M i j.
 
   (** rowScale of `M` equal to left multiply rowScaleMat of `M` *)
-  Lemma mrowScale_eq : forall {n} (x : fin n) (c : A) (M : smat A n),
+  Lemma mrowScale_eq : forall {n} (x : 'I_n) (c : A) (M : smat A n),
       mrowScale x c M = (matRowScale x c) * M.
   Proof.
     intros. unfold mrowScale, matRowScale. apply meq_iff_mnth; intros.
     rewrite mnth_mmul. unfold vdot. fin.
-    - apply fin2nat_inj in E; rewrite E. symmetry.
+    - apply fin2nat_eq_iff in E; rewrite E. symmetry.
       apply vsum_unique with (i := x); intros; rewrite vnth_vmap2; fin.
     - symmetry.
       apply vsum_unique with (i := i); intros; rewrite vnth_vmap2; fin.
@@ -2161,7 +2161,7 @@ Section RowTrans.
   Qed.
 
   (** mrowScale i c (M * N) = mrowScale i c M * N *)
-  Lemma mrowScale_mmul : forall {n} (M N : smat A n) (i : fin n) (c : A),
+  Lemma mrowScale_mmul : forall {n} (M N : smat A n) (i : 'I_n) (c : A),
       mrowScale i c (M * N) = mrowScale i c M * N.
   Proof. intros. rewrite !mrowScale_eq. rewrite mmul_assoc; auto. Qed.
 
@@ -2171,20 +2171,20 @@ Section RowTrans.
   (** 行倍加矩阵
       作用：E(x,y,c) * M 的结果是 M 的第 y 行的 c 倍加到第 x 行
       形式：单位阵 + 第 (x,y) 的元素是 c *)
-  Definition matRowAdd {n} (x y : fin n) (c : A) : smat A n :=
+  Definition matRowAdd {n} (x y : 'I_n) (c : A) : smat A n :=
     mat1 + matOneElem x y c.
 
   (** 行倍加：矩阵 M 的第 y 行的 c 倍加到第 x 行 *)
-  Definition mrowAdd {n} (x y : fin n) (c : A) (M : smat A n) : smat A n :=
+  Definition mrowAdd {n} (x y : 'I_n) (c : A) (M : smat A n) : smat A n :=
     fun i j => if i ??= x then (M i j + c * M y j)%A else M i j.
 
-  Lemma mrowAdd_eq : forall {n} (x y : fin n) (c : A) (M : smat A n),
+  Lemma mrowAdd_eq : forall {n} (x y : 'I_n) (c : A) (M : smat A n),
       mrowAdd x y c M = (matRowAdd x y c) * M.
   Proof.
     intros. unfold mrowAdd, matRowAdd, matOneElem. apply meq_iff_mnth; intros.
     rewrite mnth_mmul. symmetry. fin.
     - rewrite vnth_madd. rewrite vdot_vadd_l. f_equal.
-      + apply fin2nat_inj in E; rewrite E.
+      + apply fin2nat_eq_iff in E; rewrite E.
         apply vsum_unique with (i := x); intros; rewrite vnth_vmap2; fin.
         * rewrite vnth_mcol. rewrite mnth_mat1_same. ring.
         * rewrite vnth_mcol. rewrite mnth_mat1_diff; auto. ring.
@@ -2196,18 +2196,18 @@ Section RowTrans.
   Qed.
 
   (** mrowAdd i j c (M * N) = mrowScale i j c M * N *)
-  Lemma mrowAdd_mmul : forall {n} (M N : smat A n) (i j : fin n) (c : A),
+  Lemma mrowAdd_mmul : forall {n} (M N : smat A n) (i j : 'I_n) (c : A),
       mrowAdd i j c (M * N) = mrowAdd i j c M * N.
   Proof. intros. rewrite !mrowAdd_eq. rewrite mmul_assoc; auto. Qed.
 
   (** (i)+c(j)) * (i)+(-c)(j) = mat1 *)
-  Lemma mmul_matRowAdd_matRowAdd : forall {n} (i j : fin n) (c : A),
+  Lemma mmul_matRowAdd_matRowAdd : forall {n} (i j : 'I_n) (c : A),
       i <> j -> matRowAdd i j c * matRowAdd i j (-c) = mat1.
   Proof.
     intros. rewrite <- mrowAdd_eq. unfold matRowAdd, mrowAdd.
     apply meq_iff_mnth; intros. rewrite !mnth_madd. unfold matOneElem. fin.
-    - fin2nat_inj. rewrite mnth_mat1_same. ring.
-    - fin2nat_inj. subst. rewrite (mnth_mat1_diff j j0); auto. ring.
+    - fin2nat. rewrite mnth_mat1_same. ring.
+    - fin2nat. subst. rewrite (mnth_mat1_diff j j0); auto. ring.
   Qed.
   
   (* ======================================================================= *)
@@ -2216,7 +2216,7 @@ Section RowTrans.
   (** 行交换矩阵
       作用：E(x,y) * M 的结果是 M 的第 x 行和第 y 行交换
       形式：在x,y所在行时，(x,y) 和 (y,x) 是 1；其余行时是单位阵 *)
-  Definition matRowSwap {n} (x y : fin n) : smat A n :=
+  Definition matRowSwap {n} (x y : 'I_n) : smat A n :=
     fun i j =>
       if i ??= x
       then (if j ??= y then 1 else 0)
@@ -2225,10 +2225,10 @@ Section RowTrans.
             else (if i ??= j then 1 else 0)).
 
   (** 行交换：矩阵 M 的第 x, y 两行互换 *)
-  Definition mrowSwap {n} (x y : fin n) (M : smat A n) : smat A n :=
+  Definition mrowSwap {n} (x y : 'I_n) (M : smat A n) : smat A n :=
     fun i j => if i ??= x then M y j else (if i ??= y then M x j else M i j).
 
-  Lemma mrowSwap_eq : forall {n} (x y : fin n) (M : smat A n),
+  Lemma mrowSwap_eq : forall {n} (x y : 'I_n) (M : smat A n),
       mrowSwap x y M = (matRowSwap x y) * M.
   Proof.
     intros. unfold mrowSwap, matRowSwap. apply meq_iff_mnth; intros.
@@ -2242,22 +2242,22 @@ Section RowTrans.
   Qed.
 
   (** mrowSwap i j (M * N) = mrowSwap i j M * N *)
-  Lemma mrowSwap_mmul : forall {n} (M N : smat A n) (i j : fin n),
+  Lemma mrowSwap_mmul : forall {n} (M N : smat A n) (i j : 'I_n),
       mrowSwap i j (M * N) = mrowSwap i j M * N.
   Proof. intros. rewrite !mrowSwap_eq. rewrite mmul_assoc; auto. Qed.
 
   (** (i,j) * (i,j) = mat1 *)
-  Lemma mmul_matRowSwap_matRowSwap : forall {n} (i j : fin n),
+  Lemma mmul_matRowSwap_matRowSwap : forall {n} (i j : 'I_n),
       matRowSwap i j * matRowSwap i j = mat1.
   Proof.
     intros. rewrite <- mrowSwap_eq. unfold matRowSwap, mrowSwap.
     apply meq_iff_mnth; intros. fin.
-    - fin2nat_inj. rewrite mnth_mat1_same; auto.
-    - fin2nat_inj. rewrite mnth_mat1_diff; auto.
-    - fin2nat_inj. rewrite mnth_mat1_same; auto.
-    - fin2nat_inj. rewrite mnth_mat1_diff; auto.
-    - fin2nat_inj. rewrite mnth_mat1_same; auto.
-    - fin2nat_inj. rewrite mnth_mat1_diff; auto.
+    - fin2nat. rewrite mnth_mat1_same; auto.
+    - fin2nat. rewrite mnth_mat1_diff; auto.
+    - fin2nat. rewrite mnth_mat1_same; auto.
+    - fin2nat. rewrite mnth_mat1_diff; auto.
+    - fin2nat. rewrite mnth_mat1_same; auto.
+    - fin2nat. rewrite mnth_mat1_diff; auto.
   Qed.
 
   (* If we equipped a "Field" *)
@@ -2269,13 +2269,13 @@ Section RowTrans.
     Notation "a / b" := (a * / b) : A_scope.
     
     (** c(i) * (/c)(i) = mat1 *)
-    Lemma mmul_matRowScale_matRowScale : forall {n} (i : fin n) (c : A),
+    Lemma mmul_matRowScale_matRowScale : forall {n} (i : 'I_n) (c : A),
         c <> 0 -> matRowScale i c * matRowScale i (/c) = mat1.
     Proof.
       intros. rewrite <- mrowScale_eq. unfold matRowScale, mrowScale.
       apply meq_iff_mnth; intros. fin.
-      - fin2nat_inj. rewrite mnth_mat1_same; auto. field. auto.
-      - fin2nat_inj. rewrite mnth_mat1_diff; auto. field.
+      - fin2nat. rewrite mnth_mat1_same; auto. field. auto.
+      - fin2nat. rewrite mnth_mat1_diff; auto. field.
     Qed.
   End Field.
 
@@ -2290,8 +2290,8 @@ Section test.
   
   Let M : smat R 2 := @l2m _ 0 2 2 ([[1;2];[3;4]]).
 
-  Let i0 : fin 2 := nat2finS 0.
-  Let i1 : fin 2 := nat2finS 1.
+  Let i0 : 'I_2 := nat2finS 0.
+  Let i1 : 'I_2 := nat2finS 1.
 
   Goal m2l (mrowScale i0 2 M) = [[2;4];[3;4]]. Proof. cbv. list_eq; ring. Qed.
   Goal m2l (mrowScale i1 2 M) = [[1;2];[6;8]]. Proof. cbv. list_eq; ring. Qed.

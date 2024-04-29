@@ -110,7 +110,7 @@ Module BasicMatrixTheory (E : ElementType).
   Definition f2v {n} (f : nat -> A) : vec n := f2v f.
 
   (** (f2v a).i = a i *)
-  Lemma vnth_f2v : forall {n} f i, (@f2v n f).[i] = f (fin2nat i).
+  Lemma vnth_f2v : forall {n} f i, (@f2v n f).[i] = f i.
   Proof. intros. apply vnth_f2v. Qed.
 
   Lemma f2v_inj : forall {n} (f g : nat -> A),
@@ -118,7 +118,7 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply (@f2v_inj _ n); auto. Qed.
 
   (** (v2f a) i = a.i *)
-  Lemma nth_v2f : forall {n} (a : vec n) i (H:i<n), (v2f a) i = a.[Fin i H].
+  Lemma nth_v2f : forall {n} (a : vec n) i (H:i<n), (v2f a) i = a.[nat2fin i H].
   Proof. intros. apply nth_v2f. Qed.
 
   Lemma v2f_inj : forall {n} (a b : vec n),
@@ -139,7 +139,7 @@ Module BasicMatrixTheory (E : ElementType).
   Definition l2v {n} (l : list A) : vec n := l2v 0 l.
 
   (** (l2v l).i = nth i l *)
-  Lemma vnth_l2v : forall {n} (l : list A) i, (@l2v n l).[i] = nth (fin2nat i) l 0.
+  Lemma vnth_l2v : forall {n} (l : list A) (i : 'I_n), (@l2v n l).[i] = nth i l 0.
   Proof. intros. apply vnth_l2v. Qed.
     
   (** nth i (v2l v) = v.i *)
@@ -206,14 +206,14 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** Set element of a vector *)
 
   (** Set i-th element vector `a` with `x` *)
-  Definition vset {n} (a : vec n) (i : fin n) (x : A) : vec n := vset a i x.
+  Definition vset {n} (a : vec n) (i : 'I_n) (x : A) : vec n := vset a i x.
 
   (** (vset a i x).i = x *)
-  Lemma vnth_vset_eq : forall {n} (a : vec n) (i : fin n) (x : A), (vset a i x).[i] = x.
+  Lemma vnth_vset_eq : forall {n} (a : vec n) (i : 'I_n) (x : A), (vset a i x).[i] = x.
   Proof. intros. apply vnth_vset_eq. Qed.
   
   (** (vset a i x).j = a.[j] *)
-  Lemma vnth_vset_neq : forall {n} (a : vec n) (i j : fin n) (x : A),
+  Lemma vnth_vset_neq : forall {n} (a : vec n) (i j : 'I_n) (x : A),
       i <> j -> (vset a i x).[j] = a.[j].
   Proof. intros. apply vnth_vset_neq; auto. Qed.
 
@@ -221,57 +221,57 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** Swap two element of a vector *)
   
   (** Swap the i-th and j-th element of vector `a` *)
-  Definition vswap {n} (a : vec n) (i j : fin n) : vec n := vswap a i j.
+  Definition vswap {n} (a : vec n) (i j : 'I_n) : vec n := vswap a i j.
 
-  Lemma vnth_vswap_i : forall {n} (a : vec n) (i j : fin n), (vswap a i j).[i] = a.[j].
+  Lemma vnth_vswap_i : forall {n} (a : vec n) (i j : 'I_n), (vswap a i j).[i] = a.[j].
   Proof. intros. apply vnth_vswap_i. Qed.
 
-  Lemma vnth_vswap_j : forall {n} (a : vec n) (i j : fin n), (vswap a i j).[j] = a.[i].
+  Lemma vnth_vswap_j : forall {n} (a : vec n) (i j : 'I_n), (vswap a i j).[j] = a.[i].
   Proof. intros. apply vnth_vswap_j. Qed.
 
-  Lemma vnth_vswap_other : forall {n} (a : vec n) (i j k : fin n),
+  Lemma vnth_vswap_other : forall {n} (a : vec n) (i j k : 'I_n),
       i <> k -> j <> k -> (vswap a i j).[k] = a.[k].
   Proof. intros. apply vnth_vswap_other; auto. Qed.
 
-  Lemma vswap_vswap : forall {n} (a : vec n) (i j : fin n), vswap (vswap a i j) j i = a.
+  Lemma vswap_vswap : forall {n} (a : vec n) (i j : 'I_n), vswap (vswap a i j) j i = a.
   Proof. intros. apply vswap_vswap. Qed.
 
   (* ======================================================================= *)
   (** ** Insert element to a vector *)
 
-  Definition vinsert {n} (a : vec n) (i : fin (S n)) (x : A) : vec (S n) :=
+  Definition vinsert {n} (a : vec n) (i : 'I_(S n)) (x : A) : vec (S n) :=
     vinsert a i x.
 
   (** j < i -> (v2f (vinsert a i x)) j = (v2f a) i *)
-  Lemma vinsert_spec_lt : forall {n} (a : vec n) (i : fin (S n)) (x : A) (j : nat),
-      j < fin2nat i -> v2f (vinsert a i x) j = v2f a j.
+  Lemma vinsert_spec_lt : forall {n} (a : vec n) (i : 'I_(S n)) (x : A) (j : nat),
+      j < i -> v2f (vinsert a i x) j = v2f a j.
   Proof. intros. apply vinsert_spec_lt; auto. Qed.
 
   (** j = i -> (v2f (vinsert a i x)) j = x *)
-  Lemma vinsert_spec_eq : forall {n} (a : vec n) (i : fin (S n)) (x : A),
-      v2f (vinsert a i x) (fin2nat i) = x.
+  Lemma vinsert_spec_eq : forall {n} (a : vec n) (i : 'I_(S n)) (x : A),
+      v2f (vinsert a i x) i = x.
   Proof. intros. apply vinsert_spec_eq; auto. Qed.
   
   (** i < j -> j <= n -> (v2f (vinsert a i x)) j = (v2f a) (S i) *)
-  Lemma vinsert_spec_gt : forall {n} (a : vec n) (i : fin (S n)) (x : A) (j : nat),
-      fin2nat i < j -> 0 < j -> j < S n -> v2f (vinsert a i x) j = v2f a (pred j).
+  Lemma vinsert_spec_gt : forall {n} (a : vec n) (i : 'I_(S n)) (x : A) (j : nat),
+      i < j -> 0 < j -> j < S n -> v2f (vinsert a i x) j = v2f a (pred j).
   Proof. intros. apply vinsert_spec_gt; auto. Qed.
 
   (** j < i -> (vinsert a i x).[j] = a.[j] *)
   Lemma vnth_vinsert_lt :
-    forall {n} (a : vec n) (i j : fin (S n)) x (H : fin2nat j < fin2nat i),
+    forall {n} (a : vec n) (i j : 'I_(S n)) x (H : j < i),
       (vinsert a i x).[j] = a.[fin2PredRange j (nat_lt_ltS_lt _ _ _ H (fin2nat_lt _))].
   Proof. intros. apply (@vnth_vinsert_lt _ 0); auto. Qed.
 
   (** (vinsert a i x).i = a *)
-  Lemma vnth_vinsert_eq : forall {n} (a : vec n) (i : fin (S n)) x,
+  Lemma vnth_vinsert_eq : forall {n} (a : vec n) (i : 'I_(S n)) x,
       (vinsert a i x).[i] = x.
   Proof. intros. apply (@vnth_vinsert_eq _ 0). Qed.
 
   (** 0 < j -> (vinsert a i x).[j] = a.(pred j) *)
   Lemma vnth_vinsert_gt :
-    forall {n} (a : vec n) (i j : fin (S n)) x (H : 0 < fin2nat j),
-      fin2nat i < fin2nat j -> (vinsert a i x).[j] = a.[fin2PredRangePred j H].
+    forall {n} (a : vec n) (i j : 'I_(S n)) x (H : 0 < j),
+      i < j -> (vinsert a i x).[j] = a.[fin2PredRangePred j H].
   Proof. intros. apply (@vnth_vinsert_gt _ 0); auto. Qed.
 
   (** Invert 0 into vzero get vzero *)
@@ -303,36 +303,35 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** Remove one element *)
 
   (** Removes i-th element from vector `a` *)
-  Definition vremove {n} (a : vec (S n)) (i : fin (S n)) : vec n := vremove a i.
+  Definition vremove {n} (a : vec (S n)) (i : 'I_(S n)) : vec n := vremove a i.
 
   (** j < i -> (v2f (vremove a i)) j = (v2f a) j *)
-  Lemma vremove_spec_lt : forall {n} (a : vec (S n)) (i : fin (S n)) (j : nat),
-      j < fin2nat i -> v2f (vremove a i) j = v2f a j.
+  Lemma vremove_spec_lt : forall {n} (a : vec (S n)) (i : 'I_(S n)) (j : nat),
+      j < i -> v2f (vremove a i) j = v2f a j.
   Proof. intros. apply vremove_spec_lt; auto. Qed.
 
   (** i <= j -> j < n -> (v2f (vremove a i)) j = (v2f a) (S j) *)
-  Lemma vremove_spec_ge : forall {n} (a : vec (S n)) (i : fin (S n)) (j : nat),
-      fin2nat i <= j -> j < n -> v2f (vremove a i) j = v2f a (S j).
+  Lemma vremove_spec_ge : forall {n} (a : vec (S n)) (i : 'I_(S n)) (j : nat),
+      i <= j -> j < n -> v2f (vremove a i) j = v2f a (S j).
   Proof. intros. apply vremove_spec_ge; auto. Qed.
 
   (** j < i -> (vremove a i).[j] = a.[j] *)
-  Lemma vnth_vremove_lt : forall {n} (a : vec (S n)) (i : fin (S n)) (j : fin n),
-      fin2nat j < fin2nat i -> (vremove a i).[j] = v2f a (fin2nat j).
+  Lemma vnth_vremove_lt : forall {n} (a : vec (S n)) (i : 'I_(S n)) (j : 'I_n),
+      j < i -> (vremove a i).[j] = v2f a j.
   Proof. intros. apply vnth_vremove_lt; auto. Qed.
   
   (** i <= j -> j < n -> (vremove a i).j = a.(S j) *)
-  Lemma vnth_vremove_ge : forall {n} (a : vec (S n)) (i : fin (S n)) (j : fin n),
-      fin2nat i <= fin2nat j -> fin2nat j < n ->
-      (vremove a i).[j] = v2f a (S (fin2nat j)).
+  Lemma vnth_vremove_ge : forall {n} (a : vec (S n)) (i : 'I_(S n)) (j : 'I_n),
+      i <= j -> j < n -> (vremove a i).[j] = v2f a (S j).
   Proof. intros. apply vnth_vremove_ge; auto. Qed.
 
   (** vremove (vinsert a i x) i = a *)
-  Lemma vremove_vinsert : forall {n} (a : vec n) (i : fin (S n)) (x : A),
+  Lemma vremove_vinsert : forall {n} (a : vec n) (i : 'I_(S n)) (x : A),
       vremove (vinsert a i x) i = a.
   Proof. intros. apply (@vremove_vinsert _ 0). Qed.
   
   (** vinsert (vremove a i) (a.[i]) = a *)
-  Lemma vinsert_vremove : forall {n} (a : vec (S n)) (i : fin (S n)),
+  Lemma vinsert_vremove : forall {n} (a : vec (S n)) (i : 'I_(S n)),
       vinsert (vremove a i) i (a.[i]) = a.
   Proof. intros. apply (@vinsert_vremove _ 0). Qed.
 
@@ -415,7 +414,7 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply vremoveH_spec; auto. Qed.
   
   (** (vremoveH a).i = a.(S i) *)
-  Lemma vnth_vremoveH : forall {n} (a : vec (S n)) (i : fin n),
+  Lemma vnth_vremoveH : forall {n} (a : vec (S n)) (i : 'I_n),
       (vremoveH a).[i] = a.[fin2SuccRangeSucc i].
   Proof. intros. apply vnth_vremoveH; auto. Qed.
   
@@ -435,7 +434,7 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply vremoveT_spec; auto. Qed.
   
   (** (vremoveT a).i = a.i *)
-  Lemma vnth_vremoveT : forall {n} (a : vec (S n)) (i : fin n),
+  Lemma vnth_vremoveT : forall {n} (a : vec (S n)) (i : 'I_n),
       (vremoveT a).[i] = a.[fin2SuccRange i].
   Proof. intros. apply vnth_vremoveT; auto. Qed.
   
@@ -464,7 +463,7 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply vremoveHN_spec; auto. Qed.
   
   (** (vremoveHN a).i = a.(m + i) *)
-  Lemma vnth_vremoveHN : forall {m n} (a : vec (m + n)) (i : fin n),
+  Lemma vnth_vremoveHN : forall {m n} (a : vec (m + n)) (i : 'I_n),
       (vremoveHN a).[i] = a.[fin2AddRangeAddL i].
   Proof. intros. apply vnth_vremoveHN; auto. Qed.
   
@@ -479,7 +478,7 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply vremoveTN_spec; auto. Qed.
   
   (** (vremoveTN a).i = a.i *)
-  Lemma vnth_vremoveTN : forall {m n} (a : vec (m + n)) (i : fin m),
+  Lemma vnth_vremoveTN : forall {m n} (a : vec (m + n)) (i : 'I_m),
       (vremoveTN a).[i] = a.[fin2AddRangeR i].
   Proof. intros. apply vnth_vremoveTN; auto. Qed.
   
@@ -499,7 +498,7 @@ Module BasicMatrixTheory (E : ElementType).
 
   (** i = 0 -> (v2f [x; a]) i = a *)
   Lemma vconsH_spec_0 : forall {n} x (a : vec n) (i : nat),
-      i = 0%nat -> v2f (vconsH x a) i = x.
+      i = O -> v2f (vconsH x a) i = x.
   Proof. intros. apply vconsH_spec_0; auto. Qed.
 
   (** 0 < i -> i < n -> [x; a].i = a.(pred i) *)
@@ -513,7 +512,7 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply vnth_vconsH_0; auto. Qed.
   
   (** 0 < i -> [x; a].i = a.(pred i)  *)
-  Lemma vnth_vconsH_gt0 : forall {n} x (a : vec n) i (H: 0 < fin2nat i),
+  Lemma vnth_vconsH_gt0 : forall {n} x (a : vec n) (i : 'I_(S n)) (H: 0 < i),
       (vconsH x a).[i] = a.[fin2PredRangePred i H].
   Proof. intros. apply vnth_vconsH_gt0; auto. Qed.
 
@@ -560,7 +559,7 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply vnth_vconsT_n; auto. Qed.
 
   (** i < n -> [a; x].i = a.(pred i) *)
-  Lemma vnth_vconsT_lt : forall {n} x (a : vec n) i (H: fin2nat i < n),
+  Lemma vnth_vconsT_lt : forall {n} x (a : vec n) (i : 'I_(S n)) (H: i < n),
       (vconsT a x).[i] = a (fin2PredRange i H).
   Proof. intros. apply vnth_vconsT_lt; auto. Qed.
 
@@ -594,37 +593,38 @@ Module BasicMatrixTheory (E : ElementType).
   (* ======================================================================= *)
   (** ** Construct vector with two vectors *)
 
-  (** Append two vectors, denoted with a@b *)
-  Definition vapp {m n} (a : vec m) (b : vec n) : vec (m + n) := vapp a b.
+  (** Append two vectors, denoted with a ++ b *)
+  Definition vapp {n m} (a : vec n) (b : vec m) : vec (n + m) := vapp a b.
+  Infix "++" := vapp : vec_scope.
   
-  (** i < m -> a@b.i = u.i *)
-  Lemma vapp_spec_L : forall {m n} (a : vec m) (b : vec n) (i : nat),
-      i < m -> v2f (vapp a b) i = v2f a i.
-  Proof. intros. apply vapp_spec_L; auto. Qed.
+  (** i < n -> (a++b).[i] = a.[i] *)
+  Lemma vapp_spec_l : forall {n m} (a : vec n) (b : vec m) (i : nat),
+      i < n -> v2f (a ++ b) i = v2f a i.
+  Proof. intros. apply vapp_spec_l; auto. Qed.
   
-  (** m <= i -> i < m + n -> a&b.i = a.(i - m) *)
-  Lemma vapp_spec_R : forall {m n} (a : vec m) (b : vec n) (i : nat),
-      m <= i -> i < m + n -> v2f (vapp a b) i = v2f b (i - m).
-  Proof. intros. apply vapp_spec_R; auto. Qed.
+  (** n <= i -> i < n + m -> (a ++ b).[i] = a.[i - m] *)
+  Lemma vapp_spec_r : forall {n m} (a : vec n) (b : vec m) (i : nat),
+      n <= i -> i < n + m -> v2f (a ++ b) i = v2f b (i - n).
+  Proof. intros. apply vapp_spec_r; auto. Qed.
   
-  (** i < m -> a&b.i = a.i *)
-  Lemma vnth_vapp_L : forall {m n} (a : vec m) (b : vec n) i (H: fin2nat i < m),
-      (vapp a b).[i] = a.[fin2AddRangeR' i H].
-  Proof. intros. apply vnth_vapp_L. Qed.
+  (** i < n -> (a ++ b).[i] = a.[i] *)
+  Lemma vnth_vapp_l : forall {n m} (a : vec n) (b : vec m) (i : 'I_(n + m)) (H: i < n),
+      (a ++ b).[i] = a.[fin2AddRangeR' i H].
+  Proof. intros. apply vnth_vapp_l. Qed.
   
-  (** m <= i -> a&b.i = b.i *)
-  Lemma vnth_vapp_R : forall {m n} (a : vec m) (b : vec n) i (H : m <= fin2nat i),
-      (vapp a b).[i] = b.[fin2AddRangeAddL' i H].
-  Proof. intros. apply vnth_vapp_R. Qed.
+  (** n <= i -> (a ++ b).[i] = b.[i] *)
+  Lemma vnth_vapp_r : forall {n m} (a : vec n) (b : vec m) (i : 'I_(n + m)) (H : n <= i),
+      (a ++ b).[i] = b.[fin2AddRangeAddL' i H].
+  Proof. intros. apply vnth_vapp_r. Qed.
 
-  (** a@b = 0 <-> a = 0 /\ b = 0 *)
-  Lemma vapp_eq0_iff : forall {m n} (a : vec m) (b : vec n),
-      vapp a b = vzero <-> a = vzero /\ b = vzero.
+  (** a ++ b = 0 <-> a = 0 /\ b = 0 *)
+  Lemma vapp_eq0_iff : forall {n m} (a : vec n) (b : vec m),
+      a ++ b = vzero <-> a = vzero /\ b = vzero.
   Proof. intros. apply vapp_eq0_iff; auto. Qed.
   
   (** vapp (vheadN a) (vtailN a) = a *)
-  Lemma vapp_vheadN_vtailN : forall {m n} (a : vec (m + n)),
-      vapp (vheadN a) (vtailN a) = a.
+  Lemma vapp_vheadN_vtailN : forall {n m} (a : vec (n + m)),
+      vheadN a ++ vtailN a = a.
   Proof. intros. apply vapp_vheadN_vtailN; auto. Qed.
 
   (* ======================================================================= *)
@@ -645,7 +645,7 @@ Module BasicMatrixTheory (E : ElementType).
   (** x ∈ a : Element `x` belongs to the vector `a` *)
   Definition vmem {n} (a : vec n) (x : A) : Prop := vmem a x.
 
-  Lemma vmem_vnth : forall {n} (a : vec n) (i : fin n), vmem a (a.[i]).
+  Lemma vmem_vnth : forall {n} (a : vec n) (i : 'I_n), vmem a (a.[i]).
   Proof. intros. apply vmem_vnth. Qed.
 
   (** {x ∈ a} + {x ∉ a} *)
@@ -704,7 +704,7 @@ Module BasicMatrixTheory (E : ElementType).
   (** Convert `vfoldl` to `seqfoldl` *)
   Lemma vfoldl_eq_seqfoldl :
     forall {B} {n} (a : vec n) (x : B) (f : B -> A -> B) (s : nat -> A),
-      (forall i, a.[i] = s (fin2nat i)) -> vfoldl a x f = seqfoldl s n x f.
+      (forall i, a.[i] = s i) -> vfoldl a x f = seqfoldl s n x f.
   Proof. intros. apply vfoldl_eq_seqfoldl; auto. Qed.
 
   (* ======================================================================= *)
@@ -802,14 +802,14 @@ Module BasicMatrixTheory (E : ElementType).
       @f2m r c f = @f2m r c g -> (forall i j, i < r -> j < c -> f i j = g i j).
   Proof. intros. apply (@f2m_inj _ r c); auto. Qed.
 
-  (** (f2m f).[i].[j] = f (fin2nat i) (fin2nat j) *)
+  (** (f2m f).[i].[j] = f i j *)
   Lemma mnth_f2m : forall {r c} (f : nat -> nat -> A) i j,
-      (@f2m r c f) i j = f (fin2nat i) (fin2nat j).
+      (@f2m r c f) i j = f i j.
   Proof. intros. apply mnth_f2m. Qed.
     
-  (** (f2m f).[i] = f2v (f (fin2nat i)) *)
+  (** (f2m f).[i] = f2v (f i) *)
   Lemma vnth_f2m : forall {r c} (f : nat -> nat -> A) i,
-      (@f2m r c f).[i] = f2v (f (fin2nat i)).
+      (@f2m r c f).[i] = f2v (f i).
   Proof. intros. apply vnth_f2m. Qed.
 
   (** (m2f M) i j = M[nat2fin i].[nat2fin j] *)
@@ -932,8 +932,8 @@ Module BasicMatrixTheory (E : ElementType).
   (* ======================================================================= *)
   (** ** Get row and column of a matrix *)
 
-  Definition mrow {r c} (M : mat r c) (i : fin r) : vec c := mrow M i.
-  Definition mcol {r c} (M : mat r c) (j : fin c) : vec r := mcol M j.
+  Definition mrow {r c} (M : mat r c) (i : 'I_r) : vec c := mrow M i.
+  Definition mcol {r c} (M : mat r c) (j : 'I_c) : vec r := mcol M j.
 
   Notation "M &1" := (mcol M #0) : mat_scope.
   Notation "M &2" := (mcol M #1) : mat_scope.
@@ -941,20 +941,20 @@ Module BasicMatrixTheory (E : ElementType).
   Notation "M &4" := (mcol M #3) : mat_scope.
 
   (** (mrow M i).j = M.i.j *)
-  Lemma vnth_mrow : forall {r c} (M : mat r c) (i : fin r) (j : fin c),
+  Lemma vnth_mrow : forall {r c} (M : mat r c) (i : 'I_r) (j : 'I_c),
       (mrow M i).[j] = M.[i].[j].
   Proof. intros. apply vnth_mrow. Qed.
 
   (** (mcol M j).i = M.i.j *)
-  Lemma vnth_mcol : forall {r c} (M : mat r c) (i : fin r) (j : fin c),
+  Lemma vnth_mcol : forall {r c} (M : mat r c) (i : 'I_r) (j : 'I_c),
       (mcol M j).[i] = M.[i].[j].
   Proof. intros. apply vnth_mcol. Qed.
 
-  Lemma mcol_mtrans_eq_mrow : forall {r c} (M : mat r c) (i : fin r),
+  Lemma mcol_mtrans_eq_mrow : forall {r c} (M : mat r c) (i : 'I_r),
       mcol (M\T) i = mrow M i.
   Proof. intros. apply mcol_mtrans_eq_mrow. Qed.
 
-  Lemma mrow_mtrans_eq_mcol : forall {r c} (M : mat r c) (j : fin c),
+  Lemma mrow_mtrans_eq_mcol : forall {r c} (M : mat r c) (j : 'I_c),
       mrow (M\T) j = mcol M j.
   Proof. intros. apply mrow_mtrans_eq_mcol. Qed.
 
@@ -1025,7 +1025,7 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply mnth_mconsrH_0; auto. Qed.
 
   Lemma mnth_mconsrH_gt0 :
-    forall {r c} (a : vec c) (M : mat r c) i j (H : 0 < fin2nat i),
+    forall {r c} (a : vec c) (M : mat r c) (i : 'I_(S r)) (j : 'I_c) (H : 0 < i),
       (mconsrH a M).[i].[j] = M.[fin2PredRangePred i H].[j].
   Proof. intros. apply mnth_mconsrH_gt0; auto. Qed.
 
@@ -1046,7 +1046,7 @@ Module BasicMatrixTheory (E : ElementType).
       (mconsrT M a).[i].[j] = M.[fin2PredRange i E].[j].
   Proof. intros. apply mnth_mconsrT_lt; auto. Qed.
 
-  Lemma vnth_mconscH : forall {r c} (M : mat (S r) c) (a : vec (S r)) (i : fin (S r)),
+  Lemma vnth_mconscH : forall {r c} (M : mat (S r) c) (a : vec (S r)) (i : 'I_(S r)),
       (mconscH a M).[i] = vconsH (a.[i]) (M.[i]).
   Proof. intros; apply vnth_mconscH; auto. Qed.
   
@@ -1109,26 +1109,26 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** matrix set row / column *)
 
   (** set row *)
-  Definition msetr {r c} (M : mat r c) (a : vec c) (i0 : fin r) : mat r c :=
+  Definition msetr {r c} (M : mat r c) (a : vec c) (i0 : 'I_r) : mat r c :=
     msetr M a i0.
 
   (** set column *)
-  Definition msetc {r c} (M : mat r c) (a : vec r) (j0 : fin c) : mat r c :=
+  Definition msetc {r c} (M : mat r c) (a : vec r) (j0 : 'I_c) : mat r c :=
     msetc M a j0.
 
-  Lemma mnth_msetr_same : forall {r c} (M : mat r c) (a : vec c) (i0 : fin r) i j,
+  Lemma mnth_msetr_same : forall {r c} (M : mat r c) (a : vec c) (i0 : 'I_r) i j,
       i = i0 -> (msetr M a i0).[i].[j] = a.[j].
   Proof. intros. apply mnth_msetr_same; auto. Qed.
 
-  Lemma mnth_msetr_diff : forall {r c} (M : mat r c) (a : vec c) (i0 : fin r) i j,
+  Lemma mnth_msetr_diff : forall {r c} (M : mat r c) (a : vec c) (i0 : 'I_r) i j,
       i <> i0 -> (msetr M a i0).[i].[j] = M.[i].[j].
   Proof. intros. apply mnth_msetr_diff; auto. Qed.
 
-  Lemma mnth_msetc_same : forall {r c} (M : mat r c) (a : vec r) (j0:fin c) i j,
+  Lemma mnth_msetc_same : forall {r c} (M : mat r c) (a : vec r) (j0 : 'I_c) i j,
       j = j0 -> (msetc M a j0).[i].[j] = a.[i].
   Proof. intros. apply mnth_msetc_same; auto. Qed.
 
-  Lemma mnth_msetc_diff : forall {r c} (M : mat r c) (a : vec r) (j0:fin c) i j,
+  Lemma mnth_msetc_diff : forall {r c} (M : mat r c) (a : vec r) (j0 : 'I_c) i j,
       j <> j0 -> (msetc M a j0).[i].[j] = M.[i].[j].
   Proof. intros. apply mnth_msetc_diff; auto. Qed.
   
@@ -1349,7 +1349,7 @@ Module RingMatrixTheory (E : RingElementType).
   (* ======================================================================= *)
   (** ** 自然基的基向量 *)
 
-  Definition veye {n} (i : fin n) : vec n := veye 0 1 i.
+  Definition veye {n} (i : 'I_n) : vec n := veye 0 1 i.
 
   (** (veye i).i = 1 *)
   Lemma vnth_veye_eq : forall {n} i, (@veye n i).[i] = 1.
@@ -2252,7 +2252,7 @@ Module OrderedRingMatrixTheory (E : OrderedRingElementType).
   Proof. intros. apply vdot_sqr_le. Qed.
 
   (** (a i)² <= <a, a> *)
-  Lemma vnth_sqr_le_vdot : forall {n} (a : vec n) (i : fin n), (a i) ² <= <a, a>.
+  Lemma vnth_sqr_le_vdot : forall {n} (a : vec n) (i : 'I_n), (a i) ² <= <a, a>.
   Proof. intros. apply vnth_sqr_le_vdot. Qed.
 
   (** (∀ i, 0 <= a.i) -> a.i <= ∑a *)
@@ -3282,7 +3282,7 @@ Module OrderedFieldMatrixTheory (E : OrderedFieldElementType).
     Proof. intros. apply vdot_sqr_le. Qed.
 
     (** (v i)² <= <a, a> *)
-    Lemma vnth_sqr_le_vdot : forall {n} (a : vec n) (i : fin n), (a i) ² <= <a, a>.
+    Lemma vnth_sqr_le_vdot : forall {n} (a : vec n) (i : 'I_n), (a i) ² <= <a, a>.
     Proof. intros. apply vnth_sqr_le_vdot. Qed.
 
     (** (∀ i, 0 <= a.i) -> a.i <= ∑a *)
@@ -3508,7 +3508,7 @@ Module NormedOrderedFieldMatrixTheory (E : NormedOrderedFieldElementType).
   Proof. intros. apply vdot_same. Qed.
 
   (** |a i| <= ||a|| *)
-  Lemma vnth_le_vlen : forall {n} (a : vec n) (i : fin n),
+  Lemma vnth_le_vlen : forall {n} (a : vec n) (i : 'I_n),
       a <> vzero -> (a2r (|a i|%A) <= ||a||)%R.
   Proof. intros. apply vnth_le_vlen; auto. Qed.
 

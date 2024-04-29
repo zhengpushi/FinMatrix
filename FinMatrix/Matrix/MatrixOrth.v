@@ -364,9 +364,9 @@ Module MatrixOrth (F : FieldElementType).
         + rewrite vdot_col_col; auto. rewrite H; auto. rewrite mnth_mat1_same; auto.
       - destruct H as [H1 H2]. apply meq_iff_mnth; intros.
         rewrite <- vdot_col_col; auto.
-        destruct (fin2nat i ??= fin2nat j)%nat as [E|E].
-        + apply fin2nat_inj in E; subst. rewrite mnth_mat1_same; auto.
-        + apply fin2nat_inj_not in E. rewrite mnth_mat1_diff; auto.
+        destruct (i ??= j) as [E|E].
+        + fin2nat. rewrite mnth_mat1_same; auto.
+        + fin2nat. rewrite mnth_mat1_diff; auto.
     Qed.
     
     (** matrix M is orthogonal <-> rows of M are orthogomal *)

@@ -83,9 +83,9 @@ Section GaussElim.
   (* 为避免逆矩阵计算时的大量计算，使用抽象表示，可提高计算效率 *)
   Inductive RowOp {n} :=
   | ROnop
-  | ROswap (i j : fin (S n))
-  | ROscale (i : fin (S n)) (c : A)
-  | ROadd (i j : fin (S n)) (c : A).
+  | ROswap (i j : 'I_(S n))
+  | ROscale (i : 'I_(S n)) (c : A)
+  | ROadd (i j : 'I_(S n)) (c : A).
 
   (** 行变换列表转换为矩阵 *)
   Definition rowOps2mat {n} (l : list (@RowOp n)) : smat (S n) :=
@@ -325,7 +325,7 @@ Section GaussElim.
     intros l1 l2. revert l1. induction l2.
     - intros. simpl. rewrite app_nil_r. rewrite mmul_1_l; auto.
     - intros. simpl.
-      replace (l1 ++ a :: l2) with ((l1 ++ [a]) ++ l2);
+      replace (l1 ++ a :: l2)%list with ((l1 ++ [a]) ++ l2)%list;
         [|rewrite <- app_assoc; auto].
       rewrite IHl2. rewrite fold_left_app; simpl.
       (* Assume: l1 = [b1;b2], l2 = [c1;c2], then
@@ -373,17 +373,17 @@ Section GaussElim.
 
   (** 方阵 M 的前 x 列的左下角(不含对角线)是 0。当 x = n 时，整个矩阵左下角是 0 *)
   Definition mLeftLowerZeros {n} (M : smat n) (x : nat) : Prop :=
-    forall (i j : fin n), fin2nat j < x -> fin2nat j < fin2nat i -> M.[i].[j] = 0.
+    forall (i j : 'I_n), j < x -> j < i -> M.[i].[j] = 0.
 
   Lemma mLeftLowerZeros_less : forall {n} (M : smat (S n)) (x : nat),
       mLeftLowerZeros M (S x) -> mLeftLowerZeros M x.
   Proof. intros. hnf in *; intros. rewrite H; auto. Qed.
   
   Lemma mLeftLowerZeros_S : forall {n} (M : smat (S n)) (x : nat),
-      (forall (i : fin (S n)), x < fin2nat i -> M i #x = 0) ->
+      (forall (i : 'I_(S n)), x < i -> M i #x = 0) ->
       mLeftLowerZeros M x -> mLeftLowerZeros M (S x).
   Proof.
-    intros. hnf in *; intros. destruct (x ??= fin2nat j)%nat.
+    intros. hnf in *; intros. destruct (x ??= j).
     - assert (j = #x). rewrite e. rewrite nat2finS_fin2nat; auto.
       rewrite H3. rewrite H; auto. lia.
     - rewrite H0; auto. lia.
@@ -397,7 +397,7 @@ Section GaussElim.
   Lemma mat1_mLeftLowerZeros : forall {n}, mLeftLowerZeros (@mat1 n) n.
   Proof.
     intros. hnf. intros. rewrite mnth_mat1_diff; auto.
-    assert (fin2nat i <> fin2nat j); try lia. fin.
+    assert (fin2nat i <> j); try lia. fin.
   Qed.
   
   Lemma mat1_mUpperTrig : forall {n}, mUpperTrig (@mat1 n).
@@ -406,7 +406,7 @@ Section GaussElim.
   
   (** 方阵 M 的前 x 行/列的对角线都是 1。当 x=n 时，整个矩阵的对角线是 1 *)
   Definition mDiagonalOne {n} (M : smat n) (x : nat) : Prop :=
-    forall (i : fin n), fin2nat i < x -> M i i = 1.
+    forall (i : 'I_n), i < x -> M i i = 1.
   
   Lemma mat1_mDiagonalOne : forall {n}, mDiagonalOne (@mat1 n) n.
   Proof. intros. hnf; intros. rewrite mnth_mat1_same; auto. Qed.
@@ -424,16 +424,16 @@ Section GaussElim.
     mUpperTrig M /\ mDiagonalOnes M.
 
   (** 单位上三角矩阵，任意下面的行的倍数加到上面，仍然是单位上三角矩阵 *)
-  Lemma mrowAdd_mUnitUpperTrig : forall {n} (M : smat (S n)) (i j : fin (S n)),
+  Lemma mrowAdd_mUnitUpperTrig : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
       mUnitUpperTrig M ->
-      fin2nat i < fin2nat j ->
+      i < j ->
       mUnitUpperTrig (mrowAdd i j (- (M i j))%A M).
   Proof.
     intros. unfold mUnitUpperTrig in *. destruct H. split; hnf in *; intros.
     - unfold mrowAdd; fin. subst.
       rewrite !(H _ j0); auto. ring.
       pose proof (fin2nat_lt j). lia.
-    - unfold mrowAdd; fin. apply fin2nat_inj in E; rewrite E.
+    - unfold mrowAdd; fin. fin2nat.
       rewrite H1; auto; fin. rewrite (H _ i); auto. ring.
   Qed.
   
@@ -441,12 +441,12 @@ Section GaussElim.
   (** 方阵 M 的后 x 列的右上角（不含对角线）全是 0。
       当 x = n 时，整个矩阵右上角是 0 *)
   Definition mRightUpperZeros {n} (M : smat n) (x : nat) : Prop :=
-    forall (i j : fin n), n - x <= fin2nat j -> fin2nat i < fin2nat j -> M i j = 0.
+    forall (i j : 'I_n), n - x <= j -> i < j -> M i j = 0.
   
   Lemma mat1_mRightUpperZeros : forall {n}, mRightUpperZeros (@mat1 n) n.
   Proof.
     intros. hnf. intros. rewrite mnth_mat1_diff; auto.
-    assert (fin2nat i <> fin2nat j); try lia. fin.
+    assert (fin2nat i <> j); try lia. fin.
   Qed.
   
 
@@ -455,8 +455,8 @@ Section GaussElim.
 
   (** 第 j 列的后 x 个元素中的第 1 个非零元的行号。
       eg: 当 x 是`维数` 时，则从第 0 行开始往下查找。 *)
-  Fixpoint firstNonzero {n} (M : smat (S n)) (x : nat) (j : fin (S n))
-    : option (fin (S n)) :=
+  Fixpoint firstNonzero {n} (M : smat (S n)) (x : nat) (j : 'I_(S n))
+    : option ('I_(S n)) :=
     match x with
     | O => None
     | S x' =>
@@ -468,7 +468,7 @@ Section GaussElim.
     end.
 
   Lemma firstNonzero_imply_nonzero :
-    forall (x : nat) {n} (M : smat (S n)) (i j : fin (S n)),
+    forall (x : nat) {n} (M : smat (S n)) (i j : 'I_(S n)),
       firstNonzero M x j = Some i -> M i j <> 0.
   Proof.
     induction x; intros.
@@ -479,8 +479,8 @@ Section GaussElim.
   Qed.
   
   (* 非零元行号 r < S n *)
-  Lemma firstNonzero_max : forall (x : nat) {n} (M : smat (S n)) (j r : fin (S n)),
-      firstNonzero M x j = Some r -> fin2nat r < S n.
+  Lemma firstNonzero_max : forall (x : nat) {n} (M : smat (S n)) (j r : 'I_(S n)),
+      firstNonzero M x j = Some r -> r < S n.
   Proof.
     induction x; intros.
     - simpl in H. easy.
@@ -490,8 +490,8 @@ Section GaussElim.
   Qed.
   
   (* 非零元行号 r >= S n - x *)
-  Lemma firstNonzero_min: forall (x : nat) {n} (M : smat (S n)) (j r : fin (S n)),
-      firstNonzero M x j = Some r -> fin2nat r >= S n - x.
+  Lemma firstNonzero_min: forall (x : nat) {n} (M : smat (S n)) (j r : 'I_(S n)),
+      firstNonzero M x j = Some r -> r >= S n - x.
   Proof.
     induction x; intros.
     - simpl in H. easy.
@@ -523,13 +523,13 @@ Section GaussElim.
   (** ** 向下消元 *)
   
   (* 将矩阵M的第j列的后 x 行元素变为 0。当 j=#0时，x=n *)
-  Fixpoint elimDown {n} (M : smat (S n)) (x : nat) (j : fin (S n))
+  Fixpoint elimDown {n} (M : smat (S n)) (x : nat) (j : 'I_(S n))
     : list RowOp * smat (S n) :=
     match x with
     | O => ([], M)
     | S x' =>
         (* 递归时 x 从大到小，而 fx 是从小到大 *)
-        let fx : fin (S n) := #(S n - x) in
+        let fx : 'I_(S n) := #(S n - x) in
         let x : A := M.[fx].[j] in
         (* 如果 M[S n-x,j] <> 0，则 j 行的 -M[S n-x,j] 倍加到 S n-x 行。要求 M[j,j]=1 *)
         if Aeqdec x 0
@@ -537,13 +537,13 @@ Section GaussElim.
         else
           let (op1, M1) := (ROadd fx j (-x)%A, mrowAdd fx j (-x)%A M) in
           let (l2, M2) := elimDown M1 x' j in
-          (l2 ++ [op1], M2)
+          ((l2 ++ [op1])%list, M2)
     end.
   
   (** 对 M 向下消元得到 (l, M')，则 l 都是有效的 *)
   Lemma elimDown_rowOpValid :
-    forall (x : nat) {n} (M M' : smat (S n)) (j : fin (S n)) (l : list RowOp),
-      x < S n - fin2nat j -> elimDown M x j = (l, M') -> Forall roValid l.
+    forall (x : nat) {n} (M M' : smat (S n)) (j : 'I_(S n)) (l : list RowOp),
+      x < S n - j -> elimDown M x j = (l, M') -> Forall roValid l.
   Proof.
     induction x; intros; simpl in *.
     - inversion H0. constructor.
@@ -562,7 +562,7 @@ Section GaussElim.
 
   (** 对 M 向下消元得到 (l, M')，则 [l] * M = M' *)
   Lemma elimDown_eq :
-    forall (x : nat) {n} (M M' : smat (S n)) (j : fin (S n)) (l : list RowOp),
+    forall (x : nat) {n} (M M' : smat (S n)) (j : 'I_(S n)) (l : list RowOp),
       elimDown M x j = (l, M') -> rowOps2mat l * M = M'.
   Proof.
     induction x; intros; simpl in *.
@@ -579,11 +579,11 @@ Section GaussElim.
 
   (* 若M[y,y]=1，则对第y列的 后 x 行向下消元后，前S n - x行的所有元素保持不变 *)
   Lemma elimDown_keep_former_row :
-    forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : fin (S n)),
+    forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : 'I_(S n)),
       elimDown M x y = (l, M') ->
       M y y = 1 ->
-      x < S n - fin2nat y ->
-      (forall i j : fin (S n), fin2nat i < S n - x -> M' i j = M i j).
+      x < S n - y ->
+      (forall i j : 'I_(S n), i < S n - x -> M' i j = M i j).
   Proof.
     induction x; intros.
     - simpl in H. inv H. auto.
@@ -598,24 +598,24 @@ Section GaussElim.
   
   (* 若M[y,y]=1，则对第y列的 后 x 行向下消元后，第 y 列的后x行的所有元素变成 0 *)
   Lemma elimDown_latter_row_0:
-    forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : fin (S n)),
+    forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : 'I_(S n)),
       elimDown M x y = (l, M') ->
       M y y = 1 ->
-      x < S n - fin2nat y ->
-      (forall i : fin (S n), S n - x <= fin2nat i -> M' i y = 0).
+      x < S n - y ->
+      (forall i : 'I_(S n), S n - x <= i -> M' i y = 0).
   Proof.
     induction x; intros.
     - pose proof (fin2nat_lt i). lia.
     - simpl in H.
       destruct (Aeqdec (M #(n - x) y) 0) as [E|E].
-      + destruct (fin2nat i ??= n - x)%nat as [E1|E1].
+      + destruct (i ??= n - x) as [E1|E1].
         * apply elimDown_keep_former_row with (i:=i)(j:=y) in H; auto; try lia.
           subst. rewrite H. rewrite <- E1 in E. rewrite nat2finS_fin2nat in E; auto.
         * apply IHx with (i:=i) in H; auto; try lia.
       + destruct elimDown as [l2 M2] eqn: T2.
         inversion H. rewrite <- H5.
         replace (S n - S x) with (n - x) in H2 by lia.
-        destruct (fin2nat i ??= n - x)%nat as [E1|E1].
+        destruct (i ??= n - x) as [E1|E1].
         * apply elimDown_keep_former_row with (i:=i)(j:=y) in T2; auto; try lia.
           ** rewrite T2. unfold mrowAdd; fin. rewrite H0. rewrite <- E0. fin.
           ** unfold mrowAdd; fin.
@@ -624,12 +624,12 @@ Section GaussElim.
 
   (* 若 M 的前 y 列左下方都是0，则对后 x 行向下消元后，M' 的前 y 列左下方都是0 *)
   Lemma elimDown_mLowerLeftZeros_aux:
-    forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : fin (S n)),
+    forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : 'I_(S n)),
       elimDown M x y = (l, M') ->
-      mLeftLowerZeros M (fin2nat y) ->
-      x < S n - fin2nat y ->
+      mLeftLowerZeros M (y) ->
+      x < S n - y ->
       M y y = 1 ->
-      mLeftLowerZeros M' (fin2nat y).
+      mLeftLowerZeros M' (y).
   Proof.
     induction x; intros.
     - simpl in H. inv H. auto.
@@ -639,7 +639,7 @@ Section GaussElim.
       + destruct elimDown as [l2 M2] eqn: T2.
         inversion H. rewrite <- H5.
         hnf; intros.
-        destruct (x ??< S n - fin2nat y)%nat as [E1|E1].
+        destruct (x ??< S n - y) as [E1|E1].
         * apply IHx in T2; auto; try lia; clear IHx.
           ** hnf; intros. unfold mrowAdd; fin.
              rewrite !(H0 _ j0); auto. ring.
@@ -658,7 +658,7 @@ Section GaussElim.
   Proof.
     intros. hnf; intros.
     (* 两种情况：在 x 列，在 x 列左侧 *)
-    destruct (fin2nat j ??= x)%nat as [E|E].
+    destruct (j ??= x) as [E|E].
     - apply elimDown_latter_row_0 with (i:=i) in H; auto; subst; fin.
     - apply elimDown_mLowerLeftZeros_aux in H; auto; fin.
       rewrite H; auto.
@@ -695,7 +695,7 @@ Section GaussElim.
     match x with
     | O => Some ([], M)
     | S x' =>
-        let j : fin (S n) := #(S n - x) in
+        let j : 'I_(S n) := #(S n - x) in
         (* 找出主元 *)
         match firstNonzero M x j with
         | None => None (* 没有非零元，则该矩阵不可逆 *)
@@ -714,7 +714,7 @@ Section GaussElim.
             (* 递归 *)
             match rowEchelon M3 x' with
             | None => None
-            | Some (l4, M4) => Some (l4 ++ l3 ++ [op2; op1], M4)
+            | Some (l4, M4) => Some ((l4 ++ l3 ++ [op2; op1])%list, M4)
             end
         end
     end.
@@ -823,7 +823,7 @@ Section GaussElim.
              *** rewrite <- E0. fin. rewrite field_mulInvL; auto.
                  rewrite <- E0 in *. fin.
                  apply firstNonzero_imply_nonzero in Hi; auto.
-                 apply fin2nat_inj in E; subst. auto.
+                 fin2nat. auto.
              *** rewrite H0; auto. lia.
           ** unfold mrowScale; fin. rewrite field_mulInvL; auto.
              apply firstNonzero_imply_nonzero in Hi. rewrite <- E in *. fin.
@@ -840,7 +840,7 @@ Section GaussElim.
              *** subst.
                  pose proof (firstNonzero_max _ _ _ _ Hi).
                  pose proof (firstNonzero_min _ _ _ _ Hi). lia.
-             *** assert (fin2nat i0 < n - x)%nat. lia.
+             *** assert (i0 < n - x). lia.
                  rewrite H0; auto.
           ** unfold mrowScale, mrowSwap; fin.
              rewrite field_mulInvL; auto.
@@ -876,7 +876,7 @@ Section GaussElim.
         apply Forall_app. split; auto.
         repeat constructor. unfold roValid.
         apply field_inv_neq0_iff.
-        apply firstNonzero_imply_nonzero in Hi. fin2nat_inj. auto. fin. fin.
+        apply firstNonzero_imply_nonzero in Hi. fin2nat. auto. fin. fin.
       + (* i 不是当前行，需要换行 *)
         destruct elimDown as [l3 M3] eqn:T3.
         destruct (rowEchelon M3 x) as [[l4 M4]|] eqn:T4; try easy.
@@ -958,12 +958,12 @@ Section GaussElim.
   (** ** 向上消元 *)
   
   (* 将矩阵M的第 j 列的前 x 行元素变为 0。当 j=#(S n)时，x=S n *)
-  Fixpoint elimUp {n} (M : smat (S n)) (x : nat) (j : fin (S n))
+  Fixpoint elimUp {n} (M : smat (S n)) (x : nat) (j : 'I_(S n))
     : list RowOp * smat (S n) :=
     match x with
     | O => ([], M)
     | S x' =>
-        let fx : fin (S n) := #x' in
+        let fx : 'I_(S n) := #x' in
         let a : A := (M.[fx].[j]) in
         (* 如果 M[x',j] <> 0，则 j 行的 -M[x',j] 倍加到 x' 行。要求 M[j,j]=1 *)
         if Aeqdec a 0
@@ -971,12 +971,12 @@ Section GaussElim.
         else
           let (op1, M1) := (ROadd fx j (-a)%A, mrowAdd fx j (-a)%A M) in
           let (l2, M2) := elimUp M1 x' j in
-          (l2 ++ [op1], M2)
+          ((l2 ++ [op1])%list, M2)
     end.
 
   (** 对 M 向上消元得到 (l, M')，则 [l] * M = M' *)
   Lemma elimUp_eq :
-    forall (x : nat) {n} (M M' : smat (S n)) (j : fin (S n)) (l : list RowOp),
+    forall (x : nat) {n} (M M' : smat (S n)) (j : 'I_(S n)) (l : list RowOp),
       elimUp M x j = (l, M') -> rowOps2mat l * M = M'.
   Proof.
     induction x; intros; simpl in *.
@@ -993,8 +993,8 @@ Section GaussElim.
   
   (** 对 M 向上消元得到 (l, M')，则 l 都是有效的 *)
   Lemma elimUp_rowOpValid :
-    forall (x : nat) {n} (M M' : smat (S n)) (j : fin (S n)) (l : list RowOp),
-      x <= fin2nat j ->     (* 前 x 行，行号不超过 j *)
+    forall (x : nat) {n} (M M' : smat (S n)) (j : 'I_(S n)) (l : list RowOp),
+      x <= j ->     (* 前 x 行，行号不超过 j *)
       elimUp M x j = (l, M') -> Forall roValid l.
   Proof.
     induction x; intros; simpl in *.
@@ -1012,9 +1012,9 @@ Section GaussElim.
 
   (** 对 M 向上消元保持单位上三角矩阵 *)
   Lemma elimUp_mUnitUpperTrig :
-    forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (j : fin (S n)),
+    forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (j : 'I_(S n)),
       elimUp M x j = (l, M') ->
-      x <= fin2nat j ->     (* 前 x 行，行号不超过 j *)
+      x <= j ->     (* 前 x 行，行号不超过 j *)
       mUnitUpperTrig M -> mUnitUpperTrig M'.
   Proof.
     induction x; intros.
@@ -1030,10 +1030,10 @@ Section GaussElim.
 
   (* 上消元时，x 行及以下的行保持不变 *)
   Lemma elimUp_keep_lower_rows :
-    forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : fin (S n)),
+    forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : 'I_(S n)),
       elimUp M x y = (l, M') ->
-      x <= fin2nat y ->     (* 前 x 行，行号不超过 y *)
-      (forall i j : fin (S n), x <= fin2nat i -> M' i j = M i j).
+      x <= y ->     (* 前 x 行，行号不超过 y *)
+      (forall i j : 'I_(S n), x <= i -> M' i j = M i j).
   Proof.
     induction x; intros.
     - simpl in H. inv H. auto.
@@ -1048,23 +1048,23 @@ Section GaussElim.
   
   (* 上消元后该列上方元素为 0 *)
   Lemma elimUp_upper_rows_0 :
-    forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : fin (S n)),
+    forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : 'I_(S n)),
       elimUp M x y = (l, M') ->
       mUnitUpperTrig M ->
-      x <= fin2nat y ->     (* 前 x 行，行号不超过 y *)
-      (forall i : fin (S n), fin2nat i < x -> M' i y = 0).
+      x <= y ->     (* 前 x 行，行号不超过 y *)
+      (forall i : 'I_(S n), i < x -> M' i y = 0).
   Proof.
     induction x; intros; try lia.
     simpl in H. hnf in H0. destruct H0 as [H00 H01].
     destruct (Aeqdec (M #x y) 0) as [E|E].
     - (* i 在当前列 x，或者 i 小于 x *)
-      destruct (x ??= fin2nat i)%nat as [E1|E1].
+      destruct (x ??= i) as [E1|E1].
       + apply elimUp_keep_lower_rows with (i:=i)(j:=y) in H; try lia.
         rewrite H. subst. fin.
       + apply IHx with (i:=i) in H; auto; try lia. split; auto.
     - destruct elimUp as [l2 M2] eqn: T2. inv H.
       (* i 在当前列 x，或者 i 小于 x *)
-      destruct (x ??= fin2nat i)%nat as [E1|E1].
+      destruct (x ??= i) as [E1|E1].
       + rewrite E1 in *.
         apply elimUp_keep_lower_rows with (i:=i)(j:=y) in T2; try lia. rewrite T2.
         unfold mrowAdd; fin. rewrite H01; auto; try lia; fin.
@@ -1075,10 +1075,10 @@ Section GaussElim.
 
   (** 若 M 的后 L 列的右上角都是 0，则上消元后，M' 的后 L 列的右上角都是 0 *)
   Lemma elimUp_mUpperRightZeros_aux :
-    forall (x L : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : fin (S n)),
+    forall (x L : nat) {n} (M M' : smat (S n)) (l : list RowOp) (y : 'I_(S n)),
       elimUp M x y = (l, M') ->
-      x <= fin2nat y ->
-      L < S n - fin2nat y ->
+      x <= y ->
+      L < S n - y ->
       mUnitUpperTrig M ->
       mRightUpperZeros M L ->
       mRightUpperZeros M' L.
@@ -1107,7 +1107,7 @@ Section GaussElim.
   Proof.
     intros. hnf; intros.
     replace (S n - (S n - y)) with y in H3 by lia.
-    destruct (fin2nat j ??= y)%nat as [E|E].
+    destruct (j ??= y) as [E|E].
     - subst. apply elimUp_upper_rows_0 with (i:=i) in H; auto; fin.
     - apply elimUp_mUpperRightZeros_aux with (L:=S n - S y) in H; auto; fin.
       rewrite H; auto. lia.
@@ -1132,10 +1132,10 @@ Section GaussElim.
     match x with
     | O => ([], M)
     | S x' =>
-        let fx : fin (S n) := #x' in
+        let fx : 'I_(S n) := #x' in
         let (l1, M1) := elimUp M x' fx in
         let (l2, M2) := minRowEchelon M1 x' in
-        (l2 ++ l1, M2)
+        ((l2 ++ l1)%list, M2)
     end.
 
   (** 对 M 最简行变换得到 (l, M')，则 [l] * M = M' *)
@@ -1220,12 +1220,11 @@ Section GaussElim.
       hnf in H. destruct H. rewrite H; auto; fin.
     - destruct (j ??= i) as [E|E].
       + (* 对角线 *)
-        apply minRowEchelon_mUnitUpperTrig in H; auto.
-        apply fin2nat_inj in E; subst.
+        apply minRowEchelon_mUnitUpperTrig in H; auto. fin2nat.
         rewrite mat1_mDiagonalOne; fin.
         hnf in H. destruct H. rewrite H1; auto; fin.
       + (* 右上角 *)
-        assert (fin2nat i < fin2nat j) by lia.
+        assert (i < j) by lia.
         rewrite mat1_mRightUpperZeros; auto; fin.
         apply minRowEchelon_mRightUpperZeros in H; auto; fin.
         * rewrite H; auto; try lia.

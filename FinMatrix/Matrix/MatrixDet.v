@@ -12,315 +12,66 @@
   2. 行列式在几何、分析等数学分支中也有重要应用。
 
   remark    :
-  1. compute permutation of a list, such as 
-     perm [a;b;c] => [[a;b;c]; [a;c;b]; [b;a;c]; [b;c;a]; [c;a;b]; [c;b;a]]
-     perm [1;2;3] => [[1;2;3]; [1;3;2]; [2;1;3]; [2;3;1]; [3;1;2]; [3;2;1]]
-  2. 行列式问题
+  1. 行列式的定义：n!个单项式的代数和，每个项是矩阵中不同行不同列元素的乘积，并冠以逆序数。
+  (1) 2级矩阵
+     A = [[a11;a12]; [a21;a22]]
+     det(A) = a11*a22 + -(a12*a21)
+            = a11*det[[a22]] + (-a12)*det[[a21]]  按第1行展开
+            = (-a21)*det[[a12]] + a22*det[[a11]]  按第2行展开
+            = a11*det[[a22]] + (-a21)*det[[a12]]  按第1列展开
+            = (-a12)*det[[a21]] + a22*det[[a11]]  按第2列展开
+  (2) 3级矩阵
+     A = [[a11;a12;a13]; [a21;a22;a23]; [a31;a32;a33]]，
+     det(A) = a11*a22*a33 + -a11*a23*a32 + ...
+            = a11*det[[a22;a23];[a32;a33]])
+              + (-a12)*det[[a21;a23];[a31;a33]]
+              + a13*det[[a21;a22];[a31;a32]]    按第1行展开
+            = 其他含开方式类似
 
-     行列式的定义：它是一个单项式的求和，每个单项式是矩阵中不同行不同列元素的乘积，并
-     冠以逆序数。
+  这里展示了两种方法：原始的凑下标的方式，递归的按某行某列展开的方法。
+  数学上已经证明这两种方法的等价性。在Coq中也可以验证一次。
+              
+  上述分析发现，我们需要如下的算法：
+  (1). 逆序数：给定一个自然数列表，
+  (2). 行列式原始算法：如何取出不同行不同列下标的所有组合。
+  (3). 子矩阵：去掉一行一列后剩下的矩阵。这是构造按某行某列展开算法的基础。
 
-     二级矩阵
-        A = [[a11;a12]; [a21;a22]]
-        det(A) = a11*a22 + -(a12*a21)
-               = a11*det[[a22]] + (-a12)*det[[a21]]  按第1行展开
-               = (-a21)*det[[a12]] + a22*det[[a11]]  按第2行展开
-               = a11*det[[a22]] + (-a21)*det[[a12]]  按第1列展开
-               = (-a12)*det[[a21]] + a22*det[[a11]]  按第2列展开
-     三级矩阵
-        A = [[a11;a12;a13]; [a21;a22;a23]; [a31;a32;a33]]，
-        det(A) = a11*a22*a33 + -a11*a23*a32 + ...
-               = a11*det[[a22;a23];[a32;a33]])
-                 + (-a12)*det[[a21;a23];[a31;a33]]
-                 + a13*det[[a21;a22];[a31;a32]]    按第1行展开
-               = 其他含开方式类似
-
-     这里展示了两种方法：原始的凑下标的方式，递归的按某行某列展开的方法。
-     数学上已经证明这两种方法的等价性。在Coq中也可以验证一次。
-                 
-     上述分析发现，我们需要如下的算法：
-     1. 逆序数：给定一个自然数列表，
-     2. 行列式原始算法：如何取出不同行不同列下标的所有组合。
-     3. 子矩阵：去掉一行一列后剩下的矩阵。这是构造按某行某列展开算法的基础。
-
-  3. 行列式的性质
+  2. 行列式的性质
   (1) n阶行列式是 n! 项的代数和，其中每一项是位于不同行、不同列的n个元素的乘积。
       当 n 增大时，n! 迅速增大。例如：5!=120, 10!=3628800 (362万个项)。
       所以我们一般不会做完全展开。
   (2) 行列互换（即矩阵做转置），行列式的值不变。这表明行列式的行与列的地位是对称的。
       因此有关行的性质，对于列也同样成立。今后只研究有关行的性质。
+
+  3. 行列式的行指标、列指标的各种可能性
+  (1) 2 级为例
+         12    21
+      12 11*22 12*21
+      21 21*12 22*11
+      有2!种行指标排列，构成了每一行: 11*22-12*21, -21*12+22*11
+      有2!种列指标排列，构成了每一列: 11*22-21*12, -12*21+22*11
+  (2) 3级矩阵
+          123      132      213      231      312      321
+      123 11*22*33 11*23*32 12*21*33 12*23*31 13*21*32 13*22*31
+      132
+      213
+      231
+      312
+      321
+      有3!种行指标排列，构成了每一行。
+      有3!种列指标排列，构成了每一列。
+   (3) n级矩阵
+      有n!种行指标排列，每个排列构成了一行，第一行是行指标自然序。
+      有n!种列指标排列，每个排列构成了一列，第一列是列指标自然序。
+      该矩阵应该满足：每一行相加都相等，每一列相加也相等。
  *)
 
 Require Import Extraction.
-Require Export ListExt NatExt Matrix.
+Require Export ListExt NatExt Matrix Permutation.
 Require ZArith Reals.
 
 
 Generalizable Variable A Aadd Azero Aopp Amul Aone Ainv.
-
-
-(* ############################################################################ *)
-(** * Permutation of a list *)
-
-(* ======================================================================= *)
-(** ** Different methods for permutation *)
-
-(** *** Method 1 *)
-Module method1.
-  
-  Section def.
-    Context {A} {Azero : A}.
-    
-    (** Get k-th element and remaining elements from a list *)
-    Fixpoint pick (l : list A) (k : nat) : A * list A :=
-      match k with
-      | 0 => (hd Azero l, tl l)
-      | S k' =>
-          match l with
-          | [] => (Azero, [])
-          | x :: l' =>
-              let (a,l0) := pick l' k' in
-              (a, [x] ++ l0)
-          end
-      end.
-    
-    (** Get permutation of a list from its top n elements *)
-    Fixpoint permAux (n : nat) (l : list A) : list (list A) :=
-      match n with
-      | 0 => [[]]
-      | S n' =>
-          concat
-            (map
-               (fun k =>
-                  let '(x, lx) := k in
-                  map (cons x) (permAux n' lx))
-               (map (fun i => pick l i) (seq 0 n)))
-      end.
-
-    (** Get permutation of a list *)
-    Definition perm (l : list A) : list (list A) := permAux (length l) l.
-  End def.
-  
-  (* Compute perm [1;2;3]. *)
-
-End method1.
-
-
-
-(* Section old_code. *)
-(*   Context {A : Type} {Azero : A} {Altb : A -> A -> bool}. *)
-
-
-(** *** Method 2 *)
-Module method2.
-  
-  Section def.
-    Context {A} {Azero : A}.
-    
-    (** Convert a list to list of (one element * remaining elements) *)
-    Fixpoint pick {A} (l : list A) (remaining : list A) : list (A * list A) :=
-      match l with
-      | [] => []
-      | hl :: tl =>
-          (hl, remaining ++ tl) :: (pick tl (remaining ++ [hl]))
-      end.
-
-    (** Get permutation of a list from its top n elements *)
-    Fixpoint permAux {A} (n : nat) (l : list A) : list (list A) :=
-      match n with
-      | 0 => [[]]
-      | S n' =>
-          concat
-            (map
-               (fun k =>
-                  let '(x, lx) := k in
-                  map (cons x) (permAux n' lx))
-               (pick l []))
-      end.
-    
-    (** Get permutation of a list *)
-    Definition perm (l : list A) : list (list A) := permAux (length l) l.
-  End def.
-
-  (* Compute perm2 [1;2;3]. *)
-  
-End method2.
-
-
-
-(** *** Method 3 *)
-Module Export method3.
-
-  Section def.
-    Context {A : Type}.
-
-    (* 将 a 插入 l 的每个位置 *)
-    Fixpoint permOne (a : A) (l : list A) : list (list A) :=
-      match l with
-      | [] => [[a]]
-      | hl :: tl => (a :: l) :: (map (cons hl) (permOne a tl))
-      end.
-
-    (** Permutation of a list *)
-    Fixpoint perm (l : list A) : list (list A) :=
-      match l with
-      | [] => [[]]
-      | hl :: tl => concat (map (permOne hl) (perm tl))
-      end.
-  End def.
-
-  (* Compute permOne 1 [2;3]. *)
-  (* = [[1; 2; 3]; [2; 1; 3]; [2; 3; 1]] : dlist nat *)
-
-  (* Compute perm [1;2;3]. *)
-  (* = [[1; 2; 3]; [2; 1; 3]; [2; 3; 1]; [1; 3; 2]; [3; 1; 2]; [3; 2; 1]] : dlist nat *)
-  
-
-  Section props.
-    Context {A : Type}.
-
-    (** |permOne (a::l)| = |l| + 1 *)
-    Lemma permOne_length : forall a (l : list A), length (permOne a l) = S (length l).
-    Proof. induction l; simpl; auto. rewrite map_length. auto. Qed.
-
-    Lemma permOne_not_nil : forall a (l : list A), permOne a l <> [].
-    Proof. induction l; simpl; try easy. Qed.
-
-    Lemma perm_not_nil : forall (l : list A), perm l <> [].
-    Proof.
-      induction l; simpl; try easy.
-      destruct (perm l) eqn:E; simpl; try easy.
-      destruct (permOne a l0) eqn:E1; try easy.
-      apply permOne_not_nil in E1; auto.
-    Qed.
-    
-    (* hd (perm l) = l *)
-    Lemma hd_perm : forall (l : list A), hd [] (perm l) = l.
-    Proof.
-      induction l; auto.
-      simpl.
-    Admitted.
-
-    Lemma perm_length_in : forall (l x : list A),
-        In x (perm l) -> length x = S (length l).
-    Admitted.
-    (** |perm (a::l)| = |(a::l)| * |perm l| *)
-    Lemma perm_cons_length : forall a (l : list A),
-        length (perm (a :: l)) = (S (length l)) * (length (perm l)).
-    Proof.
-      intros. revert a. induction l; intros.
-      - simpl. auto.
-      - unfold perm; fold (perm (a :: l)).
-        (* remember (a :: l) as d. *)
-        assert (forall {A} (d : dlist A) n,
-                   (forall l, In l d -> length l = n) ->
-                   length (concat d) = n * length d).
-        admit.
-        rewrite H with (n:=S (length (a :: l))).
-        rewrite map_length. auto.
-        intros.
-    Admitted.
-    
-    (** |perm l| = |l|! *)
-    Lemma length_perm : forall (l : list A), length (perm l) = fact (length l).
-    Proof.
-      induction l. auto.
-      rewrite perm_cons_length.
-      simpl. rewrite IHl. auto.
-    Qed.
-
-    (* In a (perm l) -> forall x, In x a -> In x l *)
-    Lemma perm_in : forall (l : list A) (a : list A),
-        In a (perm l) -> (forall x, In x a -> In x l).
-    Proof.
-    Admitted.
-  
-  End props.
-
-  (* 索引下标构成的排列 *)
-  Section perm_index.
-    Open Scope nat_scope.
-    Notation perm := (@perm nat).
-    
-    (** In a (perm (seq 0 n)) -> i < n -> nth i a < n *)
-    Lemma perm_index_lt : forall n i a, In a (perm (seq 0 n)) -> i < n -> nth i a 0 < n.
-    Proof.
-      intros. apply perm_in with (x:=nth i a 0) in H.
-      - apply in_seq in H. lia.
-      - apply nth_In.
-        apply perm_length_in in H. rewrite seq_length in H. lia.
-    Qed.
-
-  End perm_index.
-
-End method3.
-
-
-(* ======================================================================= *)
-(** ** reverse-order-number (RON) of a list, 逆序数 *)
-Section ronum.
-  Context {A} {Altb : A -> A -> bool}.
-  Infix "<?" := Altb.
-
-  (* The RON of one element respect to a list *)
-  Definition ronum1 (a : A) (l : list A) : nat :=
-    fold_left (fun (n : nat) (b : A) => n + (if b <? a then 1 else 0)) l 0.
-
-  (* The RON of a list *)
-  Fixpoint ronum (l : list A) : nat :=
-    match l with
-    | [] => 0
-    | x :: l' => ronum1 x l' + ronum l'
-    end.
-End ronum.
-
-Section test.
-  Let ronum1 := @ronum1 nat Nat.leb.
-  Let ronum := @ronum nat Nat.leb.
-  (* Compute ronum1 3 [1;2;4]. (* = 2 *) *)
-  (* Compute ronum [2;1;4;3]. (* = 2 *) *)
-  (* Compute ronum [2;3;4;1]. (* = 3 *) *)
-End test.
-
-(* ======================================================================= *)
-(** ** Parity of a permutation, 排列的奇偶性 *)
-Section parity.
-  Context {A} {Altb : A -> A -> bool}.
-
-  (** The RON of a permutation is odd *)
-  Definition oddPerm (l : list A) : bool := odd (ronum (Altb:=Altb) l).
-
-End parity.
-
-
-(* ======================================================================= *)
-(** ** Exchange of a permutation 排列的对换 *)
-Section permExchg.
-  Context {A} {Altb : A -> A -> bool} (Azero : A).
-
-  Notation ronum := (ronum (Altb:=Altb)).
-  Notation oddPerm := (oddPerm (Altb:=Altb)).
-
-  (* 对换第 i0,i1 的元素 *)
-  Definition permExchg (l : list A) (i0 i1 : nat) : list A :=
-    lswap Azero l i0 i1.
-
-  (** 对换相邻位置改变排列的奇偶性 *)
-  Theorem permExchg_parity : forall (l : list A) (n i0 i1 : nat),
-      length l = n -> i0 < n -> i1 < n -> i0 <> i1 ->
-      oddPerm (permExchg l i0 i1) <> oddPerm l.
-  Proof.
-    intros. unfold oddPerm. unfold permExchg.
-    revert l i0 i1 H H0 H1 H2. induction n; intros. lia.
-    destruct l; simpl in *. lia.
-    (* 教科书上的证明很巧妙，难以形式化的描述出来。
-       书上把 l 分解为
-       [...] i [...] j [...]
-       这种形式，然后分情形讨论
-     *)
-  Admitted.
-  
-End permExchg.
 
 
 (* ############################################################################ *)
@@ -364,10 +115,10 @@ Section mdet.
     | S n' =>
         fun (M : smat (S n')) =>
           (* 列号 0,1,..,(n-1) 的全排列 *)
-          let colIds := perm (seq 0 n)%nat in
+          let colIds := perm (seq 0 n) in
           (* 每个式 *)
           let item (l:list nat) : A :=
-            (let x := seqprod n (fun i => M.[#i].[#(nth i l 0)%nat]) in
+            (let x := seqprod n (fun i => M.[#i].[#(nth i l O)]) in
              if odd (ronum l) then - x else x) in
           (* 求和 *)
           fold_left Aadd (map item colIds) 0
@@ -376,10 +127,10 @@ Section mdet.
   (** 新的实现：元素索引为 nat 类型，避免了提供 i < n 的证明，无需处理 n = 0 *)
   Definition mdet {n} (M : smat n) : A :=
     (* 列号 0,1,..,(n-1) 的全排列 *)
-    let colIds : dlist nat := perm (seq 0 n)%nat in
+    let colIds : dlist nat := perm (seq 0 n) in
     (* 每个项 *)
     let item (l : list nat) : A :=
-      (let x := seqprod n (fun i => (m2f 0 M) i (nth i l 0%nat)) in
+      (let x := seqprod n (fun i => (m2f 0 M) i (nth i l O)) in
        if odd (ronum l) then - x else x) in
     (* 求和 *)
     fold_left Aadd (map item colIds) 0.
@@ -389,10 +140,10 @@ Section mdet.
   (** n阶行列式的完全展开式 (列下标固定，行下标来自于全排列）*)
   Definition mdet' {n} (M : smat n) : A :=
     (* 行号 0,1,..,(n-1) 的全排列 *)
-    let rowIds : dlist nat := perm (seq 0 n)%nat in
+    let rowIds : dlist nat := perm (seq 0 n) in
     (* 每个项 *)
     let item (l : list nat) : A :=
-      (let x := seqprod n (fun j => (m2f 0 M) (nth j l 0%nat) j) in
+      (let x := seqprod n (fun j => (m2f 0 M) (nth j l O) j) in
        if odd (ronum l) then - x else x) in
     (* 求和 *)
     fold_left Aadd (map item rowIds) 0.
@@ -456,7 +207,7 @@ Section mdet.
   Qed.
   
   (** Property 2 : | M with x*row(M,i) | = x * |M| *)
-  Lemma mdet_row_scale : forall {n} (M1 M2 : smat n) (i : fin n) (x : A),
+  Lemma mdet_row_scale : forall {n} (M1 M2 : smat n) (i : 'I_n) (x : A),
       (forall j, j <> i -> M1.[j] = M2.[j]) ->
       (M1.[i] = x \.* M2.[i])%V -> |M1| = (x * |M2|)%A.
   Proof.
@@ -466,11 +217,11 @@ Section mdet.
     f_equal; try ring. apply map_ext_in; intros.
     assert (seqprod n (fun i0 : nat => m2f 0 M1 i0 (nth i0 a O)) =
               (x * seqprod n (fun i0 : nat => m2f 0 M2 i0 (nth i0 a O)))%A).
-    - rewrite seqprod_cmul_l with (j:=fin2nat i); [|fin].
+    - rewrite seqprod_cmul_l with (j:=i); [|fin].
       apply seqprod_eq; intros.
       assert (i0 < n) as Hi by lia.
       assert (nth i0 a O < n) as Hj. apply perm_index_lt; auto.
-      bdestruct (i0 =? fin2nat i).
+      bdestruct (i0 =? i).
       + rewrite !nth_m2f with (Hi:=Hi)(Hj:=Hj).
         replace (nat2fin i0 Hi) with i. rewrite H0; auto. subst; fin.
       + rewrite !nth_m2f with (Hi:=Hi)(Hj:=Hj). rewrite H; auto.
@@ -481,7 +232,7 @@ Section mdet.
 
   (** Property 3: 若某一行是两组数的和，则行列式等于两个行列式的和，
       它们的这一行分别是这两组数 *)
-  Lemma mdet_row_add : forall {n} (M1 M2 M : smat n) (i : fin n),
+  Lemma mdet_row_add : forall {n} (M1 M2 M : smat n) (i : 'I_n),
       (forall j, j <> i -> M1.[j] = M.[j] /\ M2.[j] = M.[j]) ->
       (M1.[i] + M2.[i])%V = M.[i] -> |M| = (|M1| + |M2|)%A.
   Proof.
@@ -492,41 +243,134 @@ Section mdet.
     assert (seqprod n (fun i0 : nat => m2f 0 M i0 (nth i0 a O)) =
               (seqprod n (fun i0 : nat => m2f 0 M1 i0 (nth i0 a O)) +
                  seqprod n (fun i0 : nat => m2f 0 M2 i0 (nth i0 a O)))%A).
-    (* - ? *)
-    (*   rewrite seqprod_cmul_l with (j:=fin2nat i); [|fin]. *)
-    (*   apply seqprod_eq; intros. *)
-    (*   assert (i0 < n) as Hi by lia. *)
-    (*   assert (nth i0 a O < n) as Hj. apply perm_index_lt; auto. *)
-    (*   bdestruct (i0 =? fin2nat i). *)
-    (*   + rewrite !nth_m2f with (Hi:=Hi)(Hj:=Hj). *)
-    (*     replace (nat2fin i0 Hi) with i. rewrite H0; auto. subst; fin. *)
-    (*   + rewrite !nth_m2f with (Hi:=Hi)(Hj:=Hj). rewrite H; auto. *)
-    (*     intro; destruct H3; subst; fin. *)
-    (* - destruct (odd (ronum a)) eqn:E; auto. *)
-    (*   rewrite H2. ring. *)
-  (* Qed. *)
+    - pose proof (fin2nat_lt i) as Hi.
+      replace n with (i + S (n - S i))%nat at 1 2 3 by lia.
+      rewrite !seqprod_plusIdx_three.
+      replace (m2f 0 M i (nth i a O))
+        with ((m2f 0 M1 i (nth i a O)) + (m2f 0 M2 i (nth i a O)))%A.
+      2:{
+        assert (nth i a O < n) as Hj. apply perm_index_lt; auto.
+        rewrite !nth_m2f with (Hi:=Hi) (Hj:=Hj). fin.
+        rewrite <- H0. rewrite vnth_vadd. auto. }
+      ring_simplify. f_equal.
+      + (* LEFT PART *)
+        move2h (m2f 0 M1 i (nth i a O)). f_equal. f_equal.
+        * apply seqprod_eq; intros.
+          assert (i0 < n) as Hi0. pose proof (fin2nat_lt i). lia.
+          assert (nth i0 a O < n) as Hj0. apply perm_index_lt; auto.
+          rewrite !nth_m2f with (Hi:=Hi0) (Hj:=Hj0).
+          assert (nat2fin i0 Hi0 <> i).
+          { intro. subst. fin. }
+          destruct (H _ H3). rewrite H4. auto.
+        * apply seqprod_eq; intros.
+          assert (S (i + i0) < n) as Hi0. pose proof (fin2nat_lt i). lia.
+          assert (nth (S (i + i0)) a O < n) as Hj0. apply perm_index_lt; auto.
+          rewrite !nth_m2f with (Hi:=Hi0) (Hj:=Hj0).
+          assert (nat2fin (S (i + i0)) Hi0 <> i).
+          { intro. destruct i. simpl in *. apply fin_eq_iff in H3. lia. }
+          destruct (H _ H3). rewrite H4. auto.
+      + (* RIGHT PART, same as LEFT PART *)
+        move2h (m2f 0 M2 i (nth i a O)). f_equal. f_equal.
+        * apply seqprod_eq; intros.
+          assert (i0 < n) as Hi0. pose proof (fin2nat_lt i). lia.
+          assert (nth i0 a O < n) as Hj0. apply perm_index_lt; auto.
+          rewrite !nth_m2f with (Hi:=Hi0) (Hj:=Hj0).
+          assert (nat2fin i0 Hi0 <> i).
+          { intro. subst. fin. }
+          destruct (H _ H3). rewrite H5. auto.
+        * apply seqprod_eq; intros.
+          assert (S (i + i0) < n) as Hi0. pose proof (fin2nat_lt i). lia.
+          assert (nth (S (i + i0)) a O < n) as Hj0. apply perm_index_lt; auto.
+          rewrite !nth_m2f with (Hi:=Hi0) (Hj:=Hj0).
+          assert (nat2fin (S (i + i0)) Hi0 <> i).
+          { intro. destruct i. simpl in *. apply fin_eq_iff in H3. lia. }
+          destruct (H _ H3). rewrite H5. auto.
+    - destruct (odd (ronum a)) eqn:E; auto.
+      rewrite H2. ring.
+  Qed.
+  
+  (* 两行互换，行列式反号 (单侧的 i < k) *)
+  Lemma mdet_row_swap_lt : forall {n} (M1 M2 : smat n) (i k : 'I_n),
+      i < k ->
+      (forall j, j <> i -> j <> k -> M1.[j] = M2.[j]) ->
+      M1.[i] = M2.[k] -> M1.[k] = M2.[i] ->
+      (|M1| = - |M2|)%A.
+  Proof.
+    intros. unfold mdet.
+    rewrite fold_left_map. 2: intros; ring.
+    (* NOTE: sum is equal, but the elements are not point-wise equal *)
+    (* Check perm (seq 0 n). *)
+    (* Check perm (seq ? *)
+    (* f_equal; try ring. apply map_ext_in; intros. *)
+    (* assert (seqprod n (fun i0 : nat => m2f 0 M1 i0 (nth i0 a O)) = *)
+    (*           - seqprod n (fun i0 : nat => m2f 0 M2 i0 (nth i0 a O))). *)
+    (* 2:{ ? rewrite H4. destruct (odd (ronum a)); auto. } *)
+    (* assert (seqprod n (fun i0 : nat => m2f 0 M1 i0 (nth i0 a O)) = *)
+    (*           - (seqprod n (fun i0 : nat => m2f 0 M2 i0 (nth i0 a O)))). *)
+    (* - pose proof (fin2nat_lt i). pose proof (fin2nat_lt j). *)
+    (*   replace n with (i + S ((j - S i) + S (n - S j)))%nat at 1 2; fin. *)
+    (*   repeat (rewrite ?seqprod_plusIdx; rewrite ?seqprodS_head). *)
+    (*   replace (i + O)%nat with (fin2nat i); fin. *)
+    (*   replace (i + S (j - S i + O))%nat with (fin2nat j); fin. *)
+    (*   move2h (m2f 0 M1 j (nth j a O)). *)
+    (*   move2h (m2f 0 M1 i (nth i a O)). *)
+    (*   move2h (m2f 0 M2 j (nth j a O)). *)
+    (*   move2h (m2f 0 M2 i (nth i a O)). *)
+      
+    (*   rewrite seqprod_plusIdx; rewrite seqprodS_head. *)
+
+
+    (*   pose proof (fin2nat_lt i) as Hi. *)
+    (*   replace n with (i + S (n - S i))%nat at 1 2 3 by lia. *)
+    (*   rewrite !seqprod_plusIdx_three. *)
+    (*   replace (m2f 0 M i (nth i a O)) *)
+    (*     with ((m2f 0 M1 i (nth i a O)) + (m2f 0 M2 i (nth i a O)))%A. *)
+    (*   2:{ *)
+    (*     assert (nth i a O < n) as Hj. apply perm_index_lt; auto. *)
+    (*     rewrite !nth_m2f with (Hi:=Hi) (Hj:=Hj). fin. *)
+    (*     rewrite <- H0. rewrite vnth_vadd. auto. } *)
+    (*   ring_simplify. f_equal. *)
+    (*   + (* LEFT PART *) *)
+    (*     move2h (m2f 0 M1 i (nth i a O)). f_equal. f_equal. *)
+    (*     * apply seqprod_eq; intros. *)
+    
+    (* (* 2:{ destruct (odd (ronum a)) eqn:E; auto. *) *)
+    (* (*   rewrite H4. auto. } *) *)
   Admitted.
   
-  (* 两行互换，行列式反号 *)
-  Lemma mdet_row_swap : forall {n} (M1 M2 : smat n) (i j : fin n),
-      i <> j ->
-      (forall k, k <> i -> k <> j -> M1.[k] = M2.[k]) ->
-      M1.[i] = M2.[j] -> M1.[j] = M2.[i] ->
+  (* 两行互换，行列式反号 (低阶描述的版本) *)
+  Lemma mdet_row_swap : forall {n} (M1 M2 : smat n) (i k : 'I_n),
+      i <> k ->
+      (forall j, j <> i -> j <> k -> M1.[j] = M2.[j]) ->
+      M1.[i] = M2.[k] -> M1.[k] = M2.[i] ->
       (|M1| = - |M2|)%A.
-  Admitted.
+  Proof.
+    intros. destruct (i ??< k).
+    - apply mdet_row_swap_lt with (i:=i)(k:=k); auto.
+    - apply mdet_row_swap_lt with (i:=k)(k:=i); auto.
+      assert (fin2nat i <> fin2nat k). fin2nat; auto. lia.
+  Qed.
+  
+  (* 两行互换，行列式反号 (用 mrowSwap 描述的版本) *)
+  Lemma mdet_row_mrowSwap : forall {n} (M : smat n) (i k : 'I_n),
+      i <> k -> (|mrowSwap i k M| = - |M|)%A.
+  Proof.
+    intros. unfold mrowSwap.
+    apply mdet_row_swap with (i:=i) (k:=k); auto; intros; fin.
+  Qed.
   
   (* 两行相同，行列式的值为 0 *)
-  Lemma mdet_row_same : forall {n} (M : smat n) (i j : fin n),
+  Lemma mdet_row_same : forall {n} (M : smat n) (i j : 'I_n),
       i <> j -> M.[i] = M.[j] -> |M| = 0.
   Admitted.
   
   (* 两行成比例，行列式的值为 0 *)
-  Lemma mdet_row_cmul : forall {n} (M : smat n) (i j : fin n) (x : A),
+  Lemma mdet_row_cmul : forall {n} (M : smat n) (i j : 'I_n) (x : A),
       i <> j -> M.[i] = (x \.* M.[j])%A -> |M| = 0.
   Admitted.
   
   (* 一行的倍数加到另一行，行列式的值不变 *)
-  Lemma mdet_row_addRow : forall {n} (M1 M2 : smat n) (i j : fin n) (x : A),
+  Lemma mdet_row_addRow : forall {n} (M1 M2 : smat n) (i j : 'I_n) (x : A),
       i <> j ->
       (forall k, k <> i -> M1.[k] = M2.[k]) ->
       M1.[i] = (M2.[i] + x \.*M2.[j])%V -> |M1| = |M2|.
@@ -747,23 +591,23 @@ Section mdetEx.
   (** ** sub-matrix  子矩阵 *)
 
   (** sub-matrix of M by remove i-th row and j-th column *)
-  Definition msubmat {n} (M : smat (S n)) (i j : fin (S n)) : smat n :=
+  Definition msubmat {n} (M : smat (S n)) (i j : 'I_(S n)) : smat n :=
     fun i0 j0 =>
-      let i1 := if (fin2nat i0 ??< fin2nat i)%nat
+      let i1 := if i0 ??< i
                 then fin2SuccRange i0
                 else fin2SuccRangeSucc i0 in
-      let j1 := if (fin2nat j0 ??< fin2nat j)%nat
+      let j1 := if j0 ??< j
                 then fin2SuccRange j0
                 else fin2SuccRangeSucc j0 in
       M.[i1].[j1].
 
   (** msubmat (msetr M a j) i j = msubmat M i j *)
-  Lemma msubmat_msetr : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : fin (S n)),
+  Lemma msubmat_msetr : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
       msubmat (msetr M a i) i j = msubmat M i j.
   Proof. intros. apply meq_iff_mnth; intros. unfold msubmat. unfold msetr. fin. Qed.
 
   (** msubmat (msetc M a j) i j = msubmat M i j *)
-  Lemma msubmat_msetc : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : fin (S n)),
+  Lemma msubmat_msetc : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
       msubmat (msetc M a j) i j = msubmat M i j.
   Proof. intros. apply meq_iff_mnth; intros. unfold msubmat. unfold msetc. fin. Qed.
 
@@ -772,30 +616,28 @@ Section mdetEx.
   (* 另一种实现，使用 nat 类型的元素索引 *)
   Definition msubmatNat (M : nat -> nat -> A) (i j : nat) : nat -> nat -> A :=
     fun i0 j0 =>
-      M
-        (if (i0 ??< i)%nat then i0 else S i0)
-        (if (j0 ??< j)%nat then j0 else S j0).
+      M (if i0 ??< i then i0 else S i0) (if j0 ??< j then j0 else S j0).
 
-  Lemma msubmat_eq_msubmatNat : forall {n} (M : smat (S n)) (i j : fin (S n)),
-      msubmat M i j = @f2m _ n n (msubmatNat (m2f 0 M) (fin2nat i) (fin2nat j)).
+  Lemma msubmat_eq_msubmatNat : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
+      msubmat M i j = @f2m _ n n (msubmatNat (m2f 0 M) i j).
   Proof.
     intros. unfold msubmat, msubmatNat. apply meq_iff_mnth; intros.
     rewrite mnth_f2m.
     destruct i0,j0,i,j; simpl.
-    assert ((if (i0 ??< i)%nat then i0 else S i0) < S n) as Hi.
-    { destruct (_??<_)%nat. lia. lia. }
-    assert ((if (i1 ??< i2)%nat then i1 else S i1) < S n) as Hj.
-    { destruct (i1??<i2)%nat. lia. lia. }
+    assert ((if i0 ??< i then i0 else S i0) < S n) as Hi.
+    { destruct (_??<_). lia. lia. }
+    assert ((if i1 ??< i2 then i1 else S i1) < S n) as Hj.
+    { destruct (i1 ??< i2). lia. lia. }
     rewrite nth_m2f with (Hi:=Hi)(Hj:=Hj). f_equal.
     - unfold fin2SuccRange, fin2SuccRangeSucc.
-      assert (fin2nat (Fin i0 E) < S n) as Ei. { simpl. lia. }
+      assert (Fin i0 E < S n) as Ei. { simpl. lia. }
       rewrite nat2finS_eq with (E:=Ei).
       simpl.
-      destruct (i0 ??< i)%nat. fin. fin.
+      destruct (i0 ??< i). fin. fin.
     - unfold fin2SuccRange, fin2SuccRangeSucc.
-      assert (fin2nat (Fin i1 E0) < S n). simpl. auto.
+      assert (Fin i1 E0 < S n). simpl. auto.
       rewrite nat2finS_eq with (E:=H).
-      destruct (i1 ??< i2)%nat. apply fin_eq_iff; auto.
+      destruct (i1 ??< i2). apply fin_eq_iff; auto.
       apply fin_eq_iff; auto.
   Qed.
       
@@ -803,20 +645,20 @@ Section mdetEx.
   (** ** minor of matrix  余子式，余因式，余因子展开式 *)
 
   (** (i,j) minor of M *)
-  Definition mminor {n} (M : smat (S n)) (i j : fin (S n)) : A := |msubmat M i j|.
+  Definition mminor {n} (M : smat (S n)) (i j : 'I_(S n)) : A := |msubmat M i j|.
       
   (** minor(M\T,i,j) = minor(M,j,i) *)
-  Lemma mminor_mtrans : forall {n} (M : smat (S n)) (i j : fin (S n)),
+  Lemma mminor_mtrans : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
       mminor (M\T) i j = mminor M j i.
   Proof. intros. unfold mminor. rewrite <- mdet_mtrans. auto. Qed.
 
   (** mminor (msetr M a i) i j = mminor M i j *)
-  Lemma mminor_msetr : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : fin (S n)),
+  Lemma mminor_msetr : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
       mminor (msetr M a i) i j = mminor M i j.
   Proof. intros. unfold mminor. rewrite msubmat_msetr. auto. Qed.
   
   (** mminor (msetc M a j) i j = mminor M i j *)
-  Lemma mminor_msetc : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : fin (S n)),
+  Lemma mminor_msetc : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
       mminor (msetc M a j) i j = mminor M i j.
   Proof. intros. unfold mminor. rewrite msubmat_msetc. auto. Qed.
 
@@ -824,8 +666,8 @@ Section mdetEx.
   Definition mminorNat {n:nat} (M : nat -> nat -> A) (i j : nat) : A :=
     mdet (@f2m _ n n (msubmatNat M i j)).
   
-  Lemma mminor_eq_mminorNat : forall {n} (M : smat (S n)) (i j : fin (S n)),
-      mminor M i j = @mminorNat n (m2f 0 M) (fin2nat i) (fin2nat j).
+  Lemma mminor_eq_mminorNat : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
+      mminor M i j = @mminorNat n (m2f 0 M) i j.
   Proof.
     intros. unfold mminor, mminorNat. rewrite msubmat_eq_msubmatNat. auto.
   Qed.
@@ -835,24 +677,24 @@ Section mdetEx.
   (** ** cofactor of matrix  代数余子式 *)
 
   (** (i,j) cofactor of M *)
-  Definition mcofactor {n} (M : smat (S n)) (i j : fin (S n)) : A :=
+  Definition mcofactor {n} (M : smat (S n)) (i j : 'I_(S n)) : A :=
     let x := mminor M i j in
-    if Nat.even (fin2nat i + fin2nat j) then x else - x.
+    if Nat.even (i + j) then x else - x.
 
   (** A(M\T,i,j) = A(M,j,i) *)
-  Lemma mcofactor_mtrans : forall {n} (M : smat (S n)) (i j : fin (S n)),
+  Lemma mcofactor_mtrans : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
       mcofactor (M\T) i j = mcofactor M j i.
   Proof.
     intros. unfold mcofactor. rewrite mminor_mtrans. rewrite Nat.add_comm. auto.
   Qed.
 
   (** mcofactor (msetr M a i) i j = mcofactor M i j *)
-  Lemma mcofactor_msetr : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : fin (S n)),
+  Lemma mcofactor_msetr : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
       mcofactor (msetr M a i) i j = mcofactor M i j.
   Proof. intros. unfold mcofactor. rewrite mminor_msetr. auto. Qed.
 
   (** mcofactor (msetc M a j) i j = mcofactor M i j *)
-  Lemma mcofactor_msetc : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : fin (S n)),
+  Lemma mcofactor_msetc : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
       mcofactor (msetc M a j) i j = mcofactor M i j.
   Proof. intros. unfold mcofactor. rewrite mminor_msetc. auto. Qed.
 
@@ -868,21 +710,21 @@ Section mdetEx.
   (** **  Cofactor expansion of the determinant (Laplace expansion) *)
 
   (** Cofactor expansion of `M` along the i-th row *)
-  Definition mdetExRow {n} : smat n -> fin n -> A :=
+  Definition mdetExRow {n} : smat n -> 'I_n -> A :=
     match n with
     | O => fun _ _ => 1
     | S n' => fun M i => vsum (fun j => M.[i].[j] * mcofactor M i j)
     end.
 
   (** Cofactor expansion of `M` along the j-th column *)
-  Definition mdetExCol {n} : smat n -> fin n -> A :=
+  Definition mdetExCol {n} : smat n -> 'I_n -> A :=
     match n with
     | O => fun _ _ => 1
     | S n' => fun M j => vsum (fun i => M.[i].[j] * mcofactor M i j)
     end.
 
   (** row_expansion (M\T, i) = col_expansion (M, i) *)
-  Lemma mdetExRow_mtrans : forall {n} (M : smat n) (i : fin n),
+  Lemma mdetExRow_mtrans : forall {n} (M : smat n) (i : 'I_n),
       mdetExRow (M \T) i = mdetExCol M i.
   Proof.
     intros. unfold mdetExRow, mdetExCol. destruct n; auto.
@@ -890,19 +732,19 @@ Section mdetEx.
   Qed.
 
   (** col_expansion (M\T, i) = row_expansion (M, i) *)
-  Lemma mdetExCol_mtrans : forall {n} (M : smat n) (i : fin n),
+  Lemma mdetExCol_mtrans : forall {n} (M : smat n) (i : 'I_n),
       mdetExCol (M \T) i = mdetExRow M i.
   Proof. intros. rewrite <- mdetExRow_mtrans. auto. Qed.
 
   (** Cofactor expansion by row is equivalent to full expansion *)
-  Theorem mdetExRow_eq_mdet : forall {n} (M : smat n) (i : fin n), mdetExRow M i = mdet M.
+  Theorem mdetExRow_eq_mdet : forall {n} (M : smat n) (i : 'I_n), mdetExRow M i = mdet M.
   Proof.
     intros. destruct n. cbv; ring.
     unfold mdetExRow, mdet in *.
   Admitted.
 
   (** Cofactor expansion by column is equivalent to full expansion *)
-  Theorem mdetExCol_eq_mdet : forall {n} (M : smat n) (j : fin n), mdetExCol M j = mdet M.
+  Theorem mdetExCol_eq_mdet : forall {n} (M : smat n) (j : 'I_n), mdetExCol M j = mdet M.
   Proof.
     intros.
     pose proof(mdetExRow_eq_mdet (M\T) j).
@@ -911,12 +753,12 @@ Section mdetEx.
   Qed.
 
   (** Cofactor expansion by row is equivalent to cofactor expansion by column *)
-  Theorem mdetExRow_eq_mdetExCol : forall {n} (M : smat n) (i : fin n),
+  Theorem mdetExRow_eq_mdetExCol : forall {n} (M : smat n) (i : 'I_n),
       mdetExRow M i = mdetExCol M i.
   Proof. intros. rewrite mdetExRow_eq_mdet, mdetExCol_eq_mdet. auto. Qed.
 
   (** < i-th row, cofactor of k-th row > = 0 (if i <> k) *)
-  Theorem vdot_mcofactor_row_diff_eq0 : forall {n} (M : smat (S n)) (i k : fin (S n)),
+  Theorem vdot_mcofactor_row_diff_eq0 : forall {n} (M : smat (S n)) (i k : 'I_(S n)),
       i <> k -> vdot (M.[i]) (fun j => mcofactor M k j) = 0.
   Proof.
     intros.
@@ -929,7 +771,7 @@ Section mdetEx.
       rewrite vnth_vmap2. unfold B.
       rewrite mnth_msetr_same; auto. f_equal.
       unfold mcofactor.
-      destruct (Nat.even (fin2nat k + fin2nat i0)) eqn:H1.
+      destruct (Nat.even (k + i0)) eqn:H1.
       + unfold mminor. f_equal. apply meq_iff_mnth; intros.
         unfold msubmat. unfold msetr. fin.
       + f_equal. unfold mminor. f_equal. apply meq_iff_mnth; intros.
@@ -943,7 +785,7 @@ Section mdetEx.
   Qed.
       
   (** < j-th column, cofactor of l-column row > = 0 (if j <> l) *)
-  Theorem vdot_mcofactor_col_diff_eq0 : forall {n} (M : smat (S n)) (j l : fin (S n)),
+  Theorem vdot_mcofactor_col_diff_eq0 : forall {n} (M : smat (S n)) (j l : 'I_(S n)),
       j <> l -> vdot (M&[j]) (fun i => mcofactor M i l) = 0.
   Proof.
     intros. pose proof (vdot_mcofactor_row_diff_eq0 (M\T) j l H).
@@ -952,12 +794,12 @@ Section mdetEx.
   Qed.
 
   (** < i-th row, cofactor of i-th row > = |M| *)
-  Lemma vdot_mcofactor_row_same_eq_det : forall {n} (M : smat (S n)) (i : fin (S n)),
+  Lemma vdot_mcofactor_row_same_eq_det : forall {n} (M : smat (S n)) (i : 'I_(S n)),
       vdot (M.[i]) (fun j => mcofactor M i j) = |M|.
   Proof. intros. rewrite <- mdetExRow_eq_mdet with (i:=i). auto. Qed.
 
   (** < j-th column, cofactor of j-th column > = |M| *)
-  Lemma vdot_mcofactor_col_same_eq_det : forall {n} (M : smat (S n)) (j : fin (S n)),
+  Lemma vdot_mcofactor_col_same_eq_det : forall {n} (M : smat (S n)) (j : 'I_(S n)),
       vdot (M&[j]) (fun i => mcofactor M i j) = |M|.
   Proof. intros. rewrite <- mdetExCol_eq_mdet with (j:=j). auto. Qed.
 
@@ -1011,7 +853,7 @@ Section mdetEx.
     | S n' =>
         fun M => 
           vsum (fun j =>
-                  let a := if Nat.even (fin2nat j)
+                  let a := if Nat.even j
                            then (M.[#0].[j])
                            else (-(M.[#0].[j]))%A in
                   let d := mdetEx (msubmat M #0 j) in
@@ -1028,7 +870,7 @@ Section mdetEx.
       apply vsum_eq; intros.
       specialize (IHn (msubmat M #0 i)) as H.
       unfold mdetEx, mdetExRow in H; fold (@mdetEx n) in H. rewrite H; clear H.
-      destruct (Nat.even (fin2nat i)) eqn:H1.
+      destruct (Nat.even i) eqn:H1.
       + f_equal.
         unfold mcofactor; simpl. rewrite H1. unfold mminor at 3.
         rewrite <- (mdetExRow_eq_mdet _ #0).
@@ -1083,12 +925,12 @@ Section mdetEx.
   (** ** cofactor of matrix (Expansion version)  代数余子式(行列式为展开形式的版本) *)
 
   (** (i,j) cofactor of matrix M (按第一行展开来计算行列式的版本) *)
-  Definition mcofactorEx {n} (M : smat (S n)) (i j : fin (S n)) : A :=
+  Definition mcofactorEx {n} (M : smat (S n)) (i j : 'I_(S n)) : A :=
     let x := mdetEx (msubmat M i j) in
-    if Nat.even (fin2nat i + fin2nat j) then x else - x.
+    if Nat.even (i + j) then x else - x.
 
   (** mcofactorEx is equal to mcofactor *)
-  Lemma mcofactorEx_eq_mcofactor : forall {n} (M : smat (S n)) (i j : fin (S n)),
+  Lemma mcofactorEx_eq_mcofactor : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
       mcofactorEx M i j = mcofactor M i j.
   Proof.
     intros. unfold mcofactorEx, mcofactor. unfold mminor.
@@ -1177,10 +1019,10 @@ Section madj.
     replace (fun i0 => mcofactorEx M j i0) with (fun i0 => mcofactor M j i0).
     2:{ extensionality i0. rewrite mcofactorEx_eq_mcofactor. auto. }
     destruct (i ??= j) as [E|E].
-    - apply fin2nat_inj in E. subst.
+    - fin2nat. subst.
       rewrite vdot_mcofactor_row_same_eq_det.
       rewrite mnth_mcmul. rewrite mnth_mat1_same; auto. ring.
-    - apply fin2nat_inj_not in E.
+    - fin2nat.
       rewrite (vdot_mcofactor_row_diff_eq0 M i j); auto.
       rewrite mnth_mcmul. rewrite mnth_mat1_diff; auto. ring.
   Qed.
@@ -1194,10 +1036,10 @@ Section madj.
     replace (fun j0 => mcofactorEx M j0 i) with (fun j0 => mcofactor M j0 i).
     2:{ extensionality j0. rewrite mcofactorEx_eq_mcofactor. auto. }
     destruct (i ??= j) as [E|E].
-    - apply fin2nat_inj in E. subst.
+    - fin2nat. subst.
       rewrite vdot_mcofactor_col_same_eq_det.
       rewrite mnth_mcmul. rewrite mnth_mat1_same; auto. ring.
-    - apply fin2nat_inj_not in E.
+    - fin2nat.
       rewrite (vdot_mcofactor_col_diff_eq0 M j i); auto.
       rewrite mnth_mcmul. rewrite mnth_mat1_diff; auto. ring.
   Qed.

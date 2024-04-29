@@ -39,6 +39,7 @@ FinMatrix/Matrix/Fin.v
 FinMatrix/Matrix/Sequence.v
 FinMatrix/Matrix/Vector.v
 FinMatrix/Matrix/Matrix.v
+FinMatrix/Matrix/Permutation.v
 FinMatrix/Matrix/MatrixDet.v
 FinMatrix/Matrix/MatrixGauss.v
 FinMatrix/Matrix/MatrixInvBase.v

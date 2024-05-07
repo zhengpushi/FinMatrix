@@ -77,5 +77,5 @@ Section test.
   Let M2 := @l2m 2 2 [[a11;a12];[a21;a22]].
   (* Compute m2l M2.               (* = [[a11; a12]; [a21; a22]] *) *)
   (* Compute m2l (mmap f M2).      (* = [[f a11; f a12]; [f a21; f a22]] *) *)
-  
+
 End test.

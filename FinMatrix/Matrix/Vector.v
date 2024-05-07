@@ -383,6 +383,53 @@ Section test.
 End test.
 
 (* ======================================================================= *)
+(** Convert vector to its elements *)
+
+Section veq_exist.
+  Context {A : Type}.
+
+  Lemma veq_exist_2 : forall (a : @vec A 2), exists a1 a2 : A, a = l2v a1 [a1;a2].
+  Proof. intros. exists (a.1),(a.2). apply v2l_inj; cbv; list_eq. Qed.
+
+  Lemma veq_exist_3 : forall (a : @vec A 3), exists a1 a2 a3 : A, a = l2v a1 [a1;a2;a3].
+  Proof. intros. exists (a.1),(a.2),(a.3). apply v2l_inj; cbv; list_eq. Qed.
+
+  Lemma veq_exist_4 : forall (a : @vec A 4), exists a1 a2 a3 a4 : A, a = l2v a2 [a1;a2;a3;a4].
+  Proof. intros. exists (a.1),(a.2),(a.3),(a.4). apply v2l_inj; cbv; list_eq. Qed.
+  
+End veq_exist.
+
+(** destruct a vector *)
+Ltac vec_destruct a :=
+  let a1 := fresh "a1" in
+  let a2 := fresh "a2" in
+  let a3 := fresh "a3" in
+  let a4 := fresh "a4" in
+  match type of a with
+  | vec 2 =>
+      (* idtac "#vec 2"; *)
+      destruct (veq_exist_2 a) as (a1,(a2,Ha)); rewrite Ha; clear a Ha
+  | vec 3 =>
+      (* idtac "#vec 3"; *)
+      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); rewrite Ha; clear a Ha
+  | vec 4 =>
+      (* idtac "#vec 4"; *)
+      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha; clear a Ha
+  end.
+
+Section test.
+  Goal forall A (v : @vec (@vec A 2) 3), v = v.
+    intros.
+    vec_destruct v.
+    vec_destruct a1.
+    vec_destruct a2.
+    vec_destruct a3.
+    auto.
+  Qed.
+End test.
+
+
+(* ======================================================================= *)
 (** ** vector with specific size *)
 Section vec_specific.
   Context {A} {Azero : A}.

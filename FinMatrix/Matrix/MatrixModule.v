@@ -48,7 +48,8 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** Definition of the vector type *)
   
   (** vector type *)
-  Definition vec (n : nat) := @vec A n.
+  Notation vec n := (@vec A n).
+  (* Definition vec (n : nat) := @vec A n. *)
   
   (* ======================================================================= *)
   (** ** Equalities of the vector *)
@@ -158,7 +159,7 @@ Module BasicMatrixTheory (E : ElementType).
 
   Lemma v2l_inj : forall {n} (a b : vec n), v2l a = v2l b -> a = b.
   Proof. intros. apply v2l_inj; auto. Qed.
-
+  
   (* ======================================================================= *)
   (** ** Make concrete vector *)
   Definition mkvec1 (a1 : A) : vec 1 := mkvec1 (Azero:=0) a1.
@@ -720,7 +721,8 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** Definition of the matrix type *)
   
   (** matrix type *)
-  Definition mat r c : Type := @mat A r c.
+  Notation mat r c := (@mat A r c).
+  (* Definition mat r c : Type := @mat A r c. *)
   
   (** square matrix type *)
   Notation smat n := (mat n n).

@@ -398,8 +398,7 @@ Module MatrixOrth (F : FieldElementType).
     Qed.
     
     Context `{HOrderedField : OrderedField A Aadd 0 Aopp Amul 1 Ainv}.
-    Context `{HConvertToR
-        : ConvertToR A Aadd 0 Aopp Amul 1 Ainv Alt Ale Altb Aleb a2r}.
+    Context `{HA2R : A2R A Aadd 0 Aopp Amul 1 Ainv Alt Ale a2r}.
     Notation vlen := (@vlen _ Aadd 0 Amul a2r).
     Notation "|| v ||" := (vlen v) : vec_scope.
 

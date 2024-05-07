@@ -149,8 +149,10 @@ Section mdet.
     fold_left Aadd (map item rowIds) 0.
 
   (* 上述两种算法等价 *)
-  Axiom mdet'_eq_mdet : forall {n} (M : smat n), mdet' M = mdet M.
+  Lemma mdet'_eq_mdet : forall {n} (M : smat n), mdet' M = mdet M.
+  Proof.
   (* 该命题的证明见丘维声老师《高等代数》P35，我暂时未完成验证 *)
+  Admitted.
 
   (** Property 1: |M\T| = |M| *)
   Lemma mdet_mtrans : forall {n} (M : smat n), |M\T| = |M|.
@@ -289,7 +291,7 @@ Section mdet.
       rewrite H2. ring.
   Qed.
   
-  (* 两行互换，行列式反号 (单侧的 i < k) *)
+  (* Property 4: 两行互换，行列式反号 (单侧的 i < k) *)
   Lemma mdet_row_swap_lt : forall {n} (M1 M2 : smat n) (i k : 'I_n),
       i < k ->
       (forall j, j <> i -> j <> k -> M1.[j] = M2.[j]) ->
@@ -299,46 +301,68 @@ Section mdet.
     intros. unfold mdet.
     rewrite fold_left_map. 2: intros; ring.
     (* NOTE: sum is equal, but the elements are not point-wise equal *)
-    (* Check perm (seq 0 n). *)
-    (* Check perm (seq ? *)
-    (* f_equal; try ring. apply map_ext_in; intros. *)
-    (* assert (seqprod n (fun i0 : nat => m2f 0 M1 i0 (nth i0 a O)) = *)
-    (*           - seqprod n (fun i0 : nat => m2f 0 M2 i0 (nth i0 a O))). *)
-    (* 2:{ ? rewrite H4. destruct (odd (ronum a)); auto. } *)
-    (* assert (seqprod n (fun i0 : nat => m2f 0 M1 i0 (nth i0 a O)) = *)
-    (*           - (seqprod n (fun i0 : nat => m2f 0 M2 i0 (nth i0 a O)))). *)
-    (* - pose proof (fin2nat_lt i). pose proof (fin2nat_lt j). *)
-    (*   replace n with (i + S ((j - S i) + S (n - S j)))%nat at 1 2; fin. *)
-    (*   repeat (rewrite ?seqprod_plusIdx; rewrite ?seqprodS_head). *)
-    (*   replace (i + O)%nat with (fin2nat i); fin. *)
-    (*   replace (i + S (j - S i + O))%nat with (fin2nat j); fin. *)
-    (*   move2h (m2f 0 M1 j (nth j a O)). *)
-    (*   move2h (m2f 0 M1 i (nth i a O)). *)
-    (*   move2h (m2f 0 M2 j (nth j a O)). *)
-    (*   move2h (m2f 0 M2 i (nth i a O)). *)
-      
-    (*   rewrite seqprod_plusIdx; rewrite seqprodS_head. *)
 
-
-    (*   pose proof (fin2nat_lt i) as Hi. *)
-    (*   replace n with (i + S (n - S i))%nat at 1 2 3 by lia. *)
-    (*   rewrite !seqprod_plusIdx_three. *)
-    (*   replace (m2f 0 M i (nth i a O)) *)
-    (*     with ((m2f 0 M1 i (nth i a O)) + (m2f 0 M2 i (nth i a O)))%A. *)
-    (*   2:{ *)
-    (*     assert (nth i a O < n) as Hj. apply perm_index_lt; auto. *)
-    (*     rewrite !nth_m2f with (Hi:=Hi) (Hj:=Hj). fin. *)
-    (*     rewrite <- H0. rewrite vnth_vadd. auto. } *)
-    (*   ring_simplify. f_equal. *)
-    (*   + (* LEFT PART *) *)
-    (*     move2h (m2f 0 M1 i (nth i a O)). f_equal. f_equal. *)
-    (*     * apply seqprod_eq; intros. *)
-    
-    (* (* 2:{ destruct (odd (ronum a)) eqn:E; auto. *) *)
-    (* (*   rewrite H4. auto. } *) *)
+    (* BELOW PROOF IS A WRONG WORK *)
+    f_equal; try ring. apply map_ext_in; intros.
+    assert (seqprod n (fun i0 : nat => m2f 0 M1 i0 (nth i0 a O)) =
+              - seqprod n (fun i0 : nat => m2f 0 M2 i0 (nth i0 a O))).
+    - pose proof (fin2nat_lt i) as Hi.
+      pose proof (fin2nat_lt k) as Hk.
+      replace n with (i + S ((k - S i) + S (n - S k)))%nat at 1 2; fin.
+      repeat (rewrite ?seqprod_plusIdx; rewrite ?seqprodS_head).
+      replace (i + O)%nat with (fin2nat i); fin.
+      replace (i + S (k - S i + O))%nat with (fin2nat k); fin.
+      move2h (m2f 0 M1 k (nth k a O)).
+      move2h (m2f 0 M1 i (nth i a O)).
+      move2h (m2f 0 M2 k (nth k a O)).
+      move2h (m2f 0 M2 i (nth i a O)).
+      ring_simplify.
+      assert (nth i a O < n) as Hi'. apply perm_index_lt; auto.
+      assert (nth k a O < n) as Hk'. apply perm_index_lt; auto.
+      rewrite !nth_m2f with (Hi:=Hi)(Hj:=Hi').
+      rewrite !nth_m2f with (Hi:=Hk)(Hj:=Hk').
+      fin. rewrite H1,H2.
+      remember (seqprod i (fun i0 : nat => m2f 0 M1 i0 (nth i0 a O))) as x1.
+      remember (seqprod i (fun i0 : nat => m2f 0 M2 i0 (nth i0 a O))) as y1.
+      remember (seqprod (k - S i)
+                  (fun i0 : nat => m2f 0 M1 (i + S i0) (nth (i + S i0) a O))) as x2.
+      remember (seqprod (k - S i)
+                  (fun i0 : nat => m2f 0 M2 (i + S i0) (nth (i + S i0) a O))) as y2.
+      remember (seqprod (n - S k)
+                  (fun i0 : nat => m2f 0 M1 (i + S (k - S i + S i0))
+                                 (nth (i + S (k - S i + S i0)) a O)))%A as x3.
+      remember (seqprod (n - S k)
+                  (fun i0 : nat => m2f 0 M2 (i + S (k - S i + S i0))
+                                 (nth (i + S (k - S i + S i0)) a O)))%A as y3.
+      assert (x1 = y1).
+      { rewrite Heqx1, Heqy1. apply seqprod_eq; intros.
+        assert (i0 < n) by lia. assert (nth i0 a O < n). apply perm_index_lt; auto.
+        erewrite !nth_m2f with (Hi:=H5)(Hj:=H6).
+        destruct i,k. fin. rewrite H0; auto.
+        { intro. apply fin_eq_iff in H7. lia. }
+        { intro. apply fin_eq_iff in H7. lia. } }
+      assert (x2 = y2).
+      { rewrite Heqx2, Heqy2. apply seqprod_eq; intros.
+        assert (i + S i0 < n) by lia.
+        assert (nth (i + S i0) a O < n). apply perm_index_lt; auto.
+        erewrite !nth_m2f with (Hi:=H6)(Hj:=H7).
+        destruct i,k. fin. rewrite H0; auto.
+        { intro. apply fin_eq_iff in H8. fin. }
+        { intro. apply fin_eq_iff in H8. fin. } }
+      assert (x3 = y3).
+      { rewrite Heqx3, Heqy3. apply seqprod_eq; intros.
+        assert (i + S (k - S i + S i0) < n) by lia.
+        assert (nth (i + S (k - S i + S i0)) a O < n). apply perm_index_lt; auto.
+        erewrite !nth_m2f with (Hi:=H7)(Hj:=H8).
+        destruct i,k. fin. rewrite H0; auto.
+        { intro. apply fin_eq_iff in H9. fin. }
+        { intro. apply fin_eq_iff in H9. fin. } }
+      clear Heqx1 Heqy1 Heqx2 Heqy2 Heqx3 Heqy3. subst.
+      admit.
+    - rewrite H4. destruct (odd (ronum a)); auto.
   Admitted.
   
-  (* 两行互换，行列式反号 (低阶描述的版本) *)
+  (* Property 4: 两行互换，行列式反号 (低阶描述的版本) *)
   Lemma mdet_row_swap : forall {n} (M1 M2 : smat n) (i k : 'I_n),
       i <> k ->
       (forall j, j <> i -> j <> k -> M1.[j] = M2.[j]) ->
@@ -351,30 +375,84 @@ Section mdet.
       assert (fin2nat i <> fin2nat k). fin2nat; auto. lia.
   Qed.
   
-  (* 两行互换，行列式反号 (用 mrowSwap 描述的版本) *)
+  (* Property 4: 两行互换，行列式反号 (用 mrowSwap 描述的版本) *)
   Lemma mdet_row_mrowSwap : forall {n} (M : smat n) (i k : 'I_n),
       i <> k -> (|mrowSwap i k M| = - |M|)%A.
   Proof.
     intros. unfold mrowSwap.
     apply mdet_row_swap with (i:=i) (k:=k); auto; intros; fin.
   Qed.
-  
-  (* 两行相同，行列式的值为 0 *)
-  Lemma mdet_row_same : forall {n} (M : smat n) (i j : 'I_n),
-      i <> j -> M.[i] = M.[j] -> |M| = 0.
-  Admitted.
-  
-  (* 两行成比例，行列式的值为 0 *)
-  Lemma mdet_row_cmul : forall {n} (M : smat n) (i j : 'I_n) (x : A),
-      i <> j -> M.[i] = (x \.* M.[j])%A -> |M| = 0.
-  Admitted.
-  
-  (* 一行的倍数加到另一行，行列式的值不变 *)
-  Lemma mdet_row_addRow : forall {n} (M1 M2 : smat n) (i j : 'I_n) (x : A),
-      i <> j ->
-      (forall k, k <> i -> M1.[k] = M2.[k]) ->
-      M1.[i] = (M2.[i] + x \.*M2.[j])%V -> |M1| = |M2|.
-  Admitted.
+
+  Section Field.
+    Context `{HField : Field A Aadd Azero Aopp Amul Aone}.
+    Context {AeqDec : Dec (@eq A)}.
+    
+    (**
+       WE ASSUME the field is not F2, i.e. {0,1},
+       because we mainly use a numerical field.
+
+       SO, WE ASSUME THIS AXIOM HERE. *)
+    Axiom two_neq0 : (1 + 1)%A <> 0.
+    
+    (* Property 5: 两行相同，行列式的值为 0 *)
+    Lemma mdet_row_same_eq0 : forall {n} (M : smat n) (i j : 'I_n),
+        i <> j -> M.[i] = M.[j] -> |M| = 0.
+    Proof.
+      intros.
+      assert (|M| = -|M|). apply (mdet_row_swap M M i j); auto.
+      apply group_sub_eq0_iff_eq in H1.
+      rewrite group_opp_opp in H1.
+      replace (|M|) with (1 * |M|)%A in H1 by ring.
+      rewrite <- distrRight in H1.
+      rewrite field_mul_eq0_iff in H1. destruct H1; auto.
+      (* 1 + 1 <> 0 *)
+      apply two_neq0 in H1. easy.
+    Qed.
+
+    (* When i-th row is replaced with j-th row (i <> j), |M| = 0 *)
+    Corollary mdet_row_vset_eq0 : forall {n} (M : smat n) (i j : 'I_n),
+        i <> j -> |vset M i (M j)| = 0.
+    Proof.
+      intros. apply (mdet_row_same_eq0 _ i j); auto.
+      rewrite vnth_vset_eq, vnth_vset_neq; auto.
+    Qed.
+    
+    (* Property 6: 两行成比例，行列式的值为 0 *)
+    Lemma mdet_row_cmul : forall {n} (M : smat n) (i j : 'I_n) (x : A),
+        i <> j -> M.[i] = (x \.* M.[j])%A -> |M| = 0.
+    Proof.
+      intros. rewrite (mdet_row_scale M (vset M i M.[j]) i x).
+      - pose proof (mdet_row_vset_eq0 M i j H). rewrite H1. ring.
+      - intros k Hk. bdestruct (i =? k); fin.
+        rewrite vnth_vset_neq; auto.
+      - rewrite vnth_vset_eq; auto.
+    Qed.
+
+    (* When i-th row is replaced with (x * j-th row) (i <> j), |M| = 0 *)
+    Corollary mdet_row_vset_cmul_eq0 : forall {n} (M : smat n) (i j : 'I_n) x,
+        i <> j -> |vset M i (x \.* M j)| = 0.
+    Proof.
+      intros.
+      pose proof (mdet_row_cmul (vset M i (x \.* M j)) i j x H).
+      rewrite vnth_vset_eq, vnth_vset_neq in H0; auto.
+    Qed.
+    
+    (* Property 7: 一行的倍数加到另一行，行列式的值不变 *)
+    Lemma mdet_row_addRow : forall {n} (M1 M2 : smat n) (i j : 'I_n) (x : A),
+        i <> j ->
+        (forall k, k <> i -> M1.[k] = M2.[k]) ->
+        M1.[i] = (M2.[i] + x \.*M2.[j])%V -> |M1| = |M2|.
+    Proof.
+      intros.
+      pose proof (mdet_row_add M2 (vset M2 i (x \.* M2.[j])) M1 i).
+      rewrite H2; auto.
+      - rewrite (mdet_row_vset_cmul_eq0); auto. ring.
+      - intros k Hk. rewrite H0; auto. split; auto.
+        rewrite vnth_vset_neq; auto.
+      - rewrite vnth_vset_eq. auto.
+    Qed.
+    
+  End Field.
 
   (* If we have a field structure *)
   Section Field.
@@ -757,41 +835,46 @@ Section mdetEx.
       mdetExRow M i = mdetExCol M i.
   Proof. intros. rewrite mdetExRow_eq_mdet, mdetExCol_eq_mdet. auto. Qed.
 
-  (** < i-th row, cofactor of k-th row > = 0 (if i <> k) *)
-  Theorem vdot_mcofactor_row_diff_eq0 : forall {n} (M : smat (S n)) (i k : 'I_(S n)),
-      i <> k -> vdot (M.[i]) (fun j => mcofactor M k j) = 0.
-  Proof.
-    intros.
-    (* B矩阵按第 k 行展开就是当前的目标 *)
-    pose (msetr M (M.[i]) k) as B.
-    pose proof (mdetExRow_eq_mdet B k).
-    assert (mdetExRow B k = vdot M.[i] (fun j => mcofactor M k j)).
-    - unfold mdetExRow. unfold vdot.
-      apply vsum_eq; intros.
-      rewrite vnth_vmap2. unfold B.
-      rewrite mnth_msetr_same; auto. f_equal.
-      unfold mcofactor.
-      destruct (Nat.even (k + i0)) eqn:H1.
-      + unfold mminor. f_equal. apply meq_iff_mnth; intros.
-        unfold msubmat. unfold msetr. fin.
-      + f_equal. unfold mminor. f_equal. apply meq_iff_mnth; intros.
-        unfold msubmat. unfold msetr. fin.
-    - rewrite <- H1. unfold B.
-      rewrite mdetExRow_eq_mdet.
-      apply (mdet_row_same _ i k); auto.
-      apply veq_iff_vnth; intros.
-      rewrite mnth_msetr_diff; auto.
-      rewrite mnth_msetr_same; auto.
-  Qed.
-      
-  (** < j-th column, cofactor of l-column row > = 0 (if j <> l) *)
-  Theorem vdot_mcofactor_col_diff_eq0 : forall {n} (M : smat (S n)) (j l : 'I_(S n)),
-      j <> l -> vdot (M&[j]) (fun i => mcofactor M i l) = 0.
-  Proof.
-    intros. pose proof (vdot_mcofactor_row_diff_eq0 (M\T) j l H).
-    rewrite <- H0 at 2. f_equal. apply veq_iff_vnth; intros.
-    rewrite mcofactor_mtrans. auto.
-  Qed.
+  Section Field.
+    Context `{HField: Field A Aadd Azero Aopp Amul Aone}.
+    Context {AeqDec: Dec (@eq A)}.
+    
+    (** < i-th row, cofactor of k-th row > = 0 (if i <> k) *)
+    Theorem vdot_mcofactor_row_diff_eq0 : forall {n} (M : smat (S n)) (i k : 'I_(S n)),
+        i <> k -> vdot (M.[i]) (fun j => mcofactor M k j) = 0.
+    Proof.
+      intros.
+      (* B矩阵按第 k 行展开就是当前的目标 *)
+      pose (msetr M (M.[i]) k) as B.
+      pose proof (mdetExRow_eq_mdet B k).
+      assert (mdetExRow B k = vdot M.[i] (fun j => mcofactor M k j)).
+      - unfold mdetExRow. unfold vdot.
+        apply vsum_eq; intros.
+        rewrite vnth_vmap2. unfold B.
+        rewrite mnth_msetr_same; auto. f_equal.
+        unfold mcofactor.
+        destruct (Nat.even (k + i0)) eqn:H1.
+        + unfold mminor. f_equal. apply meq_iff_mnth; intros.
+          unfold msubmat. unfold msetr. fin.
+        + f_equal. unfold mminor. f_equal. apply meq_iff_mnth; intros.
+          unfold msubmat. unfold msetr. fin.
+      - rewrite <- H1. unfold B.
+        rewrite mdetExRow_eq_mdet.
+        apply (mdet_row_same_eq0 _ i k); auto.
+        apply veq_iff_vnth; intros.
+        rewrite mnth_msetr_diff; auto.
+        rewrite mnth_msetr_same; auto.
+    Qed.
+    
+    (** < j-th column, cofactor of l-column row > = 0 (if j <> l) *)
+    Theorem vdot_mcofactor_col_diff_eq0 : forall {n} (M : smat (S n)) (j l : 'I_(S n)),
+        j <> l -> vdot (M&[j]) (fun i => mcofactor M i l) = 0.
+    Proof.
+      intros. pose proof (vdot_mcofactor_row_diff_eq0 (M\T) j l H).
+      rewrite <- H0 at 2. f_equal. apply veq_iff_vnth; intros.
+      rewrite mcofactor_mtrans. auto.
+    Qed.
+  End Field.
 
   (** < i-th row, cofactor of i-th row > = |M| *)
   Lemma vdot_mcofactor_row_same_eq_det : forall {n} (M : smat (S n)) (i : 'I_(S n)),
@@ -814,8 +897,8 @@ Section mdetEx.
        0 0 0 0 ... 0 a b    = a^n + (-1)^(n+1)b^2
      *)
     
-    Variable n : nat.
-    (* Let n := 7. *)
+    (* Variable n : nat. *)
+    Let n := 7.
     Variable a b : A.
     Let M1 : smat (S n) := mdiagMk 0 (vrepeat a).
     Let M2 : smat (S n) := mclsr (mdiagMk 0 (vrepeat b)) #1.
@@ -1117,7 +1200,8 @@ Section madj.
     - field; auto.
     - pose proof (vdot_mcofactor_row_same_eq_det C i).
       unfold vdot in H0. unfold vmap2 in H0. rewrite H0. ring.
-    - intros. pose proof (vdot_mcofactor_row_diff_eq0 C i j H0).
+    - intros.
+      pose proof (vdot_mcofactor_row_diff_eq0 C i j H0).
       unfold vdot in H1. unfold vmap2 in H1. rewrite H1. ring.
   Qed.
 

@@ -11,22 +11,20 @@
   1. naming of nat variable: n, m, k, p, q, r
  *)
 
-Require Import Basic.
 Require Export Hierarchy.  
-Require Import Bool.
-Require Export Init.Nat.
-Require Export Arith.
-Require Export PeanoNat.
-Require Export Lia.
+Require Export Init.Nat PeanoNat Arith Lia.
 Open Scope nat_scope.
 
 (* ######################################################################### *)
-(** * Mathematical Structure *)
+(** * Algebraic Structures *)
 
-(** *** well-defined *)
-Hint Resolve
-  Nat.add_wd Nat.mul_wd  (* nat *)
-  : wd.
+(** equality is equivalence relation: Equivalence (@eq nat) *)
+Hint Resolve eq_equivalence : nat.
+
+(** operations are well-defined. Eg: Proper (eq ==> eq ==> eq) add *)
+Hint Resolve Nat.add_wd Nat.mul_wd : nat.
+
+(** Decidable *)
 
 #[export] Instance nat_eq_Dec : Dec (@eq nat).
 Proof. constructor. apply Nat.eq_dec. Defined.
@@ -37,51 +35,133 @@ Proof. constructor. intros. destruct (Compare_dec.lt_dec a b); auto. Defined.
 #[export] Instance nat_le_Dec : Dec le.
 Proof. constructor. intros. destruct (le_lt_dec a b); auto. right. lia. Defined.
 
-Infix "??=" := (@dec _ _ nat_eq_Dec) : nat_scope.
+(** Associative *)
 
-(* These two notations have lower priorities, and will be covered by "??<" and "??<="
-   for Print. *)
-Notation "m ??> n" := (@dec _ _ nat_lt_Dec n m) : nat_scope.
-Notation "m ??>= n" := (@dec _ _ nat_le_Dec n m) : nat_scope.
+#[export] Instance natAdd_Assoc : Associative Nat.add.
+Proof. constructor; intros; ring. Qed.
 
-(* We mainly use these two notations to keep minimum proof obligation *)
-Infix "??<" := (@dec _ _ nat_lt_Dec) : nat_scope.
-Infix "??<=" := (@dec _ _ nat_le_Dec) : nat_scope.
+#[export] Instance natMul_Assoc : Associative Nat.mul.
+Proof. constructor; intros; ring. Qed.
 
-(* n <= n *)
-Lemma nat_le_refl : forall n : nat, n <= n.
-Proof. intros. lia. Qed.
+Hint Resolve natAdd_Assoc natMul_Assoc : nat.
 
-(* n <= m <-> "Ale" (derived from lt) *)
-Lemma nat_le_iff_Ale : forall (n m : nat), n <= m <-> (n < m \/ n = m).
-Proof. intros. lia. Qed.
+Goal forall a b c : nat, (a + (b + c) = (a + b) + c).
+Proof. intros. rewrite associative; auto. Qed.
 
-Section test.
-  Goal forall n m : nat, {n = m} + {n <> m}.
-  Proof. intros. apply Aeqdec. Abort.
+Goal forall a b c : nat, ((a + b) + c = a + (b + c)).
+Proof. apply associative. Qed.
+
+(** Commutative *)
+
+#[export] Instance natAdd_Comm : Commutative Nat.add.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance natMul_Comm : Commutative Nat.mul.
+Proof. constructor; intros; ring. Qed.
+
+Hint Resolve natAdd_Comm natMul_Comm : nat.
+
+Goal forall a b : nat, (a + b = b + a)%nat.
+Proof. apply commutative. Qed.
+
+Goal forall a b : nat, (a * b = b * a)%nat.
+Proof. apply commutative. Qed.
+
+(** Identity Left/Right *)
+#[export] Instance natAdd_IdL : IdentityLeft Nat.add 0.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance natAdd_IdR : IdentityRight Nat.add 0.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance natMul_IdL : IdentityLeft Nat.mul 1.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance natMul_IdR : IdentityRight Nat.mul 1.
+Proof. constructor; intros; ring. Qed.
+
+Hint Resolve
+  natAdd_IdL natAdd_IdR
+  natMul_IdL natMul_IdR : nat.
+
+(** Inverse Left/Right *)
+
+(** Distributive *)
+
+#[export] Instance natMul_add_DistrL : DistrLeft Nat.add Nat.mul.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance natMul_add_DistrR : DistrRight Nat.add Nat.mul.
+Proof. constructor; intros; ring. Qed.
+
+Hint Resolve natMul_add_DistrL natMul_add_DistrR : nat.
+
+(** Semigroup *)
+
+#[export] Instance natAdd_SGroup : SGroup Nat.add.
+Proof. constructor; auto with nat. Qed.
+
+#[export] Instance natMul_SGroup : SGroup Nat.mul.
+Proof. constructor; auto with nat. Qed.
+
+Hint Resolve
+  natAdd_SGroup
+  natMul_SGroup
+  : nat.
+
+(** Abelian semigroup *)
+
+#[export] Instance natAdd_ASGroup : ASGroup Nat.add.
+Proof. constructor; auto with nat. Qed.
+
+#[export] Instance natMul_ASGroup : ASGroup Nat.mul.
+Proof. constructor; auto with nat. Qed.
+
+Hint Resolve
+  natAdd_ASGroup
+  natMul_ASGroup
+  : nat.
+
+Goal forall x1 x2 y1 y2 a b c : nat,
+    x1 + x2 = y1 + y2 -> x1 + a + b + c + x2 = y1 + c + (b + a) + y2.
+Proof. intros. pose proof natAdd_ASGroup. asgroup. Qed.
+
+(** Monoid *)
   
-End test.
+#[export] Instance natAdd_Monoid : Monoid Nat.add 0.
+Proof. constructor; auto with nat. Qed.
 
-(** add AMonoid *)
-#[export] Instance nat_add_AMonoid : AMonoid add 0.
-Proof. repeat constructor; intros; lia. Qed.
+#[export] Instance natMul_Monoid : Monoid Nat.mul 1.
+Proof. constructor; auto with nat. Qed.
 
+Hint Resolve
+  natAdd_Monoid
+  natMul_Monoid
+  : nat.
+
+(** Abelian monoid *)
+  
+#[export] Instance natAdd_AMonoid : AMonoid Nat.add 0.
+Proof. constructor; auto with nat. Qed.
+  
+#[export] Instance natMul_AMonoid : AMonoid Nat.mul 1.
+Proof. constructor; auto with nat. Qed.
+
+(** Order *)
 
 (** (<, <=, <?, <=?) is an Order *)
-#[export] Instance nat_Order : Order lt le ltb leb.
+#[export] Instance nat_Order : Order lt le.
 Proof.
-  constructor; intros; try lia.
+  constructor; intros; try lia; auto with nat.
   destruct (lt_eq_lt_dec a b) as [[H|H]|H]; auto.
-  apply Nat.ltb_spec0. apply Nat.leb_spec0.
 Qed.
 
-Section test.
+Infix "??=" := (@dec _ _ nat_eq_Dec) : nat_scope.
 
-  Goal forall n m : nat, n <= m \/ m < n.
-  Proof. intros. apply le_connected. Qed.
-
-End test.
-
+Notation "m ??> n" := (@dec _ _ nat_lt_Dec n m) : nat_scope.
+Notation "m ??>= n" := (@dec _ _ nat_le_Dec n m) : nat_scope.
+Infix "??<" := (@dec _ _ nat_lt_Dec) : nat_scope.
+Infix "??<=" := (@dec _ _ nat_le_Dec) : nat_scope.
 
 
 (* ######################################################################### *)

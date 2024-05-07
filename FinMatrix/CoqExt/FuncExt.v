@@ -16,6 +16,10 @@ Import ListNotations.
 Require Export FunctionalExtensionality.
 
 
+(** Two functions are equal, iff extensional equal *)
+Lemma feq_iff : forall {A} (f g : A -> A), f = g <-> (forall x, f x = g x).
+Proof. intros. split; intros; subst; auto. extensionality x; auto. Qed.
+
 (** A short name of "functional_extensionality" *)
 (* Definition fun_eq {A B} := @functional_extensionality A B. *)
 (* Ltac fun_eq := apply functional_extensionality. *)

@@ -23,7 +23,7 @@
      |v| = √<v, v>
  *)
 
-Require Export RExt Ratan2 RealFunction.
+Require Export Hierarchy RExt RFunExt Ratan2.
 Require Export MatrixModule.
 Require Import ExtrOcamlBasic ExtrOcamlNatInt MyExtrOCamlR.
 
@@ -42,38 +42,16 @@ Open Scope mat_scope.
 (* ############################################################################ *)
 (** * OCaml Extraction of matrix inversion *)
 
-Recursive Extraction
-  mmul
-  minvtblebGE minvoGE minvGE minvListGE
-  minvtblebAM minvoAM minvAM minvListAM.
+(* Recursive Extraction *)
+(*   mmul *)
+(*   minvtblebGE minvoGE minvGE minvListGE *)
+(*   minvtblebAM minvoAM minvAM minvListAM. *)
 
-Extraction "ocaml_test/matrix.ml"
-  mmul
-  minvtblebGE minvoGE minvGE minvListGE
-  minvtblebAM minvoAM minvAM minvListAM.
+(* Extraction "ocaml_test/matrix.ml" *)
+(*   mmul *)
+(*   minvtblebGE minvoGE minvGE minvListGE *)
+(*   minvtblebAM minvoAM minvAM minvListAM. *)
 
-(* Module test_inv_ocaml. *)
-(*   (* short name *) *)
-(*   Module AM := MinvMoreAM FieldElementTypeR. *)
-(*   Module GE := MinvMoreGE FieldElementTypeR. *)
-
-(*   Import AM. *)
-(*   Definition minvtblebAM {n} := @minvtbleb n. *)
-(*   Definition minvoAM {n} := @minvo n. *)
-(*   Definition minvAM {n} := @minv n. *)
-(*   Definition minvListAM {n} := @minvList n. *)
-  
-(*   Import GE. *)
-(*   Definition minvtblebGE {n} := @minvtbleb n. *)
-(*   Definition minvoGE {n} := @minvo n. *)
-(*   Definition minvGE {n} := @minv n. *)
-(*   Definition minvListGE {n} := @minvList n. *)
-
-
-(*   Extraction "ocaml_test/matrix.ml" *)
-(*     minvtblebGE minvoGE minvGE minvListGE *)
-(*     minvtblebAM minvoAM minvAM minvListAM mmul. *)
-(* End test_inv_ocaml. *)
 
 (* ######################################################################### *)
 (** * Matrix theory applied to this type *)
@@ -105,7 +83,7 @@ Qed.
 (** Aabs a = Rabs a *)
 Lemma Aabs_eq_Rabs : forall a : A, | a |%A = | a |%R.
 Proof.
-  intros. unfold Aabs. destruct (leb_reflect 0 a); autounfold with A in *; ra.
+  intros. unfold Aabs. destruct (Ale_dec Azero a); autounfold with A in *; ra.
   rewrite Rabs_left; ra.
 Qed.
 
@@ -1042,7 +1020,7 @@ Proof.
   assert (x = 1).
   { rewrite <- H4 in H0. rewrite vlen_vcmul in H0. unfold a2r,id in H0.
     symmetry in H0. apply Rmult_eq_r_reg in H0; auto.
-    autounfold with A in *. unfold Aabs in H0. destruct (_<=?_); lra.
+    autounfold with A in *. unfold Aabs in H0. destruct (Ale_dec 0 x); lra.
     apply vlen_neq0_iff_neq0; auto. }
   rewrite H in H4. rewrite vcmul_1_l in H4; auto.
 Qed.
@@ -1056,7 +1034,7 @@ Proof.
   assert (x = - (1))%R.
   { rewrite <- H4 in H0. rewrite vlen_vcmul in H0. unfold a2r,id in H0.
     symmetry in H0. apply Rmult_eq_r_reg in H0; auto.
-    autounfold with A in *. unfold Aabs in H0. destruct (_<=?_); lra.
+    autounfold with A in *. unfold Aabs in H0. destruct (Ale_dec 0 x); lra.
     apply vlen_neq0_iff_neq0; auto. }
   rewrite H in H4. rewrite vcmul_neg1_l in H4. rewrite <- H4, vopp_vopp. auto.
 Qed.

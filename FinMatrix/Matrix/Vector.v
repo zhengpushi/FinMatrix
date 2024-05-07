@@ -90,6 +90,14 @@ Proof.
   extensionality i; auto.
 Qed.
 
+(* Full type information of `veq_iff_vnth` *)
+(*
+Check @veq_iff_vnth:
+  forall (A : Type) (n : nat) (a b : vec n),
+    a = b <-> (forall i : fin n, (a : vec n) (i : fin n) = (b : vec n) (i : fin n)).
+*)
+
+
 (** a[(i,H1)] = b[(i,H2)] -> a[(i,H3)] = b[(i,H4)] *)
 Lemma vnth_sameIdx_imply : forall {A n} {a b : @vec A n} {i} {H1 H2 H3 H4 : i < n},
     a (nat2fin i H1) = b (nat2fin i H2) ->
@@ -1836,7 +1844,7 @@ Section vsum.
   (* if equip a `OrderedARing` *)
   Section OrderedARing.
     Context `{HOrderedARing
-        : OrderedARing A Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb}.
+        : OrderedARing A Aadd Azero Aopp Amul Aone Alt Ale}.
     (* Check HOrderedARing : Order Alt Ale Altb Aleb. *)
     Infix "*" := (Amul) : A_scope.
     Infix "<" := Alt.
@@ -1878,7 +1886,7 @@ Section vsum.
       intros. destruct (Aeqdec (a.[i]) 0); auto. exfalso.
       pose proof (vsum_ge_any a i H). rewrite H0 in H1.
       specialize (H i).
-      pose proof (@le_antisym _ _ _ _ _ HOrderedARing (a i) 0 H1 H). easy.
+      assert (a.[i] = 0). apply le_antisym; auto. easy.
     Qed.
     
   End OrderedARing.
@@ -2074,10 +2082,8 @@ Section vopp.
   (** <vadd,vzero,vopp> is an abelian group *)
   #[export] Instance vadd_AGroup : forall n, @AGroup (vec n) vadd vzero vopp.
   Proof.
-    intros. repeat constructor; intros;
-      try apply vadd_AMonoid;
-      try apply vadd_vopp_l;
-      try apply vadd_vopp_r.
+    intros. repeat constructor; intros; try apply vadd_AMonoid.
+    apply vadd_vopp_l. apply vadd_vopp_r.
   Qed.
 
   (* Now, we ca use group theory on this instance *)
@@ -2253,15 +2259,6 @@ Section vcmul.
   (** x .* (a - b) = (x .* a) - (x .* b) *)
   Lemma vcmul_vsub : forall {n} x (a b : vec n), x \.* (a - b) = (x \.* a) - (x \.* b).
   Proof. intros. rewrite vcmul_vadd. rewrite vcmul_vopp. auto. Qed.
-
-  (** <vadd,vzero,vopp> is an abelian group *)
-  #[export] Instance vec_AGroup : forall n, @AGroup (vec n) vadd vzero vopp.
-  Proof.
-    intros. repeat constructor; intros;
-      try apply vadd_AMonoid;
-      try apply vadd_vopp_l;
-      try apply vadd_vopp_r.
-  Qed.
   
   (* If equip a `Dec` *)
   Section AeqDec.
@@ -2641,15 +2638,15 @@ Section vlen.
   
   Context `{HARing : ARing A Aadd Azero Aopp Amul Aone}.
   Add Ring ring_inst : (make_ring_theory HARing).
-  Context `{HConvertToR
-      : ConvertToR A Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb a2r}.
+  Context `{HA2R
+      : A2R A Aadd Azero Aopp Amul Aone Ainv Alt Ale a2r}.
 
   Infix "+" := Aadd : A_scope.
   Notation "0" := Azero : A_scope.
   Infix "*" := Amul : A_scope.
   (* Notation "a ²" := (a * a) : A_scope. *)
   Notation "1" := Aone : A_scope.
-  Notation "| a |" := (@Aabs _ 0 Aopp Aleb a) : A_scope.
+  Notation "| a |" := (Aabs a) : A_scope.
   
   Notation vzero := (@vzero _ Azero).
   Notation vadd := (@vadd _ Aadd).
@@ -2673,7 +2670,7 @@ Section vlen.
   
   Section OrderedARing.
     Context `{HOrderedARing
-        : OrderedARing A Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb}.
+        : OrderedARing A Aadd Azero Aopp Amul Aone Alt Ale}.
     Infix "<" := Alt : A_scope.
     Infix "<=" := Ale : A_scope.
     
@@ -2883,8 +2880,8 @@ Section vunit.
     
   End Field.
 
-  Section ConvertToR.
-    Context `{HConvertToR : ConvertToR A Aadd Azero Aopp Amul Aone Ainv Alt Ale}.
+  Section A2R.
+    Context `{HA2R : A2R A Aadd Azero Aopp Amul Aone Ainv Alt Ale}.
 
     Notation vlen := (@vlen _ Aadd Azero Amul a2r).
     Notation "|| a ||" := (vlen a) : vec_scope.
@@ -2893,7 +2890,7 @@ Section vunit.
     Lemma vunit_spec : forall {n} (a : vec n), vunit a <-> ||a|| = 1%R.
     Proof. intros. split; intros; apply vlen_eq1_iff_vdot1; auto. Qed.
 
-  End ConvertToR.
+  End A2R.
 
 (** If column of a and column of b all are unit, 
     then column of (a * b) is also unit *)
@@ -3183,7 +3180,7 @@ Section vcoll_vpara_vantipara.
         x, such as use 1 to prove 1 <> 0, thus need a field.
    *)
   Context `{HOrderedField
-      : OrderedField A Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb}.
+      : OrderedField A Aadd Azero Aopp Amul Aone Ainv Alt Ale}.
   Add Field field_inst : (make_field_theory HOrderedField).
   Notation "0" := Azero : A_scope.
   Notation "1" := Aone : A_scope.

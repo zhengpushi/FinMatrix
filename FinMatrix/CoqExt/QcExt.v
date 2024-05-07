@@ -15,6 +15,330 @@ Open Scope Qc.
 
 
 (* ######################################################################### *)
+(** * Preliminary properties *)
+
+(** - a + a = 0 *)
+Lemma Qcplus_opp_l : forall a : Qc, - a + a = 0.
+Proof. intros. rewrite Qcplus_comm. rewrite Qcplus_opp_r. auto. Qed.
+
+(** ~ (a < a) *)
+Lemma Qclt_irrefl : forall a : Qc, ~ (a < a).
+Proof. intros. intro. apply Qclt_not_eq in H. easy. Qed.
+
+(** a <> b -> a <= b -> a < b *)
+Lemma Qcle_lt_strong : forall a b : Qc, a <> b -> a <= b -> a < b.
+Proof.
+  intros.
+  destruct (Qc_dec a b) as [[H1|H1]|H1]; auto.
+  - apply Qcle_not_lt in H0. easy.
+  - subst. easy.
+Qed.
+
+(** c + a = c + b -> a = b *)
+Lemma Qcplus_reg_l : forall a b c : Qc, c + a = c + b -> a = b.
+Proof.
+  intros.
+  assert (-c + c + a = -c + c + b). { rewrite !associative. rewrite H. auto. }
+  rewrite Qcplus_opp_l in H0. rewrite !Qcplus_0_l in H0. auto.
+Qed.
+
+(** a + c = b + c -> a = b *)
+Lemma Qcplus_reg_r : forall a b c : Qc, a + c = b + c -> a = b.
+Proof.
+  intros.
+  assert (a + c + -c = b + c + -c). { rewrite H. auto. }
+  rewrite !associative in H0. rewrite Qcplus_opp_r in H0.
+  rewrite !Qcplus_0_r in H0. auto.
+Qed.
+
+(** b < c -> a + b < a + c *)
+Lemma Qcplus_lt_compat_l : forall a b c : Qc, b < c -> a + b < a + c.
+Proof.
+  intros. destruct (Qc_eq_dec b c) as [H1|H1].
+  - subst. apply Qclt_not_eq in H. easy.
+  - pose proof (Qcplus_le_compat a a b c).
+    assert (a <= a). apply Qcle_refl.
+    assert (b <= c). apply Qclt_le_weak; auto.
+    specialize (H0 H2 H3).
+    apply Qcle_lt_or_eq in H0. destruct H0; auto.
+    assert (-a + (a + b) = -a + (a + c)). rewrite H0; auto.
+    rewrite <- !associative in H4. rewrite !Qcplus_opp_l,!Qcplus_0_l in H4. easy.
+Qed.
+
+(** a < b -> a + c < b + c *)
+Lemma Qcplus_lt_compat_r : forall a b c : Qc, a < b -> a + c < b + c.
+Proof. intros. rewrite !(Qcplus_comm _ c). apply Qcplus_lt_compat_l; auto. Qed.
+
+(** a < b -> 0 < c -> c * a < c * b *)
+Lemma Qcmult_lt_compat_l : forall a b c : Qc, a < b -> 0 < c -> c * a < c * b.
+Proof. intros. rewrite !(commutative c _). apply Qcmult_lt_compat_r; auto. Qed.
+
+  
+(* ######################################################################### *)
+(** * Algebraic Structures *)
+
+(** equality is equivalence relation: Equivalence eq *)
+Hint Resolve eq_equivalence : Qc.
+
+(** operations are well-defined. Eg: Proper (eq ==> eq ==> eq) Qcplus *)
+
+Lemma Qcadd_wd : Proper (eq ==> eq ==> eq) Qcplus.
+Proof. repeat (hnf; intros); subst; auto. Qed.
+
+Lemma Qcopp_wd : Proper (eq ==> eq) Qcopp.
+Proof. repeat (hnf; intros); subst; auto. Qed.
+
+Lemma Qcsub_wd : Proper (eq ==> eq ==> eq) Qcminus.
+Proof. repeat (hnf; intros); subst; auto. Qed.
+
+Lemma Qcmul_wd : Proper (eq ==> eq ==> eq) Qcmult.
+Proof. repeat (hnf; intros); subst; auto. Qed.
+
+Lemma Qcinv_wd : Proper (eq ==> eq) Qcinv.
+Proof. repeat (hnf; intros); subst; auto. Qed.
+
+Lemma Qcdiv_wd : Proper (eq ==> eq ==> eq) Qcdiv.
+Proof. repeat (hnf; intros); subst; auto. Qed.
+
+Hint Resolve
+  Qcadd_wd Qcopp_wd Qcsub_wd
+  Qcmul_wd Qcinv_wd Qcdiv_wd : Qc.
+
+(** Decidable *)
+
+#[export] Instance Qc_eq_Dec : Dec (@eq Qc).
+Proof. constructor. apply Qc_eq_dec. Defined.
+
+#[export] Instance Qc_lt_Dec : Dec Qclt.
+Proof.
+  constructor. intros. destruct (Qclt_le_dec a b); auto.
+  right. intro. apply Qcle_not_lt in q. easy.
+Defined.
+
+#[export] Instance Qc_le_Dec : Dec Qcle.
+Proof.
+  constructor. intros. destruct (Qclt_le_dec b a); auto.
+  right. intro. apply Qcle_not_lt in H. easy.
+Defined.
+
+(** Associative *)
+
+#[export] Instance Qcadd_Assoc : Associative Qcplus.
+Proof. constructor; intros; field. Qed.
+
+#[export] Instance Qcmul_Assoc : Associative Qcmult.
+Proof. constructor; intros; field. Qed.
+
+Hint Resolve Qcadd_Assoc Qcmul_Assoc : Qc.
+
+(** Commutative *)
+
+#[export] Instance Qcadd_Comm : Commutative Qcplus.
+Proof. constructor; intros; field. Qed.
+
+#[export] Instance Qcmul_Comm : Commutative Qcmult.
+Proof. constructor; intros; field. Qed.
+
+Hint Resolve Qcadd_Comm Qcmul_Comm : Qc.
+
+(** Identity Left/Right *)
+
+#[export] Instance Qcadd_IdL : IdentityLeft Qcplus 0.
+Proof. constructor; intros; field. Qed.
+
+#[export] Instance Qcadd_IdR : IdentityRight Qcplus 0.
+Proof. constructor; intros; field. Qed.
+
+#[export] Instance Qcmul_IdL : IdentityLeft Qcmult 1.
+Proof. constructor; intros; field. Qed.
+
+#[export] Instance Qcmul_IdR : IdentityRight Qcmult 1.
+Proof. constructor; intros; field. Qed.
+
+Hint Resolve
+  Qcadd_IdL Qcadd_IdR
+  Qcmul_IdL Qcmul_IdR : Qc.
+
+(** Inverse Left/Right *)
+
+#[export] Instance Qcadd_InvL : InverseLeft Qcplus 0 Qcopp.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance Qcadd_InvR : InverseRight Qcplus 0 Qcopp.
+Proof. constructor; intros; ring. Qed.
+
+Hint Resolve Qcadd_InvL Qcadd_InvR : Qc.
+
+(** Distributive *)
+
+#[export] Instance Qcmul_add_DistrL : DistrLeft Qcplus Qcmult.
+Proof. constructor; intros; field. Qed.
+
+#[export] Instance Qcmul_add_DistrR : DistrRight Qcplus Qcmult.
+Proof. constructor; intros; field. Qed.
+
+Hint Resolve
+  Qcmul_add_DistrL
+  Qcmul_add_DistrR
+  : Qc.
+
+(** Semigroup *)
+
+#[export] Instance Qcadd_SGroup : SGroup Qcplus.
+Proof. constructor; auto with Qc. Qed.
+
+#[export] Instance Qcmul_SGroup : SGroup Qcmult.
+Proof. constructor; auto with Qc. Qed.
+
+Hint Resolve
+  Qcadd_SGroup
+  Qcmul_SGroup
+  : Qc.
+
+(** Abelian semigroup *)
+
+#[export] Instance Qcadd_ASGroup : ASGroup Qcplus.
+Proof. constructor; auto with Qc. Qed.
+
+#[export] Instance Qcmul_ASGroup : ASGroup Qcmult.
+Proof. constructor; auto with Qc. Qed.
+
+Hint Resolve
+  Qcadd_ASGroup
+  Qcmul_ASGroup
+  : Qc.
+
+(** Monoid *)
+  
+#[export] Instance Qcadd_Monoid : Monoid Qcplus 0.
+Proof. constructor; auto with Qc. Qed.
+
+#[export] Instance Qcmul_Monoid : Monoid Qcmult 1.
+Proof. constructor; auto with Qc. Qed.
+
+Hint Resolve
+  Qcadd_Monoid
+  Qcmul_Monoid
+  : Qc.
+
+(** Abelian monoid *)
+  
+#[export] Instance Qcadd_AMonoid : AMonoid Qcplus 0.
+Proof. constructor; auto with Qc. Qed.
+  
+#[export] Instance Qcmul_AMonoid : AMonoid Qcmult 1.
+Proof. constructor; auto with Qc. Qed.
+
+Hint Resolve Qcadd_AMonoid Qcmul_AMonoid : Qc.
+
+(** Group *)
+
+#[export] Instance Qcadd_Group : Group Qcplus 0 Qcopp.
+Proof. constructor; auto with Qc. Qed.
+
+Hint Resolve Qcadd_Group : Qc.
+
+(** AGroup *)
+
+#[export] Instance Qcadd_AGroup : AGroup Qcplus 0 Qcopp.
+Proof. constructor; auto with Qc. Qed.
+
+Hint Resolve Qcadd_AGroup : Qc.
+
+(** Ring *)
+
+#[export] Instance Qc_Ring : Ring Qcplus 0 Qcopp Qcmult 1.
+Proof. constructor; auto with Qc. Qed.
+
+Hint Resolve Qc_Ring : Qc.
+
+(** ARing *)
+
+#[export] Instance Qc_ARing : ARing Qcplus 0 Qcopp Qcmult 1.
+Proof. constructor; auto with Qc. Qed.
+
+Hint Resolve Qc_ARing : Qc.
+
+(** Field *)
+
+#[export] Instance Qc_Field : Field Qcplus 0 Qcopp Qcmult 1 Qcinv.
+Proof.
+  constructor; auto with Qc.
+  - intros. field; auto.
+  - intro. easy.
+Qed.
+
+Hint Resolve Qc_Field : Qc.
+
+(** Order *)
+
+#[export] Instance Qc_Order : Order Qclt Qcle.
+Proof.
+  constructor; intros; try lia; auto with Qc; auto with qarith.
+  - intro. apply Qclt_not_eq in H. easy.
+  - apply Qclt_trans with b; auto.
+  - apply Qc_dec.
+  - split; intros.
+    apply Qcle_lt_or_eq; auto. destruct H.
+    apply Qclt_le_weak; auto. subst. apply Qcle_refl.
+Qed.
+
+Hint Resolve Qc_Order : Qc.
+
+#[export] Instance Qc_OrderedARing :
+  OrderedARing Qcplus 0 Qcopp Qcmult 1 Qclt Qcle.
+Proof.
+  constructor; auto with Qc.
+  - apply Qcplus_lt_compat_r.
+  - intros. apply Qcmult_lt_compat_r; auto.
+Qed.
+
+Hint Resolve Qc_OrderedARing : Qc.
+
+#[export] Instance Qc_OrderedField :
+  OrderedField Qcplus 0 Qcopp Qcmult 1 Qcinv Qclt Qcle.
+Proof. constructor; auto with Qc. Qed.
+
+Hint Resolve Qc_OrderedField : Qc.
+
+(* (** Bool version of "<" and "<=" for Qc *) *)
+(* Definition Qcltb (a b : Qc) : bool := if Qclt_le_dec a b then true else false. *)
+(* Definition Qcleb (a b : Qc) : bool := if Qclt_le_dec b a then false else true. *)
+(* Infix "<?" := Qcltb : Qc_scope. *)
+(* Infix "<=?" := Qcleb : Qc_scope. *)
+
+(* Lemma Qcltb_reflect : forall a b : Qc, reflect (a < b) (a <? b). *)
+(* Proof. *)
+(*   intros. unfold Qcltb. destruct Qclt_le_dec; constructor; auto. *)
+(*   apply Qcle_not_lt; auto. *)
+(* Qed. *)
+
+(* Lemma Qcleb_reflect : forall a b : Qc, reflect (a <= b) (a <=? b). *)
+(* Proof. *)
+(*   intros. unfold Qcleb. destruct Qclt_le_dec; constructor; auto. *)
+(*   apply Qclt_not_le; auto. *)
+(* Qed. *)
+
+(* #[export] Instance Qc_Order : Order Qclt Qcle. *)
+(* Proof. *)
+(*   constructor; intros; auto with Qc. ? *)
+(*   - split; intros. apply Qcle_lt_or_eq; auto. destruct H. *)
+(*     apply Qclt_le_weak; auto. subst. apply Qcle_refl. *)
+(*   - apply Qc_lt_irrefl. *)
+(*   - pose proof (Qclt_trans a b a H H0). apply Qc_lt_irrefl in H1. easy. *)
+(*   - apply Qclt_trans with b; auto. *)
+(*   - apply Qc_dec. *)
+(*   - apply Qcltb_reflect. *)
+(*   - apply Qcleb_reflect. *)
+(* Qed. *)
+
+(* Section test. *)
+(*   Goal forall a b : Qc, {a = b} + {a <> b}. *)
+(*   Proof. intros. apply Aeqdec. Abort. *)
+(* End test. *)
+
+
+(* ######################################################################### *)
 (** ** Understanding the Qc type *)
 
 (* Why Qc is better than Q *)
@@ -39,123 +363,6 @@ Section eq.
   Proof. cbv. f_equal. apply UIP. Qed.
 End eq.
 
-
-(* ######################################################################### *)
-(** * Mathematical Structure *)
-
-#[export] Instance Qc_eq_Dec : Dec (@eq Qc).
-Proof. constructor. apply Qc_eq_dec. Defined.
-
-#[export] Instance Qc_le_Dec : Dec Qcle.
-Proof.
-  constructor. intros. destruct (Qclt_le_dec b a); auto.
-  right. intro. apply Qcle_not_lt in H. easy.
-Defined.
-
-#[export] Instance Qc_lt_Dec : Dec Qclt.
-Proof.
-  constructor. intros. destruct (Qclt_le_dec a b); auto.
-  right. intro. apply Qcle_not_lt in q. easy.
-Defined.
-
-(* ~ (a < a) *)
-Lemma Qc_lt_irrefl : forall a : Qc, ~ (a < a).
-Proof.
-  intros. intro. apply Qclt_not_eq in H. easy.
-Qed.
-
-(* a <> b -> a <= b -> a < b *)
-Lemma Qcle_lt_strong : forall a b : Qc, a <> b -> a <= b -> a < b.
-Proof.
-  intros.
-  destruct (Qc_dec a b) as [[H1|H1]|H1]; auto.
-  - apply Qcle_not_lt in H0. easy.
-  - subst. easy.
-Qed.
-
-(* -q + q = 0 *)
-Lemma Qcplus_opp_l : forall q : Qc, -q + q = Q2Qc 0.
-Proof. intros. rewrite commutative, Qcplus_opp_r; auto. Qed. 
-
-(* c + a = c + b -> a = b *)
-Lemma Qc_add_reg_l : forall a b c : Qc, c + a = c + b -> a = b.
-Proof.
-  intros.
-  assert (-c + c + a = -c + c + b). { rewrite !associative. rewrite H. auto. }
-  rewrite Qcplus_opp_l in H0. rewrite !Qcplus_0_l in H0. auto.
-Qed.
-
-(* a + c = b + c -> a = b *)
-Lemma Qc_add_reg_r : forall a b c : Qc, a + c = b + c -> a = b.
-Proof.
-  intros.
-  assert (a + c + -c = b + c + -c). { rewrite H. auto. }
-  rewrite !associative in H0. rewrite Qcplus_opp_r in H0.
-  rewrite !Qcplus_0_r in H0. auto.
-Qed.
-
-(* a < b -> a + c < b + c *)
-Lemma Qc_lt_add_compat_r : forall a b c : Qc, a < b -> a + c < b + c.
-Proof.
-  intros. pose proof (Qcplus_le_compat a b c c). destruct (Aeqdec a b).
-  - subst. apply Qc_lt_irrefl in H. easy.
-  - apply Qcle_lt_strong; auto.
-    + intro. apply Qc_add_reg_r in H1. easy.
-    + apply H0. apply Qclt_le_weak; auto. apply Qcle_refl.
-Qed.
-
-(* a < b -> c + a < c + b *)
-Lemma Qc_lt_add_compat_l : forall a b c : Qc, a < b -> c + a < c + b.
-Proof. intros. rewrite !(commutative c _). apply Qc_lt_add_compat_r; auto. Qed.
-
-(* a < b -> 0 < c -> a * c < b * c *)
-Lemma Qc_lt_mul_compat_r : forall a b c : Qc, a < b -> 0 < c -> a * c < b * c.
-Proof. intros. apply Qcmult_lt_compat_r; auto. Qed.
-
-(* a < b -> 0 < c -> c * a < c * b *)
-Lemma Qc_lt_mul_compat_l : forall a b c : Qc, a < b -> 0 < c -> c * a < c * b.
-Proof. intros. rewrite !(commutative c _). apply Qc_lt_mul_compat_r; auto. Qed.
-
-(* n <= n *)
-Lemma Qc_le_refl : forall n : Qc, n <= n.
-Proof. apply Qcle_refl. Qed.
-
-
-(** Bool version of "<" and "<=" for Qc *)
-Definition Qcltb (a b : Qc) : bool := if Qclt_le_dec a b then true else false.
-Definition Qcleb (a b : Qc) : bool := if Qclt_le_dec b a then false else true.
-Infix "<?" := Qcltb : Qc_scope.
-Infix "<=?" := Qcleb : Qc_scope.
-
-Lemma Qcltb_reflect : forall a b : Qc, reflect (a < b) (a <? b).
-Proof.
-  intros. unfold Qcltb. destruct Qclt_le_dec; constructor; auto.
-  apply Qcle_not_lt; auto.
-Qed.
-
-Lemma Qcleb_reflect : forall a b : Qc, reflect (a <= b) (a <=? b).
-Proof.
-  intros. unfold Qcleb. destruct Qclt_le_dec; constructor; auto.
-  apply Qclt_not_le; auto.
-Qed.
-
-#[export] Instance Qc_Order : Order Qclt Qcle Qcltb Qcleb.
-Proof.
-  constructor; intros.
-  - split; intros. apply Qcle_lt_or_eq; auto. destruct H.
-    apply Qclt_le_weak; auto. subst. apply Qcle_refl.
-  - apply Qc_lt_irrefl.
-  - pose proof (Qclt_trans a b a H H0). apply Qc_lt_irrefl in H1. easy.
-  - apply Qclt_trans with b; auto.
-  - apply Qc_dec.
-  - apply Qcltb_reflect.
-  - apply Qcleb_reflect.
-Qed.
-
-Section test.
-  Goal forall a b : Qc, {a = b} + {a <> b}.
-  Proof. intros. apply Aeqdec. Abort.
-End test.
 
 
 (* ######################################################################### *)
@@ -234,36 +441,10 @@ Qed.
 
 
 (* ######################################################################### *)
-(** ** Well-defined (or compatible, or proper morphism) of operations on Qc. *)
-
-Lemma Qcplus_wd : Proper (eq ==> eq ==> eq) Qcplus.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Qcopp_wd : Proper (eq ==> eq) Qcopp.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Qcminus_wd : Proper (eq ==> eq ==> eq) Qcminus.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Qcmult_wd : Proper (eq ==> eq ==> eq) Qcmult.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Qcinv_wd : Proper (eq ==> eq) Qcinv.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Qcdiv_wd : Proper (eq ==> eq ==> eq) Qcdiv.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Hint Resolve
-  Qcplus_wd Qcopp_wd Qcminus_wd Qcmult_wd Qcinv_wd Qcdiv_wd
-  : wd.
-
-
-(* ######################################################################### *)
 (** ** Others *)
 
 
-(** ** sqrt of Q *)
+(** ** Sqrt of Q *)
 
 (* Definition Qsqrt (q : Q) := Qmake (Z.sqrt (Qnum q)) (Pos.sqrt (Qden q)). *)
 

@@ -61,12 +61,291 @@
  *)
 
 
+Require Export ZExt QExt QcExt.
 Require Export Lia Lra Reals.
-Require Import ZExt QExt QcExt.
-Require Export Basic.
-Require Export Hierarchy.
 
 Open Scope R_scope.
+
+
+(* ######################################################################### *)
+(** * Algebraic Structures *)
+
+(** equality is equivalence relation: Equivalence eq *)
+Hint Resolve eq_equivalence : R.
+
+(** operations are well-defined. Eg: Proper (eq ==> eq ==> eq) Rplus *)
+
+Lemma Radd_wd : Proper (eq ==> eq ==> eq) Rplus.
+Proof. repeat (hnf; intros); subst; auto. Qed.
+
+Lemma Ropp_wd : Proper (eq ==> eq) Ropp.
+Proof. repeat (hnf; intros); subst; auto. Qed.
+
+Lemma Rsub_wd : Proper (eq ==> eq ==> eq) Rminus.
+Proof. repeat (hnf; intros); subst; auto. Qed.
+
+Lemma Rmul_wd : Proper (eq ==> eq ==> eq) Rmult.
+Proof. repeat (hnf; intros); subst; auto. Qed.
+
+Lemma Rinv_wd : Proper (eq ==> eq) Rinv.
+Proof. repeat (hnf; intros); subst; auto. Qed.
+
+Lemma Rdiv_wd : Proper (eq ==> eq ==> eq) Rdiv.
+Proof. repeat (hnf; intros); subst; auto. Qed.
+
+Hint Resolve
+  Radd_wd Ropp_wd Rsub_wd
+  Rmul_wd Rinv_wd Rdiv_wd : R.
+
+(** Decidable *)
+
+#[export] Instance Req_Dec : Dec (@eq R).
+Proof. constructor. apply Req_EM_T. Defined.
+
+#[export] Instance Rle_Dec : Dec Rle.
+Proof. constructor. intros. destruct (Rle_lt_dec a b); auto. right; lra. Qed.
+
+#[export] Instance Rlt_Dec : Dec Rlt.
+Proof. constructor. intros. destruct (Rlt_le_dec a b); auto. right; lra. Qed.
+
+
+(** Associative *)
+
+#[export] Instance Radd_Assoc : Associative Rplus.
+Proof. constructor; intros; field. Qed.
+
+#[export] Instance Rmul_Assoc : Associative Rmult.
+Proof. constructor; intros; field. Qed.
+
+Hint Resolve Radd_Assoc Rmul_Assoc : R.
+
+(** Commutative *)
+
+#[export] Instance Radd_Comm : Commutative Rplus.
+Proof. constructor; intros; field. Qed.
+
+#[export] Instance Rmul_Comm : Commutative Rmult.
+Proof. constructor; intros; field. Qed.
+
+Hint Resolve Radd_Comm Rmul_Comm : R.
+
+(** Identity Left/Right *)
+#[export] Instance Radd_IdL : IdentityLeft Rplus 0.
+Proof. constructor; intros; field. Qed.
+
+#[export] Instance Radd_IdR : IdentityRight Rplus 0.
+Proof. constructor; intros; field. Qed.
+
+#[export] Instance Rmul_IdL : IdentityLeft Rmult 1.
+Proof. constructor; intros; field. Qed.
+
+#[export] Instance Rmul_IdR : IdentityRight Rmult 1.
+Proof. constructor; intros; field. Qed.
+
+Hint Resolve
+  Radd_IdL Radd_IdR
+  Rmul_IdL Rmul_IdR : R.
+
+(** Inverse Left/Right *)
+
+#[export] Instance Radd_InvL : InverseLeft Rplus 0 Ropp.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance Radd_InvR : InverseRight Rplus 0 Ropp.
+Proof. constructor; intros; ring. Qed.
+
+Hint Resolve Radd_InvL Radd_InvR : R.
+
+(** Distributive *)
+
+#[export] Instance Rmul_add_DistrL : DistrLeft Rplus Rmult.
+Proof. constructor; intros; field. Qed.
+
+#[export] Instance Rmul_add_DistrR : DistrRight Rplus Rmult.
+Proof. constructor; intros; field. Qed.
+
+Hint Resolve
+  Rmul_add_DistrL
+  Rmul_add_DistrR
+  : R.
+
+(** Semigroup *)
+
+#[export] Instance Radd_SGroup : SGroup Rplus.
+Proof. constructor; auto with R. Qed.
+
+#[export] Instance Rmul_SGroup : SGroup Rmult.
+Proof. constructor; auto with R. Qed.
+
+Hint Resolve
+  Radd_SGroup
+  Rmul_SGroup
+  : R.
+
+(** Abelian semigroup *)
+
+#[export] Instance Radd_ASGroup : ASGroup Rplus.
+Proof. constructor; auto with R. Qed.
+
+#[export] Instance Rmul_ASGroup : ASGroup Rmult.
+Proof. constructor; auto with R. Qed.
+
+Hint Resolve
+  Radd_ASGroup
+  Rmul_ASGroup
+  : R.
+
+(** Monoid *)
+  
+#[export] Instance Radd_Monoid : Monoid Rplus 0.
+Proof. constructor; auto with R. Qed.
+
+#[export] Instance Rmul_Monoid : Monoid Rmult 1.
+Proof. constructor; auto with R. Qed.
+
+Hint Resolve
+  Radd_Monoid
+  Rmul_Monoid
+  : R.
+
+(** Abelian monoid *)
+  
+#[export] Instance Radd_AMonoid : AMonoid Rplus 0.
+Proof. constructor; auto with R. Qed.
+  
+#[export] Instance Rmul_AMonoid : AMonoid Rmult 1.
+Proof. constructor; auto with R. Qed.
+
+Hint Resolve Radd_AMonoid Rmul_AMonoid : R.
+
+(** Group *)
+
+#[export] Instance Radd_Group : Group Rplus 0 Ropp.
+Proof. constructor; auto with R. Qed.
+
+Hint Resolve Radd_Group : R.
+
+(** AGroup *)
+
+#[export] Instance Radd_AGroup : AGroup Rplus 0 Ropp.
+Proof. constructor; auto with R. Qed.
+
+Hint Resolve Radd_AGroup : R.
+
+(** Ring *)
+
+#[export] Instance R_Ring : Ring Rplus 0 Ropp Rmult 1.
+Proof. constructor; auto with R. Qed.
+
+Hint Resolve R_Ring : R.
+
+(** ARing *)
+
+#[export] Instance R_ARing : ARing Rplus 0 Ropp Rmult 1.
+Proof. constructor; auto with R. Qed.
+
+Hint Resolve R_ARing : R.
+
+(** Field *)
+Hint Resolve R1_neq_R0 : R.
+Hint Resolve Rmult_inv_l : R.
+
+#[export] Instance R_Field : Field Rplus 0 Ropp Rmult 1 Rinv.
+Proof. constructor; auto with R. Qed.
+
+Hint Resolve R_Field : R.
+
+(** Order *)
+
+#[export] Instance R_Order : Order Rlt Rle.
+Proof.
+  constructor; intros; try lra; auto with R.
+  pose proof (total_order_T a b).
+  do 2 (destruct H as [H|]; auto).
+Qed.
+
+Hint Resolve R_Order : R.
+
+#[export] Instance R_OrderedARing :
+  OrderedARing Rplus 0 Ropp Rmult 1 Rlt Rle.
+Proof. constructor; auto with R. intros; lra. Qed.
+
+Hint Resolve R_OrderedARing : R.
+
+#[export] Instance R_OrderedField :
+  OrderedField Rplus 0 Ropp Rmult 1 Rinv Rlt Rle.
+Proof. constructor; auto with R. Qed.
+
+Hint Resolve R_OrderedField : R.
+
+#[export] Instance R_A2R
+  : A2R Rplus 0 Ropp Rmult 1 Rinv Rlt Rle id.
+Proof. constructor; intros; unfold id; auto with R; try easy. Qed.
+
+
+(* ######################################################################### *)
+(** * Reqb,Rleb,Rltb: Boolean comparison of R *)
+
+Definition Reqb (r1 r2 : R) : bool := Acmpb Req_Dec r1 r2.
+Definition Rleb (r1 r2 : R) : bool := Acmpb Rle_Dec r1 r2.
+Definition Rltb (r1 r2 : R) : bool := Acmpb Rlt_Dec r1 r2.
+Infix "=?"  := Reqb : R_scope.
+Infix "<=?" := Rleb : R_scope.
+Infix "<?"  := Rltb : R_scope.
+Infix ">?"  := (fun x y => y <? x) : R_scope.
+Infix ">=?" := (fun x y => y <=? x) : R_scope.
+
+Lemma Reqb_true : forall x y, x =? y = true <-> x = y.
+Proof. apply Acmpb_true. Qed.
+
+Lemma Reqb_false : forall x y, x =? y = false <-> x <> y.
+Proof. apply Acmpb_false. Qed.
+    
+Lemma Reqb_reflect : forall x y, reflect (x = y) (x =? y).
+Proof.
+  intros. unfold Reqb,Acmpb. destruct dec; constructor; auto.
+Qed.
+#[export] Hint Resolve Reqb_reflect : bdestruct.
+
+Lemma Reqb_refl : forall r, r =? r = true.
+Proof. intros. unfold Reqb,Acmpb. destruct dec; auto. Qed.
+
+Lemma Reqb_comm : forall r1 r2, (r1 =? r2) = (r2 =? r1).
+Proof. intros. unfold Reqb,Acmpb. destruct dec,dec; auto. lra. Qed.
+
+Lemma Reqb_trans : forall r1 r2 r3, r1 =? r2 = true ->
+  r2 =? r3 = true -> r1 =? r3 = true.
+Proof. intros. unfold Reqb,Acmpb in *. destruct dec,dec,dec; auto. lra. Qed.
+
+Lemma Rltb_reflect : forall x y, reflect (x < y) (x <? y).
+Proof. intros. unfold Rltb,Acmpb in *. destruct dec; auto; constructor; lra. Qed.
+#[export] Hint Resolve Rltb_reflect : bdestruct.
+
+Lemma Rleb_reflect : forall x y, reflect (x <= y) (x <=? y).
+Proof. intros. unfold Rleb,Acmpb in *. destruct dec; auto; constructor; lra. Qed.
+#[export] Hint Resolve Rleb_reflect : bdestruct.
+
+(* x <=? x = true *)
+Lemma Rleb_refl : forall x : R, x <=? x = true.
+Proof. intros. bdestruct (x <=? x); auto; lra. Qed.
+
+(* (x <=? - y) = (-x >=? y) *)
+Lemma Rleb_opp_r : forall x y : R, (x <=? - y) = (- x >=? y).
+Proof. intros. bdestruct (x <=? -y); bdestruct (-x >=? y); lra. Qed.
+
+(* (- x <=? y) = (x >=? - y) *)
+Lemma Rleb_opp_l : forall x y : R, (- x <=? y) = (x >=? - y).
+Proof. intros. bdestruct (- x <=? y); bdestruct (x >=? -y); lra. Qed.
+
+(** (a - b <? 0) = (0 <? b - a) *)
+Lemma Rminus_ltb0_comm : forall a b : R, (a - b <? 0) = (0 <? b - a).
+Proof. intros. unfold Rltb,Acmpb. destruct dec,dec; auto; lra. Qed.
+  
+(** (a - b >? 0) = (0 >? b - a) *)
+Lemma Rminus_gtb0_comm : forall a b : R, (a - b >? 0) = (0 >? b - a).
+Proof. intros. unfold Rltb,Acmpb. destruct dec,dec; auto; lra. Qed.
+
+
 
 (* ######################################################################### *)
 (** * Config the usage of Coq-Standard-Library Reals: Hints, Opaque, auto *)
@@ -279,79 +558,6 @@ Proof. intros. destruct (_??<_); split; intros; try congruence. lra. Qed.
 Lemma RleDec_refl : forall {B} (x : R) (b1 b2 : B),
     (if x ??<= x then b1 else b2) = b1.
 Proof. intros. destruct (_??<= _); ra. Qed.
-
-
-(* ######################################################################### *)
-(** * Reqb,Rleb,Rltb: Boolean comparison of R *)
-
-
-#[export] Instance R_eq_Dec : Dec (@eq R).
-Proof. constructor. apply Req_EM_T. Defined.
-
-#[export] Instance R_le_Dec : Dec Rle.
-Proof. constructor. intros. destruct (Rle_lt_dec a b); auto. right; lra. Qed.
-
-#[export] Instance R_lt_Dec : Dec Rlt.
-Proof. constructor. intros. destruct (Rlt_le_dec a b); auto. right; lra. Qed.
-
-Definition Reqb (r1 r2 : R) : bool := Acmpb R_eq_Dec r1 r2.
-Definition Rleb (r1 r2 : R) : bool := Acmpb R_le_Dec r1 r2.
-Definition Rltb (r1 r2 : R) : bool := Acmpb R_lt_Dec r1 r2.
-Infix "=?"  := Reqb : R_scope.
-Infix "<=?" := Rleb : R_scope.
-Infix "<?"  := Rltb : R_scope.
-Infix ">?"  := (fun x y => y <? x) : R_scope.
-Infix ">=?" := (fun x y => y <=? x) : R_scope.
-
-Lemma Reqb_true : forall x y, x =? y = true <-> x = y.
-Proof. apply Acmpb_true. Qed.
-
-Lemma Reqb_false : forall x y, x =? y = false <-> x <> y.
-Proof. apply Acmpb_false. Qed.
-    
-Lemma Reqb_reflect : forall x y, reflect (x = y) (x =? y).
-Proof.
-  intros. unfold Reqb,Acmpb. destruct dec; constructor; auto.
-Qed.
-#[export] Hint Resolve Reqb_reflect : bdestruct.
-
-Lemma Reqb_refl : forall r, r =? r = true.
-Proof. intros. unfold Reqb,Acmpb. destruct dec; auto. Qed.
-
-Lemma Reqb_comm : forall r1 r2, (r1 =? r2) = (r2 =? r1).
-Proof. intros. unfold Reqb,Acmpb. destruct dec,dec; auto. lra. Qed.
-
-Lemma Reqb_trans : forall r1 r2 r3, r1 =? r2 = true ->
-  r2 =? r3 = true -> r1 =? r3 = true.
-Proof. intros. unfold Reqb,Acmpb in *. destruct dec,dec,dec; auto. lra. Qed.
-
-Lemma Rltb_reflect : forall x y, reflect (x < y) (x <? y).
-Proof. intros. unfold Rltb,Acmpb in *. destruct dec; auto; constructor; lra. Qed.
-#[export] Hint Resolve Rltb_reflect : bdestruct.
-
-Lemma Rleb_reflect : forall x y, reflect (x <= y) (x <=? y).
-Proof. intros. unfold Rleb,Acmpb in *. destruct dec; auto; constructor; lra. Qed.
-#[export] Hint Resolve Rleb_reflect : bdestruct.
-
-(* x <=? x = true *)
-Lemma Rleb_refl : forall x : R, x <=? x = true.
-Proof. intros. bdestruct (x <=? x); ra. Qed.
-
-(* (x <=? - y) = (-x >=? y) *)
-Lemma Rleb_opp_r : forall x y : R, (x <=? - y) = (- x >=? y).
-Proof. intros. bdestruct (x <=? -y); bdestruct (-x >=? y); ra. Qed.
-
-(* (- x <=? y) = (x >=? - y) *)
-Lemma Rleb_opp_l : forall x y : R, (- x <=? y) = (x >=? - y).
-Proof. intros. bdestruct (- x <=? y); bdestruct (x >=? -y); ra. Qed.
-
-(** (a - b <? 0) = (0 <? b - a) *)
-Lemma Rminus_ltb0_comm : forall a b : R, (a - b <? 0) = (0 <? b - a).
-Proof. intros. unfold Rltb,Acmpb. destruct dec,dec; auto; lra. Qed.
-  
-(** (a - b >? 0) = (0 >? b - a) *)
-Lemma Rminus_gtb0_comm : forall a b : R, (a - b >? 0) = (0 >? b - a).
-Proof. intros. unfold Rltb,Acmpb. destruct dec,dec; auto; lra. Qed.
 
 
 (* ######################################################################### *)
@@ -1848,8 +2054,8 @@ Section Qc2R.
     apply Rle_Qle; auto. apply Qle_Rle; auto.
   Qed.
 
-  #[export] Instance Qc_ConvertToR
-    : ConvertToR Qcplus (0%Qc) Qcopp Qcmult (1%Qc) Qcinv Qclt Qcle Qcltb Qcleb Qc2R.
+  #[export] Instance Qc_A2R
+    : A2R Qcplus (0%Qc) Qcopp Qcmult (1%Qc) Qcinv Qclt Qcle Qc2R.
   Proof.
     constructor; intros.
     apply Qc2R_add. apply Qc2R_0. apply Qc2R_opp. apply Qc2R_mul. apply Qc2R_1.
@@ -1868,69 +2074,6 @@ Definition Rapprox (r1 r2 diff : R) : Prop := |r1 - r2| <= diff.
 
 (** boolean version of approximate function *)
 Definition Rapproxb (r1 r2 diff : R) : bool := |r1 - r2| <=? diff.
-
-
-(* ######################################################################### *)
-(** * Mathematical Structure *)
-
-(* ======================================================================= *)
-(** ** Well-defined (or compatible, or proper morphism) of operations on R. *)
-
-Lemma Rplus_wd : Proper (eq ==> eq ==> eq) Rplus.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Ropp_wd : Proper (eq ==> eq) Ropp.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Rminus_wd : Proper (eq ==> eq ==> eq) Rminus.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Rmult_wd : Proper (eq ==> eq ==> eq) Rmult.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Rinv_wd : Proper (eq ==> eq) Rinv.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Lemma Rdiv_wd : Proper (eq ==> eq ==> eq) Rdiv.
-Proof. simp_proper. intros; subst; ring. Qed.
-
-Hint Resolve
-  Rplus_wd Ropp_wd Rminus_wd Rmult_wd Rinv_wd Rdiv_wd
-  : wd.
-
-(* ======================================================================= *)
-(** ** Useful structures *)
-
-#[export] Instance R_Order : Order Rlt Rle Rltb Rleb.
-Proof.
-  constructor; intros; try lra.
-  destruct (total_order_T a b) as [[H|H]|H]; auto.
-  apply Rltb_reflect. apply Rleb_reflect.
-Qed.
-
-#[export] Instance R_ARing : ARing Rplus R0 Ropp Rmult R1.
-Proof.
-  repeat constructor; intros; ring.
-Qed.
-
-#[export] Instance R_OrderedARing
-  : OrderedARing Rplus 0 Ropp Rmult 1 Rlt Rle Rltb Rleb.
-Proof.
-  constructor. apply R_ARing. apply R_Order.
-  - intros. lra.
-  - intros. apply Rmult_lt_compat_r; auto.
-Qed.
-
-#[export] Instance R_Field : Field Rplus R0 Ropp Rmult R1 Rinv.
-Proof.
-  constructor. apply R_ARing. intros. field; auto. lra.
-Qed.
-
-#[export] Instance R_OrderedField
-  : OrderedField Rplus 0 Ropp Rmult 1 Rinv Rlt Rle Rltb Rleb.
-Proof.
-  constructor. apply R_Field. apply R_OrderedARing.
-Qed.
 
 
 (* ######################################################################### *)
@@ -1965,10 +2108,6 @@ Qed.
 #[export] Hint Resolve
   Rdiv_le_1
   : R.
-
-#[export] Instance R_ConvertToR
-  : ConvertToR Rplus 0 Ropp Rmult 1 Rinv Rlt Rle Rltb Rleb id.
-Proof. constructor; intros; unfold id; auto; try easy. apply R_Order. Qed.
 
 
 (** b <> 0 -> a * b = b -> a = 1 *)

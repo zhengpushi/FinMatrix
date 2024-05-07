@@ -18,8 +18,8 @@
 # ========== CoqExt ====================
 FinMatrix/CoqExt/Basic.v
 FinMatrix/CoqExt/BoolExt.v
+FinMatrix/CoqExt/FuncExt.v
 FinMatrix/CoqExt/StrExt.v
-FinMatrix/CoqExt/TupleExt.v
 FinMatrix/CoqExt/ListExt.v
 FinMatrix/CoqExt/Hierarchy.v
 FinMatrix/CoqExt/NatExt.v
@@ -28,7 +28,8 @@ FinMatrix/CoqExt/ZExt.v
 FinMatrix/CoqExt/QExt.v
 FinMatrix/CoqExt/QcExt.v
 FinMatrix/CoqExt/RExt.v
-FinMatrix/CoqExt/RealFunction.v
+FinMatrix/CoqExt/RFunExt.v
+FinMatrix/CoqExt/RAnalysisExt.v
 FinMatrix/CoqExt/Ratan2.v
 FinMatrix/CoqExt/Complex.v
 FinMatrix/CoqExt/LinearSpace.v

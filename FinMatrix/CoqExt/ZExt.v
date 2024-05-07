@@ -8,18 +8,27 @@
   date      : 2022.04
 *)
 
-Require Export ZArith.
 Require Export Hierarchy.  
+Require Export ZArith.
 Open Scope Z.
 
 
 (* ######################################################################### *)
-(** * Mathematical Structure *)
+(** * Algebraic Structures *)
 
-(** *** well-defined *)
+(** equality is equivalence relation: Equivalence (@eq Z) *)
+Hint Resolve eq_equivalence : Z.
+
+(** operations are well-defined. Eg: Proper (eq ==> eq ==> eq) add *)
 Hint Resolve
-  Z.add_wd Z.opp_wd Z.sub_wd Z.mul_wd (* Z *)
-  : wd.
+  Z.add_wd
+  Z.opp_wd
+  Z.sub_wd
+  Z.mul_wd
+  : Z.
+
+
+(** Decidable *)
 
 #[export] Instance Z_eq_Dec : Dec (@eq Z).
 Proof. constructor. apply Z.eq_dec. Defined.
@@ -30,30 +39,154 @@ Proof. constructor. intros. destruct (Z_le_gt_dec a b); auto. Defined.
 #[export] Instance Z_lt_Dec : Dec Z.lt.
 Proof. constructor. intros. destruct (Z_lt_le_dec a b); auto. right. lia. Defined.
 
-(* n <= n *)
-Lemma Z_le_refl : forall n : Z, n <= n.
-Proof. intros. lia. Qed.
+(** Associative *)
 
-Lemma Z_zero_le_sqr : forall a : Z, 0 <= a * a.
-Proof. intros. apply Z.square_nonneg. Qed.
+#[export] Instance Zadd_Assoc : Associative Z.add.
+Proof. constructor; intros; ring. Qed.
 
-Lemma Z_add_le_compat : forall a1 b1 a2 b2 : Z, a1 <= a2 -> b1 <= b2 -> a1 + b1 <= a2 + b2.
-Proof. intros. lia. Qed.
+#[export] Instance Zmul_Assoc : Associative Z.mul.
+Proof. constructor; intros; ring. Qed.
 
-Lemma Z_add_eq_0_reg_l : forall a b : Z, 0 <= a -> 0 <= b -> a + b = 0 -> a = 0.
-Proof. intros. lia. Qed.
+Hint Resolve Zadd_Assoc Zmul_Assoc : Z.
 
-#[export] Instance Z_Order : Order Z.lt Z.le Z.ltb Z.leb.
+(** Commutative *)
+
+#[export] Instance Zadd_Comm : Commutative Z.add.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance Zmul_Comm : Commutative Z.mul.
+Proof. constructor; intros; ring. Qed.
+
+Hint Resolve Zadd_Comm Zmul_Comm : Z.
+
+(** Identity Left/Right *)
+#[export] Instance Zadd_IdL : IdentityLeft Z.add 0.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance Zadd_IdR : IdentityRight Z.add 0.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance Zmul_IdL : IdentityLeft Z.mul 1.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance Zmul_IdR : IdentityRight Z.mul 1.
+Proof. constructor; intros; ring. Qed.
+
+Hint Resolve
+  Zadd_IdL Zadd_IdR
+  Zmul_IdL Zmul_IdR : Z.
+
+(** Inverse Left/Right *)
+
+#[export] Instance Zadd_InvL : InverseLeft Z.add 0 Z.opp.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance Zadd_InvR : InverseRight Z.add 0 Z.opp.
+Proof. constructor; intros; ring. Qed.
+
+Hint Resolve Zadd_InvL Zadd_InvR : Z.
+
+
+(** Distributive *)
+
+#[export] Instance Zmul_add_DistrL : DistrLeft Z.add Z.mul.
+Proof. constructor; intros; ring. Qed.
+
+#[export] Instance Zmul_add_DistrR : DistrRight Z.add Z.mul.
+Proof. constructor; intros; ring. Qed.
+
+Hint Resolve Zmul_add_DistrL Zmul_add_DistrR : Z.
+
+(** Semigroup *)
+
+#[export] Instance Zadd_SGroup : SGroup Z.add.
+Proof. constructor; auto with Z. Qed.
+
+#[export] Instance Zmul_SGroup : SGroup Z.mul.
+Proof. constructor; auto with Z. Qed.
+
+Hint Resolve Zadd_SGroup Zmul_SGroup : Z.
+
+(** Abelian semigroup *)
+
+#[export] Instance Zadd_ASGroup : ASGroup Z.add.
+Proof. constructor; auto with Z. Qed.
+
+#[export] Instance Zmul_ASGroup : ASGroup Z.mul.
+Proof. constructor; auto with Z. Qed.
+
+Hint Resolve
+  Zadd_ASGroup
+  Zmul_ASGroup
+  : Z.
+
+(** Monoid *)
+  
+#[export] Instance Zadd_Monoid : Monoid Z.add 0.
+Proof. constructor; auto with Z. Qed.
+
+#[export] Instance Zmul_Monoid : Monoid Z.mul 1.
+Proof. constructor; auto with Z. Qed.
+
+Hint Resolve Zadd_Monoid Zmul_Monoid : Z.
+
+(** Abelian monoid *)
+  
+#[export] Instance Zadd_AMonoid : AMonoid Z.add 0.
+Proof. constructor; auto with Z. Qed.
+  
+#[export] Instance Zmul_AMonoid : AMonoid Z.mul 1.
+Proof. constructor; auto with Z. Qed.
+
+Hint Resolve Zadd_AMonoid Zmul_AMonoid : Z.
+
+(** Group *)
+
+#[export] Instance Zadd_Group : Group Z.add 0 Z.opp.
+Proof. constructor; auto with Z. Qed.
+
+Hint Resolve Zadd_Group : Z.
+
+(** AGroup *)
+
+#[export] Instance Zadd_AGroup : AGroup Z.add 0 Z.opp.
+Proof. constructor; auto with Z. Qed.
+
+Hint Resolve Zadd_AGroup : Z.
+
+(** Ring *)
+
+#[export] Instance Z_Ring : Ring Z.add 0 Z.opp Z.mul 1.
+Proof. constructor; auto with Z. Qed.
+
+Hint Resolve Z_Ring : Z.
+
+(** ARing *)
+
+#[export] Instance Z_ARing : ARing Z.add 0 Z.opp Z.mul 1.
+Proof. constructor; auto with Z. Qed.
+
+Hint Resolve Z_ARing : Z.
+
+(** Order *)
+
+#[export] Instance Z_Order : Order Z.lt Z.le.
 Proof.
-  constructor; intros; try lia. apply Z_dec'.
-  apply Z.ltb_spec0. apply Z.leb_spec0.
+  constructor; intros; try lia; auto with Z.
+  apply Z_dec'.
 Qed.
 
+Hint Resolve Z_Order : Z.
 
-Section test.
-  Goal forall a b : Z, {a = b} + {a <> b}.
-  Proof. intros. apply Aeqdec. Abort.
-End test.
+#[export] Instance Z_OrderedARing :
+  OrderedARing Z.add 0 Z.opp Z.mul 1 Z.lt Z.le.
+Proof.
+  constructor; auto with Z.
+  intros; lia.
+  intros. apply Zmult_lt_compat_r; auto.
+Qed.
+
+Hint Resolve Z_OrderedARing : Z.
 
 
 (* ######################################################################### *)

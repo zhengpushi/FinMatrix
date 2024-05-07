@@ -24,7 +24,7 @@
     such that `vcmul` and `vdot` could be defined on natural numbers.
 *)
 
-Require NatExt ZExt QExt QcExt RExt RealFunction Complex.
+Require NatExt ZExt QExt QcExt RExt RFunExt Complex.
 Require Export Hierarchy.
 
 
@@ -93,7 +93,7 @@ Module ElementTypeR <: ElementType.
   Hint Unfold A Azero : A.
 
   Lemma AeqDec : Dec (@eq A).
-  Proof. apply R_eq_Dec. Defined.
+  Proof. apply Req_Dec. Defined.
 End ElementTypeR.
 
 Module ElementTypeC <: ElementType.
@@ -107,13 +107,15 @@ Module ElementTypeC <: ElementType.
 End ElementTypeC.
 
 Module ElementTypeRFun <: ElementType.
-  Export RealFunction.
-  Definition A : Type := tpRFun.
-  Definition Azero : A := fzero.
+  Export RFunExt.
+  Add Ring ring_inst : (make_ring_theory Rfun_ARing).
+  
+  Definition A : Type := R -> R.
+  Definition Azero : A := fzeroR.
   Hint Unfold A Azero : A.
 
   Lemma AeqDec : Dec (@eq A).
-  Proof. constructor. intros a b. unfold tpRFun in *.
+  Proof. constructor. intros a b.
          (* rewrite (functional_extensionality a b). *)
   Admitted.
 End ElementTypeRFun.
@@ -149,14 +151,11 @@ Module Type OrderedElementType <: ElementType.
   Include ElementType.
   
   Parameter Alt Ale : A -> A -> Prop.
-  Parameter Altb Aleb : A -> A -> bool.
 
   Infix "<" := Alt : A_scope.
   Infix "<=" := Ale : A_scope.
-  Infix "<?" := Altb : A_scope.
-  Infix "<=?" := Aleb : A_scope.
   
-  Axiom Order : Order Alt Ale Altb Aleb.
+  Axiom Order : Order Alt Ale.
 End OrderedElementType.
 
 (** ** Instances *)
@@ -165,11 +164,9 @@ Module OrderedElementTypeNat <: OrderedElementType.
 
   Definition Alt := Nat.lt.
   Definition Ale := Nat.le.
-  Definition Altb := Nat.ltb.
-  Definition Aleb := Nat.leb.
-  Hint Unfold Ale Alt Altb Aleb : A.
+  Hint Unfold Ale Alt : A.
 
-  #[export] Instance Order : Order Alt Ale Altb Aleb.
+  #[export] Instance Order : Order Alt Ale.
   Proof. apply nat_Order. Qed.
 End OrderedElementTypeNat.
 
@@ -178,11 +175,9 @@ Module OrderedElementTypeZ <: OrderedElementType.
 
   Definition Alt := Z.lt.
   Definition Ale := Z.le.
-  Definition Altb := Z.ltb.
-  Definition Aleb := Z.leb.
-  Hint Unfold Ale Alt Altb Aleb : A.
+  Hint Unfold Ale Alt : A.
 
-  #[export] Instance Order : Order Alt Ale Altb Aleb.
+  #[export] Instance Order : Order Alt Ale.
   Proof. apply Z_Order. Qed.
 End OrderedElementTypeZ.
 
@@ -206,11 +201,9 @@ Module OrderedElementTypeQc <: OrderedElementType.
 
   Definition Alt := Qclt.
   Definition Ale := Qcle.
-  Definition Altb := Qcltb.
-  Definition Aleb := Qcleb.
-  Hint Unfold Ale Alt Altb Aleb : A.
+  Hint Unfold Ale Alt : A.
 
-  #[export] Instance Order : Order Alt Ale Altb Aleb.
+  #[export] Instance Order : Order Alt Ale.
   Proof. apply Qc_Order. Qed.
 End OrderedElementTypeQc.
 
@@ -219,11 +212,9 @@ Module OrderedElementTypeR <: OrderedElementType.
 
   Definition Alt := Rlt.
   Definition Ale := Rle.
-  Definition Altb := Rltb.
-  Definition Aleb := Rleb.
-  Hint Unfold Ale Alt Altb Aleb : A.
+  Hint Unfold Ale Alt : A.
 
-  #[export] Instance Order : Order Alt Ale Altb Aleb.
+  #[export] Instance Order : Order Alt Ale.
   Proof. apply R_Order. Qed.
 End OrderedElementTypeR.
 
@@ -313,7 +304,7 @@ End MonoidElementTypeC.
 Module MonoidElementTypeRFun <: MonoidElementType.
   Include ElementTypeRFun.
   
-  Definition Aadd := fadd.
+  Definition Aadd := faddR.
   Hint Unfold Aadd : A.
   
   Infix "+" := Aadd : A_scope.
@@ -499,9 +490,9 @@ End RingElementTypeC.
 Module RingElementTypeRFun <: RingElementType.
   Include MonoidElementTypeRFun.
   
-  Definition Aone : A := fone.
-  Definition Aopp := fopp.
-  Definition Amul := fmul.
+  Definition Aone : A := foneR.
+  Definition Aopp := foppR.
+  Definition Amul := fmulR.
   Hint Unfold Aone Aadd Aopp Amul : A.
   
   Notation Asub := (fun x y => Aadd x (Aopp y)).
@@ -565,18 +556,15 @@ Module Type OrderedRingElementType <: RingElementType <: OrderedElementType.
   Include RingElementType.
 
   Parameter Alt Ale : A -> A -> Prop.
-  Parameter Altb Aleb : A -> A -> bool.
 
   Infix "<" := Alt : A_scope.
   Infix "<=" := Ale : A_scope.
-  Infix "<?" := Altb : A_scope.
-  Infix "<=?" := Aleb : A_scope.
 
-  Axiom Order : Order Alt Ale Altb Aleb.
-  Axiom OrderedARing : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb.
+  Axiom Order : Order Alt Ale.
+  Axiom OrderedARing : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
   #[export] Existing Instance OrderedARing.
-
-  Notation "| a |" := (@Aabs _ 0 Aopp Aleb a) : A_scope.
+  
+  Notation "| a |" := (Aabs a) : A_scope.
   
 End OrderedRingElementType.
 
@@ -588,15 +576,13 @@ Module OrderedRingElementTypeZ <: OrderedRingElementType.
   
   Definition Ale := Z.le.
   Definition Alt := Z.lt.
-  Definition Altb := Z.ltb.
-  Definition Aleb := Z.leb.
-  Hint Unfold Ale Alt Altb Aleb : A.
+  Hint Unfold Ale Alt : A.
 
-  #[export] Instance Order : Order Alt Ale Altb Aleb.
+  #[export] Instance Order : Order Alt Ale.
   Proof. apply OrderedElementTypeZ.Order. Qed.
   
   #[export] Instance OrderedARing
-    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb.
+    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
   Proof.
     constructor. apply ARing. apply Order.
     - intros; autounfold with A in *. lia.
@@ -609,19 +595,17 @@ Module OrderedRingElementTypeQc <: OrderedRingElementType.
 
   Definition Ale := Qcle.
   Definition Alt := Qclt.
-  Definition Altb := Qcltb.
-  Definition Aleb := Qcleb.
-  Hint Unfold Ale Alt Altb Aleb : A.
+  Hint Unfold Ale Alt : A.
   
-  #[export] Instance Order : Order Alt Ale Altb Aleb.
+  #[export] Instance Order : Order Alt Ale.
   Proof. apply OrderedElementTypeQc.Order. Qed.
   
   #[export] Instance OrderedARing
-    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb.
+    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
   Proof.
     constructor. apply ARing. apply Order.
-    - intros; autounfold with A in *. apply Qc_lt_add_compat_r; auto.
-    - intros; autounfold with A in *. apply Qc_lt_mul_compat_r; auto.
+    - intros; autounfold with A in *. apply Qcplus_lt_compat_r; auto.
+    - intros; autounfold with A in *. apply Qcmult_lt_compat_r; auto.
   Qed.
 End OrderedRingElementTypeQc.
 
@@ -630,22 +614,20 @@ Module OrderedRingElementTypeR <: OrderedRingElementType.
   
   Definition Ale := Rle.
   Definition Alt := Rlt.
-  Definition Altb := Rltb.
-  Definition Aleb := Rleb.
-  Hint Unfold Ale Alt Altb Aleb : A.
+  Hint Unfold Ale Alt : A.
 
-  #[export] Instance Order : Order Alt Ale Altb Aleb.
+  #[export] Instance Order : Order Alt Ale.
   Proof. apply OrderedElementTypeR.Order. Qed.
   
   #[export] Instance OrderedARing
-    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb.
+    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
   Proof.
     constructor. apply ARing. apply Order.
     - intros; autounfold with A in *. lra.
     - intros; autounfold with A in *. apply Rmult_lt_compat_r; auto.
   Qed.
 
-  Notation "| a |" := (@Aabs _ 0 Aopp Aleb a) : A_scope.
+  Notation "| a |" := (Aabs a) : A_scope.
   
 End OrderedRingElementTypeR.
 
@@ -805,22 +787,19 @@ Module Type OrderedFieldElementType <: FieldElementType <: OrderedRingElementTyp
   Include FieldElementType.
 
   Parameter Alt Ale : A -> A -> Prop.
-  Parameter Altb Aleb : A -> A -> bool.
 
   Infix "<" := Alt : A_scope.
   Infix "<=" := Ale : A_scope.
-  Infix "<?" := Altb : A_scope.
-  Infix "<=?" := Aleb : A_scope.
   
-  Axiom Order : Order Alt Ale Altb Aleb.
+  Axiom Order : Order Alt Ale.
 
-  Axiom OrderedARing : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb.
+  Axiom OrderedARing : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
   #[export] Existing Instance OrderedARing.
 
-  Axiom OrderedAField : OrderedField Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb.
+  Axiom OrderedAField : OrderedField Aadd Azero Aopp Amul Aone Ainv Alt Ale.
   #[export] Existing Instance OrderedAField.
 
-  Notation "| a |" := (@Aabs _ 0 Aopp Aleb a) : A_scope.
+  Notation "| a |" := (Aabs a) : A_scope.
 End OrderedFieldElementType.
 
 
@@ -831,19 +810,17 @@ Module OrderedFieldElementTypeQc <: OrderedFieldElementType.
 
   Definition Ale := Qcle.
   Definition Alt := Qclt.
-  Definition Altb := Qcltb.
-  Definition Aleb := Qcleb.
-  Hint Unfold Ale Alt Altb Aleb : A.
+  Hint Unfold Ale Alt : A.
 
-  #[export] Instance Order : Order Alt Ale Altb Aleb.
+  #[export] Instance Order : Order Alt Ale.
   Proof. apply OrderedElementTypeQc.Order. Qed.
   
   #[export] Instance OrderedARing
-    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb.
+    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
   Proof. apply OrderedRingElementTypeQc.OrderedARing. Qed.
   
   #[export] Instance OrderedAField
-    : OrderedField Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb.
+    : OrderedField Aadd Azero Aopp Amul Aone Ainv Alt Ale.
   Proof. constructor. apply Field. apply OrderedRingElementTypeQc.OrderedARing. Qed.
   
 End OrderedFieldElementTypeQc.
@@ -853,22 +830,20 @@ Module OrderedFieldElementTypeR <: OrderedFieldElementType.
   
   Definition Ale := Rle.
   Definition Alt := Rlt.
-  Definition Altb := Rltb.
-  Definition Aleb := Rleb.
-  Hint Unfold Ale Alt Altb Aleb : A.
+  Hint Unfold Ale Alt : A.
 
-  #[export] Instance Order : Order Alt Ale Altb Aleb.
+  #[export] Instance Order : Order Alt Ale.
   Proof. apply OrderedElementTypeR.Order. Qed.
   
   #[export] Instance OrderedARing
-    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb.
+    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
   Proof. apply OrderedRingElementTypeR.OrderedARing. Qed.
   
   #[export] Instance OrderedAField
-    : OrderedField Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb.
+    : OrderedField Aadd Azero Aopp Amul Aone Ainv Alt Ale.
   Proof. constructor. apply Field. apply OrderedRingElementTypeR.OrderedARing. Qed.
 
-  Notation "| a |" := (@Aabs _ 0 Aopp Aleb a) : A_scope.
+  Notation "| a |" := (Aabs a) : A_scope.
 
 End OrderedFieldElementTypeR.
 
@@ -880,11 +855,11 @@ End OrderedFieldElementTypeR.
 (** ** Type of Element with normed ordered field structure *)
 Module Type NormedOrderedFieldElementType <: OrderedFieldElementType.
   Include OrderedFieldElementType.
-  Export RExt RealFunction.
+  Export RExt RFunExt.
 
   Parameter a2r : A -> R.
-  Axiom ConvertToR : ConvertToR Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb a2r.
-  #[export] Existing Instance ConvertToR.
+  Axiom A2R : A2R Aadd Azero Aopp Amul Aone Ainv Alt Ale a2r.
+  #[export] Existing Instance A2R.
 End NormedOrderedFieldElementType.
 
 
@@ -892,13 +867,13 @@ End NormedOrderedFieldElementType.
 
 Module NormedOrderedFieldElementTypeQc <: NormedOrderedFieldElementType.
   Include OrderedFieldElementTypeQc.
-  Export RExt RealFunction.
+  Export RExt RFunExt.
 
   Definition a2r := Qc2R.
   
-  #[export] Instance ConvertToR
-    : ConvertToR Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb a2r.
-  Proof. apply Qc_ConvertToR. Qed.
+  #[export] Instance A2R
+    : A2R Aadd Azero Aopp Amul Aone Ainv Alt Ale a2r.
+  Proof. apply Qc_A2R. Qed.
 End NormedOrderedFieldElementTypeQc.
 
 Module NormedOrderedFieldElementTypeR <: NormedOrderedFieldElementType.
@@ -906,7 +881,7 @@ Module NormedOrderedFieldElementTypeR <: NormedOrderedFieldElementType.
   
   Definition a2r := id.
   
-  #[export] Instance ConvertToR
-    : ConvertToR Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb a2r.
-  Proof. apply R_ConvertToR. Qed.
+  #[export] Instance A2R
+    : A2R Aadd Azero Aopp Amul Aone Ainv Alt Ale a2r.
+  Proof. apply R_A2R. Qed.
 End NormedOrderedFieldElementTypeR.

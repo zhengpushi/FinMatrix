@@ -157,7 +157,7 @@ Module Export method3.
   Section def.
     Context {A : Type}.
 
-    (* 将 a 插入 l 的每个位置 *)
+    (** Insert an element `a` into a list `l` at all possible position *)
     Fixpoint permOne (a : A) (l : list A) : list (list A) :=
       match l with
       | [] => [[a]]

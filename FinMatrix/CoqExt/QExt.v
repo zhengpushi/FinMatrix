@@ -18,16 +18,15 @@ Open Scope Q.
 (* ######################################################################### *)
 (** * Mathematical Structure *)
 
-(* Global Instance Comm_QAdd : Commutative Qplus Qeq. *)
-(* constructor. intros; ring. Qed. *)
-
-(* Global Instance Comm_QMul : Commutative Qmult Qeq. *)
-(* constructor. intros; ring. Qed. *)
-
 (** well-defined  *)
 Hint Resolve
   Qplus_comp Qopp_comp Qminus_comp Qmult_comp Qinv_comp Qdiv_comp (* Q *)
   : wd.
+
+(** Decidable *)
+
+#[export] Instance Qeq_Dec : Dec Qeq.
+Proof. constructor. intros. apply Qeq_dec. Defined.
 
 #[export] Instance Q_eq_Dec : Dec (@eq Q).
 Proof.
@@ -47,15 +46,6 @@ Proof.
   constructor. intros. destruct (Qlt_le_dec a b); auto.
   right. intro. apply Qle_not_lt in q. easy.
 Defined.
-
-(* n <= n *)
-Lemma Q_le_refl : forall n : Q, n <= n.
-Proof. apply Qle_refl. Qed.
-
-Section test.
-  Goal forall a b : Q, {a = b} + {a <> b}.
-  Proof. intros. apply Aeqdec. Abort.
-End test.
 
 
 (* ######################################################################### *)

@@ -44,10 +44,8 @@
      Commutative f                      an operation is commutative
      IdentityLeft f e                   ∀ a, f e a = a
      IdentityRight f e                  ∀ a, f a e = a
-     DistributiveLeft Aadd Amul         ∀ a b c, a * (b + c) = a * b + a * c
-     DistributiveRight Aadd Amul        ∀ a b c, (a + b) * c = a * c + b * c
-     Order lt le ltb leb                `lt,le` is order relation, and `ltb,leb` 
-                                        reflect `lt,le`
+     DistrLeft Aadd Amul                ∀ a b c, a * (b + c) = a * b + a * c
+     DistrRight Aadd Amul               ∀ a b c, (a + b) * c = a * c + b * c
      SGroup Aadd                        semigroup<+>. Aadd is associative
      ASGroup Aadd                       abelian semigroup<+>. Aadd is commutative
      Monoid Aadd Azero                  monoid<+,0>
@@ -57,12 +55,13 @@
      SemiRing Aadd Azero Amul Aone      semiring<+,0,*,1>
      Ring Aadd Azero Aopp Amul Aone     ring<+,0,-a,*,1>
      ARing Aadd Azero Aopp Amul Aone    abelian-ring<+,0,-a,*,1>
-     OrderedARing Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb
-                                        abelian-ring, along with order relation
      Field Aadd Azero Aopp Amul Aone Ainv  field<+,0,-a,*,1,/a>
-     OrderedField Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb
+     Order lt le                       `lt,le` is order relation
+     OrderedARing Aadd Azero Aopp Amul Aone Alt Ale
+                                        abelian-ring, along with order relation
+     OrderedField Aadd Azero Aopp Amul Aone Ainv Alt Ale
                                         field, along with order relation
-     ConvertToR Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb (a2r:A->R)
+     A2R Aadd Azero Aopp Amul Aone Ainv Alt Ale (a2r:A->R)
                                         The `a2r` operation is consistent
   
      ============= The structure of algebraic structure ===============
@@ -610,13 +609,13 @@ Class InverseRight {A} (Aop : A -> A -> A) (Ae : A) (Aopinv : A -> A)
 (*       Aopp (Tadd a b) = Tadd (Aopp a) (Aopp b) *)
 (*   }. *)
 
-Class DistributiveLeft {A} (Aadd Amul : A -> A -> A) := {
-    distributiveLeft : forall a b c,
+Class DistrLeft {A} (Aadd Amul : A -> A -> A) := {
+    distrLeft : forall a b c,
       Amul a (Aadd b c) = Aadd (Amul a b) (Amul a c)
   }.
 
-Class DistributiveRight {A} (Aadd Amul : A -> A -> A) := {
-    distributiveRight : forall a b c,
+Class DistrRight {A} (Aadd Amul : A -> A -> A) := {
+    distrRight : forall a b c,
       Amul (Aadd a b) c = Aadd (Amul a c) (Amul b c)
   }.
 
@@ -640,207 +639,6 @@ Class DistributiveRight {A} (Aadd Amul : A -> A -> A) := {
 (** ** Instances *)
 
 (** ** Extra Theories *)
-
-(** ** Examples *)
-
-
-
-(* ######################################################################### *)
-(** * Total order relations *)
-
-(* ref : 
-   https://en.wikipedia.org/wiki/Construction_of_the_real_numbers
-   https://en.wikipedia.org/wiki/Partially_ordered_set
- *)
-(* 
-   Remark :
-   1. The difference of total order relation and partial order relation is the 
-      "total" propertity (forall a b, a <= b \/ b <= a).
-   2. Four forms "<=, <, >, >=" are mutually derived. We will define "<" and "<="
-      here, with the consistent law.
- *)
-
-(** ** Class *)
-Class Order {A} (Alt Ale : A -> A -> Prop) (Altb Aleb : A -> A -> bool) := {
-    (* Lt and Le are consistent *)
-    lt_le_cong : forall a b : A, Ale a b <-> (Alt a b \/ a = b);
-    (* Lt is anti-reflexivi *)
-    lt_irrefl : forall a : A, ~ (Alt a a);
-    (* Lt is anti-symmetric *)
-    lt_antisym : forall a b : A, Alt a b -> Alt b a -> a = b;
-    (* Lt is transitive *)
-    lt_trans : forall a b c : A, Alt a b -> Alt b c -> Alt a c;
-    (* Lt three cases *)
-    lt_cases : forall a b : A, {Alt a b} + {Alt b a} + {a = b};
-    (* Lt and Ltb are reflect *)
-    ltb_reflect : forall a b : A, reflect (Alt a b) (Altb a b);
-    (* Le and Leb are reflect *)
-    leb_reflect : forall a b : A, reflect (Ale a b) (Aleb a b);
-  }.
-
-(** ** Instances *)
-
-(** ** Extra Theories *)
-Section theories.
-  Context `{HOrder : Order}.
-
-  (* Note the sequence of the notations, the newer has more priority than older *)
-  Notation "a > b" := (Alt b a).
-  Notation "a >= b" := (Ale b a).
-  Infix "<" := Alt.
-  Infix "<=" := Ale.
-  Infix "<?" := Altb.
-  Infix "<=?" := Aleb.
-
-  (* Lt is decidable *)
-  Lemma lt_dec : forall a b, {a < b} + {~(a < b)}.
-  Proof.
-    intros. destruct (lt_cases a b) as [[H1|H1]|H1]; auto.
-    - right. intro. pose proof (lt_trans H1 H). apply lt_irrefl in H0; auto.
-    - right. subst. apply lt_irrefl.
-  Qed.
-
-  #[export] Instance lt_Dec : Dec Alt.
-  Proof. constructor. intro. apply lt_dec. Qed.
-
-  (* Hint Resolve ltb_reflect : bdestruct. *)
-
-  (* eq is decidable can be derived from `Order` *)
-  #[export] Instance order_EqDec : Dec (@eq A).
-  Proof.
-    constructor.
-    intros; destruct (lt_cases a b) as [[H1|H1]|H1]; auto.
-    - right; intro; subst. apply lt_irrefl in H1; auto.
-    - right; intro; subst. apply lt_irrefl in H1; auto.
-  Qed.
-
-  (* Lt is connected *)
-  Lemma lt_connected : forall a b : A, Alt a b \/ Alt b a \/ a = b.
-  Proof. intros. destruct (lt_cases a b) as [[H1|H1]|H1]; auto. Qed.
-  
-  (* a < b -> a <= b *)
-  Lemma le_if_lt : forall a b : A, a < b -> a <= b.
-  Proof. intros. apply lt_le_cong. auto. Qed.
-  
-  (* a <= b -> a <> b -> a < b *)
-  Lemma lt_if_le_and_neq : forall a b : A, a <= b -> a <> b -> a < b.
-  Proof. intros. apply lt_le_cong in H. destruct H; auto. easy. Qed.
-
-  (** a < b -> a <> b *)
-  Lemma lt_not_eq : forall a b : A, a < b -> a <> b.
-  Proof. intros. intro. subst. apply lt_irrefl in H; auto. Qed.
-
-  (** a <= a *)
-  Lemma le_refl : forall a : A, a <= a.
-  Proof. intros. apply lt_le_cong. right. auto. Qed.
-  
-  (** a <= b -> b <= a -> a = b *)
-  Lemma le_antisym : forall a b : A, a <= b -> b <= a -> a = b.
-  Proof.
-    intros. apply lt_le_cong in H, H0. destruct H, H0; subst; auto.
-    apply lt_antisym; auto.
-  Qed.
-  
-  (** a <= b -> b <= c -> a <= c *)
-  Lemma le_trans : forall a b c : A, a <= b -> b <= c -> a <= c.
-  Proof.
-    intros. apply lt_le_cong in H, H0. apply lt_le_cong.
-    destruct H, H0; subst; auto. left. apply lt_trans with b; auto.
-  Qed.
-  
-  (** a < b -> b <= c -> a < c *)
-  Lemma lt_trans_lt_le : forall a b c : A, a < b -> b <= c -> a < c.
-  Proof.
-    intros. pose proof (le_if_lt H). pose proof (le_trans H1 H0).
-    apply lt_if_le_and_neq; auto.
-    intro. subst. pose proof (le_antisym H0 H1). subst. apply lt_irrefl in H; auto.
-  Qed.
-  
-  (** a <= b -> b < c -> a < c *)
-  Lemma lt_trans_le_lt : forall a b c : A, a <= b -> b < c -> a < c.
-  Proof.
-    intros. pose proof (le_if_lt H0). pose proof (le_trans H H1).
-    apply lt_if_le_and_neq; auto.
-    intro. subst. pose proof (le_antisym H H1). subst. apply lt_irrefl in H0; auto.
-  Qed.
-
-  (** a < b -> b < a -> False *)
-  Lemma lt_gt_contr : forall a b : A, a < b -> b < a -> False.
-  Proof.
-    intros. apply lt_trans with (a:=a) in H0; auto. apply lt_irrefl in H0; auto.
-  Qed.
-
-  (** a < b -> a <> b *)
-  Lemma lt_imply_neq : forall a b : A, a < b -> a <> b.
-  Proof. intros. intro. subst. apply lt_irrefl in H. auto. Qed.
-
-(* Qclt_not_le: forall x y : Qc, x < y -> ~ y <= x *)
-(* Qcnot_le_lt: forall x y : Qc, ~ x <= y -> y < x *)
-  
-  (** a < b -> ~ (b < a) *)
-  Lemma lt_not_lt : forall a b : A, a < b -> ~ (b < a).
-  Proof. intros. intro. apply lt_gt_contr in H; auto. Qed.
-  
-  (** a < b -> ~ (b <= a) *)
-  Lemma lt_not_le : forall a b : A, a < b -> ~ (b <= a).
-  Proof.
-    intros. rewrite lt_le_cong. apply and_not_or. split.
-    apply lt_not_lt; auto. symmetry. apply lt_not_eq; auto.
-  Qed.
-  
-  (** ~ (a <= b) -> b < a *)
-  Lemma not_le_lt : forall a b : A, ~ (a <= b) -> b < a.
-  Proof.
-    intros. rewrite lt_le_cong in H. apply not_or_and in H. destruct H.
-    destruct (lt_cases a b) as [[H1|H1]|H1]; try easy.
-  Qed.
-  
-  (** a <= b -> ~ (b < a) *)
-  Lemma le_not_lt : forall a b : A, a <= b -> ~ (b < a).
-  Proof.
-    intros. rewrite lt_le_cong in H. destruct H.
-    apply lt_not_lt; auto. subst. apply lt_irrefl.
-  Qed.
-  
-  (** ~ (a < b) -> b <= a *)
-  Lemma not_lt_le : forall a b : A, ~ (a < b) -> b <= a.
-  Proof.
-    intros. apply lt_le_cong.
-    destruct (lt_cases a b) as [[H1|H1]|H1]; auto; try easy.
-  Qed.
-
-  (** a <= b -> b <= a -> a = b *)
-  Lemma le_ge_eq : forall a b : A, a <= b -> b <= a -> a = b.
-  Proof.
-    intros. apply le_not_lt in H,H0.
-    destruct (lt_cases a b) as [[H1|H1]|H1]; easy.
-  Qed.
-
-  (** {a <= b} + {~(a <= b)} *)
-  Lemma le_dec : forall a b : A, {a <= b} + {~(a <= b)}.
-  Proof.
-    intros. destruct (lt_dec b a); auto.
-    - right. apply lt_not_le; auto.
-    - left. apply not_lt_le; auto.
-  Qed.
-
-  #[export] Instance le_Dec : Dec Ale.
-  Proof. constructor; intros. apply le_dec. Qed.
-  
-  (** a <= b \/ b < a *)
-  Lemma le_connected : forall a b : A, a <= b \/ b < a.
-  Proof. intros. destruct (le_dec a b); auto. apply not_le_lt in n. auto. Qed.
-
-  (* Boolean version of "<=" *)
-  (* Hint Resolve leb_reflect : bdestruct. *)
-
-  Lemma leb_refl : forall a : A, a <=? a = true.
-  Proof. intros. destruct (leb_reflect a a); auto. destruct n. apply le_refl. Qed.
-
-End theories.
-
-(* #[export] Hint Resolve ltb_reflect leb_reflect : bdestruct. *)
-
 
 (** ** Examples *)
 
@@ -2006,8 +1804,8 @@ End Examples.
 Class SRing {A} Aadd (Azero:A) Amul Aone := {
     sringAddAM :: AMonoid Aadd Azero; (* 不确定交换性是否必要，姑且先留下 *)
     sringMulAM :: AMonoid Amul Aone; (* 不确定交换性是否必要，姑且先留下 *)
-    sringDistrL :: DistributiveLeft Aadd Amul;
-    sringDistrR :: DistributiveRight Aadd Amul;
+    sringDistrL :: DistrLeft Aadd Amul;
+    sringDistrR :: DistrRight Aadd Amul;
   }.
 
 (** ** Instances *)
@@ -2058,8 +1856,8 @@ End Examples.
 Class Ring {A} Aadd (Azero:A) Aopp Amul Aone := {
     ringAddAG :: AGroup Aadd Azero Aopp;
     ringMulM :: Monoid Amul Aone;
-    ringDistrL :: DistributiveLeft Aadd Amul;
-    ringDistrR :: DistributiveRight Aadd Amul;
+    ringDistrL :: DistrLeft Aadd Amul;
+    ringDistrR :: DistrRight Aadd Amul;
   }.
 
 (** ** Instances *)
@@ -2089,6 +1887,10 @@ Section Theory.
   Notation Asub a b := (a + -b).
   Infix "*" := Amul : A_scope.
 
+  (** a + a = (1 + 1) * a *)
+  Lemma ring_add_same_eq_mul2 : forall a, a + a = (1 + 1) * a.
+  Proof. intros. rewrite distrRight, !identityLeft at 1. auto. Qed.
+  
 End Theory.
 
 (** ** Examples *)
@@ -2098,7 +1900,7 @@ Section Examples.
   Import Reals.
   
   Goal forall a b c : R, (a * (b + c) = a * b + a * c)%R.
-  Proof. apply distributiveLeft. Qed.
+  Proof. apply distrLeft. Qed.
 
 End Examples.
   
@@ -2136,7 +1938,7 @@ Proof.
   constructor; intros;
     try (rewrite ?identityLeft,?associative; reflexivity);
     try (rewrite commutative; reflexivity).
-  rewrite distributiveRight; reflexivity.
+  rewrite distrRight; reflexivity.
   rewrite inverseRight; reflexivity.
 Qed.
 
@@ -2170,7 +1972,7 @@ Section Theory.
   Proof.
     intros.
     assert (a * b + (-a) * b = 0).
-    - rewrite <- distributiveRight. rewrite inverseRight. apply ring_mul_0_l.
+    - rewrite <- distrRight. rewrite inverseRight. apply ring_mul_0_l.
     - symmetry. apply group_opp_uniq_l. auto.
   Qed.
 
@@ -2280,11 +2082,511 @@ End Demo_ConcrateRing.
 
 
 (* ######################################################################### *)
+(** * Field *)
+
+(* Tips: 也许还遗漏了一个条件，即：0 没有逆元。但此处不知如何修复 *)
+
+(** ** Class *)
+Class Field {A} Aadd (Azero:A) Aopp Amul Aone Ainv := {
+    fieldRing :: ARing Aadd Azero Aopp Amul Aone;
+    field_mulInvL : forall a, a <> Azero -> Amul (Ainv a) a = Aone;
+    field_1_neq_0 : Aone <> Azero;
+  }.
+
+(** ** Instances *)
+Section Instances.
+
+  Import Qcanon Reals.
+  
+  #[export] Instance Field_Qc : Field Qcplus 0 Qcopp Qcmult 1 Qcinv.
+  split_intro; subst; (try (field; reflexivity)); try easy.
+  field. auto.
+  Defined.
+
+  #[export] Instance Field_R : Field Rplus R0 Ropp Rmult R1 Rinv.
+  split_intro; subst; try (field; reflexivity); auto.
+  field; auto. auto with real.
+  Defined.
+
+End Instances.
+
+
+(** ** Extra Theories *)
+
+(* make a `field_theory` from `Field` *)
+Lemma make_field_theory `(HField : Field)
+  : field_theory Azero Aone Aadd Amul
+      (fun a b => Aadd a (Aopp b)) Aopp
+      (fun a b => Amul a (Ainv b)) Ainv eq.
+Proof.
+  constructor; intros;
+    try (rewrite ?identityLeft,?associative; reflexivity);
+    try (rewrite commutative; reflexivity).
+  apply (make_ring_theory fieldRing).
+  apply field_1_neq_0.
+  apply field_mulInvL. auto.
+Qed.
+
+(* make a `AGroup` from `Field` *)
+Lemma make_field_agroup_add `(HField : Field) : AGroup Aadd Azero Aopp.
+Proof. apply HField. Qed.
+
+(* make a `AMonoid` from `Field` *)
+Lemma make_field_amonoid_add `(HField : Field) : AMonoid Aadd Azero.
+Proof. apply HField. Qed.
+
+Section Theory.
+  Context `{HField : Field}.
+  Infix "+" := Aadd.
+  Notation "- a" := (Aopp a).
+  Notation Asub a b := (a + -b).
+  Infix "-" := Asub.
+  Notation "0" := Azero.
+  Notation "1" := Aone.
+  Infix "*" := Amul.
+  Notation "/ a" := (Ainv a).
+  Notation Adiv a b := (a * (/b)).
+  Infix "/" := Adiv.
+
+  Add Field field_inst : (make_field_theory HField).
+
+  (** a <> 0 -> a * / a = 1 *)
+  Lemma field_mulInvR : forall a : A, a <> 0 -> a * /a = 1.
+  Proof. intros. rewrite commutative. rewrite field_mulInvL; easy. Qed.
+
+  (** a <> 0 -> (1/a) * a = 1 *)
+  Lemma field_mulInvL_inv1 : forall a : A, a <> 0 -> (1/a) * a = 1.
+  Proof. intros. simpl. field; auto. Qed.
+  
+  (** a <> 0 -> a * (1/a) = 1 *)
+  Lemma field_mulInvR_inv1 : forall a : A, a <> 0 -> a * (1/a) = 1.
+  Proof. intros. simpl. field. auto. Qed.
+
+  (** a <> 0 -> / a <> 0 *)
+  Lemma field_inv_neq0_if_neq0 : forall a : A, a <> 0 -> / a <> 0.
+  Proof.
+    intros. intro.
+    pose proof (field_mulInvL H). rewrite H0 in H1. rewrite ring_mul_0_l in H1.
+    apply field_1_neq_0. auto.
+  Qed.
+
+  (** - 1 <> 0 *)
+  Lemma field_neg1_neq_0 : - (1) <> 0.
+  Proof.
+    intro. rewrite <- group_opp_0 in H at 1. apply group_opp_inj in H.
+    apply field_1_neq_0; auto.
+  Qed.
+  
+  (** a <> 0 -> a * b = a * c -> b = c *)
+  Lemma field_mul_cancel_l : forall a b c : A,
+      a <> 0 -> a * b = a * c -> b = c.
+  Proof.
+    intros.
+    assert (/a * (a * b) = /a * (a * c)).
+    { rewrite H0. easy. }
+    rewrite <- ?associative in H1.
+    rewrite field_mulInvL in H1; auto.
+    rewrite ?identityLeft in H1. easy.
+  Qed.
+
+  (** c <> 0 -> a * c = b * c -> a = b *)
+  Lemma field_mul_cancel_r : forall a b c : A,
+      c <> 0 -> a * c = b * c -> a = b.
+  Proof.
+    intros.
+    assert ((a * c) * /c = (b * c) * /c).
+    { rewrite H0. easy. }
+    rewrite ?associative in H1.
+    rewrite field_mulInvR in H1; auto.
+    rewrite ?identityRight in H1. easy.
+  Qed.
+
+  (** a * b = 1 -> / a = b *)
+  Lemma field_inv_eq_l : forall a b : A, a <> 0 -> a * b = 1 -> / a = b.
+  Proof.
+    intros. apply (@field_mul_cancel_l a (/ a) b); auto.
+    rewrite field_mulInvR; auto.
+  Qed.
+
+  (** a * b = 1 -> / b = a *)
+  Lemma field_inv_eq_r : forall a b : A, b <> 0 -> a * b = 1 -> / b = a.
+  Proof.
+    intros. apply (@field_mul_cancel_r (/ b) a b); auto.
+    rewrite field_mulInvL; auto.
+  Qed.
+
+  (** / / a = a *)
+  Lemma field_inv_inv : forall a : A, a <> 0 -> / / a = a.
+  Proof.
+    intros. pose proof (field_inv_neq0_if_neq0 H).
+    apply field_mul_cancel_l with (/ a); auto.
+    rewrite field_mulInvL; auto. rewrite field_mulInvR; auto.
+  Qed.
+
+  (** / a = / b -> a = b *)
+  Lemma field_inv_inj : forall a b : A, a <> 0 -> b <> 0 -> / a = / b -> a = b.
+  Proof.
+    intros. rewrite <- field_inv_inv; auto. rewrite <- H1.
+    rewrite field_inv_inv; auto.
+  Qed.
+
+  (** / (- a) = - (/ a) *)
+  Lemma field_inv_opp : forall a : A, a <> 0 -> / (- a) = - (/ a).
+  Proof.
+    intros. apply field_inv_eq_l. apply group_opp_neq0_iff; auto.
+    rewrite ring_mul_opp_opp. apply field_mulInvR; auto.
+  Qed.
+    
+  (** a - b = b - a -> a = b *)
+  (* ref: Spivak's Calculus, https://imgur.com/22NR1HZ *)
+  Lemma field_sub_anti_eq_imply_eq : forall a b, a - b = b - a -> a = b.
+  Proof.
+    intros.
+    assert ((a - b) + b = (b - a) + b). rewrite H. auto.
+    rewrite associative in H0. rewrite inverseLeft, identityRight in H0.
+    rewrite commutative in H0. rewrite <- associative in H0.
+    assert (a + a = b + b - a + a). rewrite H0 at 1. auto.
+    rewrite associative in H1. rewrite inverseLeft, identityRight in H1 at 1.
+    replace (a + a) with ((1 + 1) * a) in H1
+        by (rewrite <- ring_add_same_eq_mul2; auto).
+    replace (b + b) with ((1 + 1) * b) in H1
+        by (rewrite <- ring_add_same_eq_mul2; auto).
+    apply field_mul_cancel_l in H1; auto.
+    (* NOTE: F2 don't hold this property *)
+  Abort.
+
+  (** a = - a -> a = 0 *)
+  Lemma field_eq_opp_imply_eq0 : forall a, a = -a -> a = 0.
+  Proof.
+    intros.
+    assert (a + a = 0 + 0). rewrite H at 1. field.
+    replace (a + a) with ((1 + 1) * a) in H0
+        by (rewrite <- ring_add_same_eq_mul2; auto).
+    replace (0 + 0) with ((1 + 1) * 0) in H0
+        by (rewrite <- ring_add_same_eq_mul2; auto).
+    apply field_mul_cancel_l in H0; auto.
+    (* NOTE: F2 don't hold this property *)
+  Abort.
+
+  
+  Section Dec.
+    Context {AeqDec : Dec (@eq A)}.
+    
+    (** a * b = 0 <-> a = 0 \/ b = 0 *)
+    Lemma field_mul_eq0_iff : forall a b : A, a * b = 0 <-> a = 0 \/ b = 0.
+    Proof.
+      intros. split; intros.
+      - destruct (Aeqdec a 0), (Aeqdec b 0); auto.
+        assert ((/a * a) * (b * /b) = /a * (a * b) * /b). field; auto.
+        rewrite H, field_mulInvL, field_mulInvR, identityLeft in H0; auto.
+        rewrite ring_mul_0_r in H0 at 1.
+        rewrite ring_mul_0_l in H0 at 1.
+        exfalso. apply field_1_neq_0; auto.
+      - destruct H; subst.
+        rewrite ring_mul_0_l; auto. rewrite ring_mul_0_r; auto.
+    Qed.
+    
+    (** a * b <> 0 <-> (a <> 0 /\ b <> 0) *)
+    Lemma field_mul_neq0_iff : forall a b : A, a * b <> 0 <-> (a <> 0 /\ b <> 0).
+    Proof. intros. rewrite field_mul_eq0_iff. tauto. Qed.
+    
+    (** / a <> 0 -> a <> 0 *)
+    Lemma field_inv_neq0_imply_neq0 : forall a : A, / a <> 0 -> a <> 0.
+    Proof.
+      intros. intro.
+    (* 备注：
+       1. 我暂时无法证明这个引理，但我可能要用到这个性质
+       2. 由反证法，若 a = 0，则 /a = 0，这应该不对。因为：
+          数学上，无穷小的倒数是无穷大。不过 0 还不是无穷小。
+       3. 在 Reals.RIneq 库中，有两个引理如下，我觉得好像有问题，但又无法指正。
+          Lemma Rinv_0 : / 0 = 0.
+          Lemma Rinv_inv r : / / r = r.
+       4. 主要问题是，/ 0 是没有定义的，但我的 Field 结构无法排除这种情况
+     *)
+    Admitted.
+
+    (** / a <> 0 <-> a <> 0 *)
+    Lemma field_inv_neq0_iff : forall a : A, / a <> 0 <-> a <> 0.
+    Proof.
+      intros; split. apply field_inv_neq0_imply_neq0.
+      apply field_inv_neq0_if_neq0.
+    Qed.
+    
+    (** a * a = 0 -> a = 0 *)
+    Lemma field_sqr_eq0_reg : forall a : A, a * a = 0 -> a = 0.
+    Proof. intros. apply field_mul_eq0_iff in H. destruct H; auto. Qed.
+
+    (** a * b = b -> a = 1 \/ b = 0 *)
+    Lemma field_mul_eq_imply_a1_or_b0 : forall (a b : A),
+        a * b = b -> (a = 1) \/ (b = 0).
+    Proof.
+      intros. destruct (Aeqdec a 1), (Aeqdec b 0); auto.
+      replace b with (1 * b) in H at 2 by ring.
+      apply field_mul_cancel_r in H; auto.
+    Qed.
+  End Dec.
+
+End Theory.
+
+(** ** Examples *)
+Section Examples.
+
+  Import Reals.
+  
+  Goal forall a b : R, (a <> 0 -> /a * a = 1)%R.
+    intros. apply field_mulInvL. auto. Qed.
+
+End Examples.
+
+
+
+(* ######################################################################### *)
+(** * Total order relations *)
+
+(* ref : 
+   https://en.wikipedia.org/wiki/Construction_of_the_real_numbers
+   https://en.wikipedia.org/wiki/Partially_ordered_set
+ *)
+(* 
+   Remark :
+   1. The difference of total order relation and partial order relation is the 
+      "total" propertity (forall a b, a <= b \/ b <= a).
+   2. Four forms "<=, <, >, >=" are mutually derived. We will define "<" and "<="
+      here, with the consistent law.
+ *)
+
+(** ** Class *)
+Class Order {A} (Alt Ale : A -> A -> Prop) := {
+    (* Lt is anti-reflexivi *)
+    lt_irrefl : forall a : A, ~ (Alt a a);
+    (* Lt is anti-symmetric *)
+    lt_antisym : forall a b : A, Alt a b -> Alt b a -> a = b;
+    (* Lt is transitive *)
+    lt_trans : forall a b c : A, Alt a b -> Alt b c -> Alt a c;
+    (* Lt three cases *)
+    lt_cases : forall a b : A, {Alt a b} + {Alt b a} + {a = b};
+
+    (* Lt and Le are consistent *)
+    lt_le_cong : forall a b : A, Ale a b <-> (Alt a b \/ a = b);
+  }.
+
+(** ** Instances *)
+
+(** ** Extra Theories *)
+
+(** About "eq" *)
+Section eq.
+  Context `{HOrder : Order}.
+
+  (** eq is decidable *)
+  Lemma Aeq_dec : forall a b : A, {a = b} + {a <> b}.
+  Proof.
+    intros; destruct (lt_cases a b) as [[H1|H1]|H1]; auto.
+    - right; intro; subst. apply lt_irrefl in H1; auto.
+    - right; intro; subst. apply lt_irrefl in H1; auto.
+  Qed.
+  
+  #[export] Instance Aeq_Dec : Dec (@eq A).
+  Proof. constructor. intros. apply Aeq_dec. Qed.
+End eq.
+
+
+(** About "lt" *)
+Section lt.
+  Context `{HOrder : Order}.
+  (* Note the sequence of the notations, the newer has more priority than older *)
+  Notation "a > b" := (Alt b a).
+  Infix "<" := Alt.
+
+  (* Lt is decidable *)
+  Lemma Alt_dec : forall a b, {a < b} + {~(a < b)}.
+  Proof.
+    intros. destruct (lt_cases a b) as [[H1|H1]|H1]; auto.
+    - right. intro. pose proof (lt_trans H1 H). apply lt_irrefl in H0; auto.
+    - right. subst. apply lt_irrefl.
+  Qed.
+
+  #[export] Instance Alt_Dec : Dec Alt.
+  Proof. constructor. intros. apply Alt_dec. Defined.
+
+  (* Lt is connected *)
+  Lemma lt_connected : forall a b : A, Alt a b \/ Alt b a \/ a = b.
+  Proof. intros. destruct (lt_cases a b) as [[H1|H1]|H1]; auto. Qed.
+
+  (** a < b -> a <> b *)
+  Lemma lt_not_eq : forall a b : A, a < b -> a <> b.
+  Proof. intros. intro. subst. apply lt_irrefl in H; auto. Qed.
+
+  (** a < b -> b < a -> False *)
+  Lemma lt_gt_contr : forall a b : A, a < b -> b < a -> False.
+  Proof.
+    intros. apply lt_trans with (a:=a) in H0; auto. apply lt_irrefl in H0; auto.
+  Qed.
+
+  (** a < b -> a <> b *)
+  Lemma lt_imply_neq : forall a b : A, a < b -> a <> b.
+  Proof. intros. intro. subst. apply lt_irrefl in H. auto. Qed.
+
+  (** a < b -> ~ (b < a) *)
+  Lemma lt_not_lt : forall a b : A, a < b -> ~ (b < a).
+  Proof. intros. intro. apply lt_gt_contr in H; auto. Qed.
+End lt.
+
+
+(** About "le" *)
+Section le.
+  Context `{HOrder : Order}.
+  Notation "a >= b" := (Ale b a).
+  Notation "a > b" := (Alt b a).
+  Infix "<" := Alt.
+  Infix "<=" := Ale.
+  
+  (* a < b -> a <= b *)
+  Lemma le_if_lt : forall a b : A, a < b -> a <= b.
+  Proof. intros. apply lt_le_cong. auto. Qed.
+  
+  (* a <= b -> a <> b -> a < b *)
+  Lemma lt_if_le_and_neq : forall a b : A, a <= b -> a <> b -> a < b.
+  Proof. intros. apply lt_le_cong in H. destruct H; auto. easy. Qed.
+
+  (** a <= a *)
+  Lemma le_refl : forall a : A, a <= a.
+  Proof. intros. apply lt_le_cong. right. auto. Qed.
+  
+  (** a <= b -> b <= a -> a = b *)
+  Lemma le_antisym : forall a b : A, a <= b -> b <= a -> a = b.
+  Proof.
+    intros. apply lt_le_cong in H, H0. destruct H, H0; subst; auto.
+    apply lt_antisym; auto.
+  Qed.
+  
+  (** a <= b -> b <= c -> a <= c *)
+  Lemma le_trans : forall a b c : A, a <= b -> b <= c -> a <= c.
+  Proof.
+    intros. apply lt_le_cong in H, H0. apply lt_le_cong.
+    destruct H, H0; subst; auto. left. apply lt_trans with b; auto.
+  Qed.
+  
+  (** a < b -> b <= c -> a < c *)
+  Lemma lt_trans_lt_le : forall a b c : A, a < b -> b <= c -> a < c.
+  Proof.
+    intros. pose proof (le_if_lt H). pose proof (le_trans H1 H0).
+    apply lt_if_le_and_neq; auto.
+    intro. subst. pose proof (le_antisym H0 H1). subst. apply lt_irrefl in H; auto.
+  Qed.
+  
+  (** a <= b -> b < c -> a < c *)
+  Lemma lt_trans_le_lt : forall a b c : A, a <= b -> b < c -> a < c.
+  Proof.
+    intros. pose proof (le_if_lt H0). pose proof (le_trans H H1).
+    apply lt_if_le_and_neq; auto.
+    intro. subst. pose proof (le_antisym H H1). subst. apply lt_irrefl in H0; auto.
+  Qed.
+  
+  (** a < b -> ~ (b <= a) *)
+  Lemma lt_not_le : forall a b : A, a < b -> ~ (b <= a).
+  Proof.
+    intros. rewrite lt_le_cong. apply and_not_or. split.
+    apply lt_not_lt; auto. symmetry. apply lt_not_eq; auto.
+  Qed.
+  
+  (** ~ (a <= b) -> b < a *)
+  Lemma not_le_lt : forall a b : A, ~ (a <= b) -> b < a.
+  Proof.
+    intros. rewrite lt_le_cong in H. apply not_or_and in H. destruct H.
+    destruct (lt_cases a b) as [[H1|H1]|H1]; try easy.
+  Qed.
+  
+  (** a <= b -> ~ (b < a) *)
+  Lemma le_not_lt : forall a b : A, a <= b -> ~ (b < a).
+  Proof.
+    intros. rewrite lt_le_cong in H. destruct H.
+    apply lt_not_lt; auto. subst. apply lt_irrefl.
+  Qed.
+  
+  (** ~ (a < b) -> b <= a *)
+  Lemma not_lt_le : forall a b : A, ~ (a < b) -> b <= a.
+  Proof.
+    intros. apply lt_le_cong.
+    destruct (lt_cases a b) as [[H1|H1]|H1]; auto; try easy.
+  Qed.
+
+  (** a <= b -> b <= a -> a = b *)
+  Lemma le_ge_eq : forall a b : A, a <= b -> b <= a -> a = b.
+  Proof.
+    intros. apply le_not_lt in H,H0.
+    destruct (lt_cases a b) as [[H1|H1]|H1]; easy.
+  Qed.
+
+  (** {a <= b} + {~(a <= b)} *)
+  Lemma Ale_dec : forall a b : A, {a <= b} + {~(a <= b)}.
+  Proof.
+    intros. destruct (Alt_dec b a); auto.
+    - right. apply lt_not_le; auto.
+    - left. apply not_lt_le; auto.
+  Qed.
+
+  #[export] Instance Ale_Dec : Dec Ale.
+  Proof. constructor; intros. apply Ale_dec. Qed.
+  
+  (** a <= b \/ b < a *)
+  Lemma le_connected : forall a b : A, a <= b \/ b < a.
+  Proof. intros. destruct (Ale_dec a b); auto. apply not_le_lt in n. auto. Qed.
+
+End le.
+
+(** Simplify expressions on Order {=, <, <=} *)
+Ltac order_core lt le :=
+  intros;
+  repeat
+    (try
+       match goal with
+       (* |- {a = b} + {a <> b}. *)
+       | H: Order lt le |- {?a = ?b} + {?a <> ?b} => apply Aeq_dec
+       (* |- {a < b} + {~(a < b)}. *)
+       | H: Order lt le |- {lt ?a ?b} + {~(lt ?a ?b)} => apply Alt_dec
+       (* |- {a <= b} + {~(a <= b)} *)
+       | H: Order lt le |- {le ?a ?b} + {~(le ?a ?b)} => apply Ale_dec
+       (* |- a <= a *)
+       | H: Order lt le |- le ?a ?a => apply le_refl
+       (* |- ~(a < a) *)
+       | H: Order lt le |- ~(lt ?a ?a) => apply lt_irrefl
+       (* a <> b, a <= b |- a < b *)
+       | H: Order lt le, H1: ?a <> ?b, H2: le ?a ?b |- lt ?a ?b =>
+           apply lt_if_le_and_neq
+       end;
+     auto; try easy).
+
+(** Simplify expressions on Order in current context *)
+Ltac order :=
+  match goal with
+  | H: Order ?lt ?le |- _ => order_core lt le
+  end.
+
+(** ** Examples *)
+Section test.
+  Context `{Order}.
+  Infix "<" := Alt : A_scope.
+  Infix "<=" := Ale : A_scope.
+
+  Variable a b c d e f g : A.
+
+  Goal {a = b} + {a <> b}. order. Qed.
+  Goal {a < b} + {~(a < b)}. order. Qed.
+  Goal {a <= b} + {~(a <= b)}. order. Qed.
+  Goal a <= a. order. Qed.
+  Goal ~(a < a). order. Qed.
+  Goal a <> b -> a <= b -> a < b. order. Qed.
+
+End test.
+
+
+(* ######################################################################### *)
 (** * Abelian-ring with total order *)
 
-Class OrderedARing {A} Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb := {
+Class OrderedARing {A} Aadd Azero Aopp Amul Aone Alt Ale := {
     or_Ring :: ARing Aadd Azero Aopp Amul Aone;
-    or_Order :: Order Alt Ale Altb Aleb;
+    or_Order :: Order Alt Ale;
     
     (* Lt is compatible with addition operation: a < b -> a + c < a + c *)
     lt_add_compat_r : forall a b c : A,
@@ -2318,8 +2620,6 @@ Section theories.
   Notation "a >= b" := (Ale b a) : A_scope.
   Infix "<" := Alt : A_scope.
   Infix "<=" := Ale : A_scope.
-  Infix "<?" := Altb : A_scope.
-  Infix "<=?" := Aleb : A_scope.
   
 
   (** *** Properties for "lt" *)
@@ -2649,7 +2949,7 @@ Section theories.
   (** 0 <= a * b -> 0 < a -> 0 <= b *)
   Lemma ge0_mul_reg_ge0 : forall a b : A, 0 <= a * b -> 0 < a -> 0 <= b.
   Proof.
-    intros. destruct (le_dec 0 b) as [H1|H1]; auto.
+    intros. destruct (Ale_dec 0 b) as [H1|H1]; auto.
     destruct (Aeqdec b 0) as [H2|H2].
     - rewrite H2 in *. apply le_refl.
     - exfalso. apply not_le_lt in H1.
@@ -2718,17 +3018,21 @@ Section theories.
 
   (** *** Abs of a term of A type *)
   
-  Definition Aabs (a : A) : A := if 0 <=? a then a else - a.
+  (* Tips: a good example shows that we can compare two object using 
+     "cmp_dec" without "cmpb" (boolean version), thus avoids many proof works.
+     That is, another choice is: provide {Altb Aleb : A -> A -> bool},
+     but we need more works *)
+  Definition Aabs (a : A) : A := if Ale_dec 0 a then a else - a.
   Notation "| a |" := (Aabs a) : A_scope.
 
   (** 0 <= a -> | a | = a *)
   Lemma Aabs_right : forall a : A, 0 <= a -> | a | = a.
-  Proof. intros. unfold Aabs. destruct (leb_reflect 0 a); auto. easy. Qed.
+  Proof. intros. unfold Aabs. destruct (Ale_dec 0 a); auto. easy. Qed.
     
   (** a < 0 -> | a | = - a *)
   Lemma Aabs_left : forall a : A, a < 0 -> | a | = - a.
   Proof.
-    intros. unfold Aabs. destruct (leb_reflect 0 a); auto.
+    intros. unfold Aabs. destruct (Ale_dec 0 a); auto.
     apply lt_not_le in H. easy.
   Qed.
 
@@ -2736,7 +3040,7 @@ Section theories.
   Lemma Aabs_mul : forall a b : A, | a * b | = | a | * | b |.
   Proof.
     intros. unfold Aabs.
-    destruct (leb_reflect 0 (a*b)), (leb_reflect 0 a), (leb_reflect 0 b); try ring.
+    destruct (Ale_dec 0 (a*b)), (Ale_dec 0 a), (Ale_dec 0 b); try ring.
     - apply not_le_lt in n.
       rewrite commutative in a0. apply ge0_mul_reg_le0 in a0; auto.
       apply le_ge_eq in a1; auto. subst. ring.
@@ -2751,7 +3055,7 @@ Section theories.
   Lemma Aabs_add_le : forall a b : A, | a + b | <= | a | + | b |.
   Proof.
     intros. unfold Aabs.
-    destruct (leb_reflect 0 a), (leb_reflect 0 b), (leb_reflect 0 (a + b));
+    destruct (Ale_dec 0 a), (Ale_dec 0 b), (Ale_dec 0 (a + b));
       ring_simplify.
     - apply le_refl.
     - apply le_add_compat; apply ge_neg_l_if_ge0; auto.
@@ -2771,236 +3075,11 @@ End theories.
 
 
 (* ######################################################################### *)
-(** * Field *)
-
-(* Tips: 也许还遗漏了一个条件，即：0 没有逆元。但此处不知如何修复 *)
-
-(** ** Class *)
-Class Field {A} Aadd (Azero:A) Aopp Amul Aone Ainv := {
-    fieldRing :: ARing Aadd Azero Aopp Amul Aone;
-    field_mulInvL : forall a, a <> Azero -> Amul (Ainv a) a = Aone;
-    field_1_neq_0 : Aone <> Azero;
-  }.
-
-(** ** Instances *)
-Section Instances.
-
-  Import Qcanon Reals.
-  
-  #[export] Instance Field_Qc : Field Qcplus 0 Qcopp Qcmult 1 Qcinv.
-  split_intro; subst; (try (field; reflexivity)); try easy.
-  field. auto.
-  Defined.
-
-  #[export] Instance Field_R : Field Rplus R0 Ropp Rmult R1 Rinv.
-  split_intro; subst; try (field; reflexivity); auto.
-  field; auto. auto with real.
-  Defined.
-
-End Instances.
-
-
-(** ** Extra Theories *)
-
-(* make a `field_theory` from `Field` *)
-Lemma make_field_theory `(HField : Field)
-  : field_theory Azero Aone Aadd Amul
-      (fun a b => Aadd a (Aopp b)) Aopp
-      (fun a b => Amul a (Ainv b)) Ainv eq.
-Proof.
-  constructor; intros;
-    try (rewrite ?identityLeft,?associative; reflexivity);
-    try (rewrite commutative; reflexivity).
-  apply (make_ring_theory fieldRing).
-  apply field_1_neq_0.
-  apply field_mulInvL. auto.
-Qed.
-
-(* make a `AGroup` from `Field` *)
-Lemma make_field_agroup_add `(HField : Field) : AGroup Aadd Azero Aopp.
-Proof. apply HField. Qed.
-
-(* make a `AMonoid` from `Field` *)
-Lemma make_field_amonoid_add `(HField : Field) : AMonoid Aadd Azero.
-Proof. apply HField. Qed.
-
-Section Theory.
-  Context `{HField : Field}.
-  Infix "+" := Aadd.
-  Notation "- a" := (Aopp a).
-  Notation Asub a b := (a + -b).
-  Notation "0" := Azero.
-  Notation "1" := Aone.
-  Infix "*" := Amul.
-  Notation "/ a" := (Ainv a).
-  Notation Adiv a b := (a * (/b)).
-  Infix "/" := Adiv.
-
-  Add Field field_inst : (make_field_theory HField).
-
-  (** a <> 0 -> a * / a = 1 *)
-  Lemma field_mulInvR : forall a : A, a <> 0 -> a * /a = 1.
-  Proof. intros. rewrite commutative. rewrite field_mulInvL; easy. Qed.
-
-  (** a <> 0 -> (1/a) * a = 1 *)
-  Lemma field_mulInvL_inv1 : forall a : A, a <> 0 -> (1/a) * a = 1.
-  Proof. intros. simpl. field; auto. Qed.
-  
-  (** a <> 0 -> a * (1/a) = 1 *)
-  Lemma field_mulInvR_inv1 : forall a : A, a <> 0 -> a * (1/a) = 1.
-  Proof. intros. simpl. field. auto. Qed.
-
-  (** a <> 0 -> / a <> 0 *)
-  Lemma field_inv_neq0_if_neq0 : forall a : A, a <> 0 -> / a <> 0.
-  Proof.
-    intros. intro.
-    pose proof (field_mulInvL H). rewrite H0 in H1. rewrite ring_mul_0_l in H1.
-    apply field_1_neq_0. auto.
-  Qed.
-
-  (** - 1 <> 0 *)
-  Lemma field_neg1_neq_0 : - (1) <> 0.
-  Proof.
-    intro. rewrite <- group_opp_0 in H at 1. apply group_opp_inj in H.
-    apply field_1_neq_0; auto.
-  Qed.
-  
-  (** a <> 0 -> a * b = a * c -> b = c *)
-  Lemma field_mul_cancel_l : forall a b c : A,
-      a <> 0 -> a * b = a * c -> b = c.
-  Proof.
-    intros.
-    assert (/a * (a * b) = /a * (a * c)).
-    { rewrite H0. easy. }
-    rewrite <- ?associative in H1.
-    rewrite field_mulInvL in H1; auto.
-    rewrite ?identityLeft in H1. easy.
-  Qed.
-
-  (** c <> 0 -> a * c = b * c -> a = b *)
-  Lemma field_mul_cancel_r : forall a b c : A,
-      c <> 0 -> a * c = b * c -> a = b.
-  Proof.
-    intros.
-    assert ((a * c) * /c = (b * c) * /c).
-    { rewrite H0. easy. }
-    rewrite ?associative in H1.
-    rewrite field_mulInvR in H1; auto.
-    rewrite ?identityRight in H1. easy.
-  Qed.
-
-  (** a * b = 1 -> / a = b *)
-  Lemma field_inv_eq_l : forall a b : A, a <> 0 -> a * b = 1 -> / a = b.
-  Proof.
-    intros. apply (@field_mul_cancel_l a (/ a) b); auto.
-    rewrite field_mulInvR; auto.
-  Qed.
-
-  (** a * b = 1 -> / b = a *)
-  Lemma field_inv_eq_r : forall a b : A, b <> 0 -> a * b = 1 -> / b = a.
-  Proof.
-    intros. apply (@field_mul_cancel_r (/ b) a b); auto.
-    rewrite field_mulInvL; auto.
-  Qed.
-
-  (** / / a = a *)
-  Lemma field_inv_inv : forall a : A, a <> 0 -> / / a = a.
-  Proof.
-    intros. pose proof (field_inv_neq0_if_neq0 H).
-    apply field_mul_cancel_l with (/ a); auto.
-    rewrite field_mulInvL; auto. rewrite field_mulInvR; auto.
-  Qed.
-
-  (** / a = / b -> a = b *)
-  Lemma field_inv_inj : forall a b : A, a <> 0 -> b <> 0 -> / a = / b -> a = b.
-  Proof.
-    intros. rewrite <- field_inv_inv; auto. rewrite <- H1.
-    rewrite field_inv_inv; auto.
-  Qed.
-
-  (** / (- a) = - (/ a) *)
-  Lemma field_inv_opp : forall a : A, a <> 0 -> / (- a) = - (/ a).
-  Proof.
-    intros. apply field_inv_eq_l. apply group_opp_neq0_iff; auto.
-    rewrite ring_mul_opp_opp. apply field_mulInvR; auto.
-  Qed.
-
-  
-  Context {AeqDec : Dec (@eq A)}.
-  
-  (** a * b = 0 <-> a = 0 \/ b = 0 *)
-  Lemma field_mul_eq0_iff : forall a b : A, a * b = 0 <-> a = 0 \/ b = 0.
-  Proof.
-    intros. split; intros.
-    - destruct (Aeqdec a 0), (Aeqdec b 0); auto.
-      assert ((/a * a) * (b * /b) = /a * (a * b) * /b). field; auto.
-      rewrite H, field_mulInvL, field_mulInvR, identityLeft in H0; auto.
-      rewrite ring_mul_0_r in H0 at 1.
-      rewrite ring_mul_0_l in H0 at 1.
-      exfalso. apply field_1_neq_0; auto.
-    - destruct H; subst.
-      rewrite ring_mul_0_l; auto. rewrite ring_mul_0_r; auto.
-  Qed.
-  
-  (** a * b <> 0 <-> (a <> 0 /\ b <> 0) *)
-  Lemma field_mul_neq0_iff : forall a b : A, a * b <> 0 <-> (a <> 0 /\ b <> 0).
-  Proof. intros. rewrite field_mul_eq0_iff. tauto. Qed.
-    
-  (** / a <> 0 -> a <> 0 *)
-  Lemma field_inv_neq0_imply_neq0 : forall a : A, / a <> 0 -> a <> 0.
-  Proof.
-    intros. intro.
-    (* 备注：
-       1. 我暂时无法证明这个引理，但我可能要用到这个性质
-       2. 由反证法，若 a = 0，则 /a = 0，这应该不对。因为：
-          数学上，无穷小的倒数是无穷大。不过 0 还不是无穷小。
-       3. 在 Reals.RIneq 库中，有两个引理如下，我觉得好像有问题，但又无法指正。
-          Lemma Rinv_0 : / 0 = 0.
-          Lemma Rinv_inv r : / / r = r.
-       4. 主要问题是，/ 0 是没有定义的，但我的 Field 结构无法排除这种情况
-     *)
-  Admitted.
-
-  (** / a <> 0 <-> a <> 0 *)
-  Lemma field_inv_neq0_iff : forall a : A, / a <> 0 <-> a <> 0.
-  Proof.
-    intros; split. apply field_inv_neq0_imply_neq0.
-    apply field_inv_neq0_if_neq0.
-  Qed.
-  
-  (** a * a = 0 -> a = 0 *)
-  Lemma field_sqr_eq0_reg : forall a : A, a * a = 0 -> a = 0.
-  Proof. intros. apply field_mul_eq0_iff in H. destruct H; auto. Qed.
-
-  (** a * b = b -> a = 1 \/ b = 0 *)
-  Lemma field_mul_eq_imply_a1_or_b0 : forall (a b : A),
-      a * b = b -> (a = 1) \/ (b = 0).
-  Proof.
-    intros. destruct (Aeqdec a 1), (Aeqdec b 0); auto.
-    replace b with (1 * b) in H at 2 by ring.
-    apply field_mul_cancel_r in H; auto.
-  Qed.
-
-End Theory.
-
-(** ** Examples *)
-Section Examples.
-
-  Import Reals.
-  
-  Goal forall a b : R, (a <> 0 -> /a * a = 1)%R.
-    intros. apply field_mulInvL. auto. Qed.
-
-End Examples.
-
-
-
-(* ######################################################################### *)
 (** * Field with total order *)
 
-Class OrderedField {A} Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb := {
+Class OrderedField {A} Aadd Azero Aopp Amul Aone Ainv Alt Ale := {
     of_Field :: @Field A Aadd Azero Aopp Amul Aone Ainv;
-    of_OrderedRing :: @OrderedARing _ Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb;
+    of_OrderedRing :: @OrderedARing _ Aadd Azero Aopp Amul Aone Alt Ale;
   }.
 
 Coercion of_Field : OrderedField >-> Field.
@@ -3026,8 +3105,6 @@ Section Theory.
   Notation "a >= b" := (Ale b a).
   Infix "<" := Alt.
   Infix "<=" := Ale.
-  Infix "<?" := Altb.
-  Infix "<=?" := Aleb.
     
   (** a <> 0 -> 0 < a * a *)
   Lemma sqr_gt0 : forall a : A, a <> 0 -> 0 < a * a.
@@ -3120,7 +3197,8 @@ End Theory.
 (* ######################################################################### *)
 (** * Convert to R type *)
 
-Class ConvertToR {A} Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb
+(** Operations {+,0,-x,*,1,/x,==,<,<=} is consistent with "a2r: A -> R" *)
+Class A2R {A} Aadd Azero Aopp Amul Aone Ainv Alt Ale
   (a2r : A -> R) := {
     a2r_add : forall a b : A, a2r (Aadd a b) = (a2r a + a2r b)%R;
     a2r_0 : a2r Azero = 0%R;
@@ -3128,7 +3206,7 @@ Class ConvertToR {A} Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb
     a2r_mul : forall a b : A, a2r (Amul a b) = (a2r a * a2r b)%R;
     a2r_1 : a2r Aone = 1%R;
     a2r_inv : forall a : A, a <> Azero -> a2r (Ainv a) = (/ (a2r a))%R;
-    a2r_Order :: Order Alt Ale Altb Aleb;
+    a2r_Order :: Order Alt Ale;
     a2r_eq_iff : forall a b : A, a2r a = a2r b <-> a = b;
     a2r_lt_iff : forall a b : A, (a2r a < a2r b)%R <-> Alt a b;
     a2r_le_iff : forall a b : A, (a2r a <= a2r b)%R <-> Ale a b
@@ -3138,7 +3216,7 @@ Class ConvertToR {A} Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb
 
 (** ** Extra Theories *)
 Section Theory.
-  Context `{HConvertToR : ConvertToR}.
+  Context `{HA2R : A2R}.
   Context {AeqDec : Dec (@eq A)}.
   Infix "<" := Alt : A_scope.
   Infix "<=" := Ale : A_scope.
@@ -3161,14 +3239,14 @@ Section Theory.
 
   Section OrderedARing.
     Context `{HOrderedARing :
-        OrderedARing A Aadd Azero Aopp Amul Aone Alt Ale Altb Aleb}.
+        OrderedARing A Aadd Azero Aopp Amul Aone Alt Ale}.
     Notation "| a |" := (Rabs a) : R_scope.
-    Notation "| a |" := (@Aabs _ Azero Aopp Aleb a) : A_scope.
+    Notation "| a |" := (Aabs a) : A_scope.
 
     (** a2r | a | = | a2r a | *)
     Lemma a2r_Aabs : forall a : A, a2r (| a |) = | a2r a|%R.
     Proof.
-      intros. unfold Aabs. destruct (leb_reflect Azero a).
+      intros. unfold Aabs. destruct (Ale_dec Azero a).
       - rewrite Rabs_right; auto. rewrite <- a2r_0.
         apply Rle_ge. apply a2r_le_iff; auto.
       - rewrite Rabs_left. rewrite a2r_opp. auto.

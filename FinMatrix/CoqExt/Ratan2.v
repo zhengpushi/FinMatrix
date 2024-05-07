@@ -34,9 +34,10 @@
 
 
 Require Import RExt.
-Require Import RealFunction.
-
 Open Scope R_scope.
+
+Axiom cos_2PI_add : forall x : R, cos (2 * PI + x) = cos x.
+Axiom tan_sub_PI : forall x : R, tan (x - PI) = tan x.
 
 
 (* ######################################################################### *)
@@ -112,7 +113,7 @@ Proof.
   - rewrite atan2_X0_Yge0; ra.
   - assert (sin a < 0). { apply sin_lt_0_var; lra. }
     assert (cos a < 0).
-    { rewrite <- RealFunction.cos_2PI_add. apply cos_lt_0; ra. }
+    { rewrite <- cos_2PI_add. apply cos_lt_0; ra. }
     rewrite atan2_Xlt0_Ylt0; ra.
     rewrite atan_ak_bk; ra. cbv; rewrite Rtan_rw.
     rewrite <- Rtrigo_facts.tan_pi_plus; ra. rewrite atan_tan; ra.
@@ -128,7 +129,7 @@ Proof.
     assert (cos a < 0). { apply cos_lt_0; ra. }
     rewrite atan2_Xlt0_Yge0; ra.
     rewrite atan_ak_bk; ra. cbv; rewrite Rtan_rw.
-    rewrite <- RealFunction.tan_sub_PI. rewrite atan_tan; ra.
+    rewrite <- tan_sub_PI. rewrite atan_tan; ra.
 Qed.
 
 

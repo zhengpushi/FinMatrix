@@ -247,7 +247,7 @@ Section fold_left.
       inversion H; clear H. inversion H0; clear H0.
       rewrite !fold_left_rebase_l.
       rewrite (IHl1 l2 n a1); auto.
-      + rewrite distributiveLeft. agroup.
+      + rewrite distrLeft. agroup.
         specialize (H1 0). simpl in H1. rewrite H1; auto. lia.
       + intros. specialize (H1 (S i)). simpl in H1. apply H1. lia.
   Qed.
@@ -320,7 +320,7 @@ Section fold_right.
     induction l1,l2; intros; simpl in *; try lia.
     - rewrite ring_mul_0_r; auto.
     - destruct n. lia. rewrite (IHl1 l2 n a1); auto.
-      + rewrite (distributiveLeft a1). agroup.
+      + rewrite (distrLeft a1). agroup.
         specialize (H1 0); simpl in H1; rewrite H1; auto. lia.
       + intros. specialize (H1 (S i)); simpl in H1. apply H1. lia.
   Qed.

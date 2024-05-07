@@ -8,8 +8,7 @@
   date      : 2023.12
  *)
 
-Require Export RExt.
-Require Export RealFunction.
+Require Export RExt RFunExt.
 Require Export MatrixModule.
 
 
@@ -42,7 +41,7 @@ Open Scope mat_scope.
 (** * Usage demo *)
 
 Section test.
-  Let f00 : A := fun t => 1.
+  Let f00 : A := fun t => 1%R.
   Let f01 : A := fun t => 2.
   Let f10 : A := fun t => 3.
   Let f11 : A := fun t => 4.
@@ -55,6 +54,7 @@ Section test.
 End test.
 
 Section Example4CoordinateSystem.
+  Open Scope A_scope.
   Open Scope fun_scope.
   Notation "1" := Aone : fun_scope.
   Notation "0" := Azero : fun_scope.

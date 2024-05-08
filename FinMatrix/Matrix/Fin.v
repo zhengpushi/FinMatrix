@@ -10,10 +10,10 @@
   remark    :
   1. 比较自然数的判定程序
      已有的程序
-     le_gt_dec     : forall m n : nat, {m <= n} + {m > n}
-     lt_eq_lt_dec  : forall m n : nat, {m < n} + {m = n} + {n < m}
+     le_gt_dec     : forall n m : nat, {n <= m} + {n > m}
+     lt_eq_lt_dec  : forall n m : nat, {n < m} + {n = m} + {m < n}
      新增的程序
-     lt_ge_dec     : forall m n : nat, {m < n} + {m >= n}
+     lt_ge_dec     : forall n m : nat, {n < m} + {n >= m}
 
   2. fin 的几种实现方案
      (1). 使用 unit 来表示 fin 0

@@ -2153,6 +2153,39 @@ Qed.
 Lemma mult_PI_gt0 : forall r, 0 < r -> 0 < r * PI.
 Proof. ra. Qed.  
 
+(** \sqrt {a² + b²} <= |a| + |b| *)
+Lemma R_neq5 : forall a b : R, sqrt (a² + b²) <= Rabs a + Rabs b.
+Proof.
+  intros.
+  rewrite <- sqrt_square.
+  - apply sqrt_le_1_alt.
+    apply Rle_trans with (Rabs a * Rabs a + Rabs b * Rabs b)%R.
+    + rewrite <- !Rabs_mult. apply Rplus_le_compat.
+      apply RRle_abs. apply RRle_abs.
+    + ring_simplify.
+      rewrite !Rplus_assoc. apply Rplus_le_compat_l.
+      rewrite <- Rplus_0_l at 1. apply Rplus_le_compat_r.
+      assert (0 <= Rabs a) by ra; assert (0 <= Rabs b) by ra. ra.
+  - assert (0 <= Rabs a) by ra; assert (0 <= Rabs b) by ra. ra.
+Qed.
+
+(** a * c + b * d <= \sqrt {(a² + b²) * (c² + d²)} *)
+Lemma R_neq6 : forall a b c d : R, a * c + b * d <= sqrt((a² + b²) * (c² + d²)).
+Proof.
+  intros.
+  apply Rsqr_incr_0_var; ra. ring_simplify.
+  autorewrite with R sqrt; ra.
+  ring_simplify.
+  rewrite !Rplus_assoc; repeat apply Rplus_le_compat_l.
+  rewrite <- !Rplus_assoc; repeat apply Rplus_le_compat_r.
+  (* 2acbd <= a^2*d^2+b^2*c^2 *)
+  autorewrite with R.
+  replace (2 * a * c * b * d)%R with (2 * (a * d) * (b * c))%R by ring.
+  replace (a² * d² + c² * b²)%R with ((a*d)² + (b * c)²)%R; try (cbv; ring).
+  apply R_neq1.
+Qed.
+
+
 (** 算术-几何平均值不等式，简称 “算几不等式” *)
 (* 设 x1,x2,...,xn 为 n 个正实数，
      记算术平均数是 An = (∑xi)/n，
@@ -2171,12 +2204,12 @@ Proof. ra. Qed.
 (* https://zh.wikipedia.org/wiki/平均数不等式 *)
 
 (* 在2维和3维的具体形式 *)
-Lemma Rineq2 : forall a b : R,
+Lemma R_neq7 : forall a b : R,
     0 <= a -> 0 <= b ->
     (a + b) / 2 >= sqrt(a * b).
 Abort.
 
-Lemma Rineq3 : forall a b c : R,
+Lemma R_neq8 : forall a b c : R,
     0 <= a -> 0 <= b -> 0 <= c ->
     (a + b + c) / 3 >= sqrt(a * b).
 Abort.

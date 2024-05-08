@@ -28,7 +28,6 @@ Require NatExt ZExt QExt QcExt RExt RFunExt Complex.
 Require Export Hierarchy.
 
 
-
 (* ######################################################################### *)
 (** * ElementType *)
 
@@ -99,11 +98,11 @@ End ElementTypeR.
 Module ElementTypeC <: ElementType.
   Export Complex.
   Definition A : Type := C.
-  Definition Azero : A := 0.
+  Definition Azero : A := C0.
   Hint Unfold A Azero : A.
 
   Lemma AeqDec : Dec (@eq A).
-  Proof. apply Complex_eq_Dec. Defined.
+  Proof. apply Ceq_Dec. Defined.
 End ElementTypeC.
 
 Module ElementTypeRFun <: ElementType.
@@ -470,7 +469,7 @@ End RingElementTypeR.
 Module RingElementTypeC <: RingElementType.
   Include MonoidElementTypeC.
 
-  Definition Aone : A := 1.
+  Definition Aone : A := C1.
   Definition Aopp := Copp.
   Definition Amul := Cmul.
   Hint Unfold Aone Aadd Aopp Amul : A.
@@ -711,7 +710,7 @@ Module FieldElementTypeC <: FieldElementType.
   Notation Adiv := (fun x y => Amul x (Ainv y)).
 
   Lemma Aone_neq_Azero : Aone <> Azero.
-  Proof. cbv in *. auto with complex. Qed.
+  Proof. cbv in *. auto with C. Qed.
   
   #[export] Instance Field : Field Aadd Azero Aopp Amul Aone Ainv.
   Proof.

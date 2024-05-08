@@ -268,8 +268,8 @@ End minvtble.
 
 
 (* ############################################################################ *)
-(** * Interface of matrix inversion *)
-Module Type Minv (E : FieldElementType).
+(** * Interface of matrix inversion core theory *)
+Module Type MinvCore (E : FieldElementType).
   Export E.
   Open Scope A_scope.
   Open Scope mat_scope.
@@ -358,14 +358,15 @@ Module Type Minv (E : FieldElementType).
   (** M\-1 * M = mat1 *)
   Axiom mmul_minv_l : forall {n} (M : smat n), minvtble M -> M\-1 * M = mat1.
   
-End Minv.
+End MinvCore.
 
 
 (* ############################################################################ *)
-(** * Extended theory of matrix inversion *)
+(** * Matrix inversion theory *)
 
-(** More theory of matrix inversion, dependent on core theory `Minv` *)
-Module MinvMore (F : FieldElementType) (M : Minv F).
+(** Matrix inversion theory, dependent on `MinvCore` *)
+Module Minv (F : FieldElementType) (M : MinvCore F).
+  Export F.
   Export M.
 
   (* ======================================================================= *)
@@ -514,4 +515,4 @@ Module MinvMore (F : FieldElementType) (M : Minv F).
       l2v 0 (solveEqList n lC lb) = solveEq C b.
   Proof. intros. unfold solveEqList. rewrite l2v_v2l. auto. Qed.
   
-End MinvMore.
+End Minv.

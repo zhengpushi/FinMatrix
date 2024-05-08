@@ -59,7 +59,7 @@ Section mat_monoid_nat.
   Open Scope mat_scope.
 
   (* Create matrix by a list *)
-   Let M : mat 2 3 := l2m [[1;2;3];[4]].
+  Let M : mat 2 3 := l2m [[1;2;3];[4]].
   Compute m2l M. (* = [[1; 2; 3]; [4; 0; 0]] : dlist A *)
 
   (* Create matrix by a nat-indexing-function *)
@@ -202,7 +202,7 @@ Section vec_Qc.
   
   (* The vector on Qc can define the metric space, and the metric function is a2r *)
   Search a2r.
-  Print Hierarchy.ConvertToR.
+  Print Hierarchy.A2R.
 End vec_Qc.
 
 

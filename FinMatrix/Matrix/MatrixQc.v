@@ -15,8 +15,7 @@ Require Export MatrixModule.
 (* ######################################################################### *)
 (** * Matrix theory come from common implementations *)
 
-Module Export MatrixTheoryQc :=
-  NormedOrderedFieldMatrixTheory NormedOrderedFieldElementTypeQc.
+Include (NormedOrderedFieldMatrixTheory NormedOrderedFieldElementTypeQc).
 
 Open Scope Q_scope.
 Open Scope Qc_scope.
@@ -101,15 +100,12 @@ Section test.
   (* Compute m2l (minvGE M). *)
   (* Compute m2l (minv M). *)
   (* Compute v2l (cramerRule M u). *)
-  (* Compute m2l (minv1 (mat1 + mat1)). *)
-  (* Compute m2l (minv2 (mat1 + mat1)). *)
-  (* Compute m2l (minv3 (mat1 + mat1)). *)
-  (* Compute m2l (minv4 (mat1 + mat1)). *)
   (* Check morth M. *)
   (* Check GOnP M. *)
   (* Check mkGOn M. *)
   (* Check SOnP M. *)
   (* Check mkSOn M. *)
+  
 
   (** Solve equation over list of Q type *)
   Open Scope Q_scope.

@@ -337,39 +337,36 @@ End minv.
 (* ############################################################################ *)
 (** * Matrix Inversion by Adjoint Matrix (module version)  *)
 
-Module MinvAM (E : FieldElementType) <: Minv E.
+Module MinvCoreAM (E : FieldElementType) <: MinvCore E.
   Export E.
   Add Field field_thy_inst : (make_field_theory Field).
   Open Scope A_scope.
   Open Scope mat_scope.
 
-  Module Import AMNotations.
-    Notation "0" := Azero : A_scope.
-    Notation "1" := Aone : A_scope.
-    Infix "+" := Aadd : A_scope.
-    Notation "- a" := (Aopp a) : A_scope.
-    Notation "a - b" := ((a + -b)%A) : A_scope.
-    Infix "*" := Amul : A_scope.
-    Notation "/ a" := (Ainv a) : A_scope.
-    Notation "a / b" := ((a * /b)%A) : A_scope.
+  Local Notation "0" := Azero : A_scope.
+  Local Notation "1" := Aone : A_scope.
+  Local Infix "+" := Aadd : A_scope.
+  Local Notation "- a" := (Aopp a) : A_scope.
+  Local Notation "a - b" := ((a + -b)%A) : A_scope.
+  Local Infix "*" := Amul : A_scope.
+  Local Notation "/ a" := (Ainv a) : A_scope.
+  Local Notation "a / b" := ((a * /b)%A) : A_scope.
 
-    Notation smat n := (smat A n).
-    Notation mat1 := (@mat1 _ Azero Aone).
-    Notation mcmul := (@mcmul _ Amul).
-    Infix "\.*" := mcmul : mat_scope.
-    Notation mmul := (@mmul _ Aadd Azero Amul).
-    Infix "*" := mmul : mat_scope.
-    Notation mmulv := (@mmulv _ Aadd 0 Amul).
-    Infix "*v" := mmulv : mat_scope.
+  Local Notation smat n := (smat A n).
+  Local Notation mat1 := (@mat1 _ Azero Aone).
+  Local Notation mcmul := (@mcmul _ Amul).
+  Local Infix "\.*" := mcmul : mat_scope.
+  Local Notation mmul := (@mmul _ Aadd Azero Amul).
+  Local Infix "*" := mmul : mat_scope.
+  Local Notation mmulv := (@mmulv _ Aadd 0 Amul).
+  Local Infix "*v" := mmulv : mat_scope.
+  Local Notation madj := (@madj _ Aadd 0 Aopp Amul 1).
+  Local Notation "M \A" := (madj M) : mat_scope.
 
-    Notation madj := (@madj _ Aadd 0 Aopp Amul 1).
-    Notation "M \A" := (madj M) : mat_scope.
-  End AMNotations.
-  
-  Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).
-  Notation mdetEx := (@mdetEx _ Aadd 0 Aopp Amul 1).
-  Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
-  Notation msingular := (@msingular _ Aadd 0 Amul 1).
+  Local Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).
+  Local Notation mdetEx := (@mdetEx _ Aadd 0 Aopp Amul 1).
+  Local Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
+  Local Notation msingular := (@msingular _ Aadd 0 Amul 1).
     
   (* ======================================================================= *)
   (** ** Check matrix invertibility *)
@@ -447,18 +444,41 @@ Module MinvAM (E : FieldElementType) <: Minv E.
   Lemma minvNoCheck_spec : forall {n} (M : smat n), minvtble M -> minvNoCheck M = M\-1.
   Proof. intros. apply minvNoCheck_spec; auto. Qed.
   
-End MinvAM.
+End MinvCoreAM.
 
 
 (* ############################################################################ *)
-(** * More theory of matrix inversion by Adjoint Matrix *)
-Module MinvMoreAM (E : FieldElementType).
-  Module Minv_inst := MinvAM E.
-  Module MinvMore_inst := MinvMore E Minv_inst.
+(** * Matrix inversion by Adjoint Matrix *)
+Module MinvAM (E : FieldElementType).
+  Module MinvCore_inst := MinvCoreAM E.
+  Module Minv_inst := Minv E MinvCore_inst.
   Export Minv_inst.
-  Import AMNotations.
-  Export MinvMore_inst.
 
+  Local Notation "0" := Azero : A_scope.
+  Local Notation "1" := Aone : A_scope.
+  Local Infix "+" := Aadd : A_scope.
+  Local Notation "- a" := (Aopp a) : A_scope.
+  Local Notation "a - b" := ((a + -b)%A) : A_scope.
+  Local Infix "*" := Amul : A_scope.
+  Local Notation "/ a" := (Ainv a) : A_scope.
+  Local Notation "a / b" := ((a * /b)%A) : A_scope.
+
+  Local Notation smat n := (smat A n).
+  Local Notation mat1 := (@mat1 _ Azero Aone).
+  Local Notation mcmul := (@mcmul _ Amul).
+  Local Infix "\.*" := mcmul : mat_scope.
+  Local Notation mmul := (@mmul _ Aadd Azero Amul).
+  Local Infix "*" := mmul : mat_scope.
+  Local Notation mmulv := (@mmulv _ Aadd 0 Amul).
+  Local Infix "*v" := mmulv : mat_scope.
+  Local Notation madj := (@madj _ Aadd 0 Aopp Amul 1).
+  Local Notation "M \A" := (madj M) : mat_scope.
+
+  Local Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).
+  Local Notation mdetEx := (@mdetEx _ Aadd 0 Aopp Amul 1).
+  Local Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
+  Local Notation msingular := (@msingular _ Aadd 0 Amul 1).
+  
   Notation mcofactorEx := (@mcofactorEx _ Aadd 0 Aopp Amul 1).
   Notation mdet1 := (@mdet1 A).
   Notation mdet2 := (@mdet2 _ Aadd Aopp Amul).
@@ -535,7 +555,7 @@ Module MinvMoreAM (E : FieldElementType).
   Lemma minv4_eq_minv : forall M, minvtble M -> minv4 M = M\-1.
   Proof. intros. apply minv4_eq_minv; auto. Qed.
   
-End MinvMoreAM.
+End MinvAM.
 
 
 (* ############################################################################ *)
@@ -544,10 +564,10 @@ End MinvMoreAM.
 (* ======================================================================= *)
 (** ** Test inverse matrix over Qc type *)
 
-Module MinvMoreAM_Qc := MinvMoreAM FieldElementTypeQc.
+Module MinvAM_Qc := MinvAM FieldElementTypeQc.
 
 Section inv_Qc.
-  Import MinvMoreAM_Qc.
+  Import MinvAM_Qc.
   
   (** Example 1: inverse matrix of a `3x3` matrix over Qc type *)
   Section ex1.
@@ -602,8 +622,7 @@ End inv_Qc.
       use Qc type. *)
 Section inv_Q.
 
-  Import MinvMoreAM_Qc.
-  Import AMNotations.
+  Import MinvAM_Qc.
   Open Scope Q_scope.
 
   (** Check matrix invertibility with rational number lists *)
@@ -725,7 +744,7 @@ Section inv_Q.
 
     (* We can get the (1,3) element quickly, instead of get all elements *)
     Open Scope Qc_scope.
-    Let M : smat 8 := l2m 0 (Q2Qc_dlist d1).
+    Let M : smat _ 8 := l2m 0 (Q2Qc_dlist d1).
 
     (* method 1 *)
     Let M1 := @minv 8 (l2m 0 (Q2Qc_dlist d1)).
@@ -789,16 +808,15 @@ End inv_Q.
 (* ======================================================================= *)
 (** ** Test solveEq and cramerRule over Qc type *)
 Section solveEq_cramerRule_Qc.
-  Import MinvMoreAM_Qc.
-  Import AMNotations.
+  Import MinvAM_Qc.
 
-  Let M1 : smat 2 := l2m 0 (Q2Qc_dlist [[1;2];[3;4]]%Q).
+  Let M1 : smat _ 2 := l2m 0 (Q2Qc_dlist [[1;2];[3;4]]%Q).
   Let b1 : vec 2 := l2v 0 (Q2Qc_list [5;6]%Q).
   (* Compute v2l (solveEq M1 b1). *)
   (* Compute v2l (cramerRule M1 b1). *)
   (* Tips: here, these two methods have different computational cost *)
 
-  Let M2 : smat 5 :=
+  Let M2 : smat _ 5 :=
         l2m 0 (Q2Qc_dlist
                  [[1;2;3;4;5];
                   [2;4;3;5;1];

@@ -252,33 +252,31 @@ End minv.
 
 (* ############################################################################ *)
 (** * Inverse matrix based on Gauss elimination (module version) *)
-Module MinvGE (E : FieldElementType) <: Minv E.
-  Export E.
+Module MinvCoreGE (E : FieldElementType) <: MinvCore E.
+  Import E.
   Open Scope A_scope.
   Open Scope mat_scope.
   
   Add Field field_inst : (make_field_theory Field).
 
-  Module Import GENotations.
-    Notation "0" := Azero : A_scope.
-    Notation "1" := Aone : A_scope.
-    Infix "+" := Aadd : A_scope.
-    Notation "- a" := (Aopp a) : A_scope.
-    Notation "a - b" := ((a + -b)%A) : A_scope.
-    Infix "*" := Amul : A_scope.
-    Notation "/ a" := (Ainv a) : A_scope.
-    Notation "a / b" := ((a * /b)%A) : A_scope.
-    
-    Notation smat n := (smat A n).
-    Notation mat1 := (@mat1 _ Azero Aone).
-    Notation mcmul := (@mcmul _ Amul).
-    Infix "\.*" := mcmul : mat_scope.
-    Notation mmul := (@mmul _ Aadd Azero Amul).
-    Infix "*" := mmul : mat_scope.
-    Infix "*" := mmul : mat_scope.
-    Notation mmulv := (@mmulv _ Aadd 0 Amul).
-    Infix "*v" := mmulv : mat_scope.
-  End GENotations.
+  Local Notation "0" := Azero : A_scope.
+  Local Notation "1" := Aone : A_scope.
+  Local Infix "+" := Aadd : A_scope.
+  Local Notation "- a" := (Aopp a) : A_scope.
+  Local Notation "a - b" := ((a + -b)%A) : A_scope.
+  Local Infix "*" := Amul : A_scope.
+  Local Notation "/ a" := (Ainv a) : A_scope.
+  Local Notation "a / b" := ((a * /b)%A) : A_scope.
+
+  Local Notation smat n := (smat A n).
+  Local Notation mat1 := (@mat1 _ Azero Aone).
+  Local Notation mcmul := (@mcmul _ Amul).
+  Local Infix "\.*" := mcmul : mat_scope.
+  Local Notation mmul := (@mmul _ Aadd Azero Amul).
+  Local Infix "*" := mmul : mat_scope.
+  Local Infix "*" := mmul : mat_scope.
+  Local Notation mmulv := (@mmulv _ Aadd 0 Amul).
+  Local Infix "*v" := mmulv : mat_scope.
   
   Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
   Notation msingular := (@msingular _ Aadd 0 Amul 1).
@@ -363,18 +361,17 @@ Module MinvGE (E : FieldElementType) <: Minv E.
   Lemma mmul_minv_l : forall {n} (M : smat n), minvtble M -> M\-1 * M = mat1.
   Proof. intros. apply mmul_minv_l; auto. Qed.
   
-End MinvGE.
+End MinvCoreGE.
 
 
 (* ############################################################################ *)
-(** * More theory of matrix inversion by Gauss Elimination *)
-Module MinvMoreGE (E : FieldElementType).
-  Module Minv_inst := MinvGE E.
-  Module MinvMore_inst := MinvMore E Minv_inst.
+(** * Matrix inversion by Gauss Elimination *)
+Module MinvGE (E : FieldElementType).
+  Module MinvCore_inst := MinvCoreGE E.
+  Module Minv_inst := Minv E MinvCore_inst.
   Export Minv_inst.
-  Export MinvMore_inst.
 
-End MinvMoreGE.
+End MinvGE.
 
 
 (* ############################################################################ *)
@@ -383,10 +380,10 @@ End MinvMoreGE.
 (* ******************************************************************* *)
 (** ** Test inverse matrix on Qc *)
 
-Module MinvMoreGE_Qc := MinvMoreGE FieldElementTypeQc.
+Module MinvGE_Qc := MinvGE FieldElementTypeQc.
 
 Section test_Qc.
-  Import MinvMoreGE_Qc.
+  Import MinvGE_Qc.
 
   Open Scope Q_scope.
   Open Scope Qc_scope.

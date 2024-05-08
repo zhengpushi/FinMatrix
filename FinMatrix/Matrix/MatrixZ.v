@@ -15,7 +15,7 @@ Require Export MatrixModule.
 (* ######################################################################### *)
 (** * Matrix theory come from common implementations *)
 
-Module Export MatrixTheoryZ := OrderedRingMatrixTheory OrderedRingElementTypeZ.
+Include (OrderedRingMatrixTheory OrderedRingElementTypeZ).
 
 Open Scope Z_scope.
 Open Scope vec_scope.
@@ -41,7 +41,6 @@ Section test.
   (* Compute vsum u. *)
   (* Check vunit u. *)
   (* Check u _|_ v. *)
-  (* Check u // v. *)
   
   Open Scope mat_scope.
   
@@ -63,7 +62,7 @@ Section test.
   (* Compute mdet2 mat1. *)
   (* Compute mdet3 mat1. *)
   (* Compute m2l (madj M). *)
-  (* Check minvertible M. *)
+  (* Check minvtble M. *)
 
   Let M4 :=
         @l2m 9 9
@@ -79,9 +78,14 @@ Section test.
            [ 10;    10;     2;     1;     8;     3;     3;     5;     6;     4]].
 
   (* Time Eval vm_compute in mdet M4. *)
-  (*      = -418388139 *)
-  (*      : T *)
-  (* Finished transaction in 13.995 secs (13.992u,0.s) (successful) *)
+  (*      = -93336855 *)
+  (*      : A *)
+  (* Finished transaction in 9.056 secs (9.052u,0.004s) (successful) *)
+
+  (* Time Eval vm_compute in mdetEx M4. *)
+  (*      = -93336855 *)
+  (*      : A *)
+  (* Finished transaction in 8.715 secs (8.714u,0.s) (successful) *)
 
   Let M5 :=
         @l2m 20 20

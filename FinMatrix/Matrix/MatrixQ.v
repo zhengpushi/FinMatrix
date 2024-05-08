@@ -15,7 +15,7 @@ Require Export MatrixModule.
 (* ######################################################################### *)
 (** * Matrix theory come from common implementations *)
 
-Module Export MatrixTheoryQ := BasicMatrixTheory ElementTypeQ.
+Include (BasicMatrixTheory ElementTypeQ).
 
 Open Scope Q_scope.
 Open Scope vec_scope.

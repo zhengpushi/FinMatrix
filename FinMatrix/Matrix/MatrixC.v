@@ -15,7 +15,7 @@ Require Export MatrixModule.
 (* ######################################################################### *)
 (** * Matrix theory come from common implementations *)
 
-Module Export MatrixTheoryC := FieldMatrixTheory FieldElementTypeC.
+Include (FieldMatrixTheory FieldElementTypeC).
 
 Open Scope C_scope.
 Open Scope vec_scope.

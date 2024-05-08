@@ -156,8 +156,8 @@ Module MatrixOrth (F : FieldElementType).
   Open Scope A_scope.
   Open Scope mat_scope.
 
-  Module AM := MinvMoreAM F.
-  Import AM AMNotations.
+  Module AM := MinvAM F.
+  Import AM.
 
   Local Notation "0" := Azero : A_scope.
   Local Notation "1" := Aone : A_scope.
@@ -172,7 +172,15 @@ Module MatrixOrth (F : FieldElementType).
   Local Infix "_|_" := vorth : vec_scope.
 
   Local Notation mat r c := (mat A r c).
-
+  Local Notation smat n := (smat A n).
+  Local Notation "M \T" := (@mtrans A _ _ M) : mat_scope.
+  Local Notation mat1 := (@mat1 _ Azero Aone).
+  Local Notation mmul := (@mmul _ Aadd Azero Amul).
+  Local Infix "*" := mmul : mat_scope.
+  Local Notation mmulv := (@mmulv _ Aadd 0 Amul).
+  Local Infix "*v" := mmulv : mat_scope.
+  Local Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
+  Local Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).
 
   (* ======================================================================= *)
   (** ** Orthonormal vectors 标准正交的向量组 *)

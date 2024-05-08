@@ -30,8 +30,7 @@ Require Import ExtrOcamlBasic ExtrOcamlNatInt MyExtrOCamlR.
 (* ######################################################################### *)
 (** * Matrix theory come from common implementations *)
 
-Module Export MatrixTheoryR :=
-  NormedOrderedFieldMatrixTheory NormedOrderedFieldElementTypeR.
+Include (NormedOrderedFieldMatrixTheory NormedOrderedFieldElementTypeR).
 
 Open Scope R_scope.
 Open Scope vec_scope.
@@ -88,8 +87,9 @@ Proof.
 Qed.
 
 (** <a, a> = ||a||² *)
-Lemma vdot_same : forall {n} (a : vec n), <a, a> = (||a||)².
+Lemma vdot_sameR : forall {n} (a : vec n), <a, a> = (||a||)².
 Proof. intros. rewrite <- vdot_same. auto. Qed.
+
 
 (* ======================================================================= *)
 (** ** Vector normalization (only valid in R type) *)
@@ -214,7 +214,7 @@ Lemma sqr_vdot_vnorm : forall {n} (a b : vec n),
     <vnorm a, vnorm b>² = <a, b>² / (<a, a> * <b, b>).
 Proof.
   intros. rewrite vdot_vnorm; auto. rewrite Rsqr_div'. f_equal.
-  rewrite Rsqr_mult. rewrite !vdot_same. auto.
+  rewrite Rsqr_mult. rewrite !vdot_sameR. auto.
 Qed.
 
 (** sqrt (1 - <a, b>²) = sqrt (<a, a> * <b, b> - <a, b>²) / (||a|| * ||b||) *)
@@ -226,7 +226,7 @@ Proof.
   intros. unfold vnorm. rewrite vdot_vcmul_l, vdot_vcmul_r. autounfold with A.
   replace (1 - (1 / (||a||) * (1 / (||b||) * (<a, b>)))²)%R
     with (((<a, a> * <b, b>) - <a, b>²) / (||a|| * ||b||)²); auto.
-  rewrite !Rsqr_mult, !Rsqr_div'. rewrite <- !vdot_same. field_simplify_eq.
+  rewrite !Rsqr_mult, !Rsqr_div'. rewrite <- !vdot_sameR. field_simplify_eq.
   - autorewrite with R. auto.
   - split; apply vdot_same_neq0_if_vnonzero; auto.
 Qed.
@@ -256,7 +256,7 @@ Infix "/_" := vangle : vec_scope.
 (** The angle of between any vector and itself is 0 *)
 Lemma vangle_self : forall {n} (a : vec n), a <> vzero -> a /_ a = 0.
 Proof.
-  intros. unfold vangle. rewrite vdot_same.
+  intros. unfold vangle. rewrite vdot_sameR.
   rewrite vnorm_len1; auto. autorewrite with R. apply acos_1.
 Qed.
 
@@ -368,20 +368,20 @@ Qed.
 Lemma vangle_0_imply_vdot_sqr_eq : forall {n} (a b : vec n),
     a <> vzero -> b <> vzero ->
     a /_ b = 0 -> <a, b>² = (<a, a> * <b, b>)%R.
-Proof. intros. apply vangle_0_iff in H1; auto. rewrite H1, !vdot_same. ra. Qed.
+Proof. intros. apply vangle_0_iff in H1; auto. rewrite H1, !vdot_sameR. ra. Qed.
 
 (** a /_ b = π -> <a, b>² = <a, a> * <b, b> *)
 Lemma vangle_PI_imply_vdot_sqr_eq : forall {n} (a b : vec n),
     a <> vzero -> b <> vzero ->
     a /_ b = PI -> <a, b>² = (<a, a> * <b, b>)%R.
-Proof. intros. apply vangle_PI_iff in H1; auto. rewrite H1, !vdot_same. ra. Qed.
+Proof. intros. apply vangle_PI_iff in H1; auto. rewrite H1, !vdot_sameR. ra. Qed.
 
 (** (<a, b>² = <a, a> * <b, b>) -> (a /_ b = 0) \/ (a /_ b = π) *)
 Lemma vdot_sqr_eq_imply_vangle_0_or_PI : forall {n} (a b : vec n),
     a <> vzero -> b <> vzero ->
     <a, b>² = (<a, a> * <b, b>)%R -> (a /_ b = 0) \/ (a /_ b = PI).
 Proof.
-  intros. rewrite !vdot_same in H1. rewrite <- Rsqr_mult in H1.
+  intros. rewrite !vdot_sameR in H1. rewrite <- Rsqr_mult in H1.
   apply Rsqr_eq in H1. destruct H1.
   - apply vangle_0_iff in H1; auto.
   - apply vangle_PI_iff in H1; auto.
@@ -685,7 +685,7 @@ Proof.
   pose proof (vdot_sqr_le a b). pose proof (vdot_sqr_le_form2 a b H1 H2).
   autounfold with A in *.
   rewrite acos_atan; [|ra]. f_equal. apply Rsqr_inj. ra. ra.
-  rewrite !Rsqr_div', !Rsqr_mult, <- !vdot_same. field_simplify_eq; [|ra].
+  rewrite !Rsqr_div', !Rsqr_mult, <- !vdot_sameR. field_simplify_eq; [|ra].
   rewrite Rsqr_sqrt; [|ra]. rewrite Rsqr_sqrt; [|ra].
   autorewrite with R. field. split; apply vdot_same_neq0_if_vnonzero; auto.
 Qed.
@@ -1993,6 +1993,16 @@ Section Example4CoordinateSystem.
   Proof. apply m2l_inj; cbv; list_eq; lra. Qed.
     
 End Example4CoordinateSystem.
+
+
+(** Test for symbol matrix *)
+Section Symbol_matrix.
+  
+  Variable a11 a12 a13 a21 a22 a23 a31 a32 a33 : A.
+  (* Compute m2l (minvAM1 (l2m [[a11]])). *)
+  (* Compute m2l (minvAM2 (l2m [[a11;a12];[a21;a22]])). *)
+  (* Compute m2l (minvAM3 (l2m [[a11;a12;a13];[a21;a22;a23];[a31;a32;a33]])). *)
+End Symbol_matrix.
 
 
 (** example for symbol matrix *)

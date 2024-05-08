@@ -26,10 +26,10 @@
 
 
 Require Export Matrix.
+Require Export ElementType.
 Require Export MatrixDet.
 Require Export MatrixInv.
 Require Export MatrixOrth.
-Require Export ElementType.
 
 
 (* ######################################################################### *)
@@ -2163,6 +2163,13 @@ Module RingMatrixTheory (E : RingElementType).
   Lemma mdet_mat1 : forall {n}, |@mat1 n| = 1.
   Proof. intros. apply mdet_mat1. Qed.
 
+  (** Determinant by cofactor expansion along the 0-th row *)
+  Definition mdetEx {n} (M : smat n) : A := @mdetEx _ Aadd 0 Aopp Amul Aone _ M.
+  
+  (** mdetEx is equal to mdet *)
+  Lemma mdetEx_eq_mdet : forall {n} (M : smat n), mdetEx M = mdet M.
+  Proof. intros. apply mdetEx_eq_mdet. Qed.
+
   (* ======================================================================= *)
   (** ** Determinant on matrix of 1-,2-, or 3-dim*)
 
@@ -2280,11 +2287,9 @@ Module FieldMatrixTheory (E : FieldElementType).
   
   Include (RingMatrixTheory E).
   
-  Module AM := MinvMoreAM E.
-  Module GE := MinvMoreGE E.
-  Module OrthAM := MatrixOrth E.
-  Import OrthAM.
-
+  Module AM := MinvAM E.
+  Module GE := MinvGE E.
+  Module Import OrthAM := MatrixOrth E.
   Open Scope vec_scope.
 
   (* ======================================================================= *)

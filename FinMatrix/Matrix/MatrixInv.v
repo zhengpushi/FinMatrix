@@ -44,17 +44,16 @@ Generalizable Variable A Aadd Azero Aopp Amul Aone Ainv.
 (* ======================================================================= *)
 (** usage for AM over Qc type *)
 Module usage_AM_Qc.
-  Module AM := MinvMoreAM FieldElementTypeQc.
+  Module AM := MinvAM FieldElementTypeQc.
   Import AM.
-  Import AMNotations.
 
   (* Example 1: evaluate inverse matrix *)
   Section ex1.
   (* [1 3 1]   [-1 -1  2]   [1 0 0]
      [2 1 1] * [ 0 -1  1] = [0 1 0]
      [2 2 1]   [ 2  4 -5]   [0 0 1] *)
-    Let M : smat 3 := l2m 0 (Q2Qc_dlist [[1;3;1];[2;1;1];[2;2;1]]%Q).
-    Let N : smat 3 := l2m 0 (Q2Qc_dlist [[-1;-1;2];[0;-1;1];[2;4;-5]]%Q).
+    Let M : smat _ 3 := l2m 0 (Q2Qc_dlist [[1;3;1];[2;1;1];[2;2;1]]%Q).
+    Let N : smat _ 3 := l2m 0 (Q2Qc_dlist [[-1;-1;2];[0;-1;1];[2;4;-5]]%Q).
 
     (* Compute m2l (M\-1). *)
     (* Compute m2l (N\-1). *)
@@ -65,7 +64,7 @@ Module usage_AM_Qc.
     (* Given an equation [C * x = b] as following:
        1 * x + 2 * y = 5
        3 * x + 4 * y = 6 *)
-    Let C : smat 2 := l2m 0 (Q2Qc_dlist [[1;2];[3;4]]%Q).
+    Let C : smat _ 2 := l2m 0 (Q2Qc_dlist [[1;2];[3;4]]%Q).
     Let b : vec 2 := l2v 0 (Q2Qc_list [5;6]%Q).
     
     (* solve equation by cramer-rule *)
@@ -79,17 +78,16 @@ End usage_AM_Qc.
 (* ======================================================================= *)
 (** usage for GE over Qc type *)
 Module usage_GE_Qc.
-  Module GE := MinvMoreGE FieldElementTypeQc.
+  Module Import GE := MinvGE FieldElementTypeQc.
   Import GE.
-  Import GENotations.
 
   (* Example 1: evaluate inverse matrix *)
   Section ex1.
   (* [1 3 1]   [-1 -1  2]   [1 0 0]
      [2 1 1] * [ 0 -1  1] = [0 1 0]
      [2 2 1]   [ 2  4 -5]   [0 0 1] *)
-    Let M : smat 3 := l2m 0 (Q2Qc_dlist [[1;3;1];[2;1;1];[2;2;1]]%Q).
-    Let N : smat 3 := l2m 0 (Q2Qc_dlist [[-1;-1;2];[0;-1;1];[2;4;-5]]%Q).
+    Let M : smat _ 3 := l2m 0 (Q2Qc_dlist [[1;3;1];[2;1;1];[2;2;1]]%Q).
+    Let N : smat _ 3 := l2m 0 (Q2Qc_dlist [[-1;-1;2];[0;-1;1];[2;4;-5]]%Q).
 
     (* Compute m2l (M\-1). *)
     (* Compute m2l (N\-1). *)
@@ -100,7 +98,7 @@ Module usage_GE_Qc.
     (* Given an equation [C * x = b] as following:
        1 * x + 2 * y = 5
        3 * x + 4 * y = 6 *)
-    Let C : smat 2 := l2m 0 (Q2Qc_dlist [[1;2];[3;4]]%Q).
+    Let C : smat _ 2 := l2m 0 (Q2Qc_dlist [[1;2];[3;4]]%Q).
     Let b : vec 2 := l2v 0 (Q2Qc_list [5;6]%Q).
     
     (* solve equation by inverse matrix *)
@@ -111,8 +109,8 @@ End usage_GE_Qc.
 (* ======================================================================= *)
 (** usage for AM over Q type *)
 Module usage_AM_Q.
-  Module AM := MinvMoreAM FieldElementTypeQc.
-  Import AM AMNotations.
+  Module AM := MinvAM FieldElementTypeQc.
+  Import AM.
 
   (* Support matrix inversion over Q type *)
   Section inv_Q.
@@ -127,14 +125,14 @@ Module usage_AM_Q.
 
     (** use cramerRule to solve equation [C * x = b] with Q list type *)
     Definition cramerRule (n : nat) (C : dlist Q) (b : list Q) : list Q :=
-      let C' : smat n := l2m 0 (Q2Qc_dlist C) in
+      let C' : smat _ n := l2m 0 (Q2Qc_dlist C) in
       let b' : vec n := l2v 0 (Q2Qc_list b) in
       let x' : vec n := cramerRule C' b' in
       Qc2Q_list (v2l x').
 
     (** use inverse matrix to solve equation [C * x = b] with Q list type *)
     Definition solveEq (n : nat) (C : dlist Q) (b : list Q) : list Q :=
-      let C' : smat n := l2m 0 (Q2Qc_dlist C) in
+      let C' : smat _ n := l2m 0 (Q2Qc_dlist C) in
       let b' : vec n := l2v 0 (Q2Qc_list b) in
       let x' : vec n := solveEq C' b' in
       Qc2Q_list (v2l x').
@@ -234,8 +232,8 @@ End usage_AM_Q.
 (* ======================================================================= *)
 (** usage for GE over Q type *)
 Module usage_GE_Q.
-  Module GE := MinvMoreGE FieldElementTypeQc.
-  Import GE GENotations.
+  Module GE := MinvGE FieldElementTypeQc.
+  Import GE.
 
   (* Support matrix inversion over Q type *)
   Section inv_Q.
@@ -250,7 +248,7 @@ Module usage_GE_Q.
 
     (** use inverse matrix to solve equation [C * x = b] with Q list type *)
     Definition solveEq (n : nat) (C : dlist Q) (b : list Q) : list Q :=
-      let C' : smat n := l2m 0 (Q2Qc_dlist C) in
+      let C' : smat _ n := l2m 0 (Q2Qc_dlist C) in
       let b' : vec n := l2v 0 (Q2Qc_list b) in
       let x' : vec n := solveEq C' b' in
       Qc2Q_list (v2l x').

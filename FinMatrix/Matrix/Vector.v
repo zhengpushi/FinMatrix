@@ -399,8 +399,8 @@ Section veq_exist.
   
 End veq_exist.
 
-(** destruct a vector *)
-Ltac vec_destruct a :=
+(** destruct a vector to its elements *)
+Ltac v2e a :=
   let a1 := fresh "a1" in
   let a2 := fresh "a2" in
   let a3 := fresh "a3" in
@@ -408,24 +408,24 @@ Ltac vec_destruct a :=
   match type of a with
   | vec 2 =>
       (* idtac "#vec 2"; *)
-      destruct (veq_exist_2 a) as (a1,(a2,Ha)); rewrite Ha; clear a Ha
+      destruct (veq_exist_2 a) as (a1,(a2,Ha)); rewrite Ha; clear a Ha;
+      try (v2e a1; v2e a2)
   | vec 3 =>
       (* idtac "#vec 3"; *)
-      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); rewrite Ha; clear a Ha
+      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); rewrite Ha; clear a Ha;
+      try (v2e a1; v2e a2; v2e a3)
   | vec 4 =>
       (* idtac "#vec 4"; *)
-      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha; clear a Ha
+      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha; clear a Ha;
+      try (v2e a1; v2e a2; v2e a3; v2e a4)
   end.
 
 Section test.
+  Goal forall A (v : @vec A 3), v = v.
+  Proof. intros. v2e v. auto. Qed.
+  
   Goal forall A (v : @vec (@vec A 2) 3), v = v.
-    intros.
-    vec_destruct v.
-    vec_destruct a1.
-    vec_destruct a2.
-    vec_destruct a3.
-    auto.
-  Qed.
+  Proof. intros. v2e v. auto. Qed.
 End test.
 
 

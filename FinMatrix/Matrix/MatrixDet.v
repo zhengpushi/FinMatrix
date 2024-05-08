@@ -964,6 +964,7 @@ Section mdetEx.
         unfold mdetExRow. apply vsum_eq; intros. auto.
   Qed.
   
+  (** mdetEx is equal to mdet *)
   Theorem mdetEx_eq_mdet : forall {n} (M : smat n), mdetEx M = mdet M.
   Proof.
     intros. destruct n.

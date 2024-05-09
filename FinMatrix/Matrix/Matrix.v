@@ -26,7 +26,7 @@
  *)
 
 
-Require Export TupleExt Hierarchy.
+Require Export Hierarchy.
 Require Export ListExt.
 Require Export Vector.
 Require Reals.

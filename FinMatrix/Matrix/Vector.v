@@ -27,7 +27,7 @@
  *)
 
 
-Require Export TupleExt ListExt Hierarchy.
+Require Export ListExt Hierarchy.
 Require Export RExt.
 (* Require Export RExt RealFunction. *)
 Require Export Fin Sequence.

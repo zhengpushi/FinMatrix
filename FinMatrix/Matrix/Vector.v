@@ -1704,36 +1704,25 @@ Section vsum.
 
   (** ∑a = a.0 + a.1 + ... + a.(n-1) *)
   Definition vsum {n} (a : @vec A n) := seqsum n (v2f 0 a).
+  Notation "\sum a" := (vsum a) : vec_scope.
 
   (** (∀ i, a.i = b.i) -> Σa = Σb *)
-  Lemma vsum_eq : forall {n} (a b : @vec A n), (forall i, a.[i] = b.[i]) -> vsum a = vsum b.
+  Lemma vsum_eq : forall {n} (a b : @vec A n), (forall i, a.[i] = b.[i]) -> \sum a = \sum b.
   Proof.
     intros. unfold vsum. apply seqsum_eq; intros.
     rewrite !nth_v2f with (H:=H0). apply H.
   Qed.
 
   (** (∀ i, a.i = 0) -> Σa = 0 *)
-  Lemma vsum_eq0 : forall {n} (a : @vec A n), (forall i, a.[i] = 0) -> vsum a = 0.
+  Lemma vsum_eq0 : forall {n} (a : @vec A n), (forall i, a.[i] = 0) -> \sum a = 0.
   Proof.
     intros. unfold vsum. apply seqsum_eq0; intros.
     rewrite !nth_v2f with (H:=H0). apply H.
   Qed.
-
-  (** Convert `vsum` to `seqsum` *)
-  Lemma vsum_eq_seqsum : forall {n} (a : @vec A n),
-      vsum a = seqsum n (fun i => v2f 0 a i).
-  Proof.
-    intros. unfold vsum. apply seqsum_eq; intros. auto.
-  Qed.
-  
-  (* (** Convert `vsum` to `seqsum` (succ form) *) *)
-  (* Lemma vsum_eq_seqsum_succ : forall {n} (a : @vec A (S n)), *)
-  (*     vsum a = seqsum n (fun i => a.[nat2finS i]) + a.[nat2finS n]. *)
-  (* Proof. intros. apply fseqsum_eq_seqsum_succ. Qed. *)
   
   (** `vsum` of (S n) elements, equal to addition of Sum and tail *)
   Lemma vsumS_tail : forall {n} (a : @vec A (S n)),
-      vsum a = vsum (fun i => a.[fin2SuccRange i]) + a.[nat2finS n].
+      \sum a = \sum (fun i => a.[fin2SuccRange i]) + a.[nat2finS n].
   Proof.
     intros. unfold vsum. rewrite seqsumS_tail. f_equal.
     - apply seqsum_eq; intros. erewrite !nth_v2f. f_equal.
@@ -1744,7 +1733,7 @@ Section vsum.
 
   (** `vsum` of (S n) elements, equal to addition of head and Sum *)
   Lemma vsumS_head : forall {n} (a : @vec A (S n)),
-      vsum a = a.[nat2finS 0] + vsum (fun i => a.[fin2SuccRangeSucc i]).
+      \sum a = a.[nat2finS 0] + \sum (fun i => a.[fin2SuccRangeSucc i]).
   Proof.
     intros. unfold vsum. rewrite seqsumS_head; auto. f_equal.
     apply seqsum_eq; intros. erewrite !nth_v2f. f_equal.
@@ -1754,7 +1743,7 @@ Section vsum.
 
   (** Σa + Σb = Σ(fun i => a.[i] + b.[i]) *)
   Lemma vsum_add : forall {n} (a b : @vec A n),
-      vsum a + vsum b = vsum (fun i => a.[i] + b.[i]).
+      \sum a + \sum b = \sum (fun i => a.[i] + b.[i]).
   Proof.
     intros. unfold vsum. rewrite seqsum_add. apply seqsum_eq; intros.
     rewrite !nth_v2f with (H:=H). auto.
@@ -1762,7 +1751,7 @@ Section vsum.
   
   (** `vsum` which only one item is nonzero, then got this item. *)
   Lemma vsum_unique : forall {n} (a : @vec A n) (x : A) i,
-      a.[i] = x -> (forall j, i <> j -> a.[j] = Azero) -> vsum a = x.
+      a.[i] = x -> (forall j, i <> j -> a.[j] = Azero) -> \sum a = x.
   Proof.
     intros. unfold vsum. apply seqsum_unique with (i:=i); auto; fin.
     - rewrite <- H. rewrite nth_v2f with (H:=fin2nat_lt _); fin.
@@ -1774,8 +1763,8 @@ Section vsum.
   (** `vsum` of the m+n elements equal to plus of two parts.
       Σ[0,(m+n)] a = Σ[0,m](fun i=>a[i]) + Σ[m,m+n] (fun i=>a[m+i]) *)
   Lemma vsum_plusIdx : forall m n (a : @vec A (m + n)),
-      vsum a = vsum (fun i => a.[fin2AddRangeR i]) +
-                 vsum (fun i => a.[fin2AddRangeAddL i]).
+      \sum a = \sum (fun i => a.[fin2AddRangeR i]) +
+                 \sum (fun i => a.[fin2AddRangeAddL i]).
   Proof.
     intros. unfold vsum. rewrite seqsum_plusIdx. f_equal.
     - apply seqsum_eq; intros. erewrite !nth_v2f. f_equal. apply fin_eq_iff; auto.
@@ -1790,7 +1779,7 @@ Section vsum.
   Lemma vsum_plusIdx_ext : forall m n (a : @vec A (m + n)) (b : @vec A m) (c : @vec A n),
       (forall i : 'I_m, a.[fin2AddRangeR i] = b.[i]) ->
       (forall i : 'I_n, a.[fin2AddRangeAddL i] = c.[i]) ->
-      vsum a = vsum b + vsum c.
+      \sum a = \sum b + \sum c.
   Proof.
     intros. unfold vsum. rewrite seqsum_plusIdx. f_equal.
     - apply seqsum_eq; intros. erewrite !nth_v2f. rewrite <- H. f_equal.
@@ -1808,8 +1797,8 @@ Section vsum.
       ar0 + ar1 + ... + arc = 
       ∑[j,0,c](∑[i,0,r] a.ij) *)
   Lemma vsum_vsum : forall r c (a : @vec (@vec A c) r),
-      vsum (fun i => vsum (fun j => a.[i].[j])) =
-        vsum (fun j => vsum (fun i => a.[i].[j])).
+      \sum (fun i => \sum (fun j => a.[i].[j])) =
+        \sum (fun j => \sum (fun i => a.[i].[j])).
   Proof.
     intros. unfold vsum. destruct r,c; auto.
     - rewrite seqsumS_tail. simpl. rewrite seqsum_eq0; auto.
@@ -1832,7 +1821,7 @@ Section vsum.
 
   (* ∑ (a ++ b) = ∑a + ∑b *)
   Lemma vsum_vapp : forall {m n} (a : @vec A m) (b : @vec A n),
-      vsum (a ++ b) = vsum a + vsum b.
+      \sum (a ++ b) = \sum a + \sum b.
   Proof.
     intros. apply vsum_plusIdx_ext; intros.
     - erewrite vnth_vapp_l. f_equal. rewrite fin2AddRangeR'_fin2AddRangeR. auto.
@@ -1844,7 +1833,7 @@ Section vsum.
 
   (** ∑ (vconsT a x) = ∑ a + x *)
   Lemma vsum_vconsT : forall {n} (a : @vec A n) (x : A),
-      vsum (vconsT a x) = vsum a + x.
+      \sum (vconsT a x) = \sum a + x.
   Proof.
     intros. rewrite vsumS_tail. f_equal.
     - apply vsum_eq; intros. erewrite vnth_vconsT_lt. fin.
@@ -1859,7 +1848,7 @@ Section vsum.
     
     (** - Σa = Σ(fun i => -a.[i]) *)
     Lemma vsum_opp : forall {n} (a : @vec A n),
-        - vsum a = vsum (fun i => - a.[i]).
+        - \sum a = \sum (fun i => - a.[i]).
     Proof.
       intros. unfold vsum. rewrite seqsum_opp; auto. apply seqsum_eq; intros.
       unfold v2f. fin.
@@ -1873,7 +1862,7 @@ Section vsum.
 
     (** x * Σa = Σ(fun i -> x * a.[i]) *)
     Lemma vsum_cmul_l : forall {n} (a : @vec A n) x,
-        x * vsum a = vsum (fun i => x * a.[i]).
+        x * \sum a = \sum (fun i => x * a.[i]).
     Proof.
       intros. unfold vsum. rewrite seqsum_cmul_l. apply seqsum_eq; intros.
       unfold v2f. fin.
@@ -1881,7 +1870,7 @@ Section vsum.
     
     (** Σa * x = Σ(fun i -> a.[i] * x) *)
     Lemma vsum_cmul_r : forall {n} (a : @vec A n) x,
-        vsum a * x = vsum (fun i => a.[i] * x).
+        \sum a * x = \sum (fun i => a.[i] * x).
     Proof.
       intros. unfold vsum. rewrite seqsum_cmul_r. apply seqsum_eq; intros.
       unfold v2f. fin.
@@ -1899,7 +1888,7 @@ Section vsum.
 
     (** (∀ i, 0 <= a.i) -> a.i <= ∑a *)
     Lemma vsum_ge_any : forall {n} (a : @vec A n) i,
-        (forall i, Azero <= a.[i]) -> a.[i] <= vsum a.
+        (forall i, Azero <= a.[i]) -> a.[i] <= \sum a.
     Proof.
       intros. unfold vsum.
       replace (a i) with (v2f 0 a (i)).
@@ -1909,7 +1898,7 @@ Section vsum.
     Qed.
 
     (** (∀ i, 0 <= a.i) -> 0 <= ∑a *)
-    Lemma vsum_ge0 : forall {n} (a : @vec A n), (forall i, Azero <= a.[i]) -> Azero <= vsum a.
+    Lemma vsum_ge0 : forall {n} (a : @vec A n), (forall i, Azero <= a.[i]) -> Azero <= \sum a.
     Proof.
       intros. pose proof (vsum_ge_any a). destruct n.
       - cbv. apply le_refl.
@@ -1918,7 +1907,7 @@ Section vsum.
     
     (** (∀ i, 0 <= a.i) -> (∃ i, a.i <> 0) -> 0 < ∑a *)
     Lemma vsum_gt0 : forall {n} (a : @vec A n),
-        (forall i, Azero <= a.[i]) -> (exists i, a.[i] <> Azero) -> Azero < vsum a.
+        (forall i, Azero <= a.[i]) -> (exists i, a.[i] <> Azero) -> Azero < \sum a.
     Proof.
       intros. destruct H0 as [i H0].
       pose proof (vsum_ge0 a H). pose proof (vsum_ge_any a i H).
@@ -1928,7 +1917,7 @@ Section vsum.
     
     (** (∀i, a.i >= 0) -> ∑a = 0 -> (∀i, a.i = 0) *)
     Lemma vsum_eq0_rev : forall {n} (a : @vec A n),
-        (forall i, 0 <= a.[i]) -> vsum a = 0 -> (forall i, a.[i] = 0).
+        (forall i, 0 <= a.[i]) -> \sum a = 0 -> (forall i, a.[i] = 0).
     Proof.
       intros. destruct (Aeqdec (a.[i]) 0); auto. exfalso.
       pose proof (vsum_ge_any a i H). rewrite H0 in H1.
@@ -2033,6 +2022,100 @@ Section vsum_ext.
   End form2.
   
 End vsum_ext.
+
+
+(* ======================================================================= *)
+(** ** Product of a vector *)
+Section vprod.
+  Context `{HARing : ARing}.
+  Infix "*" := Amul : A_scope.
+  Notation "0" := Azero : A_scope.
+  Notation "1" := Aone : A_scope.
+  Notation seqprod := (@seqprod _ Amul 1).
+
+  (** Πa = a.0 * a.1 * ... * a.(n-1) *)
+  Definition vprod {n} (a : @vec A n) := seqprod n (v2f 0 a).
+  Notation "\prod a" := (vprod a) : vec_scope.
+
+  (** (∀ i, a.i = b.i) -> Πa = Πb *)
+  Lemma vprod_eq : forall {n} (a b : @vec A n), (forall i, a.[i] = b.[i]) -> vprod a = vprod b.
+  Proof.
+    intros. unfold vprod. apply seqprod_eq; intros.
+    rewrite !nth_v2f with (H:=H0). apply H.
+  Qed.
+
+  (** (∀ i, a.i = 1) -> Πa = 1 *)
+  Lemma vprod_eq1: forall {n} (a : @vec A n), (forall i, a.[i] = 1) -> vprod a = 1.
+  Proof.
+    intros. unfold vprod. apply seqprod_eq1; intros.
+    rewrite !nth_v2f with (H:=H0). apply H.
+  Qed.
+  
+  (** `vprod` of (S n) elements, equal to multiplication of Prod and tail *)
+  Lemma vprodS_tail : forall {n} (a : @vec A (S n)),
+      vprod a = vprod (fun i => a.[fin2SuccRange i]) * a.[nat2finS n].
+  Proof.
+    intros. unfold vprod. rewrite seqprodS_tail. f_equal.
+    - apply seqprod_eq; intros. erewrite !nth_v2f. f_equal.
+      erewrite fin2SuccRange_nat2fin. auto.
+    - erewrite nth_v2f. erewrite nat2finS_eq. auto.
+      Unshelve. all: try lia.
+  Qed.
+
+  (** `vprod` of (S n) elements, equal to multiplication of head and Prod *)
+  Lemma vprodS_head : forall {n} (a : @vec A (S n)),
+      vprod a = a.[nat2finS 0] * vprod (fun i => a.[fin2SuccRangeSucc i]).
+  Proof.
+    intros. unfold vprod. rewrite seqprodS_head; auto. f_equal.
+    apply seqprod_eq; intros. erewrite !nth_v2f. f_equal.
+    erewrite fin2SuccRangeSucc_nat2fin. auto.
+    Unshelve. lia. auto.
+  Qed.
+
+  (** `vprod` which only one item is non-one, then got this item. *)
+  Lemma vprod_unique : forall {n} (a : @vec A n) (x : A) i,
+      a.[i] = x -> (forall j, i <> j -> a.[j] = 1) -> vprod a = x.
+  Proof.
+    intros. unfold vprod. apply seqprod_unique with (i:=i); auto; fin.
+    - rewrite <- H. rewrite nth_v2f with (H:=fin2nat_lt _); fin.
+    - intros. unfold v2f. fin.
+      specialize (H0 (nat2fin j E)). rewrite <- H0; auto.
+      intro; destruct H2; subst. fin.
+  Qed.
+
+  (** `vprod` of the m+n elements equal to multiplication of two parts.
+      Π[0,(m+n)] a = Π[0,m](fun i=>a[i]) * Π[m,m+n] (fun i=>a[m+i]) *)
+  Lemma vprod_plusIdx : forall m n (a : @vec A (m + n)),
+      vprod a = vprod (fun i => a.[fin2AddRangeR i]) *
+                 vprod (fun i => a.[fin2AddRangeAddL i]).
+  Proof.
+    intros. unfold vprod. rewrite seqprod_plusIdx. f_equal.
+    - apply seqprod_eq; intros. erewrite !nth_v2f. f_equal. apply fin_eq_iff; auto.
+    - apply seqprod_eq; intros. erewrite !nth_v2f. f_equal. apply fin_eq_iff; auto.
+      Unshelve. all: try lia.
+  Qed.
+
+  (** `vprod` of the m+n elements equal to multiplication of two parts.
+      (i < m -> a.i = b.i) ->
+      (i < n -> a.(m+i) = c.i) ->
+      Π[0,(m+n)] a = Π[0,m] b * Π[m,m+n] c. *)
+  Lemma vprod_plusIdx_ext : forall m n (a : @vec A (m + n)) (b : @vec A m) (c : @vec A n),
+      (forall i : 'I_m, a.[fin2AddRangeR i] = b.[i]) ->
+      (forall i : 'I_n, a.[fin2AddRangeAddL i] = c.[i]) ->
+      vprod a = vprod b * vprod c.
+  Proof.
+    intros. unfold vprod. rewrite seqprod_plusIdx. f_equal.
+    - apply seqprod_eq; intros. erewrite !nth_v2f. rewrite <- H. f_equal.
+      apply fin_eq_iff; auto.
+    - apply seqprod_eq; intros. erewrite !nth_v2f. rewrite <- H0. f_equal.
+      apply fin_eq_iff; auto.
+      Unshelve. all: try lia.
+  Qed.
+
+End vprod.
+
+Arguments vprod {A} Azero Amul Aone {n}.
+
 
 (* ======================================================================= *)
 (** ** Vector addition *)

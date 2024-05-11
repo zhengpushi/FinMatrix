@@ -1220,17 +1220,6 @@ Module MonoidMatrixTheory (E : MonoidElementType).
   (** (∀ i, a.i = 0) -> Σa = 0 *)
   Lemma vsum_eq0 : forall {n} (a : vec n), (forall i, a.[i] = 0) -> vsum a = 0.
   Proof. intros. apply vsum_eq0; auto. Qed.
-
-  (** Convert `vsum` to `seqsum` *)
-  Lemma vsum_eq_seqsum : forall {n} (a : vec n),
-      vsum a = @seqsum _ Aadd 0 n (fun i => v2f a i).
-  Proof. intros. apply vsum_eq_seqsum. Qed.
-
-  (* (** Convert `vsum` to `seqsum` (succ form) *) *)
-  (* Lemma vsum_eq_seqsum_succ : forall {n} (a : vec (S n)), *)
-  (*     vsum a = ((@seqsum _ Aadd 0 (fun i => a $ (nat2finS i)) n) *)
-  (*               + a $ (nat2finS n))%A. *)
-  (* Proof. intros. apply vsum_eq_seqsum_succ. Qed. *)
   
   (** `vsum` of (S n) elements, equal to addition of Sum and tail *)
   Lemma vsumS_tail : forall {n} (a : vec (S n)),

@@ -93,7 +93,8 @@ Reserved Notation "M \-1"   (at level 20, format "M \-1").         (* minv *)
 Reserved Notation "M @ N"   (at level 30, no associativity).      (* cons by col *)
 Reserved Notation "'tr' M"  (at level 33, no associativity).
 
-Reserved Notation "'\sum' f" (at level 10).       (* sum of a fin-function *)
+Reserved Notation "'\sum' f" (at level 10).       (* sum of a vector *)
+Reserved Notation "'\prod' f" (at level 10).       (* product of a vector *)
 
 Reserved Infix "/_"         (at level 60).       (* angle of two vectors *)
 Reserved Infix "/2_"        (at level 60).       (* angle of two vectors in 2D *)

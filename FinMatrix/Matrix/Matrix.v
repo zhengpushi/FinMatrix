@@ -724,7 +724,7 @@ Section mremoverH_mremoverT.
   
   (** (mremoverH M).i.j = M.(S i).j *)
   Lemma mnth_mremoverH : forall {r c} (M : @mat A (S r) c) i j,
-      (mremoverH M).[i].[j] = M.[fin2SuccRangeSucc i].[j].
+      (mremoverH M).[i].[j] = M.[fSuccRangeS i].[j].
   Proof. auto. Qed.
 
   
@@ -735,7 +735,7 @@ Section mremoverH_mremoverT.
   
   (** (mremoverT M).i.j = M.i.j *)
   Lemma mnth_mremoverT : forall {r c} (M : @mat A (S r) c) i j,
-      (mremoverT M).[i].[j] = M.[fin2SuccRange i].[j].
+      (mremoverT M).[i].[j] = M.[fSuccRange i].[j].
   Proof. auto. Qed.
 
 End mremoverH_mremoverT.
@@ -755,7 +755,7 @@ Section mremovecH_mremovecT.
   
   (** (mremovecH M).i.j = M.i.(S j) *)
   Lemma mnth_mremovecH : forall {r c} (M : @mat A r (S c)) i j,
-      (mremovecH M).[i].[j] = M.[i].[fin2SuccRangeSucc j].
+      (mremovecH M).[i].[j] = M.[i].[fSuccRangeS j].
   Proof. auto. Qed.
 
   
@@ -767,7 +767,7 @@ Section mremovecH_mremovecT.
   
   (** (mremovecT M).i.j = M.i.j *)
   Lemma mnth_mremovecT : forall {r c} (M : @mat A r (S c)) i j,
-      (mremovecT M).[i].[j] = M.[i].[fin2SuccRange j].
+      (mremovecT M).[i].[j] = M.[i].[fSuccRange j].
   Proof. auto. Qed.
 
 End mremovecH_mremovecT.
@@ -787,7 +787,7 @@ Section mcons.
   
   Lemma mnth_mconsrH_gt0 :
     forall {r c} (a : @vec A c) (M : mat A r c) (i : 'I_(S r)) (j : 'I_c) (H : 0 < i),
-      (mconsrH a M).[i].[j] = M.[fin2PredRangePred i H].[j].
+      (mconsrH a M).[i].[j] = M.[fPredRangeP i H].[j].
   Proof.
     intros. unfold mconsrH. erewrite vnth_vconsH_gt0. f_equal.
   Qed.
@@ -798,7 +798,7 @@ Section mcons.
 
   Lemma vnth_mconsrH_gt0 :
     forall {r c} (a : vec c) (M : mat A r c) (i : 'I_(S r)) (H : 0 < i),
-      (mconsrH a M).[i] = M.[fin2PredRangePred i H].
+      (mconsrH a M).[i] = M.[fPredRangeP i H].
   Proof.
     intros. unfold mconsrH. erewrite vnth_vconsH_gt0. auto.
   Qed.
@@ -848,7 +848,7 @@ Section mcons.
 
   Lemma mnth_mconsrT_lt :
     forall {r c} (M : mat A r c) (a : @vec A c) i j (E : fin2nat i < r),
-      (mconsrT M a).[i].[j] = M.[fin2PredRange i E].[j].
+      (mconsrT M a).[i].[j] = M.[fPredRange i E].[j].
   Proof.
     intros. unfold mconsrT. erewrite vnth_vconsT_lt. f_equal.
   Qed.
@@ -866,7 +866,7 @@ Section mcons.
 
   Lemma vnth_mconsrT_lt :
     forall {r c} (M : mat A r c) (a : @vec A c) (i : 'I_(S r)) (H : fin2nat i < r),
-      (mconsrT M a).[i] = M.[fin2PredRange i H].
+      (mconsrT M a).[i] = M.[fPredRange i H].
   Proof. intros. unfold mconsrT. rewrite vnth_vconsT_lt with (H:=H). auto. Qed.
 
   (** mconsrT (mremoverT M) (mtailr M) = M *)
@@ -899,7 +899,7 @@ Section mcons.
 
   Lemma mnth_mconscH_gt0 :
     forall {r c} (M : mat A r c) (a : @vec A r) i j (E : 0 < fin2nat j),
-      (mconscH a M).[i].[j] = M.[i].[fin2PredRangePred j E].
+      (mconscH a M).[i].[j] = M.[i].[fPredRangeP j E].
   Proof.
     intros. unfold mconscH. rewrite vnth_vmap2. erewrite vnth_vconsH_gt0. f_equal.
   Qed.
@@ -913,7 +913,7 @@ Section mcons.
       rewrite mnth_mconscH_0; auto.
     - assert (0 < fin2nat j) by lia.
       rewrite mnth_mconscH_gt0 with (E:=H); auto.
-      rewrite mnth_mremovecH. f_equal. apply fin2SuccRangeSucc_fin2PredRangePred.
+      rewrite mnth_mremovecH. f_equal. apply fSuccRangeS_fPredRangeP.
   Qed.
 
   (** mconscH (vconsT a x) (vconsT M b) = vconsT (mconscH a M) (vconsH x b) *)
@@ -958,7 +958,7 @@ Section mcons.
 
   Lemma mnth_mconscT_lt :
     forall {r c} (M : mat A r c) (a : @vec A r) i j (H : fin2nat j < c),
-      (mconscT M a).[i].[j] = M.[i].[fin2PredRange j H].
+      (mconscT M a).[i].[j] = M.[i].[fPredRange j H].
   Proof.
     intros. unfold mconscT. rewrite vnth_vmap2. erewrite vnth_vconsT_lt. f_equal.
   Qed.
@@ -976,7 +976,7 @@ Section mcons.
 
   Lemma mcol_mconscT_lt :
     forall {r c} (M : mat A r c) (a : @vec A r) (j : 'I_(S c)) (H : fin2nat j < c),
-      (mconscT M a)&[j] = M&[fin2PredRange j H].
+      (mconscT M a)&[j] = M&[fPredRange j H].
   Proof.
     intros. apply veq_iff_vnth; intros. rewrite !vnth_mcol.
     erewrite mnth_mconscT_lt; auto.

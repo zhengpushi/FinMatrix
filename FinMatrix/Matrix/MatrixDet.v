@@ -668,16 +668,11 @@ Section mdetEx.
   (* ======================================================================= *)
   (** ** sub-matrix  子矩阵 *)
 
-  (** sub-matrix of M by remove i-th row and j-th column *)
-  Definition msubmat {n} (M : smat (S n)) (i j : 'I_(S n)) : smat n :=
-    fun i0 j0 =>
-      let i1 := if i0 ??< i
-                then fin2SuccRange i0
-                else fin2SuccRangeSucc i0 in
-      let j1 := if j0 ??< j
-                then fin2SuccRange j0
-                else fin2SuccRangeSucc j0 in
-      M.[i1].[j1].
+  (** sub-matrix of M by remove x-th row and y-th column *)
+  Definition msubmat {n} (M : smat (S n)) (x y : 'I_(S n)) : smat n :=
+    fun i j =>
+      M.[if i ??< x then fSuccRange i else fSuccRangeS i]
+      .[if j ??< y then fSuccRange j else fSuccRangeS j].
 
   (** msubmat (msetr M a j) i j = msubmat M i j *)
   Lemma msubmat_msetr : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
@@ -707,12 +702,12 @@ Section mdetEx.
     assert ((if i1 ??< i2 then i1 else S i1) < S n) as Hj.
     { destruct (i1 ??< i2). lia. lia. }
     rewrite nth_m2f with (Hi:=Hi)(Hj:=Hj). f_equal.
-    - unfold fin2SuccRange, fin2SuccRangeSucc.
+    - unfold fSuccRange, fSuccRangeS.
       assert (Fin i0 E < S n) as Ei. { simpl. lia. }
       rewrite nat2finS_eq with (E:=Ei).
       simpl.
       destruct (i0 ??< i). fin. fin.
-    - unfold fin2SuccRange, fin2SuccRangeSucc.
+    - unfold fSuccRange, fSuccRangeS.
       assert (Fin i1 E0 < S n). simpl. auto.
       rewrite nat2finS_eq with (E:=H).
       destruct (i1 ??< i2). apply fin_eq_iff; auto.

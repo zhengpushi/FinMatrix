@@ -458,48 +458,48 @@ Proof. intros. unfold fin2SameRangeRemain. fin. Qed.
 (** ** [Fin n i] -> [Fin (S n) i] *)
 
 (** {i<n} -> {i<S n} *)
-Definition fin2SuccRange {n} (i : 'I_n) : 'I_(S n).
+Definition fSuccRange {n} (i : 'I_n) : 'I_(S n).
   refine (nat2finS (fin2nat i)).
 Defined.
 
-Lemma fin2nat_fin2SuccRange : forall n (i : 'I_n),
-    fin2nat (@fin2SuccRange n i) = fin2nat i.
+Lemma fin2nat_fSuccRange : forall n (i : 'I_n),
+    fin2nat (@fSuccRange n i) = fin2nat i.
 Proof.
-  intros. unfold fin2SuccRange. apply fin2nat_nat2finS.
+  intros. unfold fSuccRange. apply fin2nat_nat2finS.
   pose proof (fin2nat_lt i). lia.
 Qed.
-Hint Rewrite fin2nat_fin2SuccRange : fin.
+Hint Rewrite fin2nat_fSuccRange : fin.
 
-Lemma fin2SuccRange_nat2fin : forall n (i : nat) (E : i < n) (E0 : i < S n),
-  fin2SuccRange (nat2fin i E) = nat2fin i E0.
-Proof. intros. unfold fin2SuccRange, nat2finS. simpl. fin. Qed.
-Hint Rewrite fin2SuccRange_nat2fin : fin.
+Lemma fSuccRange_nat2fin : forall n (i : nat) (E : i < n) (E0 : i < S n),
+  fSuccRange (nat2fin i E) = nat2fin i E0.
+Proof. intros. unfold fSuccRange, nat2finS. simpl. fin. Qed.
+Hint Rewrite fSuccRange_nat2fin : fin.
 
 (** ** [Fin (S n) i] -> [Fin n i] *)
 
 (** {i<S n} -> {i<n} *)
-Definition fin2PredRange {n} (i : 'I_(S n)) (H : fin2nat i < n) : 'I_n :=
+Definition fPredRange {n} (i : 'I_(S n)) (H : fin2nat i < n) : 'I_n :=
   nat2fin (fin2nat i) H.
 
-Lemma fin2nat_fin2PredRange : forall n (i : 'I_(S n)) (E : fin2nat i < n),
-    fin2nat (@fin2PredRange n i E) = fin2nat i.
-Proof. intros. unfold fin2PredRange. simpl. auto. Qed.
-Hint Rewrite fin2nat_fin2PredRange : fin.
+Lemma fin2nat_fPredRange : forall n (i : 'I_(S n)) (E : fin2nat i < n),
+    fin2nat (@fPredRange n i E) = fin2nat i.
+Proof. intros. unfold fPredRange. simpl. auto. Qed.
+Hint Rewrite fin2nat_fPredRange : fin.
 
-Lemma fin2SuccRange_fin2PredRange : forall n (i : 'I_(S n)) (E : fin2nat i < n),
-    fin2SuccRange (fin2PredRange i E) = i.
+Lemma fSuccRange_fPredRange : forall n (i : 'I_(S n)) (E : fin2nat i < n),
+    fSuccRange (fPredRange i E) = i.
 Proof.
-  intros. destruct i. unfold fin2SuccRange,fin2PredRange,nat2finS; simpl. fin.
+  intros. destruct i. unfold fSuccRange,fPredRange,nat2finS; simpl. fin.
 Qed.
-Hint Rewrite fin2SuccRange_fin2PredRange : fin.
+Hint Rewrite fSuccRange_fPredRange : fin.
 
-Lemma fin2PredRange_fin2SuccRange : forall n (i : 'I_n) (E: fin2nat (fin2SuccRange i) < n),
-    fin2PredRange (fin2SuccRange i) E = i.
+Lemma fPredRange_fSuccRange : forall n (i : 'I_n) (E: fin2nat (fSuccRange i) < n),
+    fPredRange (fSuccRange i) E = i.
 Proof.
   intros. destruct i as [i Hi].
-  unfold fin2SuccRange,fin2PredRange,nat2finS in *; simpl in *. fin.
+  unfold fSuccRange,fPredRange,nat2finS in *; simpl in *. fin.
 Qed.
-Hint Rewrite fin2PredRange_fin2SuccRange : fin.
+Hint Rewrite fPredRange_fSuccRange : fin.
 
 (** ** [Fin n i] -> [Fin (m + n) i] *)
 
@@ -653,53 +653,53 @@ Qed.
 (** ** [Fin (S n) (S i)] -> [Fin n i] *)
 
 (** {S i < S n} -> {i < n} *)
-Definition fin2PredRangePred {n} (i : 'I_(S n)) (E : 0 < fin2nat i) : 'I_n.
+Definition fPredRangeP {n} (i : 'I_(S n)) (E : 0 < fin2nat i) : 'I_n.
   refine (nat2fin (pred (fin2nat i)) _).
   destruct i; simpl in *. apply pred_lt; auto.
 Defined.
 
-Lemma fin2nat_fin2PredRangePred : forall n (i : 'I_(S n)) (E : 0 < fin2nat i),
-    fin2nat (fin2PredRangePred i E) = pred (fin2nat i).
-Proof. intros. unfold fin2PredRangePred. apply fin2nat_nat2fin. Qed.
-Hint Rewrite fin2nat_fin2PredRangePred : fin.
+Lemma fin2nat_fPredRangeP : forall n (i : 'I_(S n)) (E : 0 < fin2nat i),
+    fin2nat (fPredRangeP i E) = pred (fin2nat i).
+Proof. intros. unfold fPredRangeP. apply fin2nat_nat2fin. Qed.
+Hint Rewrite fin2nat_fPredRangeP : fin.
 
 (** ** [Fin n i] -> [Fin (S n) (S i)] *)
 
 (** {i < n} -> {S i < S n} *)
-Definition fin2SuccRangeSucc {n} (i : 'I_n) : 'I_(S n).
+Definition fSuccRangeS {n} (i : 'I_n) : 'I_(S n).
   refine (nat2fin (S (fin2nat i)) _).
   pose proof (fin2nat_lt i).
   rewrite <- Nat.succ_lt_mono; auto.
 Defined.
 
-Lemma fin2nat_fin2SuccRangeSucc : forall n (i : 'I_n),
-    fin2nat (fin2SuccRangeSucc i) = S (fin2nat i).
-Proof. intros. unfold fin2SuccRangeSucc. simpl. auto. Qed.
-Hint Rewrite fin2nat_fin2SuccRangeSucc : fin.
+Lemma fin2nat_fSuccRangeS : forall n (i : 'I_n),
+    fin2nat (fSuccRangeS i) = S (fin2nat i).
+Proof. intros. unfold fSuccRangeS. simpl. auto. Qed.
+Hint Rewrite fin2nat_fSuccRangeS : fin.
 
-Lemma fin2SuccRangeSucc_fin2PredRangePred : forall n (i : 'I_(S n)) (E : 0 < fin2nat i),
-    fin2SuccRangeSucc (fin2PredRangePred i E) = i.
+Lemma fSuccRangeS_fPredRangeP : forall n (i : 'I_(S n)) (E : 0 < fin2nat i),
+    fSuccRangeS (fPredRangeP i E) = i.
 Proof.
   intros. destruct i. cbv. cbv in E. destruct i; try lia. apply fin_eq_iff; auto.
 Qed.
-Hint Rewrite fin2SuccRangeSucc_fin2PredRangePred : fin.
+Hint Rewrite fSuccRangeS_fPredRangeP : fin.
 
-Lemma fin2PredRangePred_fin2SuccRangeSucc :
-  forall n (i : 'I_n) (E : 0 < fin2nat (fin2SuccRangeSucc i)),
-    fin2PredRangePred (fin2SuccRangeSucc i) E = i.
+Lemma fPredRangeP_fSuccRangeS :
+  forall n (i : 'I_n) (E : 0 < fin2nat (fSuccRangeS i)),
+    fPredRangeP (fSuccRangeS i) E = i.
 Proof.
   intros. destruct i as [i Hi]. cbv. apply fin_eq_iff; auto.
 Qed.
-Hint Rewrite fin2PredRangePred_fin2SuccRangeSucc : fin.
+Hint Rewrite fPredRangeP_fSuccRangeS : fin.
 
-Lemma fin2nat_fin2SuccRangeSucc_gt0 : forall {n} (i : 'I_n),
-    0 < fin2nat (fin2SuccRangeSucc i).
-Proof. intros. unfold fin2SuccRangeSucc. simpl. lia. Qed.
+Lemma fin2nat_fSuccRangeS_gt0 : forall {n} (i : 'I_n),
+    0 < fin2nat (fSuccRangeS i).
+Proof. intros. unfold fSuccRangeS. simpl. lia. Qed.
 
-Lemma fin2SuccRangeSucc_nat2fin : forall n (i:nat) (E : i < n) (E0 : S i < S n),
-  fin2SuccRangeSucc (nat2fin i E) = nat2fin (S i) E0.
+Lemma fSuccRangeS_nat2fin : forall n (i:nat) (E : i < n) (E0 : S i < S n),
+  fSuccRangeS (nat2fin i E) = nat2fin (S i) E0.
 Proof. fin. Qed.
-Hint Rewrite fin2SuccRangeSucc_nat2fin : fin.
+Hint Rewrite fSuccRangeS_nat2fin : fin.
 
 
 (* ######################################################################### *)

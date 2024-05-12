@@ -158,21 +158,21 @@ Module Export method3.
     Context {A : Type}.
 
     (** Insert an element `a` into a list `l` at all possible position *)
-    Fixpoint permOne (a : A) (l : list A) : list (list A) :=
+    Fixpoint perm1 (a : A) (l : list A) : list (list A) :=
       match l with
       | [] => [[a]]
-      | hl :: tl => (a :: l) :: (map (cons hl) (permOne a tl))
+      | hl :: tl => (a :: l) :: (map (cons hl) (perm1 a tl))
       end.
 
     (** Permutation of a list *)
     Fixpoint perm (l : list A) : list (list A) :=
       match l with
       | [] => [[]]
-      | hl :: tl => concat (map (permOne hl) (perm tl))
+      | hl :: tl => concat (map (perm1 hl) (perm tl))
       end.
   End def.
 
-  (* Compute permOne 1 [2;3]. *)
+  (* Compute perm1 1 [2;3]. *)
   (* = [[1; 2; 3]; [2; 1; 3]; [2; 3; 1]] : dlist nat *)
 
   (* Compute perm [1;2;3]. *)
@@ -183,12 +183,12 @@ Module Export method3.
     Context {A : Type}.
     Context {AeqDec : Dec (@eq A)}.
 
-    (** |permOne (a::l)| = S |l| *)
-    Lemma permOne_length : forall a (l : list A), length (permOne a l) = S (length l).
+    (** |perm1 (a::l)| = S |l| *)
+    Lemma perm1_length : forall a (l : list A), length (perm1 a l) = S (length l).
     Proof. induction l; simpl; auto. rewrite map_length. auto. Qed.
 
-    (** permOne a l <> [] *)
-    Lemma permOne_not_nil : forall a (l : list A), permOne a l <> [].
+    (** perm1 a l <> [] *)
+    Lemma perm1_not_nil : forall a (l : list A), perm1 a l <> [].
     Proof. induction l; simpl; try easy. Qed.
 
     (** perm l <> [] *)
@@ -196,8 +196,8 @@ Module Export method3.
     Proof.
       induction l; simpl; try easy.
       destruct (perm l) eqn:E; simpl; try easy.
-      destruct (permOne a l0) eqn:E1; try easy.
-      apply permOne_not_nil in E1; auto.
+      destruct (perm1 a l0) eqn:E1; try easy.
+      apply perm1_not_nil in E1; auto.
     Qed.
     
     (** hd (perm l) = l *)
@@ -209,9 +209,9 @@ Module Export method3.
       - simpl in *. subst. destruct l; simpl in *; auto.
     Qed.
 
-    (** x \in (permOne a l) -> length x = S (length l) *)
-    Lemma in_permOne_length : forall (l : list A) (a : A) (x : list A),
-        In x (permOne a l) -> length x = S (length l).
+    (** x \in (perm1 a l) -> length x = S (length l) *)
+    Lemma in_perm1_length : forall (l : list A) (a : A) (x : list A),
+        In x (perm1 a l) -> length x = S (length l).
     Proof.
       induction l; intros; simpl in *.
       - destruct H; try easy. subst; auto.
@@ -229,7 +229,7 @@ Module Export method3.
       - apply in_concat in H. destruct H as [dl [H1 H2]].
         apply in_map_iff in H1. destruct H1 as [l0 [H3 H4]].
         subst. apply IHl in H4. rewrite <- H4.
-        apply in_permOne_length in H2; auto.
+        apply in_perm1_length in H2; auto.
     Qed.
 
     (** |perm (a::l)| = |(a::l)| * |perm l| *)
@@ -242,7 +242,7 @@ Module Export method3.
       - rewrite map_length. auto.
       - intros. remember (a :: l) as d.
         apply in_map_iff in H. destruct H as [x [H H1]].
-        apply in_perm_length in H1. rewrite <- H. rewrite permOne_length. auto.
+        apply in_perm_length in H1. rewrite <- H. rewrite perm1_length. auto.
     Qed.
     
     (** |perm l| = |l|! *)
@@ -253,9 +253,9 @@ Module Export method3.
       simpl. rewrite IHl. auto.
     Qed.
 
-    (** In l0 (permOne a l) -> (forall x, In x l0 -> x = a \/ In x l) *)
-    Lemma in_permOne : forall (l : list A) (a : A) (l0 : list A),
-        In l0 (permOne a l) -> (forall x, In x l0 -> x = a \/ In x l).
+    (** In l0 (perm1 a l) -> (forall x, In x l0 -> x = a \/ In x l) *)
+    Lemma in_perm1 : forall (l : list A) (a : A) (l0 : list A),
+        In l0 (perm1 a l) -> (forall x, In x l0 -> x = a \/ In x l).
     Proof.
       induction l; intros; simpl in *.
       - destruct H; try easy. subst; simpl in *. destruct H0; auto.
@@ -276,7 +276,7 @@ Module Export method3.
         apply in_map_iff in H. destruct H as [l1 [H2 H3]].
         rewrite <- H2 in H1.
         apply IHl with (l0:=l1); auto.
-        apply in_permOne with (x:=x) in H1; auto. destruct H1; auto.
+        apply in_perm1 with (x:=x) in H1; auto. destruct H1; auto.
         subst; easy.
     Qed.
   End props.

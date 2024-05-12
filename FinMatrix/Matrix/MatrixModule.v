@@ -261,7 +261,7 @@ Module BasicMatrixTheory (E : ElementType).
   (** j < i -> (vinsert a i x).[j] = a.[j] *)
   Lemma vnth_vinsert_lt :
     forall {n} (a : vec n) (i j : 'I_(S n)) x (H : j < i),
-      (vinsert a i x).[j] = a.[fin2PredRange j (nat_lt_ltS_lt _ _ _ H (fin2nat_lt _))].
+      (vinsert a i x).[j] = a.[fPredRange j (nat_lt_ltS_lt _ _ _ H (fin2nat_lt _))].
   Proof. intros. apply (@vnth_vinsert_lt _ 0); auto. Qed.
 
   (** (vinsert a i x).i = a *)
@@ -272,7 +272,7 @@ Module BasicMatrixTheory (E : ElementType).
   (** 0 < j -> (vinsert a i x).[j] = a.(pred j) *)
   Lemma vnth_vinsert_gt :
     forall {n} (a : vec n) (i j : 'I_(S n)) x (H : 0 < j),
-      i < j -> (vinsert a i x).[j] = a.[fin2PredRangePred j H].
+      i < j -> (vinsert a i x).[j] = a.[fPredRangeP j H].
   Proof. intros. apply (@vnth_vinsert_gt _ 0); auto. Qed.
 
   (** Invert 0 into vzero get vzero *)
@@ -416,7 +416,7 @@ Module BasicMatrixTheory (E : ElementType).
   
   (** (vremoveH a).i = a.(S i) *)
   Lemma vnth_vremoveH : forall {n} (a : vec (S n)) (i : 'I_n),
-      (vremoveH a).[i] = a.[fin2SuccRangeSucc i].
+      (vremoveH a).[i] = a.[fSuccRangeS i].
   Proof. intros. apply vnth_vremoveH; auto. Qed.
   
   (** a <> 0 -> vhead a = 0 -> vremoveH a <> 0 *)
@@ -436,7 +436,7 @@ Module BasicMatrixTheory (E : ElementType).
   
   (** (vremoveT a).i = a.i *)
   Lemma vnth_vremoveT : forall {n} (a : vec (S n)) (i : 'I_n),
-      (vremoveT a).[i] = a.[fin2SuccRange i].
+      (vremoveT a).[i] = a.[fSuccRange i].
   Proof. intros. apply vnth_vremoveT; auto. Qed.
   
   (** v <> 0 -> vtail v = 0 -> vremoveT v <> 0 *)
@@ -514,7 +514,7 @@ Module BasicMatrixTheory (E : ElementType).
   
   (** 0 < i -> [x; a].i = a.(pred i)  *)
   Lemma vnth_vconsH_gt0 : forall {n} x (a : vec n) (i : 'I_(S n)) (H: 0 < i),
-      (vconsH x a).[i] = a.[fin2PredRangePred i H].
+      (vconsH x a).[i] = a.[fPredRangeP i H].
   Proof. intros. apply vnth_vconsH_gt0; auto. Qed.
 
   (** [x; a] = 0 <-> x = 0 /\ v = 0 *)
@@ -561,7 +561,7 @@ Module BasicMatrixTheory (E : ElementType).
 
   (** i < n -> [a; x].i = a.(pred i) *)
   Lemma vnth_vconsT_lt : forall {n} x (a : vec n) (i : 'I_(S n)) (H: i < n),
-      (vconsT a x).[i] = a (fin2PredRange i H).
+      (vconsT a x).[i] = a (fPredRange i H).
   Proof. intros. apply vnth_vconsT_lt; auto. Qed.
 
   (** [a; x] = 0 <-> a = 0 /\ x = 0*)
@@ -999,12 +999,12 @@ Module BasicMatrixTheory (E : ElementType).
   
   (** (mremovecH M).i.j = M.i.(S j) *)
   Lemma mnth_mremovecH : forall {r c} (M : mat r (S c)) i j,
-      (mremovecH M).[i].[j] = M.[i].[fin2SuccRangeSucc j].
+      (mremovecH M).[i].[j] = M.[i].[fSuccRangeS j].
   Proof. intros. apply mnth_mremovecH; auto. Qed.
   
   (** (mremovecT M).i.j = M.i.j *)
   Lemma mnth_mremovecT : forall {r c} (M : mat r (S c)) i j,
-      (mremovecT M).[i].[j] = M.[i].[fin2SuccRange j].
+      (mremovecT M).[i].[j] = M.[i].[fSuccRange j].
   Proof. intros. apply mnth_mremovecT; auto. Qed.
 
   (* ======================================================================= *)
@@ -1028,7 +1028,7 @@ Module BasicMatrixTheory (E : ElementType).
 
   Lemma mnth_mconsrH_gt0 :
     forall {r c} (a : vec c) (M : mat r c) (i : 'I_(S r)) (j : 'I_c) (H : 0 < i),
-      (mconsrH a M).[i].[j] = M.[fin2PredRangePred i H].[j].
+      (mconsrH a M).[i].[j] = M.[fPredRangeP i H].[j].
   Proof. intros. apply mnth_mconsrH_gt0; auto. Qed.
 
   Lemma mconsrH_spec : forall {r c} (a : vec c) (M : mat r c),
@@ -1045,7 +1045,7 @@ Module BasicMatrixTheory (E : ElementType).
 
   Lemma mnth_mconsrT_lt :
     forall {r c} (M : mat r c) (a : vec c) i j (E : fin2nat i < r),
-      (mconsrT M a).[i].[j] = M.[fin2PredRange i E].[j].
+      (mconsrT M a).[i].[j] = M.[fPredRange i E].[j].
   Proof. intros. apply mnth_mconsrT_lt; auto. Qed.
 
   Lemma vnth_mconscH : forall {r c} (M : mat (S r) c) (a : vec (S r)) (i : 'I_(S r)),
@@ -1058,7 +1058,7 @@ Module BasicMatrixTheory (E : ElementType).
 
   Lemma mnth_mconscH_gt0 :
     forall {r c} (M : mat r c) (a : vec r) i j (E : 0 < fin2nat j),
-      (mconscH a M).[i].[j] = M.[i].[fin2PredRangePred j E].
+      (mconscH a M).[i].[j] = M.[i].[fPredRangeP j E].
   Proof. intros. apply mnth_mconscH_gt0; auto. Qed.
 
   (** mconscH (mheadc M) (mremovecH M) = M *)
@@ -1079,7 +1079,7 @@ Module BasicMatrixTheory (E : ElementType).
 
   Lemma mnth_mconscT_lt :
     forall {r c} (M : mat r c) (a : vec r) i j (H : fin2nat j < c),
-      (mconscT M a).[i].[j] = M.[i].[fin2PredRange j H].
+      (mconscT M a).[i].[j] = M.[i].[fPredRange j H].
   Proof. intros. apply mnth_mconscT_lt; auto. Qed.
 
   Lemma vnth_mconscT : forall {r c} (M : mat r c) (a : vec r) i,
@@ -1223,12 +1223,12 @@ Module MonoidMatrixTheory (E : MonoidElementType).
   
   (** `vsum` of (S n) elements, equal to addition of Sum and tail *)
   Lemma vsumS_tail : forall {n} (a : vec (S n)),
-      vsum a = (vsum (fun i => a.[fin2SuccRange i]) + a.[nat2finS n])%A.
+      vsum a = (vsum (fun i => a.[fSuccRange i]) + a.[nat2finS n])%A.
   Proof. intros. apply vsumS_tail; auto. Qed.
 
   (** `vsum` of (S n) elements, equal to addition of head and Sum *)
   Lemma vsumS_head : forall {n} (a : vec (S n)),
-      vsum a = (a.[nat2finS 0] + vsum (fun i => a.[fin2SuccRangeSucc i]))%A.
+      vsum a = (a.[nat2finS 0] + vsum (fun i => a.[fSuccRangeS i]))%A.
   Proof. intros. apply vsumS_head; auto. Qed.
 
   (** Σa + Σb = Σ(fun i => a.[i] + b.[i]) *)

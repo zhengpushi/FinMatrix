@@ -68,12 +68,12 @@ Section GaussElim.
   Infix "+" := madd : mat_scope.
   Notation mmul := (@mmul _ Aadd Azero Amul).
   Infix "*" := mmul : mat_scope.
-  Notation matRowSwap := (@matRowSwap _ 0 1 _).
-  Notation matRowScale := (@matRowScale _ 0 1 _).
-  Notation matRowAdd := (@matRowAdd _ Aadd 0 1 _).
   Notation mrowSwap := (@mrowSwap A).
   Notation mrowScale := (@mrowScale _ Amul).
   Notation mrowAdd := (@mrowAdd _ Aadd Amul).
+  Notation mrowSwapM := (@mrowSwapM _ 0 1 _).
+  Notation mrowScaleM := (@mrowScaleM _ 0 1 _).
+  Notation mrowAddM := (@mrowAddM _ Aadd 0 1 _).
   Notation mrow := (@mrow _ Azero).
 
 
@@ -140,18 +140,18 @@ Section GaussElim.
     Definition ro2mat {n} (op : @RowOp n) : smat (S n) :=
       match op with
       | ROnop => mat1
-      | ROswap i j => matRowSwap i j
-      | ROscale i c => matRowScale i c
-      | ROadd i j c => matRowAdd i j c
+      | ROswap i j => mrowSwapM i j
+      | ROscale i c => mrowScaleM i c
+      | ROadd i j c => mrowAddM i j c
       end.
 
     (* op => matrix of inverse opeation *)
     Definition ro2matInv {n} (op : @RowOp n) : smat (S n) :=
       match op with
       | ROnop => mat1
-      | ROswap i j => matRowSwap i j
-      | ROscale i c => matRowScale i (/c)
-      | ROadd i j c => matRowAdd i j (-c)
+      | ROswap i j => mrowSwapM i j
+      | ROscale i c => mrowScaleM i (/c)
+      | ROadd i j c => mrowAddM i j (-c)
       end.
 
     Lemma mmul_ro2mat_l : forall n (op : RowOp) (M : smat (S n)),
@@ -191,9 +191,9 @@ Section GaussElim.
     Proof.
       intros. hnf in H. destruct op; simpl.
       - rewrite mmul_1_l; auto.
-      - rewrite mmul_matRowSwap_matRowSwap; auto.
-      - rewrite mmul_matRowScale_matRowScale; auto.
-      - rewrite mmul_matRowAdd_matRowAdd; auto.
+      - rewrite mmul_mrowSwapM_mrowSwapM; auto.
+      - rewrite mmul_mrowScaleM_mrowScaleM; auto.
+      - rewrite mmul_mrowAddM_mrowAddM; auto.
     Qed.
     
     Lemma mmul_ro2matInv_ro2mat : forall {n} (op : @RowOp n),
@@ -201,13 +201,13 @@ Section GaussElim.
     Proof.
       intros. hnf in H. destruct op; simpl.
       - rewrite mmul_1_l; auto.
-      - rewrite mmul_matRowSwap_matRowSwap; auto.
+      - rewrite mmul_mrowSwapM_mrowSwapM; auto.
       - replace c with (/ / c) at 2.
-        rewrite mmul_matRowScale_matRowScale; auto.
+        rewrite mmul_mrowScaleM_mrowScaleM; auto.
         apply field_inv_neq0_iff; auto.
         rewrite field_inv_inv; auto.
       - replace c with (- - c) at 2 by field.
-        rewrite mmul_matRowAdd_matRowAdd; auto.
+        rewrite mmul_mrowAddM_mrowAddM; auto.
     Qed.
 
     (** rowOps2mat has an equivalent form with matrix multiplication. *)

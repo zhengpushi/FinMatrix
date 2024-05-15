@@ -277,6 +277,12 @@ Ltac fin :=
         | i : 'I_0 |- _  => exfalso; apply (fin0_False i)
         (* fin2nat (i:fin n) < n ==> solve it *)
         | [i : fin ?n |- fin2nat ?i < ?n]  => apply fin2nat_lt
+        (* i : fin n |- fin2nat i < S n ==> solve it *)
+        | i : fin ?n |- fin2nat ?i < S ?n =>
+            pose proof (fin2nat_lt i) as E; lia; clear E
+        (* i : fin n |- S (fin2nat i) < S n ==> solve it *)
+        | i : fin ?n |- S (fin2nat ?i) < S ?n =>
+            pose proof (fin2nat_lt i) as E; lia; clear E
         (* fin2nat i = fin2nat j, i <> j |- _ ==> solve it *)
         | H1 : fin2nat ?i = fin2nat ?j, H2 : ?i <> ?j |- _ =>
             apply fin2nat_eq_iff in H1; rewrite H1 in H2; easy

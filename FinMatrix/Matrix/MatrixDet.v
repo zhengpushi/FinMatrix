@@ -668,11 +668,25 @@ Section mdetEx.
   (* ======================================================================= *)
   (** ** sub-matrix  子矩阵 *)
 
-  (** sub-matrix of M by remove x-th row and y-th column *)
-  Definition msubmat {n} (M : smat (S n)) (x y : 'I_(S n)) : smat n :=
-    fun i j =>
-      M.[if i ??< x then fSuccRange i else fSuccRangeS i]
-      .[if j ??< y then fSuccRange j else fSuccRangeS j].
+  (* sub-matrix by nat-indexing-function, which is used for proof *)
+  Definition msubmatNat (M : nat -> nat -> A) (i j : nat) : nat -> nat -> A :=
+    fun i0 j0 =>
+      M (if i0 ??< i then i0 else S i0) (if j0 ??< j then j0 else S j0).
+
+  (** sub-matrix of M by remove i-th row and j-th column *)
+  
+  (* OLD IMPLEMENTATION, deprecated *)
+  Definition msubmat' {n} (M : smat (S n)) (i j : 'I_(S n)) : smat n :=
+    fun i0 j0 =>
+      let i1 := if i0 ??< i then fSuccRange i0 else fSuccRangeS i0 in
+      let j1 := if j0 ??< j then fSuccRange j0 else fSuccRangeS j0 in
+      M.[i1].[j1].
+
+  Definition msubmat {n} (M : smat (S n)) (i j : 'I_(S n)) : smat n :=
+    fun i0 j0 =>
+      let i1 := if i0 ??< i then #i0 else #(S i0) in
+      let j1 := if j0 ??< j then #j0 else #(S j0) in
+      M.[i1].[j1].
 
   (** msubmat (msetr M a j) i j = msubmat M i j *)
   Lemma msubmat_msetr : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
@@ -683,14 +697,7 @@ Section mdetEx.
   Lemma msubmat_msetc : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
       msubmat (msetc M a j) i j = msubmat M i j.
   Proof. intros. apply meq_iff_mnth; intros. unfold msubmat. unfold msetc. fin. Qed.
-
-  (* 以下定义有助于完成行列式性质的证明 *)
   
-  (* 另一种实现，使用 nat 类型的元素索引 *)
-  Definition msubmatNat (M : nat -> nat -> A) (i j : nat) : nat -> nat -> A :=
-    fun i0 j0 =>
-      M (if i0 ??< i then i0 else S i0) (if j0 ??< j then j0 else S j0).
-
   Lemma msubmat_eq_msubmatNat : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
       msubmat M i j = @f2m _ n n (msubmatNat (m2f 0 M) i j).
   Proof.
@@ -702,24 +709,18 @@ Section mdetEx.
     assert ((if i1 ??< i2 then i1 else S i1) < S n) as Hj.
     { destruct (i1 ??< i2). lia. lia. }
     rewrite nth_m2f with (Hi:=Hi)(Hj:=Hj). f_equal.
-    - unfold fSuccRange, fSuccRangeS.
-      assert (Fin i0 E < S n) as Ei. { simpl. lia. }
-      rewrite nat2finS_eq with (E:=Ei).
-      simpl.
-      destruct (i0 ??< i). fin. fin.
-    - unfold fSuccRange, fSuccRangeS.
-      assert (Fin i1 E0 < S n). simpl. auto.
-      rewrite nat2finS_eq with (E:=H).
-      destruct (i1 ??< i2). apply fin_eq_iff; auto.
-      apply fin_eq_iff; auto.
+    - assert (i0 < S n) by lia. rewrite nat2finS_eq with (E:=H).
+      assert (S i0 < S n) by lia. rewrite nat2finS_eq with (E:=H0). fin.
+    - assert (i1 < S n) by lia. rewrite nat2finS_eq with (E:=H).
+      assert (S i1 < S n) by lia. rewrite nat2finS_eq with (E:=H0). fin.
   Qed.
-      
+
   (* ======================================================================= *)
   (** ** minor of matrix  余子式，余因式，余因子展开式 *)
 
   (** (i,j) minor of M *)
   Definition mminor {n} (M : smat (S n)) (i j : 'I_(S n)) : A := |msubmat M i j|.
-      
+
   (** minor(M\T,i,j) = minor(M,j,i) *)
   Lemma mminor_mtrans : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
       mminor (M\T) i j = mminor M j i.
@@ -1162,48 +1163,48 @@ Section madj.
   (* ======================================================================= *)
   (** ** Cramer rule *)
 
-  (** Cramer rule, which can solve the equation with the form of C*x=b.
-      Note, the result is valid only when |C| is not zero *)
-  Definition cramerRule {n} (C : smat n) (b : @vec A n) : @vec A n :=
-    fun i => mdetEx (msetc C b i) / (mdetEx C).
+  (** Cramer rule, which can solve the equation with the form of B*x=c.
+      Note, the result is valid only when |B| is not zero *)
+  Definition cramerRule {n} (B : smat n) (c : @vec A n) : @vec A n :=
+    fun i => mdetEx (msetc B c i) / (mdetEx B).
 
-  (** C *v (cramerRule C b) = b, (The dimension is `S n`) *)
-  Lemma cramerRule_eq_S : forall {n} (C : smat (S n)) (b : @vec A (S n)),
-  |C| <> 0 -> C *v (cramerRule C b) = b.
+  (** B *v (cramerRule B c) = c, (The dimension is `S n`) *)
+  Lemma cramerRule_eq_S : forall {n} (B : smat (S n)) (c : @vec A (S n)),
+  |B| <> 0 -> B *v (cramerRule B c) = c.
   Proof.
     intros. unfold cramerRule. rewrite !mdetEx_eq_mdet.
-    remember (msetc C b) as B. apply veq_iff_vnth; intros.
+    remember (msetc B c) as C. apply veq_iff_vnth; intros.
     rewrite vnth_mmulv. unfold vdot. unfold vmap2.
-    rewrite vsum_eq with (b:=fun j => (/|C| * (C.[i].[j] * |B j|))%A).
+    rewrite vsum_eq with (b:=fun j => (/|B| * (B.[i].[j] * |C j|))%A).
     2:{ intros. rewrite !mdetEx_eq_mdet. field. auto. }
     rewrite <- vsum_cmul_l.
     rewrite vsum_eq
-      with (b:=fun j => (vsum (fun k => C.[i].[j] * (b.[k] * mcofactor C k j)))%A).
+      with (b:=fun j => (vsum (fun k => B.[i].[j] * (c.[k] * mcofactor B k j)))%A).
     2:{ intros j. rewrite <- vsum_cmul_l. f_equal.
         rewrite <- (mdetExCol_eq_mdet _ j). unfold mdetExCol.
-        apply vsum_eq; intros k. rewrite HeqB.
+        apply vsum_eq; intros k. rewrite HeqC.
         rewrite mnth_msetc_same; auto. f_equal.
         rewrite mcofactor_msetc. auto. }
     rewrite vsum_eq
-      with (b:=fun j=> vsum (fun k=> (C.[i].[j] * b.[k] * mcofactor C k j)%A)).
+      with (b:=fun j=> vsum (fun k=> (B.[i].[j] * c.[k] * mcofactor B k j)%A)).
     2:{ intros j. apply vsum_eq; intros k. ring. }
     rewrite vsum_vsum.
     rewrite vsum_eq
-      with (b:=fun k=> (b.[k] * vsum (fun j=> C.[i].[j] * mcofactor C k j))%A).
+      with (b:=fun k=> (c.[k] * vsum (fun j=> B.[i].[j] * mcofactor B k j))%A).
     2:{ intros j. rewrite vsum_cmul_l. apply vsum_eq; intros k. ring. }
     (* `vsum` has only one value when k = i *)
-    rewrite vsum_unique with (i:=i) (x:=(|C| * b.[i])%A).
+    rewrite vsum_unique with (i:=i) (x:=(|B| * c.[i])%A).
     - field; auto.
-    - pose proof (vdot_mcofactor_row_same_eq_det C i).
+    - pose proof (vdot_mcofactor_row_same_eq_det B i).
       unfold vdot in H0. unfold vmap2 in H0. rewrite H0. ring.
     - intros.
-      pose proof (vdot_mcofactor_row_diff_eq0 C i j H0).
+      pose proof (vdot_mcofactor_row_diff_eq0 B i j H0).
       unfold vdot in H1. unfold vmap2 in H1. rewrite H1. ring.
   Qed.
 
-  (** C *v (cramerRule C b) = b *)
-  Theorem cramerRule_spec : forall {n} (C : smat n) (b : @vec A n),
-  |C| <> 0 -> C *v (cramerRule C b) = b.
+  (** B *v (cramerRule B c) = c *)
+  Theorem cramerRule_spec : forall {n} (B : smat n) (c : @vec A n),
+  |B| <> 0 -> B *v (cramerRule B c) = c.
   Proof.
     intros. destruct n.
     - cbv. apply v0eq.
@@ -1211,17 +1212,17 @@ Section madj.
   Qed.
 
   (** Cramer rule over list *)
-  Definition cramerRuleList (n : nat) (lC : dlist A) (lb : list A) : list A :=
-    let C : smat n := l2m 0 lC in
-    let b : vec n := l2v 0 lb in
-    let x := cramerRule C b in
+  Definition cramerRuleList (n : nat) (lB : dlist A) (lc : list A) : list A :=
+    let B : smat n := l2m 0 lB in
+    let c : vec n := l2v 0 lc in
+    let x := cramerRule B c in
     v2l x.
 
-  (** {cramerRuleList lC lb} = cramerRule {lC} {lb} *)
-  Theorem cramerRuleList_spec : forall n (lC : dlist A) (lb : list A),
-      let C : smat n := l2m 0 lC in
-      let b : vec n := l2v 0 lb in
-      l2v 0 (cramerRuleList n lC lb) = cramerRule C b.
+  (** {cramerRuleList lB lc} = cramerRule {lB} {lc} *)
+  Theorem cramerRuleList_spec : forall n (lB : dlist A) (lc : list A),
+      let B : smat n := l2m 0 lB in
+      let c : vec n := l2v 0 lc in
+      l2v 0 (cramerRuleList n lB lc) = cramerRule B c.
   Proof. intros. unfold cramerRuleList. rewrite l2v_v2l. auto. Qed.
   
 End madj.
@@ -1233,19 +1234,19 @@ Section test.
   Notation cramerRuleList := (@cramerRuleList _ Qcplus 0 Qcopp Qcmult 1 Qcinv).
   Notation mdetEx := (@mdetEx _ Qcplus 0 Qcopp Qcmult 1).
 
-  Let lC1 := Q2Qc_dlist [[1;2];[3;4]]%Q.
-  Let lb1 := Q2Qc_list [5;6]%Q.
-  Let C1 : smat Qc 2 := l2m 0 lC1.
-  Let b1 : @vec Qc 2 := l2v 0 lb1.
-  (* Compute v2l (cramerRule C1 b1). *)
-  (* Compute cramerRuleList 2 lC1 lb1. *)
+  Let lB1 := Q2Qc_dlist [[1;2];[3;4]]%Q.
+  Let lc1 := Q2Qc_list [5;6]%Q.
+  Let B1 : smat Qc 2 := l2m 0 lB1.
+  Let c1 : @vec Qc 2 := l2v 0 lc1.
+  (* Compute v2l (cramerRule B1 c1). *)
+  (* Compute cramerRuleList 2 lB1 lc1. *)
 
-  Let lC2 := Q2Qc_dlist
+  Let lB2 := Q2Qc_dlist
                [[1;2;3;4;5];
                 [2;4;3;5;1];
                 [3;1;5;2;4];
                 [4;5;2;3;1];
                 [5;4;1;2;3]]%Q.
-  Let lb2 := Q2Qc_list [1;2;3;5;4]%Q.
-  (* Compute cramerRuleList 5 lC2 lb2. *)
+  Let lc2 := Q2Qc_list [1;2;3;5;4]%Q.
+  (* Compute cramerRuleList 5 lB2 lc2. *)
 End test.

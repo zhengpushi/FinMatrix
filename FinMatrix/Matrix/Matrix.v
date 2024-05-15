@@ -2136,22 +2136,22 @@ Section RowTrans.
 
   (* ======================================================================= *)
   (** ** Row scaling *)
+
+  (** Scalar multiply with c to x-th row of matrix M *)
+  Definition mrowScale {n} (x : 'I_n) (c : A) (M : smat A n) : smat A n :=
+    fun i j => if i ??= x then (c * M i j)%A else M i j.
   
   (** 行数乘矩阵
       作用：E(x,c) * M 的结果是 M 的第 x 行乘以 c 倍
       形式：第 (x,x) 的元素是 c, 其余是单位阵 *)
-  Definition matRowScale {n} (x : 'I_n) (c : A) : smat A n :=
+  Definition mrowScaleM {n} (x : 'I_n) (c : A) : smat A n :=
     fun (i j : 'I_n) => if i ??= j then (if i ??= x then c else 1) else 0.
-
-  (** 行数乘：矩阵 M 的第 x 行乘以 c 倍 *)
-  Definition mrowScale {n} (x : 'I_n) (c : A) (M : smat A n) : smat A n :=
-    fun i j => if i ??= x then (c * M i j)%A else M i j.
 
   (** rowScale of `M` equal to left multiply rowScaleMat of `M` *)
   Lemma mrowScale_eq : forall {n} (x : 'I_n) (c : A) (M : smat A n),
-      mrowScale x c M = (matRowScale x c) * M.
+      mrowScale x c M = (mrowScaleM x c) * M.
   Proof.
-    intros. unfold mrowScale, matRowScale. apply meq_iff_mnth; intros.
+    intros. unfold mrowScale, mrowScaleM. apply meq_iff_mnth; intros.
     rewrite mnth_mmul. unfold vdot. fin.
     - apply fin2nat_eq_iff in E; rewrite E. symmetry.
       apply vsum_unique with (i := x); intros; rewrite vnth_vmap2; fin.
@@ -2167,21 +2167,21 @@ Section RowTrans.
 
   (* ======================================================================= *)
   (** ** Row addition with scaling *)
-  
-  (** 行倍加矩阵
-      作用：E(x,y,c) * M 的结果是 M 的第 y 行的 c 倍加到第 x 行
-      形式：单位阵 + 第 (x,y) 的元素是 c *)
-  Definition matRowAdd {n} (x y : 'I_n) (c : A) : smat A n :=
-    mat1 + matOneElem x y c.
 
   (** 行倍加：矩阵 M 的第 y 行的 c 倍加到第 x 行 *)
   Definition mrowAdd {n} (x y : 'I_n) (c : A) (M : smat A n) : smat A n :=
     fun i j => if i ??= x then (M i j + c * M y j)%A else M i j.
+  
+  (** 行倍加矩阵
+      作用：E(x,y,c) * M 的结果是 M 的第 y 行的 c 倍加到第 x 行
+      形式：单位阵 + 第 (x,y) 的元素是 c *)
+  Definition mrowAddM {n} (x y : 'I_n) (c : A) : smat A n :=
+    mat1 + matOneElem x y c.
 
   Lemma mrowAdd_eq : forall {n} (x y : 'I_n) (c : A) (M : smat A n),
-      mrowAdd x y c M = (matRowAdd x y c) * M.
+      mrowAdd x y c M = (mrowAddM x y c) * M.
   Proof.
-    intros. unfold mrowAdd, matRowAdd, matOneElem. apply meq_iff_mnth; intros.
+    intros. unfold mrowAdd, mrowAddM, matOneElem. apply meq_iff_mnth; intros.
     rewrite mnth_mmul. symmetry. fin.
     - rewrite vnth_madd. rewrite vdot_vadd_l. f_equal.
       + apply fin2nat_eq_iff in E; rewrite E.
@@ -2201,10 +2201,10 @@ Section RowTrans.
   Proof. intros. rewrite !mrowAdd_eq. rewrite mmul_assoc; auto. Qed.
 
   (** (i)+c(j)) * (i)+(-c)(j) = mat1 *)
-  Lemma mmul_matRowAdd_matRowAdd : forall {n} (i j : 'I_n) (c : A),
-      i <> j -> matRowAdd i j c * matRowAdd i j (-c) = mat1.
+  Lemma mmul_mrowAddM_mrowAddM : forall {n} (i j : 'I_n) (c : A),
+      i <> j -> mrowAddM i j c * mrowAddM i j (-c) = mat1.
   Proof.
-    intros. rewrite <- mrowAdd_eq. unfold matRowAdd, mrowAdd.
+    intros. rewrite <- mrowAdd_eq. unfold mrowAddM, mrowAdd.
     apply meq_iff_mnth; intros. rewrite !mnth_madd. unfold matOneElem. fin.
     - fin2nat. rewrite mnth_mat1_same. ring.
     - fin2nat. subst. rewrite (mnth_mat1_diff j j0); auto. ring.
@@ -2212,11 +2212,15 @@ Section RowTrans.
   
   (* ======================================================================= *)
   (** ** Row swapping *)
+
+  (** 行交换：矩阵 M 的第 x, y 两行互换 *)
+  Definition mrowSwap {n} (x y : 'I_n) (M : smat A n) : smat A n :=
+    fun i j => if i ??= x then M y j else (if i ??= y then M x j else M i j).
   
   (** 行交换矩阵
       作用：E(x,y) * M 的结果是 M 的第 x 行和第 y 行交换
       形式：在x,y所在行时，(x,y) 和 (y,x) 是 1；其余行时是单位阵 *)
-  Definition matRowSwap {n} (x y : 'I_n) : smat A n :=
+  Definition mrowSwapM {n} (x y : 'I_n) : smat A n :=
     fun i j =>
       if i ??= x
       then (if j ??= y then 1 else 0)
@@ -2224,14 +2228,10 @@ Section RowTrans.
             then (if j ??= x then 1 else 0)
             else (if i ??= j then 1 else 0)).
 
-  (** 行交换：矩阵 M 的第 x, y 两行互换 *)
-  Definition mrowSwap {n} (x y : 'I_n) (M : smat A n) : smat A n :=
-    fun i j => if i ??= x then M y j else (if i ??= y then M x j else M i j).
-
   Lemma mrowSwap_eq : forall {n} (x y : 'I_n) (M : smat A n),
-      mrowSwap x y M = (matRowSwap x y) * M.
+      mrowSwap x y M = (mrowSwapM x y) * M.
   Proof.
-    intros. unfold mrowSwap, matRowSwap. apply meq_iff_mnth; intros.
+    intros. unfold mrowSwap, mrowSwapM. apply meq_iff_mnth; intros.
     rewrite mnth_mmul. symmetry. fin.
     - apply vsum_unique with (i := y); intros; rewrite vnth_vmap2; fin.
       rewrite vnth_mcol. ring.
@@ -2247,10 +2247,10 @@ Section RowTrans.
   Proof. intros. rewrite !mrowSwap_eq. rewrite mmul_assoc; auto. Qed.
 
   (** (i,j) * (i,j) = mat1 *)
-  Lemma mmul_matRowSwap_matRowSwap : forall {n} (i j : 'I_n),
-      matRowSwap i j * matRowSwap i j = mat1.
+  Lemma mmul_mrowSwapM_mrowSwapM : forall {n} (i j : 'I_n),
+      mrowSwapM i j * mrowSwapM i j = mat1.
   Proof.
-    intros. rewrite <- mrowSwap_eq. unfold matRowSwap, mrowSwap.
+    intros. rewrite <- mrowSwap_eq. unfold mrowSwapM, mrowSwap.
     apply meq_iff_mnth; intros. fin.
     - fin2nat. rewrite mnth_mat1_same; auto.
     - fin2nat. rewrite mnth_mat1_diff; auto.
@@ -2269,10 +2269,10 @@ Section RowTrans.
     Notation "a / b" := (a * / b) : A_scope.
     
     (** c(i) * (/c)(i) = mat1 *)
-    Lemma mmul_matRowScale_matRowScale : forall {n} (i : 'I_n) (c : A),
-        c <> 0 -> matRowScale i c * matRowScale i (/c) = mat1.
+    Lemma mmul_mrowScaleM_mrowScaleM : forall {n} (i : 'I_n) (c : A),
+        c <> 0 -> mrowScaleM i c * mrowScaleM i (/c) = mat1.
     Proof.
-      intros. rewrite <- mrowScale_eq. unfold matRowScale, mrowScale.
+      intros. rewrite <- mrowScale_eq. unfold mrowScaleM, mrowScale.
       apply meq_iff_mnth; intros. fin.
       - fin2nat. rewrite mnth_mat1_same; auto. field. auto.
       - fin2nat. rewrite mnth_mat1_diff; auto. field.

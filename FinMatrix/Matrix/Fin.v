@@ -185,10 +185,23 @@ Proof. intros. destruct i. apply fin_eq_iff. lia. Qed.
 Definition nat2finS {n} (i : nat) : 'I_(S n).
   destruct (i ??< S n)%nat as [E|E].
   - apply (Fin i E).
-  - apply fin0.
+  - apply (Fin 0 (Nat.lt_0_succ _)).
+    (* apply fin0. *)
 Defined.
-
 Notation "# i" := (nat2finS i) (at level 1, format "# i").
+
+(* OLD definition, (directly define it, without Dec structures) *)
+Definition nat2finS' {n} (i : nat) : 'I_(S n) :=
+  match lt_dec i (S n) with
+  | left H => Fin i H
+  | _ => Fin 0 (Nat.lt_0_succ _)
+  end.
+
+Lemma nat2finS'_eq_nat2finS : forall n i, @nat2finS' n i = @nat2finS n i.
+Proof.
+  intros. unfold nat2finS', nat2finS.
+  destruct lt_dec,(_??<_); try lia; f_equal. apply proof_irrelevance.
+Qed.
 
 Lemma nat2finS_eq : forall n i (E : i < S n), nat2finS i = Fin i E.
 Proof.

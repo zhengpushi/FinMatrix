@@ -455,7 +455,7 @@ Section GaussElim.
 
   (** 第 j 列的后 x 个元素中的第 1 个非零元的行号。
       eg: 当 x 是`维数` 时，则从第 0 行开始往下查找。 *)
-  Fixpoint firstNonzero {n} (M : smat (S n)) (x : nat) (j : 'I_(S n))
+  Fixpoint getPivot {n} (M : smat (S n)) (x : nat) (j : 'I_(S n))
     : option ('I_(S n)) :=
     match x with
     | O => None
@@ -463,13 +463,13 @@ Section GaussElim.
         (* x的递归顺序：   x,    x-1, ... ,    1, (0)
            S n-x的顺序：Sn-x, Sn-x+1, ... , Sn-1, (Sn) *)
         if Aeqdec (M #(S n - x) j) 0
-        then firstNonzero M x' j
+        then getPivot M x' j
         else Some #(S n - x)
     end.
 
-  Lemma firstNonzero_imply_nonzero :
+  Lemma getPivot_imply_nonzero :
     forall (x : nat) {n} (M : smat (S n)) (i j : 'I_(S n)),
-      firstNonzero M x j = Some i -> M i j <> 0.
+      getPivot M x j = Some i -> M i j <> 0.
   Proof.
     induction x; intros.
     - simpl in H. easy.
@@ -479,8 +479,8 @@ Section GaussElim.
   Qed.
   
   (* 非零元行号 r < S n *)
-  Lemma firstNonzero_max : forall (x : nat) {n} (M : smat (S n)) (j r : 'I_(S n)),
-      firstNonzero M x j = Some r -> r < S n.
+  Lemma getPivot_max : forall (x : nat) {n} (M : smat (S n)) (j r : 'I_(S n)),
+      getPivot M x j = Some r -> r < S n.
   Proof.
     induction x; intros.
     - simpl in H. easy.
@@ -490,8 +490,8 @@ Section GaussElim.
   Qed.
   
   (* 非零元行号 r >= S n - x *)
-  Lemma firstNonzero_min: forall (x : nat) {n} (M : smat (S n)) (j r : 'I_(S n)),
-      firstNonzero M x j = Some r -> r >= S n - x.
+  Lemma getPivot_min: forall (x : nat) {n} (M : smat (S n)) (j r : 'I_(S n)),
+      getPivot M x j = Some r -> r >= S n - x.
   Proof.
     induction x; intros.
     - simpl in H. easy.
@@ -503,19 +503,19 @@ Section GaussElim.
   (* End GaussElim. *)
   (* Section test. *)
   (*   Let M : smat nat 3 := l2m 0 [[1;0;0];[0;1;0];[0;0;1]]. *)
-  (*   Notation firstNonzero := (@firstNonzero nat 0). *)
-  (*   Compute firstNonzero M 3 #0. *)
-  (*   Compute firstNonzero M 3 #1. *)
-  (*   Compute firstNonzero M 3 #2. *)
-  (*   Compute firstNonzero M 2 #0. *)
-  (*   Compute firstNonzero M 2 #1. *)
-  (*   Compute firstNonzero M 2 #2. *)
-  (*   Compute firstNonzero M 1 #0. *)
-  (*   Compute firstNonzero M 1 #1. *)
-  (*   Compute firstNonzero M 1 #2. *)
-  (*   Compute firstNonzero M 0 #0. *)
-  (*   Compute firstNonzero M 0 #1. *)
-  (*   Compute firstNonzero M 0 #2. *)
+  (*   Notation getPivot := (@getPivot nat 0). *)
+  (*   Compute getPivot M 3 #0. *)
+  (*   Compute getPivot M 3 #1. *)
+  (*   Compute getPivot M 3 #2. *)
+  (*   Compute getPivot M 2 #0. *)
+  (*   Compute getPivot M 2 #1. *)
+  (*   Compute getPivot M 2 #2. *)
+  (*   Compute getPivot M 1 #0. *)
+  (*   Compute getPivot M 1 #1. *)
+  (*   Compute getPivot M 1 #2. *)
+  (*   Compute getPivot M 0 #0. *)
+  (*   Compute getPivot M 0 #1. *)
+  (*   Compute getPivot M 0 #2. *)
   (* End test. *)
 
 
@@ -530,12 +530,13 @@ Section GaussElim.
     | S x' =>
         (* 递归时 x 从大到小，而 fx 是从小到大 *)
         let fx : 'I_(S n) := #(S n - x) in
-        let x : A := M.[fx].[j] in
+        let a : A := M.[fx].[j] in
         (* 如果 M[S n-x,j] <> 0，则 j 行的 -M[S n-x,j] 倍加到 S n-x 行。要求 M[j,j]=1 *)
-        if Aeqdec x 0
+        if Aeqdec a 0
         then elimDown M x' j
         else
-          let (op1, M1) := (ROadd fx j (-x)%A, mrowAdd fx j (-x)%A M) in
+          let op1 := ROadd fx j (-a)%A in
+          let M1 := mrowAdd fx j (-a)%A M in
           let (l2, M2) := elimDown M1 x' j in
           ((l2 ++ [op1])%list, M2)
     end.
@@ -697,7 +698,7 @@ Section GaussElim.
     | S x' =>
         let j : 'I_(S n) := #(S n - x) in
         (* 找出主元 *)
-        match firstNonzero M x j with
+        match getPivot M x j with
         | None => None (* 没有非零元，则该矩阵不可逆 *)
         | Some i =>
             (* 使主元行在当前行 *)
@@ -726,7 +727,7 @@ Section GaussElim.
     induction x; intros.
     - simpl in H. inversion H. simpl. apply mmul_1_l.
     - unfold rowEchelon in H; fold (@rowEchelon (n)) in H. (* Tips: simpl展开太多 *)
-      destruct firstNonzero as [i|] eqn: Hi; try easy.
+      destruct getPivot as [i|] eqn: Hi; try easy.
       replace (S n - S x) with (n - x) in * by lia.
       (* 根据 i ??= #(n - x) 决定是否需要换行 *)
       destruct (i ??= #(n - x)) as [E|E].
@@ -759,7 +760,7 @@ Section GaussElim.
     - simpl in *. inv H. auto.
     - unfold rowEchelon in H; fold (@rowEchelon n) in H.
       replace (S n - S x) with (n - x) in * by lia.
-      destruct firstNonzero as [i|] eqn : Hi; try easy.
+      destruct getPivot as [i|] eqn : Hi; try easy.
       (* 根据 i ??= #(n - x) 决定是否需要换行 *)
       destruct (i ??= #(n - x)) as [E|E].
       + destruct elimDown as [l3 M3] eqn:T3.
@@ -771,7 +772,7 @@ Section GaussElim.
         * unfold mrowScale; fin.
           (* 确保元素非零时才能消去除法逆元 *)
           rewrite field_mulInvL; auto.
-          apply firstNonzero_imply_nonzero in Hi. rewrite <- E in *. fin.
+          apply getPivot_imply_nonzero in Hi. rewrite <- E in *. fin.
         * hnf; intros. unfold mrowScale; fin. rewrite (H1 _ j); fin.
       + destruct elimDown as [l3 M3] eqn:T3.
         destruct rowEchelon as [[l4 M4]|] eqn:T4; try easy.
@@ -782,9 +783,9 @@ Section GaussElim.
         * unfold mrowScale; fin.
           (* 确保元素非零时才能消去除法逆元 *)
           rewrite field_mulInvL; auto.
-          unfold mrowSwap; fin. apply firstNonzero_imply_nonzero in Hi. auto.
+          unfold mrowSwap; fin. apply getPivot_imply_nonzero in Hi. auto.
         * hnf; intros. unfold mrowScale, mrowSwap; fin.
-          ** rewrite (H1 _ j); fin. apply firstNonzero_min in Hi. lia.
+          ** rewrite (H1 _ j); fin. apply getPivot_min in Hi. lia.
           ** rewrite (H1 _ j); fin.
   Qed.
 
@@ -809,7 +810,7 @@ Section GaussElim.
     - simpl in *. inv H. auto.
     - (* simpl in H. *) (* too much! *)
       unfold rowEchelon in H; fold (@rowEchelon n) in H.
-      destruct firstNonzero as [i|] eqn: Hi; try easy.
+      destruct getPivot as [i|] eqn: Hi; try easy.
       replace (S n - S x) with (n - x) in * by lia.
       (* 根据 i ??= #(n - x) 决定是否需要换行 *)
       destruct (i ??= #(n - x)) as [E|E].
@@ -822,11 +823,11 @@ Section GaussElim.
           ** rewrite T3. unfold mrowScale; fin.
              *** rewrite <- E0. fin. rewrite field_mulInvL; auto.
                  rewrite <- E0 in *. fin.
-                 apply firstNonzero_imply_nonzero in Hi; auto.
+                 apply getPivot_imply_nonzero in Hi; auto.
                  fin2nat. auto.
              *** rewrite H0; auto. lia.
           ** unfold mrowScale; fin. rewrite field_mulInvL; auto.
-             apply firstNonzero_imply_nonzero in Hi. rewrite <- E in *. fin.
+             apply getPivot_imply_nonzero in Hi. rewrite <- E in *. fin.
       + destruct elimDown as [l3 M3] eqn:T3.
         destruct rowEchelon as [[l4 M4]|] eqn:T4; try easy.
         apply IHx in T4; clear IHx; try lia.
@@ -835,16 +836,16 @@ Section GaussElim.
           apply elimDown_keep_former_row with (i:=i0)(j:=i0) in T3; fin.
           ** rewrite T3. unfold mrowScale, mrowSwap; fin.
              *** rewrite <- E0. fin. rewrite field_mulInvL; auto.
-                 apply firstNonzero_imply_nonzero in Hi.
+                 apply getPivot_imply_nonzero in Hi.
                  rewrite <- E0 in *. fin.
              *** subst.
-                 pose proof (firstNonzero_max _ _ _ _ Hi).
-                 pose proof (firstNonzero_min _ _ _ _ Hi). lia.
+                 pose proof (getPivot_max _ _ _ _ Hi).
+                 pose proof (getPivot_min _ _ _ _ Hi). lia.
              *** assert (i0 < n - x). lia.
                  rewrite H0; auto.
           ** unfold mrowScale, mrowSwap; fin.
              rewrite field_mulInvL; auto.
-             apply firstNonzero_imply_nonzero in Hi. auto.
+             apply getPivot_imply_nonzero in Hi. auto.
   Qed.
   
   (** 化行阶梯矩阵得到的矩阵的对角线都是 1 *)
@@ -863,7 +864,7 @@ Section GaussElim.
     induction x; intros.
     - simpl in H0. inversion H0. constructor.
     - unfold rowEchelon in H0; fold (@rowEchelon (n)) in H0.
-      destruct firstNonzero as [i|] eqn: Hi; try easy.
+      destruct getPivot as [i|] eqn: Hi; try easy.
       replace (S n - S x) with (n - x) in * by lia.
       (* 根据 i ??= #(n - x) 决定是否需要换行 *)
       destruct (i ??= #(n - x)) as [E|E].
@@ -876,7 +877,7 @@ Section GaussElim.
         apply Forall_app. split; auto.
         repeat constructor. unfold roValid.
         apply field_inv_neq0_iff.
-        apply firstNonzero_imply_nonzero in Hi. fin2nat. auto. fin. fin.
+        apply getPivot_imply_nonzero in Hi. fin2nat. auto. fin. fin.
       + (* i 不是当前行，需要换行 *)
         destruct elimDown as [l3 M3] eqn:T3.
         destruct (rowEchelon M3 x) as [[l4 M4]|] eqn:T4; try easy.
@@ -886,7 +887,7 @@ Section GaussElim.
         apply Forall_app. split; auto.
         repeat constructor. unfold roValid.
         apply field_inv_neq0_iff. unfold mrowSwap. fin.
-        apply firstNonzero_imply_nonzero in Hi. auto. fin. fin.
+        apply getPivot_imply_nonzero in Hi. auto. fin. fin.
   Qed.
 
   (** 对 M 行变换得到 (l, M')，则 [l]' * M' = M *)
@@ -924,7 +925,7 @@ Section GaussElim.
   (* Section test. *)
 
   (*   Import QcExt. *)
-  (*   Notation firstNonzero := (firstNonzero (Azero:=0)). *)
+  (*   Notation getPivot := (getPivot (Azero:=0)). *)
   (*   Notation rowEchelon := (@rowEchelon _ Qcplus 0 Qcopp Qcmult Qcinv _). *)
   (*   Notation elimDown := (@elimDown _ Qcplus 0 Qcopp Qcmult _). *)
   (*   Notation rowOps2mat := (@rowOps2mat _ Qcplus 0 Qcmult 1 _). *)

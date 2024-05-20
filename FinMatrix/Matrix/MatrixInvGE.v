@@ -50,8 +50,8 @@ Section minv.
   Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
   Notation msingular := (@msingular _ Aadd 0 Amul 1).
 
-  Notation rowEchelon := (@rowEchelon _ Aadd 0 Aopp Amul Ainv _).
-  Notation minRowEchelon := (@minRowEchelon _ Aadd 0 Aopp Amul _).
+  Notation toREF := (@toREF _ Aadd 0 Aopp Amul Ainv _).
+  Notation toRREF := (@toRREF _ Aadd 0 Aopp Amul _).
   Notation rowOps2mat := (@rowOps2mat _ Aadd 0 Amul 1).
   Notation rowOps2matInv := (@rowOps2matInv _ Aadd 0 Aopp Amul 1 Ainv).
   
@@ -64,21 +64,21 @@ Section minv.
     | O => fun _ => true   (* zero-dims matrix is considered invertible *)
     | S n' =>
         fun M =>
-          match rowEchelon M (S n') with
+          match toREF M (S n') with
           | None => false
           | Some (l1, M1) => true
           end
     end.
 
-  (* M * N = mat1 -> (exists (l1, M1), rowEchelon M (S n) = Some (l1,M1) *)
-  Lemma mmul_eq1_imply_rowEchelon_Some_l : forall {n} (M N : smat (S n)),
-      M * N = mat1 -> (exists '(l1, M1), rowEchelon M (S n) = Some (l1, M1)).
+  (* M * N = mat1 -> (exists (l1, M1), toREF M (S n) = Some (l1,M1) *)
+  Lemma mmul_eq1_imply_toREF_Some_l : forall {n} (M N : smat (S n)),
+      M * N = mat1 -> (exists '(l1, M1), toREF M (S n) = Some (l1, M1)).
   Proof.
   Admitted.
 
-  (* M * N = mat1 -> (exists (l1, N1), rowEchelon N (S n) = Some (l1,N1) *)
-  Lemma mmul_eq1_imply_rowEchelon_Some_r : forall {n} (M N : smat (S n)),
-      M * N = mat1 -> (exists '(l1, N1), rowEchelon N (S n) = Some (l1, N1)).
+  (* M * N = mat1 -> (exists (l1, N1), toREF N (S n) = Some (l1,N1) *)
+  Lemma mmul_eq1_imply_toREF_Some_r : forall {n} (M N : smat (S n)),
+      M * N = mat1 -> (exists '(l1, N1), toREF N (S n) = Some (l1, N1)).
   Proof.
   Admitted.
   
@@ -88,19 +88,19 @@ Section minv.
   Proof.
     intros. split; intros.
     - hnf in H. destruct H as [M' [Hl Hr]]. destruct n; auto.
-      apply (mmul_eq1_imply_rowEchelon_Some_r) in Hl. destruct Hl as [[l1 M1]].
+      apply (mmul_eq1_imply_toREF_Some_r) in Hl. destruct Hl as [[l1 M1]].
       unfold minvtbleb. rewrite H. auto.
     - apply minvtble_iff_minvtbleL. hnf.
       unfold minvtbleb in H. destruct n.
       + exists M. apply v0eq.
-      + destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
-        destruct (minRowEchelon M1 (S n)) as [l2 M2] eqn:T2.
-        apply minRowEchelon_eq in T2 as H3.
-        apply rowEchelon_eq in T1 as H4.
-        apply minRowEchelon_mat1 in T2 as H5.
+      + destruct toREF as [[l1 M1]|] eqn:T1; try easy.
+        destruct (toRREF M1 (S n)) as [l2 M2] eqn:T2.
+        apply toRREF_eq in T2 as H3.
+        apply toREF_eq in T1 as H4.
+        apply toRREF_mat1 in T2 as H5.
         * subst. rewrite <- mmul_assoc in H5.
           exists (rowOps2mat l2 * rowOps2mat l1); auto.
-        * apply rowEchelon_mUnitUpperTrig in T1. auto.
+        * apply toREF_mUnitUpperTrig in T1. auto.
   Qed.
   
   (** msingular M <-> minvtbleb M = false *)
@@ -121,10 +121,10 @@ Section minv.
     | O => fun M => Some mat1 (* zero-dims matrix has a dummy inverse, any value is OK *)
     | S n' =>
         fun (M : smat (S n')) =>
-          match rowEchelon M (S n') with
+          match toREF M (S n') with
           | None => None
           | Some (l1, M1) =>
-              let (l2, M2) := minRowEchelon M1 (S n') in
+              let (l2, M2) := toRREF M1 (S n') in
               Some (rowOps2mat (l2 ++ l1))
           end
     end.
@@ -137,9 +137,9 @@ Section minv.
     unfold minvo, minvtbleb. destruct n.
     - split; intros; auto. exists M. f_equal. apply v0eq.
     - split; intros.
-      + destruct H as [M' H]. destruct rowEchelon as [[l1 M1]|]; try easy.
-      + destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
-        destruct minRowEchelon as [l2 M2] eqn:T2. eexists; auto.
+      + destruct H as [M' H]. destruct toREF as [[l1 M1]|]; try easy.
+      + destruct toREF as [[l1 M1]|] eqn:T1; try easy.
+        destruct toRREF as [l2 M2] eqn:T2. eexists; auto.
   Qed.
 
   (** `minvo` return `None`, iff M is singular *)
@@ -151,8 +151,8 @@ Section minv.
     - split; intros; try easy. destruct H. exists mat1; auto.
     - split; intros; try easy.
       + intro. destruct H0 as [M' H0]. rewrite H in H0. easy.
-      + destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
-        destruct minRowEchelon as [l2 M2] eqn:T2. destruct H. eexists; auto.
+      + destruct toREF as [[l1 M1]|] eqn:T1; try easy.
+        destruct toRREF as [l2 M2] eqn:T2. destruct H. eexists; auto.
   Qed.
 
   (** If `minvo M` return `Some M'`, then `M' * M = mat1` *)
@@ -161,14 +161,14 @@ Section minv.
   Proof.
     intros. unfold minvo in H. destruct n.
     - apply v0eq.
-    - destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
-      destruct minRowEchelon as [l2 M2] eqn:T2. inv H.
+    - destruct toREF as [[l1 M1]|] eqn:T1; try easy.
+      destruct toRREF as [l2 M2] eqn:T2. inv H.
       copy T1. copy T2.
-      apply rowEchelon_eq in T1.
-      apply minRowEchelon_eq in T2.
+      apply toREF_eq in T1.
+      apply toRREF_eq in T2.
       rewrite rowOps2mat_app. rewrite mmul_assoc. rewrite T1,T2.
-      apply minRowEchelon_mat1 in HC0; auto.
-      apply rowEchelon_mUnitUpperTrig in HC; auto.
+      apply toRREF_mat1 in HC0; auto.
+      apply toREF_mUnitUpperTrig in HC; auto.
   Qed.
 
   (** If `minvo M` return `Some M'`, then `M * M' = mat1` *)
@@ -183,19 +183,19 @@ Section minv.
     (* Let's proof it directly *)
     unfold minvo in H. destruct n.
     - apply v0eq.
-    - destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
-      destruct minRowEchelon as [l2 M2] eqn:T2.
-      apply rowEchelon_eq_inv in T1 as T1'.
-      apply minRowEchelon_eq_inv in T2 as T2'.
-      apply minRowEchelon_mat1 in T2 as T2''; auto.
-      2:{ apply rowEchelon_mUnitUpperTrig in T1; auto. }
+    - destruct toREF as [[l1 M1]|] eqn:T1; try easy.
+      destruct toRREF as [l2 M2] eqn:T2.
+      apply toREF_eq_inv in T1 as T1'.
+      apply toRREF_eq_inv in T2 as T2'.
+      apply toRREF_mat1 in T2 as T2''; auto.
+      2:{ apply toREF_mUnitUpperTrig in T1; auto. }
       rewrite <- T1'. rewrite <- T2'. rewrite T2''.
       inversion H. rewrite mmul_1_r.
       rewrite <- rowOps2matInv_app.
       rewrite mmul_rowOps2matInv_rowOps2mat_eq1. auto.
       apply Forall_app. split.
-      apply minRowEchelon_rowOpValid in T2; auto.
-      apply rowEchelon_rowOpValid in T1; auto.
+      apply toRREF_rowOpValid in T2; auto.
+      apply toREF_rowOpValid in T1; auto.
   Qed.
 
   (* ******************************************************************* *)
@@ -207,10 +207,10 @@ Section minv.
     | O => fun _ => mat1
     | S n' =>
         fun (M : smat (S n')) =>
-          match rowEchelon M n with
+          match toREF M n with
           | None => mat1
           | Some (l1, M1) =>
-              let (l2, M2) := minRowEchelon M1 n in
+              let (l2, M2) := toRREF M1 n in
               rowOps2mat (l2 ++ l1)
           end
     end.
@@ -220,8 +220,8 @@ Section minv.
   Lemma minvo_Some_imply_minv : forall {n} (M N : smat n), minvo M = Some N -> M\-1 = N.
   Proof.
     intros. unfold minvo, minv in *. destruct n. inv H. auto.
-    destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
-    destruct minRowEchelon as [l2] eqn:T2.
+    destruct toREF as [[l1 M1]|] eqn:T1; try easy.
+    destruct toRREF as [l2] eqn:T2.
     inv H. auto.
   Qed.
 
@@ -229,8 +229,8 @@ Section minv.
   Lemma minvo_None_imply_minv : forall {n} (M  : smat n), minvo M = None -> M\-1 = mat1.
   Proof.
     intros. unfold minvo, minv in *. destruct n. easy.
-    destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
-    destruct minRowEchelon as [l2] eqn:T2. easy.
+    destruct toREF as [[l1 M1]|] eqn:T1; try easy.
+    destruct toRREF as [l2] eqn:T2. easy.
   Qed.
   
   (** M\-1 * M = mat1 *)
@@ -238,13 +238,13 @@ Section minv.
   Proof.
     intros. apply minvtble_iff_minvtbleb_true in H as H1.
     unfold minvtbleb, minv in *. destruct n. apply v0eq.
-    destruct rowEchelon as [[l1 M1]|] eqn:T1; try easy.
-    destruct minRowEchelon as [l2 M2] eqn:T2.
+    destruct toREF as [[l1 M1]|] eqn:T1; try easy.
+    destruct toRREF as [l2 M2] eqn:T2.
     rewrite rowOps2mat_app. rewrite mmul_assoc.
-    apply rowEchelon_eq in T1 as T1'. rewrite T1'.
-    apply minRowEchelon_eq in T2 as T2'. rewrite T2'.
-    apply minRowEchelon_mat1 in T2; auto.
-    apply rowEchelon_mUnitUpperTrig in T1; auto.
+    apply toREF_eq in T1 as T1'. rewrite T1'.
+    apply toRREF_eq in T2 as T2'. rewrite T2'.
+    apply toRREF_mat1 in T2; auto.
+    apply toREF_mUnitUpperTrig in T1; auto.
   Qed.
   
 End minv.
@@ -281,8 +281,8 @@ Module MinvCoreGE (E : FieldElementType) <: MinvCore E.
   Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
   Notation msingular := (@msingular _ Aadd 0 Amul 1).
 
-  Notation rowEchelon := (@rowEchelon _ Aadd 0 Aopp Amul Ainv _).
-  Notation minRowEchelon := (@minRowEchelon _ Aadd 0 Aopp Amul _).
+  Notation toREF := (@toREF _ Aadd 0 Aopp Amul Ainv _).
+  Notation toRREF := (@toRREF _ Aadd 0 Aopp Amul _).
   Notation rowOps2mat := (@rowOps2mat _ Aadd 0 Amul 1).
   Notation rowOps2matInv := (@rowOps2matInv _ Aadd 0 Aopp Amul 1 Ainv).
   
@@ -293,15 +293,15 @@ Module MinvCoreGE (E : FieldElementType) <: MinvCore E.
   Definition minvtbleb {n} (M : smat n) : bool :=
     @minvtbleb _ Aadd 0 Aopp Amul Ainv _ _ M.
 
-  (* M * N = mat1 -> (exists (l1, M1), rowEchelon M (S n) = Some (l1,M1) *)
-  Lemma mmul_eq1_imply_rowEchelon_Some_l : forall {n} (M N : smat (S n)),
-      M * N = mat1 -> (exists '(l1, M1), rowEchelon M (S n) = Some (l1, M1)).
-  Proof. intros. apply mmul_eq1_imply_rowEchelon_Some_l in H; auto. Qed.
+  (* M * N = mat1 -> (exists (l1, M1), toREF M (S n) = Some (l1,M1) *)
+  Lemma mmul_eq1_imply_toREF_Some_l : forall {n} (M N : smat (S n)),
+      M * N = mat1 -> (exists '(l1, M1), toREF M (S n) = Some (l1, M1)).
+  Proof. intros. apply mmul_eq1_imply_toREF_Some_l in H; auto. Qed.
 
-  (* M * N = mat1 -> (exists (l1, N1), rowEchelon N (S n) = Some (l1,N1) *)
-  Lemma mmul_eq1_imply_rowEchelon_Some_r : forall {n} (M N : smat (S n)),
-      M * N = mat1 -> (exists '(l1, N1), rowEchelon N (S n) = Some (l1, N1)).
-  Proof. intros. apply mmul_eq1_imply_rowEchelon_Some_r in H; auto. Qed.
+  (* M * N = mat1 -> (exists (l1, N1), toREF N (S n) = Some (l1,N1) *)
+  Lemma mmul_eq1_imply_toREF_Some_r : forall {n} (M N : smat (S n)),
+      M * N = mat1 -> (exists '(l1, N1), toREF N (S n) = Some (l1, N1)).
+  Proof. intros. apply mmul_eq1_imply_toREF_Some_r in H; auto. Qed.
   
   (** minvtble M <-> minvtbleb M = true *)
   Lemma minvtble_iff_minvtbleb_true : forall {n} (M : smat n),

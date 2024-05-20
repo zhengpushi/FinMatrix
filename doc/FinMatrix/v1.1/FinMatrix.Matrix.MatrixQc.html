@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.Matrix.MatrixQc</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#"><span class="id" title="library">QcExt</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#"><span class="id" title="library">MatrixModule</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab743"></a><h1 class="section">Matrix theory come from common implementations</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Include</span> (<a class="idref" href="FinMatrix.Matrix.MatrixModule.html#NormedOrderedFieldMatrixTheory"><span class="id" title="module">NormedOrderedFieldMatrixTheory</span></a> <a class="idref" href="FinMatrix.Matrix.ElementType.html#NormedOrderedFieldElementTypeQc"><span class="id" title="module">NormedOrderedFieldElementTypeQc</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">Q_scope</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">Qc_scope</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">vec_scope</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mat_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab744"></a><h1 class="section">Matrix theory applied to this type</h1>
+
+<div class="paragraph"> </div>
+
+ Cramer rule over list of Q type 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="cramerRuleListQ" class="idref" href="#cramerRuleListQ"><span class="id" title="definition">cramerRuleListQ</span></a> (<a id="n:1" class="idref" href="#n:1"><span class="id" title="binder">n</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="lC:2" class="idref" href="#lC:2"><span class="id" title="binder">lC</span></a> : <a class="idref" href="FinMatrix.CoqExt.ListExt.html#dlist"><span class="id" title="abbreviation">dlist</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a>) (<a id="lb:3" class="idref" href="#lb:3"><span class="id" title="binder">lb</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <a id="lC':4" class="idref" href="#lC':4"><span class="id" title="binder">lC'</span></a> := <a class="idref" href="FinMatrix.CoqExt.ListExt.html#dmap"><span class="id" title="definition">dmap</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lC:2"><span class="id" title="variable">lC</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <a id="lb':5" class="idref" href="#lb':5"><span class="id" title="binder">lb'</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lb:3"><span class="id" title="variable">lb</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <a id="lx':6" class="idref" href="#lx':6"><span class="id" title="binder">lx'</span></a> := <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#cramerRuleList"><span class="id" title="definition">cramerRuleList</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#n:1"><span class="id" title="variable">n</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lC':4"><span class="id" title="variable">lC'</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lb':5"><span class="id" title="variable">lb'</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#Qc2Q"><span class="id" title="definition">Qc2Q</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lx':6"><span class="id" title="variable">lx'</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="cramerRuleListQ_spec" class="idref" href="#cramerRuleListQ_spec"><span class="id" title="lemma">cramerRuleListQ_spec</span></a> : <span class="id" title="keyword">forall</span> (<a id="n:7" class="idref" href="#n:7"><span class="id" title="binder">n</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="lC:8" class="idref" href="#lC:8"><span class="id" title="binder">lC</span></a> : <a class="idref" href="FinMatrix.CoqExt.ListExt.html#dlist"><span class="id" title="abbreviation">dlist</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a>) (<a id="lb:9" class="idref" href="#lb:9"><span class="id" title="binder">lb</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> (<a class="idref" href="FinMatrix.Matrix.MatrixQc.html#cramerRuleListQ"><span class="id" title="definition">cramerRuleListQ</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#n:7"><span class="id" title="variable">n</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lC:8"><span class="id" title="variable">lC</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lb:9"><span class="id" title="variable">lb</span></a>) <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#cramerRuleList"><span class="id" title="definition">cramerRuleList</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#n:7"><span class="id" title="variable">n</span></a> (<a class="idref" href="FinMatrix.CoqExt.ListExt.html#dmap"><span class="id" title="definition">dmap</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lC:8"><span class="id" title="variable">lC</span></a>) (<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lb:9"><span class="id" title="variable">lb</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#cramerRuleListQ"><span class="id" title="definition">cramerRuleListQ</span></a>. <span class="id" title="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map_map"><span class="id" title="lemma">map_map</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ListExt.html#map_id"><span class="id" title="lemma">ListExt.map_id</span></a>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#Q2Qc_Qc2Q"><span class="id" title="lemma">Q2Qc_Qc2Q</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Solve the equation with the form of C*x=b by GE over list of Q type. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="solveEqListGEQ" class="idref" href="#solveEqListGEQ"><span class="id" title="definition">solveEqListGEQ</span></a> (<a id="n:10" class="idref" href="#n:10"><span class="id" title="binder">n</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="lC:11" class="idref" href="#lC:11"><span class="id" title="binder">lC</span></a> : <a class="idref" href="FinMatrix.CoqExt.ListExt.html#dlist"><span class="id" title="abbreviation">dlist</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a>) (<a id="lb:12" class="idref" href="#lb:12"><span class="id" title="binder">lb</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <a id="lC':13" class="idref" href="#lC':13"><span class="id" title="binder">lC'</span></a> := <a class="idref" href="FinMatrix.CoqExt.ListExt.html#dmap"><span class="id" title="definition">dmap</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lC:11"><span class="id" title="variable">lC</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <a id="lb':14" class="idref" href="#lb':14"><span class="id" title="binder">lb'</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lb:12"><span class="id" title="variable">lb</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <a id="lx':15" class="idref" href="#lx':15"><span class="id" title="binder">lx'</span></a> := <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#solveEqListGE"><span class="id" title="definition">solveEqListGE</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#n:10"><span class="id" title="variable">n</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lC':13"><span class="id" title="variable">lC'</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lb':14"><span class="id" title="variable">lb'</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#Qc2Q"><span class="id" title="definition">Qc2Q</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lx':15"><span class="id" title="variable">lx'</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+{solveEqListGEQ n lC lb} = solveEqListGE n {lC} {lb} 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="solveEqListGEQ_spec" class="idref" href="#solveEqListGEQ_spec"><span class="id" title="lemma">solveEqListGEQ_spec</span></a> : <span class="id" title="keyword">forall</span> (<a id="n:16" class="idref" href="#n:16"><span class="id" title="binder">n</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="lC:17" class="idref" href="#lC:17"><span class="id" title="binder">lC</span></a> : <a class="idref" href="FinMatrix.CoqExt.ListExt.html#dlist"><span class="id" title="abbreviation">dlist</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a>) (<a id="lb:18" class="idref" href="#lb:18"><span class="id" title="binder">lb</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> (<a class="idref" href="FinMatrix.Matrix.MatrixQc.html#solveEqListGEQ"><span class="id" title="definition">solveEqListGEQ</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#n:16"><span class="id" title="variable">n</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lC:17"><span class="id" title="variable">lC</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lb:18"><span class="id" title="variable">lb</span></a>) <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#solveEqListGE"><span class="id" title="definition">solveEqListGE</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#n:16"><span class="id" title="variable">n</span></a> (<a class="idref" href="FinMatrix.CoqExt.ListExt.html#dmap"><span class="id" title="definition">dmap</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lC:17"><span class="id" title="variable">lC</span></a>) (<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lb:18"><span class="id" title="variable">lb</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#solveEqListGEQ"><span class="id" title="definition">solveEqListGEQ</span></a>. <span class="id" title="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map_map"><span class="id" title="lemma">map_map</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ListExt.html#map_id"><span class="id" title="lemma">ListExt.map_id</span></a>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#Q2Qc_Qc2Q"><span class="id" title="lemma">Q2Qc_Qc2Q</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Solve the equation with the form of C*x=b by AM over list of Q type. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="solveEqListAMQ" class="idref" href="#solveEqListAMQ"><span class="id" title="definition">solveEqListAMQ</span></a> (<a id="n:19" class="idref" href="#n:19"><span class="id" title="binder">n</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="lC:20" class="idref" href="#lC:20"><span class="id" title="binder">lC</span></a> : <a class="idref" href="FinMatrix.CoqExt.ListExt.html#dlist"><span class="id" title="abbreviation">dlist</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a>) (<a id="lb:21" class="idref" href="#lb:21"><span class="id" title="binder">lb</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <a id="lC':22" class="idref" href="#lC':22"><span class="id" title="binder">lC'</span></a> := <a class="idref" href="FinMatrix.CoqExt.ListExt.html#dmap"><span class="id" title="definition">dmap</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lC:20"><span class="id" title="variable">lC</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <a id="lb':23" class="idref" href="#lb':23"><span class="id" title="binder">lb'</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lb:21"><span class="id" title="variable">lb</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <a id="lx':24" class="idref" href="#lx':24"><span class="id" title="binder">lx'</span></a> := <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#solveEqListAM"><span class="id" title="definition">solveEqListAM</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#n:19"><span class="id" title="variable">n</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lC':22"><span class="id" title="variable">lC'</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lb':23"><span class="id" title="variable">lb'</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#Qc2Q"><span class="id" title="definition">Qc2Q</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lx':24"><span class="id" title="variable">lx'</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+{solveEqListAMQ n lC lb} = solveEqListAM n {lC} {lb} 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="solveEqListAMQ_spec" class="idref" href="#solveEqListAMQ_spec"><span class="id" title="lemma">solveEqListAMQ_spec</span></a> : <span class="id" title="keyword">forall</span> (<a id="n:25" class="idref" href="#n:25"><span class="id" title="binder">n</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="lC:26" class="idref" href="#lC:26"><span class="id" title="binder">lC</span></a> : <a class="idref" href="FinMatrix.CoqExt.ListExt.html#dlist"><span class="id" title="abbreviation">dlist</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a>) (<a id="lb:27" class="idref" href="#lb:27"><span class="id" title="binder">lb</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#Q"><span class="id" title="record">Q</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> (<a class="idref" href="FinMatrix.Matrix.MatrixQc.html#solveEqListAMQ"><span class="id" title="definition">solveEqListAMQ</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#n:25"><span class="id" title="variable">n</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lC:26"><span class="id" title="variable">lC</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lb:27"><span class="id" title="variable">lb</span></a>) <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#solveEqListAM"><span class="id" title="definition">solveEqListAM</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#n:25"><span class="id" title="variable">n</span></a> (<a class="idref" href="FinMatrix.CoqExt.ListExt.html#dmap"><span class="id" title="definition">dmap</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lC:26"><span class="id" title="variable">lC</span></a>) (<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.Qcanon.html#Q2Qc"><span class="id" title="definition">Q2Qc</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#lb:27"><span class="id" title="variable">lb</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#solveEqListAMQ"><span class="id" title="definition">solveEqListAMQ</span></a>. <span class="id" title="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map_map"><span class="id" title="lemma">map_map</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ListExt.html#map_id"><span class="id" title="lemma">ListExt.map_id</span></a>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#Q2Qc_Qc2Q"><span class="id" title="lemma">Q2Qc_Qc2Q</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="solveEqListQ" class="idref" href="#solveEqListQ"><span class="id" title="abbreviation">solveEqListQ</span></a> := <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#solveEqListGEQ"><span class="id" title="definition">solveEqListGEQ</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab745"></a><h1 class="section">Usage demo</h1>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <a id="test" class="idref" href="#test"><span class="id" title="section">test</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="v2l" class="idref" href="#v2l"><span class="id" title="abbreviation">v2l</span></a> <span class="id" title="var">v</span> := (<a class="idref" href="FinMatrix.CoqExt.QcExt.html#Qc2Q_list"><span class="id" title="definition">Qc2Q_list</span></a> (<a class="idref" href="FinMatrix.Matrix.MatrixQc.html#v2l"><span class="id" title="definition">v2l</span></a> <span class="id" title="var">v</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="m2l" class="idref" href="#m2l"><span class="id" title="abbreviation">m2l</span></a> <span class="id" title="var">M</span> := (<a class="idref" href="FinMatrix.CoqExt.QcExt.html#Qc2Q_dlist"><span class="id" title="definition">Qc2Q_dlist</span></a> (<a class="idref" href="FinMatrix.Matrix.MatrixQc.html#m2l"><span class="id" title="definition">m2l</span></a> <span class="id" title="var">M</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">vec_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <a id="test.u" class="idref" href="#test.u"><span class="id" title="variable">u</span></a> := @<a class="idref" href="FinMatrix.Matrix.MatrixQc.html#l2v"><span class="id" title="definition">l2v</span></a> 3 (<a class="idref" href="FinMatrix.CoqExt.QcExt.html#Q2Qc_list"><span class="id" title="definition">Q2Qc_list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">[</span></a>1<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a> 2<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a> 3<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">]</span></a>%<span class="id" title="var">Q</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <a id="test.v" class="idref" href="#test.v"><span class="id" title="variable">v</span></a> := @<a class="idref" href="FinMatrix.Matrix.MatrixQc.html#l2v"><span class="id" title="definition">l2v</span></a> 3 (<a class="idref" href="FinMatrix.CoqExt.QcExt.html#Q2Qc_list"><span class="id" title="definition">Q2Qc_list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">[</span></a>2<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a> 1<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a> 0<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">]</span></a>%<span class="id" title="var">Q</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mat_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <a id="test.M" class="idref" href="#test.M"><span class="id" title="variable">M</span></a> := @<a class="idref" href="FinMatrix.Matrix.MatrixQc.html#l2m"><span class="id" title="definition">l2m</span></a> 3 3 (<a class="idref" href="FinMatrix.CoqExt.QcExt.html#Q2Qc_dlist"><span class="id" title="definition">Q2Qc_dlist</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">[[</span></a>1<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>-3<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>-2<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">];[</span></a>-2<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>1<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>-4<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">];[</span></a>-1<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>4<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>-1<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">]]</span></a>%<span class="id" title="var">Q</span>).<br/>
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Solve equation over list of Q type 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">Q_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <a id="test.C" class="idref" href="#test.C"><span class="id" title="variable">C</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">[[</span></a>1<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>2<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">];[</span></a>3<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>4<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">]]</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <a id="test.b" class="idref" href="#test.b"><span class="id" title="variable">b</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">[</span></a>5<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>6<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">]</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.Matrix.MatrixQc.html#test"><span class="id" title="section">test</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

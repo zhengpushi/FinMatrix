@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.Matrix.MatrixQ</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.QExt.html#"><span class="id" title="library">QExt</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#"><span class="id" title="library">MatrixModule</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab740"></a><h1 class="section">Matrix theory come from common implementations</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Include</span> (<a class="idref" href="FinMatrix.Matrix.MatrixModule.html#BasicMatrixTheory"><span class="id" title="module">BasicMatrixTheory</span></a> <a class="idref" href="FinMatrix.Matrix.ElementType.html#ElementTypeQ"><span class="id" title="module">ElementTypeQ</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">Q_scope</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">vec_scope</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mat_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab741"></a><h1 class="section">Matrix theory applied to this type</h1>
+
+</div>
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab742"></a><h1 class="section">Usage demo</h1>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <a id="test" class="idref" href="#test"><span class="id" title="section">test</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">vec_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <a id="test.u" class="idref" href="#test.u"><span class="id" title="variable">u</span></a> := @<a class="idref" href="FinMatrix.Matrix.MatrixQ.html#l2v"><span class="id" title="definition">l2v</span></a> 3 <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">[</span></a>1<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>2<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>-3<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">]</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <a id="test.v" class="idref" href="#test.v"><span class="id" title="variable">v</span></a> := @<a class="idref" href="FinMatrix.Matrix.MatrixQ.html#f2v"><span class="id" title="definition">f2v</span></a> 3 (<span class="id" title="keyword">fun</span> <a id="i:1" class="idref" href="#i:1"><span class="id" title="binder">i</span></a> =&gt; -1 <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.QArith.QArith_base.html#4f14570d00eeffbb0b18ccb7e91c8ff8"><span class="id" title="notation">+</span></a> <a class="idref" href="FinMatrix.CoqExt.QExt.html#nat2Q"><span class="id" title="definition">nat2Q</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixQ.html#i:1"><span class="id" title="variable">i</span></a>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mat_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <a id="test.M1" class="idref" href="#test.M1"><span class="id" title="variable">M1</span></a> := @<a class="idref" href="FinMatrix.Matrix.MatrixQ.html#l2m"><span class="id" title="definition">l2m</span></a> 3 3 <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">[[</span></a>1<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>-3<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>-2<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">];[</span></a>-2<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>1<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>-4<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">];[</span></a>-1<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>4<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a>-1<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">]]</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.Matrix.MatrixQ.html#test"><span class="id" title="section">test</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

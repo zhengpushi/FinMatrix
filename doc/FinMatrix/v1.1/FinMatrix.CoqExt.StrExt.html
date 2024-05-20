@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.CoqExt.StrExt</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Nat.html#"><span class="id" title="library">Nat</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#"><span class="id" title="library">List</span></a>.<br/>
+<span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#ListNotations"><span class="id" title="module">ListNotations</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.Ascii.html#"><span class="id" title="library">Ascii</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">string</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+nat to ascii：只有0~9能正确转换，其余的都会转换为'A' 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="nat2ascii" class="idref" href="#nat2ascii"><span class="id" title="definition">nat2ascii</span></a> (<a id="n:1" class="idref" href="#n:1"><span class="id" title="binder">n</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.Ascii.html#ascii"><span class="id" title="inductive">ascii</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#n:1"><span class="id" title="variable">n</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| 0 =&gt; "0" | 1 =&gt; "1" | 2 =&gt; "2" | 3 =&gt; "3" | 4 =&gt; "4"<br/>
+&nbsp;&nbsp;| 5 =&gt; "5" | 6 =&gt; "6" | 7 =&gt; "7" | 8 =&gt; "8" | 9 =&gt; "9"<br/>
+&nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt; "A"<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+nat to string 的辅助函数。
+  cnt     用于循环计数，初始值至少是位数那么大，比如125的位数是3
+  n       输入的自然数
+  suffix  后缀字符串，初始值为 ""，随着循环会逐步构成 "5", "25", "125"
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Fixpoint</span> <a id="nat2str_aux" class="idref" href="#nat2str_aux"><span class="id" title="definition">nat2str_aux</span></a> (<a id="cnt:3" class="idref" href="#cnt:3"><span class="id" title="binder">cnt</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="n:4" class="idref" href="#n:4"><span class="id" title="binder">n</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="suffix:5" class="idref" href="#suffix:5"><span class="id" title="binder">suffix</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <a id="suffix':7" class="idref" href="#suffix':7"><span class="id" title="binder">suffix'</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#String"><span class="id" title="constructor">String</span></a> (<a class="idref" href="FinMatrix.CoqExt.StrExt.html#nat2ascii"><span class="id" title="definition">nat2ascii</span></a> (<a class="idref" href="FinMatrix.CoqExt.StrExt.html#n:4"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Nat.html#::nat_scope:x_'mod'_x"><span class="id" title="notation">mod</span></a> 10)) <a class="idref" href="FinMatrix.CoqExt.StrExt.html#suffix:5"><span class="id" title="variable">suffix</span></a> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#cnt:3"><span class="id" title="variable">cnt</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#O"><span class="id" title="constructor">O</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.StrExt.html#suffix':7"><span class="id" title="variable">suffix'</span></a><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#S"><span class="id" title="constructor">S</span></a> <span class="id" title="var">cnt'</span> =&gt; <span class="id" title="keyword">match</span> (<a class="idref" href="FinMatrix.CoqExt.StrExt.html#n:4"><span class="id" title="variable">n</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Nat.html#2e0d8202c5a48097752d760d3a1db6a7"><span class="id" title="notation">/</span></a>10) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#O"><span class="id" title="constructor">O</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.StrExt.html#suffix':7"><span class="id" title="variable">suffix'</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">n'</span> =&gt; <a class="idref" href="FinMatrix.CoqExt.StrExt.html#nat2str_aux:6"><span class="id" title="definition">nat2str_aux</span></a> <span class="id" title="var">cnt'</span> <span class="id" title="var">n'</span> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#suffix':7"><span class="id" title="variable">suffix'</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+nat to string 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="nat2str" class="idref" href="#nat2str"><span class="id" title="definition">nat2str</span></a> (<a id="n:9" class="idref" href="#n:9"><span class="id" title="binder">n</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> := <a class="idref" href="FinMatrix.CoqExt.StrExt.html#nat2str_aux"><span class="id" title="definition">nat2str_aux</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#n:9"><span class="id" title="variable">n</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#n:9"><span class="id" title="variable">n</span></a> "".<br/>
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+生成 n 个字符串：a1,a2,...,an 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="create_nstrs" class="idref" href="#create_nstrs"><span class="id" title="definition">create_nstrs</span></a> (<a id="n:10" class="idref" href="#n:10"><span class="id" title="binder">n</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) (<a id="prefix:11" class="idref" href="#prefix:11"><span class="id" title="binder">prefix</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> :=<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> (<span class="id" title="keyword">fun</span> <a id="i:12" class="idref" href="#i:12"><span class="id" title="binder">i</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.StrExt.html#prefix:11"><span class="id" title="variable">prefix</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#169ad156fbc6036a53a0338819a2b301"><span class="id" title="notation">++</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#nat2str"><span class="id" title="definition">nat2str</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#i:12"><span class="id" title="variable">i</span></a>) (<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#seq"><span class="id" title="definition">seq</span></a> 1 <a class="idref" href="FinMatrix.CoqExt.StrExt.html#n:10"><span class="id" title="variable">n</span></a>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+用指定字符构成的字符串 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="str_repeat" class="idref" href="#str_repeat"><span class="id" title="definition">str_repeat</span></a> (<a id="c:13" class="idref" href="#c:13"><span class="id" title="binder">c</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.Ascii.html#ascii"><span class="id" title="inductive">ascii</span></a>) (<a id="len:14" class="idref" href="#len:14"><span class="id" title="binder">len</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="keyword">fix</span> <a id="f:19" class="idref" href="#f:19"><span class="id" title="binder">f</span></a> (<a id="aux:15" class="idref" href="#aux:15"><span class="id" title="binder">aux</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>) (<a id="n:16" class="idref" href="#n:16"><span class="id" title="binder">n</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#n:16"><span class="id" title="variable">n</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#O"><span class="id" title="constructor">O</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.StrExt.html#aux:15"><span class="id" title="variable">aux</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#S"><span class="id" title="constructor">S</span></a> <span class="id" title="var">n</span> =&gt; <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#String"><span class="id" title="constructor">String</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#c:13"><span class="id" title="variable">c</span></a> (<a class="idref" href="FinMatrix.CoqExt.StrExt.html#f:17"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#aux:15"><span class="id" title="variable">aux</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#n:16"><span class="id" title="variable">n</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.StrExt.html#f:19"><span class="id" title="variable">f</span></a> "" <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len:14"><span class="id" title="variable">len</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+左填充的定长字符串。不足右侧用空格填充，多余时剪掉右侧 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="str_alignl" class="idref" href="#str_alignl"><span class="id" title="definition">str_alignl</span></a> (<a id="s:20" class="idref" href="#s:20"><span class="id" title="binder">s</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>) (<a id="len:21" class="idref" href="#len:21"><span class="id" title="binder">len</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <a id="len_s:22" class="idref" href="#len_s:22"><span class="id" title="binder">len_s</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#length"><span class="id" title="definition">length</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#s:20"><span class="id" title="variable">s</span></a> <span class="id" title="tactic">in</span>      <br/>
+&nbsp;&nbsp;<span class="id" title="keyword">if</span> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len_s:22"><span class="id" title="variable">len_s</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Nat.html#ad2ec4e405f68c46c0a176e3e94ae2e3"><span class="id" title="notation">=?</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len:21"><span class="id" title="variable">len</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">then</span> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#s:20"><span class="id" title="variable">s</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">else</span> <span class="id" title="keyword">if</span> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len_s:22"><span class="id" title="variable">len_s</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Nat.html#6b7621b45fff0af5e2b2cbb2bc2d4e1d"><span class="id" title="notation">&lt;?</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len:21"><span class="id" title="variable">len</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">then</span> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#s:20"><span class="id" title="variable">s</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#169ad156fbc6036a53a0338819a2b301"><span class="id" title="notation">++</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#169ad156fbc6036a53a0338819a2b301"><span class="id" title="notation">(</span></a><a class="idref" href="FinMatrix.CoqExt.StrExt.html#str_repeat"><span class="id" title="definition">str_repeat</span></a> " " (<a class="idref" href="FinMatrix.CoqExt.StrExt.html#len:21"><span class="id" title="variable">len</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Nat.html#::nat_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len_s:22"><span class="id" title="variable">len_s</span></a>)<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#169ad156fbc6036a53a0338819a2b301"><span class="id" title="notation">)</span></a> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">else</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#substring"><span class="id" title="definition">substring</span></a> 0 <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len:21"><span class="id" title="variable">len</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#s:20"><span class="id" title="variable">s</span></a>. 
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+右对齐的定长字符串。不足时左侧填充空格，多余时剪掉左侧 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="str_alignr" class="idref" href="#str_alignr"><span class="id" title="definition">str_alignr</span></a> (<a id="s:23" class="idref" href="#s:23"><span class="id" title="binder">s</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>) (<a id="len:24" class="idref" href="#len:24"><span class="id" title="binder">len</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <a id="len_s:25" class="idref" href="#len_s:25"><span class="id" title="binder">len_s</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#length"><span class="id" title="definition">length</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#s:23"><span class="id" title="variable">s</span></a> <span class="id" title="tactic">in</span>      <br/>
+&nbsp;&nbsp;<span class="id" title="keyword">if</span> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len_s:25"><span class="id" title="variable">len_s</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Nat.html#ad2ec4e405f68c46c0a176e3e94ae2e3"><span class="id" title="notation">=?</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len:24"><span class="id" title="variable">len</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">then</span> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#s:23"><span class="id" title="variable">s</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">else</span> <span class="id" title="keyword">if</span> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len_s:25"><span class="id" title="variable">len_s</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Nat.html#6b7621b45fff0af5e2b2cbb2bc2d4e1d"><span class="id" title="notation">&lt;?</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len:24"><span class="id" title="variable">len</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">then</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#169ad156fbc6036a53a0338819a2b301"><span class="id" title="notation">(</span></a><a class="idref" href="FinMatrix.CoqExt.StrExt.html#str_repeat"><span class="id" title="definition">str_repeat</span></a> " " (<a class="idref" href="FinMatrix.CoqExt.StrExt.html#len:24"><span class="id" title="variable">len</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Nat.html#::nat_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len_s:25"><span class="id" title="variable">len_s</span></a>)<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#169ad156fbc6036a53a0338819a2b301"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#169ad156fbc6036a53a0338819a2b301"><span class="id" title="notation">++</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#s:23"><span class="id" title="variable">s</span></a> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">else</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#substring"><span class="id" title="definition">substring</span></a> (<a class="idref" href="FinMatrix.CoqExt.StrExt.html#len_s:25"><span class="id" title="variable">len_s</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Nat.html#::nat_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len:24"><span class="id" title="variable">len</span></a>) <a class="idref" href="FinMatrix.CoqExt.StrExt.html#len:24"><span class="id" title="variable">len</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#s:23"><span class="id" title="variable">s</span></a>. 
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab10"></a><h1 class="section">LF and CR strings</h1>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <a id="LF_CR" class="idref" href="#LF_CR"><span class="id" title="section">LF_CR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="CharLF" class="idref" href="#CharLF"><span class="id" title="definition">CharLF</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.Ascii.html#ascii"><span class="id" title="inductive">ascii</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.Ascii.html#ascii_of_nat"><span class="id" title="definition">ascii_of_nat</span></a> 10.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="CharCR" class="idref" href="#CharCR"><span class="id" title="definition">CharCR</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.Ascii.html#ascii"><span class="id" title="inductive">ascii</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.Ascii.html#ascii_of_nat"><span class="id" title="definition">ascii_of_nat</span></a> 13.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="strNewlineUnix" class="idref" href="#strNewlineUnix"><span class="id" title="definition">strNewlineUnix</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#String"><span class="id" title="constructor">String</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#CharLF"><span class="id" title="definition">CharLF</span></a> "".<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="strNewlineWin" class="idref" href="#strNewlineWin"><span class="id" title="definition">strNewlineWin</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#String"><span class="id" title="constructor">String</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#CharCR"><span class="id" title="definition">CharCR</span></a> (<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#String"><span class="id" title="constructor">String</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#CharLF"><span class="id" title="definition">CharLF</span></a> "").<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="strNewlineMac" class="idref" href="#strNewlineMac"><span class="id" title="definition">strNewlineMac</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> := <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#String"><span class="id" title="constructor">String</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#CharCR"><span class="id" title="definition">CharCR</span></a> "".<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="strNewline" class="idref" href="#strNewline"><span class="id" title="definition">strNewline</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a> := <a class="idref" href="FinMatrix.CoqExt.StrExt.html#strNewlineUnix"><span class="id" title="definition">strNewlineUnix</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#LF_CR"><span class="id" title="section">LF_CR</span></a>.<br/>
+
+<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

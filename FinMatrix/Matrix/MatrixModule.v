@@ -2602,10 +2602,10 @@ Module FieldMatrixTheory (E : FieldElementType).
   (* Notation elimUp := (@elimUp _ Aadd 0 Aopp Amul). *)
 
   (* (** 将矩阵M的后 x 行化为标准上三角形。参数 x 最大为维数 *) *)
-  (* Notation rowEchelon := (@rowEchelon _ Aadd 0 Aopp Amul Ainv). *)
+  (* Notation toREF := (@toREF _ Aadd 0 Aopp Amul Ainv). *)
 
   (* (** 将矩阵 M 的前 x 行(列)化为行最简阶梯形。当 x 为 S n 时表示整个矩阵 *) *)
-  (* Notation minRowEchelon := (@minRowEchelon _ Aadd 0 Aopp Amul). *)
+  (* Notation toRREF := (@toRREF _ Aadd 0 Aopp Amul). *)
 
     
   (** Check the invertibility of matrix `M` *)

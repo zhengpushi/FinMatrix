@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.CoqExt.FuncExt</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#"><span class="id" title="library">List</span></a>.<br/>
+<span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#ListNotations"><span class="id" title="module">ListNotations</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Logic.FunctionalExtensionality.html#"><span class="id" title="library">FunctionalExtensionality</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Two functions are equal, iff extensional equal 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="feq_iff" class="idref" href="#feq_iff"><span class="id" title="lemma">feq_iff</span></a> : <span class="id" title="keyword">forall</span> {<a id="A:1" class="idref" href="#A:1"><span class="id" title="binder">A</span></a>} (<a id="f:2" class="idref" href="#f:2"><span class="id" title="binder">f</span></a> <a id="g:3" class="idref" href="#g:3"><span class="id" title="binder">g</span></a> : <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:1"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:1"><span class="id" title="variable">A</span></a>), <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:2"><span class="id" title="variable">f</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:3"><span class="id" title="variable">g</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">(</span></a><span class="id" title="keyword">forall</span> <a id="x:4" class="idref" href="#x:4"><span class="id" title="binder">x</span></a>, <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:2"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#x:4"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:3"><span class="id" title="variable">g</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#x:4"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">)</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">subst</span>; <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">extensionality</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A short name of "functional_extensionality" 
+</div>
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+eta expansion 
+</div>
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+Bidirection form of functional extensionality (unary function) 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="fun_eq_iff_forall_eq" class="idref" href="#fun_eq_iff_forall_eq"><span class="id" title="lemma">fun_eq_iff_forall_eq</span></a> : <span class="id" title="keyword">forall</span> <a id="A:5" class="idref" href="#A:5"><span class="id" title="binder">A</span></a> <a id="B:6" class="idref" href="#B:6"><span class="id" title="binder">B</span></a> (<a id="f:7" class="idref" href="#f:7"><span class="id" title="binder">f</span></a> <a id="g:8" class="idref" href="#g:8"><span class="id" title="binder">g</span></a> : <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:5"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#B:6"><span class="id" title="variable">B</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">(</span></a><span class="id" title="keyword">fun</span> <a id="i:9" class="idref" href="#i:9"><span class="id" title="binder">i</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:7"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#i:9"><span class="id" title="variable">i</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">(</span></a><span class="id" title="keyword">fun</span> <a id="i:10" class="idref" href="#i:10"><span class="id" title="binder">i</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:8"><span class="id" title="variable">g</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#i:10"><span class="id" title="variable">i</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <span class="id" title="keyword">forall</span> <a id="i:11" class="idref" href="#i:11"><span class="id" title="binder">i</span></a>, <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:7"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#i:11"><span class="id" title="variable">i</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:8"><span class="id" title="variable">g</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#i:11"><span class="id" title="variable">i</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">remember</span> (<span class="id" title="keyword">fun</span> (<a id="f:12" class="idref" href="#f:12"><span class="id" title="binder"><span id="f:14" class="id">f</span></span></a>:<span class="id" title="var">A</span><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><span class="id" title="var">B</span>) (<a id="i:13" class="idref" href="#i:13"><span class="id" title="binder"><span id="i:15" class="id">i</span></span></a>:<span class="id" title="var">A</span>) =&gt; <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:12"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#i:13"><span class="id" title="variable">i</span></a>) <span class="id" title="keyword">as</span> <span class="id" title="var">F</span> <span class="id" title="var">eqn</span>:<span class="id" title="var">EqF</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">replace</span> (<span class="id" title="keyword">fun</span> <a id="i:16" class="idref" href="#i:16"><span class="id" title="binder"><span id="i:17" class="id">i</span></span></a> =&gt; <span class="id" title="var">f</span> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#i:16"><span class="id" title="variable">i</span></a>) <span class="id" title="keyword">with</span> (<span class="id" title="var">F</span> <span class="id" title="var">f</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span> <span class="id" title="tactic">by</span> (<span class="id" title="tactic">rewrite</span> <span class="id" title="var">EqF</span>; <span class="id" title="tactic">auto</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">replace</span> (<span class="id" title="keyword">fun</span> <a id="i:18" class="idref" href="#i:18"><span class="id" title="binder"><span id="i:19" class="id">i</span></span></a> =&gt; <span class="id" title="var">g</span> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#i:18"><span class="id" title="variable">i</span></a>) <span class="id" title="keyword">with</span> (<span class="id" title="var">F</span> <span class="id" title="var">g</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span> <span class="id" title="tactic">by</span> (<span class="id" title="tactic">rewrite</span> <span class="id" title="var">EqF</span>; <span class="id" title="tactic">auto</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">replace</span> (<span class="id" title="var">f</span> <span class="id" title="var">i</span>) <span class="id" title="keyword">with</span> (<span class="id" title="var">F</span> <span class="id" title="var">f</span> <span class="id" title="var">i</span>) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">rewrite</span> <span class="id" title="var">EqF</span>; <span class="id" title="tactic">auto</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">replace</span> (<span class="id" title="var">g</span> <span class="id" title="var">i</span>) <span class="id" title="keyword">with</span> (<span class="id" title="var">F</span> <span class="id" title="var">g</span> <span class="id" title="var">i</span>) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">rewrite</span> <span class="id" title="var">EqF</span>; <span class="id" title="tactic">auto</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">extensionality</span> <span class="id" title="var">i</span>. <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Another form of functional extensionality (binary function) 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="fun_eq_iff_forall_eq2" class="idref" href="#fun_eq_iff_forall_eq2"><span class="id" title="lemma">fun_eq_iff_forall_eq2</span></a> : <span class="id" title="keyword">forall</span> <a id="A:20" class="idref" href="#A:20"><span class="id" title="binder">A</span></a> <a id="B:21" class="idref" href="#B:21"><span class="id" title="binder">B</span></a> <a id="C:22" class="idref" href="#C:22"><span class="id" title="binder">C</span></a> (<a id="f:23" class="idref" href="#f:23"><span class="id" title="binder">f</span></a> <a id="g:24" class="idref" href="#g:24"><span class="id" title="binder">g</span></a> : <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:20"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#B:21"><span class="id" title="variable">B</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#C:22"><span class="id" title="variable">C</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">(</span></a><span class="id" title="keyword">fun</span> <a id="i:25" class="idref" href="#i:25"><span class="id" title="binder">i</span></a> <a id="j:26" class="idref" href="#j:26"><span class="id" title="binder">j</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:23"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#i:25"><span class="id" title="variable">i</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#j:26"><span class="id" title="variable">j</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">(</span></a><span class="id" title="keyword">fun</span> <a id="i:27" class="idref" href="#i:27"><span class="id" title="binder">i</span></a> <a id="j:28" class="idref" href="#j:28"><span class="id" title="binder">j</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:24"><span class="id" title="variable">g</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#i:27"><span class="id" title="variable">i</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#j:28"><span class="id" title="variable">j</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <span class="id" title="keyword">forall</span> <a id="i:29" class="idref" href="#i:29"><span class="id" title="binder">i</span></a> <a id="j:30" class="idref" href="#j:30"><span class="id" title="binder">j</span></a>, <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:23"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#i:29"><span class="id" title="variable">i</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#j:30"><span class="id" title="variable">j</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:24"><span class="id" title="variable">g</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#i:29"><span class="id" title="variable">i</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#j:30"><span class="id" title="variable">j</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> (<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#fun_eq_iff_forall_eq"><span class="id" title="lemma">fun_eq_iff_forall_eq</span></a>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">extensionality</span> <span class="id" title="var">i</span>. <span class="id" title="tactic">extensionality</span> <span class="id" title="var">j</span>. <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+execute an unary function multiply times with the initial value. 
+    Similiar to fold.
+    nexec a0 f n := f (f ... (f x) ...)
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Fixpoint</span> <a id="nexec" class="idref" href="#nexec"><span class="id" title="definition">nexec</span></a> {<a id="A:31" class="idref" href="#A:31"><span class="id" title="binder">A</span></a>:<span class="id" title="keyword">Type</span>} (<a id="a0:32" class="idref" href="#a0:32"><span class="id" title="binder">a0</span></a>:<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:31"><span class="id" title="variable">A</span></a>) (<a id="f:33" class="idref" href="#f:33"><span class="id" title="binder">f</span></a>:<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:31"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:31"><span class="id" title="variable">A</span></a>) (<a id="n:34" class="idref" href="#n:34"><span class="id" title="binder">n</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:31"><span class="id" title="variable">A</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#n:34"><span class="id" title="variable">n</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#O"><span class="id" title="constructor">O</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#a0:32"><span class="id" title="variable">a0</span></a><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#S"><span class="id" title="constructor">S</span></a> <span class="id" title="var">n'</span> =&gt; <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#nexec:35"><span class="id" title="definition">nexec</span></a> (<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:33"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#a0:32"><span class="id" title="variable">a0</span></a>) <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:33"><span class="id" title="variable">f</span></a> <span class="id" title="var">n'</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+nexec rewriting 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="nexec_rw" class="idref" href="#nexec_rw"><span class="id" title="lemma">nexec_rw</span></a> : <span class="id" title="keyword">forall</span> (<a id="A:37" class="idref" href="#A:37"><span class="id" title="binder">A</span></a>:<span class="id" title="keyword">Type</span>) (<a id="a:38" class="idref" href="#a:38"><span class="id" title="binder">a</span></a>:<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:37"><span class="id" title="variable">A</span></a>) (<a id="f:39" class="idref" href="#f:39"><span class="id" title="binder">f</span></a>:<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:37"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:37"><span class="id" title="variable">A</span></a>) (<a id="n:40" class="idref" href="#n:40"><span class="id" title="binder">n</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>),<br/>
+&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#nexec"><span class="id" title="definition">nexec</span></a> (<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:39"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#a:38"><span class="id" title="variable">a</span></a>) <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:39"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#n:40"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:39"><span class="id" title="variable">f</span></a> (<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#nexec"><span class="id" title="definition">nexec</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#a:38"><span class="id" title="variable">a</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:39"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#n:40"><span class="id" title="variable">n</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="var">revert</span> <span class="id" title="var">a</span>. <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Linear property of nexec 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="nexec_linear" class="idref" href="#nexec_linear"><span class="id" title="lemma">nexec_linear</span></a> : <span class="id" title="keyword">forall</span> (<a id="A:41" class="idref" href="#A:41"><span class="id" title="binder">A</span></a>:<span class="id" title="keyword">Type</span>) (<a id="a:42" class="idref" href="#a:42"><span class="id" title="binder">a</span></a>:<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:41"><span class="id" title="variable">A</span></a>) (<a id="f:43" class="idref" href="#f:43"><span class="id" title="binder">f</span></a>:<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:41"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:41"><span class="id" title="variable">A</span></a>) (<a id="g:44" class="idref" href="#g:44"><span class="id" title="binder">g</span></a>:<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:41"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:41"><span class="id" title="variable">A</span></a>) (<a id="n:45" class="idref" href="#n:45"><span class="id" title="binder">n</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>)<br/>
+&nbsp;&nbsp;(<a id="H:47" class="idref" href="#H:47"><span class="id" title="binder">H</span></a>: <span class="id" title="keyword">forall</span> <a id="x:46" class="idref" href="#x:46"><span class="id" title="binder">x</span></a>:<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:41"><span class="id" title="variable">A</span></a>, <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:43"><span class="id" title="variable">f</span></a> (<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:44"><span class="id" title="variable">g</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#x:46"><span class="id" title="variable">x</span></a>) <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:44"><span class="id" title="variable">g</span></a> (<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:43"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#x:46"><span class="id" title="variable">x</span></a>)),<br/>
+&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#nexec"><span class="id" title="definition">nexec</span></a> (<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:44"><span class="id" title="variable">g</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#a:42"><span class="id" title="variable">a</span></a>) <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:43"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#n:45"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:44"><span class="id" title="variable">g</span></a> (<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#nexec"><span class="id" title="definition">nexec</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#a:42"><span class="id" title="variable">a</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:43"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#n:45"><span class="id" title="variable">n</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="var">revert</span> <span class="id" title="var">a</span>. <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H</span>,<span class="id" title="var">IHn</span>. <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+map f (seq 0 (S n)) = map f (seq 0 n) + f n
+    So, a0 + f 0 + f 1 + ... + f n = (a0 + f 0 + ... + f (n-1)) + f n 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="fold_map_seq" class="idref" href="#fold_map_seq"><span class="id" title="lemma">fold_map_seq</span></a> : <span class="id" title="keyword">forall</span> (<a id="A:48" class="idref" href="#A:48"><span class="id" title="binder">A</span></a>:<span class="id" title="keyword">Type</span>) (<a id="f:49" class="idref" href="#f:49"><span class="id" title="binder">f</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:48"><span class="id" title="variable">A</span></a>) (<a id="g:50" class="idref" href="#g:50"><span class="id" title="binder">g</span></a>:<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:48"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:48"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:48"><span class="id" title="variable">A</span></a>) (<a id="a0:51" class="idref" href="#a0:51"><span class="id" title="binder">a0</span></a>:<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#A:48"><span class="id" title="variable">A</span></a>) (<a id="n:52" class="idref" href="#n:52"><span class="id" title="binder">n</span></a>:<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>),<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#fold_left"><span class="id" title="definition">fold_left</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:50"><span class="id" title="variable">g</span></a> (<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:49"><span class="id" title="variable">f</span></a> (<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#seq"><span class="id" title="definition">seq</span></a> 0 (<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Datatypes.html#S"><span class="id" title="constructor">S</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#n:52"><span class="id" title="variable">n</span></a>))) <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#a0:51"><span class="id" title="variable">a0</span></a> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:50"><span class="id" title="variable">g</span></a> (<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#fold_left"><span class="id" title="definition">fold_left</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#g:50"><span class="id" title="variable">g</span></a> (<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:49"><span class="id" title="variable">f</span></a> (<a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#seq"><span class="id" title="definition">seq</span></a> 0 <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#n:52"><span class="id" title="variable">n</span></a>)) <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#a0:51"><span class="id" title="variable">a0</span></a>) (<a class="idref" href="FinMatrix.CoqExt.FuncExt.html#f:49"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.FuncExt.html#n:52"><span class="id" title="variable">n</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#seq_S"><span class="id" title="lemma">seq_S</span></a>. &nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#map_app"><span class="id" title="lemma">map_app</span></a>. &nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/doc/V8.19.0/stdlib//Coq.Lists.List.html#fold_left_app"><span class="id" title="lemma">fold_left_app</span></a>. &nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

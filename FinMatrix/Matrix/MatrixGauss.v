@@ -691,7 +691,7 @@ Section GaussElim.
    *)
   (* 将矩阵M的后 x 行化为单位上三角形。
      参数 x 最大为维数，递归时 x 递减，而 (维数-x) 递增。*)
-  Fixpoint rowEchelon {n} (M : smat (S n)) (x : nat)
+  Fixpoint toREF {n} (M : smat (S n)) (x : nat)
     : option (list RowOp * smat (S n)) :=
     match x with
     | O => Some ([], M)
@@ -713,7 +713,7 @@ Section GaussElim.
             (* 使主元以下都是 0 *)
             let (l3, M3) := elimDown M2 x' j in
             (* 递归 *)
-            match rowEchelon M3 x' with
+            match toREF M3 x' with
             | None => None
             | Some (l4, M4) => Some ((l4 ++ l3 ++ [op2; op1])%list, M4)
             end
@@ -721,26 +721,26 @@ Section GaussElim.
     end.
 
   (** 对 M 行变换得到 (l, M')，则 [l] * M = M' *)
-  Lemma rowEchelon_eq : forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
-      rowEchelon M x = Some (l, M') -> rowOps2mat l * M = M'.
+  Lemma toREF_eq : forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
+      toREF M x = Some (l, M') -> rowOps2mat l * M = M'.
   Proof.
     induction x; intros.
     - simpl in H. inversion H. simpl. apply mmul_1_l.
-    - unfold rowEchelon in H; fold (@rowEchelon (n)) in H. (* Tips: simpl展开太多 *)
+    - unfold toREF in H; fold (@toREF (n)) in H. (* Tips: simpl展开太多 *)
       destruct getPivot as [i|] eqn: Hi; try easy.
       replace (S n - S x) with (n - x) in * by lia.
       (* 根据 i ??= #(n - x) 决定是否需要换行 *)
       destruct (i ??= #(n - x)) as [E|E].
       + (* i 就是当前行，不需要换行 *)
         destruct elimDown as [l3 M3] eqn:T3.
-        destruct rowEchelon as [[l4 M4]|] eqn:T4; try easy.
+        destruct toREF as [[l4 M4]|] eqn:T4; try easy.
         apply IHx in T4. inversion H. rewrite <- H2, <- T4.
         apply elimDown_eq in T3. rewrite <- T3.
         rewrite !rowOps2mat_app. simpl. rewrite !mmul_assoc. f_equal. f_equal.
         rewrite <- mrowScale_mmul. rewrite mmul_1_l. auto.
       + (* i 不是当前行，需要换行 *)
         destruct elimDown as [l3 M3] eqn:T3.
-        destruct (rowEchelon M3 x) as [[l4 M4]|] eqn:T4; try easy.
+        destruct (toREF M3 x) as [[l4 M4]|] eqn:T4; try easy.
         apply IHx in T4. inversion H. rewrite <- H2, <- T4.
         apply elimDown_eq in T3. rewrite <- T3.
         rewrite !rowOps2mat_app. simpl. rewrite !mmul_assoc. f_equal. f_equal.
@@ -749,22 +749,22 @@ Section GaussElim.
 
   (** M 的前 S n - x 列左下角是0，且将 M 的后 x 行变换上三角得到 (l, M')，
       则 M' 的所有列的左下角是 0 *)
-  Lemma rowEchelon_mLeftLowerZeros :
+  Lemma toREF_mLeftLowerZeros :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
-      rowEchelon M x = Some (l, M') ->
+      toREF M x = Some (l, M') ->
       x <= S n ->
       mLeftLowerZeros M (S n - x) ->
       mLeftLowerZeros M' (S n).
   Proof.
     induction x; intros.
     - simpl in *. inv H. auto.
-    - unfold rowEchelon in H; fold (@rowEchelon n) in H.
+    - unfold toREF in H; fold (@toREF n) in H.
       replace (S n - S x) with (n - x) in * by lia.
       destruct getPivot as [i|] eqn : Hi; try easy.
       (* 根据 i ??= #(n - x) 决定是否需要换行 *)
       destruct (i ??= #(n - x)) as [E|E].
       + destruct elimDown as [l3 M3] eqn:T3.
-        destruct rowEchelon as [[l4 M4]|] eqn:T4; try easy.
+        destruct toREF as [[l4 M4]|] eqn:T4; try easy.
         inv H. apply IHx in T4; auto; try lia; clear IHx.
         replace x with (S n - (S (n - x))) in T3 at 4 by lia.
         apply elimDown_mLeftLowerZeros in T3; try lia.
@@ -775,7 +775,7 @@ Section GaussElim.
           apply getPivot_imply_nonzero in Hi. rewrite <- E in *. fin.
         * hnf; intros. unfold mrowScale; fin. rewrite (H1 _ j); fin.
       + destruct elimDown as [l3 M3] eqn:T3.
-        destruct rowEchelon as [[l4 M4]|] eqn:T4; try easy.
+        destruct toREF as [[l4 M4]|] eqn:T4; try easy.
         inv H. apply IHx in T4; auto; try lia; clear IHx.
         replace x with (S n - (S (n - x))) in T3 at 6 by lia.
         apply elimDown_mLeftLowerZeros in T3; try lia.
@@ -790,18 +790,18 @@ Section GaussElim.
   Qed.
 
   (** 化行阶梯矩阵得到了上三角矩阵 *)
-  Lemma rowEchelon_mUpperTrig : forall {n} (M M' : smat (S n)) (l : list RowOp),
-      rowEchelon M (S n) = Some (l, M') -> mUpperTrig M'.
+  Lemma toREF_mUpperTrig : forall {n} (M M' : smat (S n)) (l : list RowOp),
+      toREF M (S n) = Some (l, M') -> mUpperTrig M'.
   Proof.
-    intros. apply rowEchelon_mLeftLowerZeros in H; auto.
+    intros. apply toREF_mLeftLowerZeros in H; auto.
     hnf; intros. lia.
   Qed.
   
   (** M 的前 S n - x 个对角线元素是1，且将 M 的后 x 行变换上三角得到 (l, M')，
       则 M' 的所有对角线都是1 *)
-  Lemma rowEchelon_mDiagonalOne :
+  Lemma toREF_mDiagonalOne :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
-      rowEchelon M x = Some (l, M') ->
+      toREF M x = Some (l, M') ->
       mDiagonalOne M (S n - x) ->
       x <= S n ->
       mDiagonalOne M' (S n).
@@ -809,13 +809,13 @@ Section GaussElim.
     induction x; intros.
     - simpl in *. inv H. auto.
     - (* simpl in H. *) (* too much! *)
-      unfold rowEchelon in H; fold (@rowEchelon n) in H.
+      unfold toREF in H; fold (@toREF n) in H.
       destruct getPivot as [i|] eqn: Hi; try easy.
       replace (S n - S x) with (n - x) in * by lia.
       (* 根据 i ??= #(n - x) 决定是否需要换行 *)
       destruct (i ??= #(n - x)) as [E|E].
       + destruct elimDown as [l3 M3] eqn:T3.
-        destruct rowEchelon as [[l4 M4]|] eqn:T4; try easy.
+        destruct toREF as [[l4 M4]|] eqn:T4; try easy.
         apply IHx in T4; clear IHx; try lia.
         * inversion H; clear H. rewrite <- H4. auto.
         * hnf; intros.
@@ -829,7 +829,7 @@ Section GaussElim.
           ** unfold mrowScale; fin. rewrite field_mulInvL; auto.
              apply getPivot_imply_nonzero in Hi. rewrite <- E in *. fin.
       + destruct elimDown as [l3 M3] eqn:T3.
-        destruct rowEchelon as [[l4 M4]|] eqn:T4; try easy.
+        destruct toREF as [[l4 M4]|] eqn:T4; try easy.
         apply IHx in T4; clear IHx; try lia.
         * inversion H; clear H. rewrite <- H4. auto.
         * hnf; intros.
@@ -849,28 +849,28 @@ Section GaussElim.
   Qed.
   
   (** 化行阶梯矩阵得到的矩阵的对角线都是 1 *)
-  Lemma rowEchelon_mDiagonalOnes : forall {n} (M M' : smat (S n)) (l : list RowOp),
-      rowEchelon M (S n) = Some (l, M') -> mDiagonalOnes M'.
+  Lemma toREF_mDiagonalOnes : forall {n} (M M' : smat (S n)) (l : list RowOp),
+      toREF M (S n) = Some (l, M') -> mDiagonalOnes M'.
   Proof.
-    intros. unfold mDiagonalOnes. apply rowEchelon_mDiagonalOne in H; auto.
+    intros. unfold mDiagonalOnes. apply toREF_mDiagonalOne in H; auto.
     hnf; lia.
   Qed.
 
   (** 对 M 行变换得到 (l, M')，则 l 都是有效的 *)
-  Lemma rowEchelon_rowOpValid :
+  Lemma toREF_rowOpValid :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
-      x <= S n -> rowEchelon M x = Some (l, M') -> Forall roValid l.
+      x <= S n -> toREF M x = Some (l, M') -> Forall roValid l.
   Proof.
     induction x; intros.
     - simpl in H0. inversion H0. constructor.
-    - unfold rowEchelon in H0; fold (@rowEchelon (n)) in H0.
+    - unfold toREF in H0; fold (@toREF (n)) in H0.
       destruct getPivot as [i|] eqn: Hi; try easy.
       replace (S n - S x) with (n - x) in * by lia.
       (* 根据 i ??= #(n - x) 决定是否需要换行 *)
       destruct (i ??= #(n - x)) as [E|E].
       + (* i 就是当前行，不需要换行 *)
         destruct elimDown as [l3 M3] eqn:T3.
-        destruct rowEchelon as [[l4 M4]|] eqn:T4; try easy. inversion H0.
+        destruct toREF as [[l4 M4]|] eqn:T4; try easy. inversion H0.
         apply IHx in T4 as T4'.
         apply elimDown_rowOpValid in T3.
         apply Forall_app. split; auto.
@@ -880,7 +880,7 @@ Section GaussElim.
         apply getPivot_imply_nonzero in Hi. fin2nat. auto. fin. fin.
       + (* i 不是当前行，需要换行 *)
         destruct elimDown as [l3 M3] eqn:T3.
-        destruct (rowEchelon M3 x) as [[l4 M4]|] eqn:T4; try easy.
+        destruct (toREF M3 x) as [[l4 M4]|] eqn:T4; try easy.
         apply IHx in T4 as T4'. inversion H0.
         apply elimDown_rowOpValid in T3.
         apply Forall_app. split; auto.
@@ -891,33 +891,33 @@ Section GaussElim.
   Qed.
 
   (** 对 M 行变换得到 (l, M')，则 [l]' * M' = M *)
-  Lemma rowEchelon_eq_inv :  forall {n} (M M' : smat (S n)) (l : list RowOp),
-      rowEchelon M (S n) = Some (l, M')  -> rowOps2matInv l * M' = M.
+  Lemma toREF_eq_inv :  forall {n} (M M' : smat (S n)) (l : list RowOp),
+      toREF M (S n) = Some (l, M')  -> rowOps2matInv l * M' = M.
   Proof.
-    intros. apply rowEchelon_eq in H as H'. rewrite <- H'.
+    intros. apply toREF_eq in H as H'. rewrite <- H'.
     rewrite <- mmul_assoc. rewrite mmul_rowOps2matInv_rowOps2mat_eq1.
     rewrite mmul_1_l; auto.
-    apply rowEchelon_rowOpValid in H. auto. lia.
+    apply toREF_rowOpValid in H. auto. lia.
   Qed.
   
   (** 化行阶梯矩阵得到的矩阵是单位上三角矩阵 *)
-  Lemma rowEchelon_mUnitUpperTrig : forall {n} (M M' : smat (S n)) (l : list RowOp),
-      rowEchelon M (S n) = Some (l, M') -> mUnitUpperTrig M'.
+  Lemma toREF_mUnitUpperTrig : forall {n} (M M' : smat (S n)) (l : list RowOp),
+      toREF M (S n) = Some (l, M') -> mUnitUpperTrig M'.
   Proof.
     intros. hnf. split.
-    apply rowEchelon_mUpperTrig in H; auto.
-    apply rowEchelon_mDiagonalOnes in H; auto.
+    apply toREF_mUpperTrig in H; auto.
+    apply toREF_mDiagonalOnes in H; auto.
   Qed.
 
   (** 化行阶梯形满足乘法不变式，并且结果矩阵是规范的上三角矩阵 *)
-  Theorem rowEchelon_spec :
+  Theorem toREF_spec :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
-      rowEchelon M (S n) = Some (l, M') ->
+      toREF M (S n) = Some (l, M') ->
       (rowOps2mat l * M = M') /\ mUnitUpperTrig M'.
   Proof.
     intros. split.
-    apply rowEchelon_eq in H; auto.
-    apply rowEchelon_mUnitUpperTrig in H; auto.
+    apply toREF_eq in H; auto.
+    apply toREF_mUnitUpperTrig in H; auto.
   Qed.
 
 
@@ -926,7 +926,7 @@ Section GaussElim.
 
   (*   Import QcExt. *)
   (*   Notation getPivot := (getPivot (Azero:=0)). *)
-  (*   Notation rowEchelon := (@rowEchelon _ Qcplus 0 Qcopp Qcmult Qcinv _). *)
+  (*   Notation toREF := (@toREF _ Qcplus 0 Qcopp Qcmult Qcinv _). *)
   (*   Notation elimDown := (@elimDown _ Qcplus 0 Qcopp Qcmult _). *)
   (*   Notation rowOps2mat := (@rowOps2mat _ Qcplus 0 Qcmult 1 _). *)
   (*   Notation mmul := (@mmul _ Qcplus 0 Qcmult). *)
@@ -940,7 +940,7 @@ Section GaussElim.
   (*   Let M1 : smat Qc 3 := l2m 0 (Q2Qc_dlist [[1;0;-2/3];[0;1;-1/2];[0;0;1]]%Q). *)
   (*   Let E1 : smat Qc 3 := l2m 0 (Q2Qc_dlist [[0;1/3;0];[-1/2;0;0];[9;4;6]]%Q). *)
   
-  (*   Goal match rowEchelon M 3 with *)
+  (*   Goal match toREF M 3 with *)
   (*        | Some (l1',M1') => m2l (rowOps2mat l1') = m2l E1 *)
   (*                           /\ m2l M1' = m2l M1 *)
   (*        | _ => False *)
@@ -1129,48 +1129,48 @@ Section GaussElim.
   (** ** 最简行阶梯形矩阵 *)
 
   (* 将矩阵 M 的前 x 行(列)化为行最简阶梯形。当 x 为 S n 时表示整个矩阵 *)
-  Fixpoint minRowEchelon {n} (M : smat (S n)) (x : nat) : list RowOp * smat (S n) :=
+  Fixpoint toRREF {n} (M : smat (S n)) (x : nat) : list RowOp * smat (S n) :=
     match x with
     | O => ([], M)
     | S x' =>
         let fx : 'I_(S n) := #x' in
         let (l1, M1) := elimUp M x' fx in
-        let (l2, M2) := minRowEchelon M1 x' in
+        let (l2, M2) := toRREF M1 x' in
         ((l2 ++ l1)%list, M2)
     end.
 
   (** 对 M 最简行变换得到 (l, M')，则 [l] * M = M' *)
-  Lemma minRowEchelon_eq : forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
-      minRowEchelon M x = (l, M') -> rowOps2mat l * M = M'.
+  Lemma toRREF_eq : forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
+      toRREF M x = (l, M') -> rowOps2mat l * M = M'.
   Proof.
     induction x; intros; simpl in *.
     - inversion H. simpl. apply mmul_1_l.
     - destruct elimUp as [l1 M1] eqn : T1.
-      destruct minRowEchelon as [l2 M2] eqn : T2.
+      destruct toRREF as [l2 M2] eqn : T2.
       apply IHx in T2. inv H.
       apply elimUp_eq in T1. rewrite <- T1.
       rewrite rowOps2mat_app. apply mmul_assoc.
   Qed.
 
-  (* minRowEchelon 保持上三角 *)
-  Lemma minRowEchelon_mUnitUpperTrig :
+  (* toRREF 保持上三角 *)
+  Lemma toRREF_mUnitUpperTrig :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
-      minRowEchelon M x = (l, M') ->
+      toRREF M x = (l, M') ->
       x <= S n ->
       mUnitUpperTrig M ->
       mUnitUpperTrig M'.
   Proof.
     induction x; intros; simpl in H. inv H; auto.
     destruct elimUp as [l1 M1] eqn : T1.
-    destruct minRowEchelon as [l2 M2] eqn : T2. inv H.
+    destruct toRREF as [l2 M2] eqn : T2. inv H.
     apply IHx in T2; auto; try lia.
     apply elimUp_mUnitUpperTrig in T1; auto. fin.
   Qed.
   
   (** 若 M 的 后 S n - x 列的右上角都是0，则对 M 最简行变换得到的 M' 的右上角都是0 *)
-  Lemma minRowEchelon_mRightUpperZeros :
+  Lemma toRREF_mRightUpperZeros :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
-      minRowEchelon M x = (l, M') ->
+      toRREF M x = (l, M') ->
       x <= S n ->
       mUnitUpperTrig M ->
       mRightUpperZeros M (S n - x) ->
@@ -1178,38 +1178,38 @@ Section GaussElim.
   Proof.
     induction x; intros; simpl in H. inv H; auto.
     destruct elimUp as [l1 M1] eqn : T1.
-    destruct minRowEchelon as [l2 M2] eqn : T2. inv H.
+    destruct toRREF as [l2 M2] eqn : T2. inv H.
     apply IHx in T2; auto; try lia.
     - apply elimUp_mUnitUpperTrig in T1; auto. fin.
     - apply elimUp_mUpperRightZeros in T1; auto.
   Qed.
 
   (** 对 M 向下消元得到 (l, M')，则 l 都是有效的 *)
-  Lemma minRowEchelon_rowOpValid :
+  Lemma toRREF_rowOpValid :
     forall (x : nat) {n} (M M' : smat (S n)) (l : list RowOp),
-      minRowEchelon M x = (l, M') -> x <= S n -> Forall roValid l.
+      toRREF M x = (l, M') -> x <= S n -> Forall roValid l.
   Proof.
     induction x; intros; simpl in H. inv H; auto.
     destruct elimUp as [l1 M1] eqn : T1.
-    destruct minRowEchelon as [l2 M2] eqn : T2. inv H.
+    destruct toRREF as [l2 M2] eqn : T2. inv H.
     apply IHx in T2; auto; try lia.
     apply elimUp_rowOpValid in T1 as T1'; fin.
     apply Forall_app. split; auto.
   Qed.
   
   (** 对 M 最简行变换得到 (l, M')，则 [l]' * M' = M *)
-  Lemma minRowEchelon_eq_inv : forall {n} (M M' : smat (S n)) (l : list RowOp),
-      minRowEchelon M (S n) = (l, M') -> rowOps2matInv l * M' = M.
+  Lemma toRREF_eq_inv : forall {n} (M M' : smat (S n)) (l : list RowOp),
+      toRREF M (S n) = (l, M') -> rowOps2matInv l * M' = M.
   Proof.
-    intros. apply minRowEchelon_eq in H as H'. rewrite <- H'.
+    intros. apply toRREF_eq in H as H'. rewrite <- H'.
     rewrite <- mmul_assoc. rewrite mmul_rowOps2matInv_rowOps2mat_eq1.
     rewrite mmul_1_l; auto.
-    apply minRowEchelon_rowOpValid in H; fin.
+    apply toRREF_rowOpValid in H; fin.
   Qed.
   
   (** 对 M 最简行变换得到 (l, M')，则 M' 是单位阵 *)
-  Lemma minRowEchelon_mat1 : forall {n} (M M' : smat (S n)) (l : list RowOp),
-      minRowEchelon M (S n) = (l, M') ->
+  Lemma toRREF_mat1 : forall {n} (M M' : smat (S n)) (l : list RowOp),
+      toRREF M (S n) = (l, M') ->
       mUnitUpperTrig M -> M' = mat1.
   Proof.
     intros. apply meq_iff_mnth; intros. 
@@ -1217,17 +1217,17 @@ Section GaussElim.
     destruct (j ??< i).
     - (* 左下角 *)
       rewrite mat1_mLeftLowerZeros; auto; fin.
-      apply minRowEchelon_mUnitUpperTrig in H; auto.
+      apply toRREF_mUnitUpperTrig in H; auto.
       hnf in H. destruct H. rewrite H; auto; fin.
     - destruct (j ??= i) as [E|E].
       + (* 对角线 *)
-        apply minRowEchelon_mUnitUpperTrig in H; auto. fin2nat.
+        apply toRREF_mUnitUpperTrig in H; auto. fin2nat.
         rewrite mat1_mDiagonalOne; fin.
         hnf in H. destruct H. rewrite H1; auto; fin.
       + (* 右上角 *)
         assert (i < j) by lia.
         rewrite mat1_mRightUpperZeros; auto; fin.
-        apply minRowEchelon_mRightUpperZeros in H; auto; fin.
+        apply toRREF_mRightUpperZeros in H; auto; fin.
         * rewrite H; auto; try lia.
         * hnf; intros. pose proof (fin2nat_lt j0). lia.
   Qed.
@@ -1243,8 +1243,8 @@ Section test.
   Notation mat1 := (@mat1 _ 0 1).
   Notation mmul := (@mmul _ Qcplus 0 Qcmult).
   Infix "*" := mmul : mat_scope.
-  Notation rowEchelon := (@rowEchelon _ Qcplus 0 Qcopp Qcmult Qcinv).
-  Notation minRowEchelon := (@minRowEchelon _ Qcplus 0 Qcopp Qcmult).
+  Notation toREF := (@toREF _ Qcplus 0 Qcopp Qcmult Qcinv).
+  Notation toRREF := (@toRREF _ Qcplus 0 Qcopp Qcmult).
   Notation elimUp := (@elimUp _ Qcplus 0 Qcopp Qcmult).
   Notation rowOps2mat := (@rowOps2mat _ Qcplus 0 Qcmult 1).
   Notation rowOps2matInv := (@rowOps2matInv _ Qcplus 0 Qcopp Qcmult 1 Qcinv).
@@ -1287,14 +1287,14 @@ Section test.
   Proof. meq. Qed.
   
   (* 行阶梯形 *)
-  Let l1 := match rowEchelon M0 3 with Some (l1,M1) => l1 | _ => [] end.
+  Let l1 := match toREF M0 3 with Some (l1,M1) => l1 | _ => [] end.
   Let T1 : smat 3 := rowOps2mat l1.
-  Let M1 : smat 3 := match rowEchelon M0 3 with Some (l1,M1) => M1 | _ => mat1 end.
+  Let M1 : smat 3 := match toREF M0 3 with Some (l1,M1) => M1 | _ => mat1 end.
   
   (* 简化行阶梯形 *)
-  Let l2 := fst (minRowEchelon M1 3).
+  Let l2 := fst (toRREF M1 3).
   Let T2 : smat 3 := rowOps2mat l2.
-  Let M2 : smat 3 := snd (minRowEchelon M1 3).
+  Let M2 : smat 3 := snd (toRREF M1 3).
 
   (* 证明变换后的矩阵 M2 是单位阵 *)
   Goal M2 = mat1.

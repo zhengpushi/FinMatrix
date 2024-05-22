@@ -2008,6 +2008,54 @@ Section Symbol_matrix.
 End Symbol_matrix.
 
 
+(** Test for symbol matrix for flight-control-system *)
+Section Symbol_matrix.
+  Variable θ ϕ : R.
+  Notation sθ := (sin θ). Notation cθ := (cos θ).
+  Notation sϕ := (sin ϕ). Notation cϕ := (cos ϕ).
+
+  (* Given input matrix *)
+  Let M : smat 3 := l2m [[1;0;-sθ];[0;cϕ;cθ*sϕ];[0;-sϕ;cθ*cϕ]]%R.
+
+  (* A unknown inverse matrix *)
+  Variable a11 a12 a13 a21 a22 a23 a31 a32 a33 : A.
+  Let M' : smat 3 := l2m [[a11;a12;a13];[a21;a22;a23];[a31;a32;a33]].
+  
+  (* Find inverse matrix *)
+  Goal minvNoCheck M = M'.
+  Proof.
+    meq; field_simplify; autorewrite with R. 
+    all:
+    match goal with
+    | |- ?a = ?b => idtac
+    | |- ?a <> ?b => try admit
+    end.
+    (* now, we find a preliminary formulas: *)
+    (*
+  1 = a11
+
+goal 2 (ID 4122) is:
+ sϕ * sθ / cθ = a12
+goal 3 (ID 4128) is:
+ cϕ * sθ / cθ = a13
+goal 4 (ID 4132) is:
+ 0 = a21
+goal 5 (ID 4139) is:
+ cϕ * cθ / cθ = a22
+goal 6 (ID 4147) is:
+ (- (cθ * sϕ / cθ))%R = a23
+goal 7 (ID 4151) is:
+ 0 = a31
+goal 8 (ID 4158) is:
+ sϕ / cθ = a32
+goal 9 (ID 4164) is:
+ cϕ / cθ = a33
+     *)
+  Abort.
+  
+End Symbol_matrix.
+
+
 (** example for symbol matrix *)
 Module Exercise_Ch1_Symbol.
 

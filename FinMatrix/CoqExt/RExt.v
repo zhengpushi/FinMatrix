@@ -1176,6 +1176,14 @@ Proof. auto. Qed.
 Lemma cos_neg0 : forall r : R, - PI / 2 < r < PI / 2 -> cos r <> 0.
 Proof. intros. assert (0 < cos r). { apply cos_gt_0; ra. } ra. Qed.
 
+(* (cos x)² * a + a * (sin x)² = a *)
+Lemma cos2_mul_x_plus_x_mul_sin2: forall x a : R, (cos x)² * a + a * (sin x)² = a.
+Proof. intros. pose proof (cos2 x). rewrite H. ra. Qed.
+
+(* (sin x)² * a + a * (cos x)² = a *)
+Lemma sin2_mul_x_plus_x_mul_cos2: forall x a : R, (sin x)² * a + a * (cos x)² = a.
+Proof. intros. pose proof (cos2 x). rewrite H. ra. Qed.
+
 #[export] Hint Rewrite
   sin_0         (* sin 0 = 0 *)
   sin_R0        (* sin R0 = 0 *)
@@ -1206,6 +1214,8 @@ Proof. intros. assert (0 < cos r). { apply cos_gt_0; ra. } ra. Qed.
   asin_opp      (* asin (-x) = - asin x *)
   acos_opp      (* acos (-x) = PI - acos x *)
   atan_opp      (* atan (-x) = - atan x *)
+  cos2_mul_x_plus_x_mul_sin2  (* (cos x)² * a + a * (sin x)² = a *)
+  sin2_mul_x_plus_x_mul_cos2  (* (sin x)² * a + a * (cos x)² = a *)
   : R.
 
 #[export] Hint Resolve

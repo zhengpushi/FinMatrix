@@ -32,6 +32,9 @@ Require Import ExtrOcamlBasic ExtrOcamlNatInt MyExtrOCamlR.
 
 Include (NormedOrderedFieldMatrixTheory NormedOrderedFieldElementTypeR).
 
+(* A TEMPORARY Fix: Let "Hierarchy.le_xx" has more priority than "Nat.le_xx" *)
+Import Hierarchy.
+
 Open Scope R_scope.
 Open Scope vec_scope.
 Open Scope mat_scope.

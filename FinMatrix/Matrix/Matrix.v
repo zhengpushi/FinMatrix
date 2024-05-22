@@ -1158,12 +1158,37 @@ Section madd.
 End madd.
 
 
-(* addition,opposition,subtraction, trace, scalar multiplication, multiplication *)
+(* ======================================================================= *)
+(** ** Matrix Trace *)
+Section mtrace.
+  Context `{AMonoid}.
+  Notation smat n := (smat A n).
+  Notation vsum := (@vsum _ Aadd Azero).
+  Infix "+" := Aadd : A_scope.
+  Notation madd := (@madd _ Aadd).
+  Infix "+" := madd : mat_scope.
+  
+  Definition mtrace {n : nat} (M : smat n) : A := vsum (fun i => M.[i].[i]).
+  Notation "'tr' M" := (mtrace M).
+
+  (** tr(M\T) = tr(M) *)
+  Lemma mtrace_mtrans : forall {n} (M : smat n), tr (M\T) = tr M.
+  Proof. intros. apply vsum_eq; intros. apply mnth_mtrans. Qed.
+
+  (** tr(M + N) = tr(M) + tr(N) *)
+  Lemma mtrace_madd : forall {n} (M N : smat n), tr (M + N) = (tr M + tr N)%A.
+  Proof.
+    intros. unfold madd, mtrace. rewrite vsum_add; intros.
+    apply vsum_eq; intros. rewrite mnth_mmap2. auto.
+  Qed.
+End mtrace.
+
+
+(* addition,opposition,subtraction, scalar multiplication, multiplication *)
 Section malg.
 
-  Context `{HAGroup : AGroup} {Aone : A}.
+  Context `{HAGroup : AGroup}.
   Notation "0" := Azero : A_scope.
-  Notation "1" := Aone : A_scope.
   Infix "+" := Aadd : A_scope.
   Notation "- a" := (Aopp a) : A_scope.
   Notation Asub := (fun a b => a + (- b)).
@@ -1178,85 +1203,10 @@ Section malg.
   Notation smat n := (smat A n).
   Notation mat0 := (@mat0 _ Azero).
   Notation madd := (@madd _ Aadd).
+  Notation mtrace := (@mtrace _ Aadd 0 _).
   Infix "+" := madd : mat_scope.
-  
-  
-  (* ======================================================================= *)
-  (** ** Unit matrix *)
-  Section mat1.
-    Definition mat1 {n} : smat n := fun i j => if i ??= j then 1 else 0.
-    
-    (** mat1\T = mat1 *)
-    Lemma mtrans_mat1 : forall {n : nat}, (@mat1 n)\T = mat1.
-    Proof.
-      intros. apply meq_iff_mnth; intros. unfold mtrans,mat1. fin.
-    Qed.
-
-    (** mat1[i,i] = 1 *)
-    Lemma mnth_mat1_same : forall {n} i, (@mat1 n).[i].[i] = 1.
-    Proof. intros. unfold mat1. fin. Qed.
-
-    (** i <> j -> mat1[i,j] = 0 *)
-    Lemma mnth_mat1_diff : forall {n} i j, i <> j -> (@mat1 n).[i].[j] = 0.
-    Proof. intros. unfold mat1. fin. Qed.
-
-    (** mat1 is diagonal matrix *)
-    Lemma mat1_diag : forall {n : nat}, mdiag 0 (@mat1 n).
-    Proof. intros. hnf. intros. rewrite mnth_mat1_diff; auto. Qed.
-
-    (** M = I -> a = 0 -> b = 0 -> x = 1 mconscT (mconsrT M a) (vconsT b x) = I *)
-    Lemma mconscT_mconsrT_vconsT_eq1 : forall {n} (M : smat n) (a b : vec n)(x : A),
-        M = mat1 -> a = vzero -> b = vzero -> x = Aone ->
-        mconscT (mconsrT M a) (vconsT b x) = mat1.
-    Proof.
-      intros. subst. apply meq_iff_mnth; intros. rewrite mnth_mconscT.
-      unfold vconsT, mconsrT, vconsT. fin; try rewrite vnth_vzero.
-      - rewrite mnth_mat1_diff; auto.
-        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
-      - rewrite mnth_mat1_diff; auto.
-        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
-      - pose proof (fin2nat_lt i). pose proof (fin2nat_lt j).
-        assert (fin2nat i = fin2nat j) by lia. apply fin2nat_eq_iff in H1.
-        subst. rewrite mnth_mat1_same. auto.
-    Qed.
-
-    (** M = I -> a = 0 -> b = 0 -> x = 1 mconsrT (mconscT M a) (vconsT b x) = I *)
-    Lemma mconsrT_mconscT_vconsT_eq1 : forall {n} (M : smat n) (a b : vec n)(x : A),
-        M = mat1 -> a = vzero -> b = vzero -> x = Aone ->
-        mconsrT (mconscT M a) (vconsT b x) = mat1.
-    Proof.
-      intros. subst. apply meq_iff_mnth; intros. rewrite mnth_mconsrT.
-      unfold vconsT, mconscT, vconsT, mcol, vmap2. fin; try rewrite vnth_vzero.
-      - rewrite mnth_mat1_diff; auto.
-        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
-      - rewrite mnth_mat1_diff; auto.
-        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
-      - pose proof (fin2nat_lt i). pose proof (fin2nat_lt j).
-        assert (fin2nat i = fin2nat j) by lia. apply fin2nat_eq_iff in H1.
-        subst. rewrite mnth_mat1_same. auto.
-    Qed.
-      
-  End mat1.
-
-  (* ======================================================================= *)
-  (** ** Matrix Trace *)
-  Section mtrace.
-    Definition mtrace {n : nat} (M : smat n) : A := vsum (fun i => M.[i].[i]).
-    Notation "'tr' M" := (mtrace M).
-
-    (** tr(M\T) = tr(M) *)
-    Lemma mtrace_mtrans : forall {n} (M : smat n), tr (M\T) = tr M.
-    Proof. intros. apply vsum_eq; intros. apply mnth_mtrans. Qed.
-
-    (** tr(M + N) = tr(M) + tr(N) *)
-    Lemma mtrace_madd : forall {n} (M N : smat n), tr (M + N) = (tr M + tr N)%A.
-    Proof.
-      intros. unfold madd, mtrace. rewrite vsum_add; intros.
-      apply vsum_eq; intros. rewrite mnth_mmap2. auto.
-    Qed.
-  End mtrace.
   Notation "'tr' M" := (mtrace M).
-
+  
   (* ======================================================================= *)
   (** ** Matrix Opposition *)
   Section mopp.
@@ -1391,15 +1341,73 @@ Section malg.
   End msub.
   Notation "M - N" := ((M + - N)%M) : mat_scope.
 
-  
-  Context `{HARing : ARing A Aadd 0 Aopp Amul 1}.
+
+  Context `{HARing : ARing A Aadd 0 Aopp}.
   Infix "*" := Amul : A_scope.
+  Notation "1" := Aone : A_scope.
   Add Ring ring_inst : (make_ring_theory HARing).
 
   Notation vcmul := (@vcmul _ Amul).
   Infix "\.*" := vcmul : vec_scope.
   Notation vdot v1 v2 := (@vdot _ Aadd 0 Amul _ v1 v2).
   Notation "< v1 , v2 >" := (vdot v1 v2) : vec_scope.
+  
+  (* ======================================================================= *)
+  (** ** Unit matrix *)
+  Section mat1.
+    Definition mat1 {n} : smat n := fun i j => if i ??= j then 1 else 0.
+    
+    (** mat1\T = mat1 *)
+    Lemma mtrans_mat1 : forall {n : nat}, (@mat1 n)\T = mat1.
+    Proof.
+      intros. apply meq_iff_mnth; intros. unfold mtrans,mat1. fin.
+    Qed.
+
+    (** mat1[i,i] = 1 *)
+    Lemma mnth_mat1_same : forall {n} i, (@mat1 n).[i].[i] = 1.
+    Proof. intros. unfold mat1. fin. Qed.
+
+    (** i <> j -> mat1[i,j] = 0 *)
+    Lemma mnth_mat1_diff : forall {n} i j, i <> j -> (@mat1 n).[i].[j] = 0.
+    Proof. intros. unfold mat1. fin. Qed.
+
+    (** mat1 is diagonal matrix *)
+    Lemma mat1_diag : forall {n : nat}, mdiag 0 (@mat1 n).
+    Proof. intros. hnf. intros. rewrite mnth_mat1_diff; auto. Qed.
+
+    (** M = I -> a = 0 -> b = 0 -> x = 1 mconscT (mconsrT M a) (vconsT b x) = I *)
+    Lemma mconscT_mconsrT_vconsT_eq1 : forall {n} (M : smat n) (a b : vec n)(x : A),
+        M = mat1 -> a = vzero -> b = vzero -> x = Aone ->
+        mconscT (mconsrT M a) (vconsT b x) = mat1.
+    Proof.
+      intros. subst. apply meq_iff_mnth; intros. rewrite mnth_mconscT.
+      unfold vconsT, mconsrT, vconsT. fin; try rewrite vnth_vzero.
+      - rewrite mnth_mat1_diff; auto.
+        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
+      - rewrite mnth_mat1_diff; auto.
+        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
+      - pose proof (fin2nat_lt i). pose proof (fin2nat_lt j).
+        assert (fin2nat i = fin2nat j) by lia. apply fin2nat_eq_iff in H1.
+        subst. rewrite mnth_mat1_same. auto.
+    Qed.
+
+    (** M = I -> a = 0 -> b = 0 -> x = 1 mconsrT (mconscT M a) (vconsT b x) = I *)
+    Lemma mconsrT_mconscT_vconsT_eq1 : forall {n} (M : smat n) (a b : vec n)(x : A),
+        M = mat1 -> a = vzero -> b = vzero -> x = Aone ->
+        mconsrT (mconscT M a) (vconsT b x) = mat1.
+    Proof.
+      intros. subst. apply meq_iff_mnth; intros. rewrite mnth_mconsrT.
+      unfold vconsT, mconscT, vconsT, mcol, vmap2. fin; try rewrite vnth_vzero.
+      - rewrite mnth_mat1_diff; auto.
+        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
+      - rewrite mnth_mat1_diff; auto.
+        assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
+      - pose proof (fin2nat_lt i). pose proof (fin2nat_lt j).
+        assert (fin2nat i = fin2nat j) by lia. apply fin2nat_eq_iff in H1.
+        subst. rewrite mnth_mat1_same. auto.
+    Qed.
+      
+  End mat1.
 
   
   (* ======================================================================= *)

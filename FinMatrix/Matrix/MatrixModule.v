@@ -28,7 +28,7 @@
 Require Export Matrix.
 Require Export ElementType.
 Require Export MatrixDet.
-Require Export MatrixInv.
+Require Export MatrixInvAM MatrixInvGE.
 Require Export MatrixOrth.
 
 

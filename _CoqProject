@@ -46,7 +46,6 @@ FinMatrix/Matrix/MatrixGauss.v
 FinMatrix/Matrix/MatrixInvBase.v
 FinMatrix/Matrix/MatrixInvAM.v
 FinMatrix/Matrix/MatrixInvGE.v
-FinMatrix/Matrix/MatrixInv.v
 FinMatrix/Matrix/MatrixOrth.v
 FinMatrix/Matrix/ElementType.v
 FinMatrix/Matrix/MatrixModule.v
@@ -57,4 +56,6 @@ FinMatrix/Matrix/MatrixQc.v
 FinMatrix/Matrix/MatrixR.v
 FinMatrix/Matrix/MatrixC.v
 FinMatrix/Matrix/MatrixRFun.v
+FinMatrix/Matrix/MatrixInvAM_test.v
+FinMatrix/Matrix/MatrixInvGE_test.v
 # FinMatrix/Matrix/VectorSpace.v

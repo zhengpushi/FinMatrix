@@ -11,7 +11,7 @@
 
 Require Export PositiveExt ZExt.
 Require Export QArith Qround.
-Require Export Hierarchy.  
+Require Export Hierarchy ElementType.
 Open Scope Q.
 
 
@@ -46,6 +46,32 @@ Proof.
   constructor. intros. destruct (Qlt_le_dec a b); auto.
   right. intro. apply Qle_not_lt in q. easy.
 Defined.
+
+
+(* ######################################################################### *)
+(** * Instances for ElementType *)
+
+Module ElementTypeQ <: ElementType.
+  Definition A : Type := Q.
+  Definition Azero : A := 0.
+  Hint Unfold A Azero : A.
+
+  Lemma AeqDec : Dec (@eq A).
+  Proof. apply Q_eq_Dec. Defined.
+End ElementTypeQ.
+
+(* Module OrderedElementTypeQ <: OrderedElementType. *)
+(*   Include ElementTypeQ. *)
+
+(*   Definition Alt := Qlt. *)
+(*   Definition Ale := Qle. *)
+(*   Hint Unfold Ale Alt : A. *)
+
+(*   #[export] Instance Order : Order Alt Ale. *)
+(*   Proof. *)
+(*     constructor; intros; autounfold with A in *; try lia. *)
+(*   Abort. *)
+(* End OrderedElementTypeQ. *)
 
 
 (* ######################################################################### *)

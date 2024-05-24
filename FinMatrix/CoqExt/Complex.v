@@ -8,7 +8,7 @@
   date      : 2022.06
  *)
 
-Require Export Hierarchy.
+Require Export Hierarchy ElementType.
 Require Export RExt RFunExt.
 Open Scope R_scope.
 
@@ -668,25 +668,25 @@ Add Field C_field_inst : C_field.
 (** ** Conjugate of complex numbers *)
 
 Definition Cconj (z : C) : C := (z.a) +i (-z.b).
-Notation "z '" := (Cconj z) (at level 20) : C_scope.
+Notation "z \*" := (Cconj z) (at level 20, format "z \*") : C_scope.
 
-Lemma Cconj_add : forall z1 z2 : C, (z1 + z2) ' = z1 ' + z2 '.
+Lemma Cconj_add : forall z1 z2 : C, (z1 + z2)\* = z1\* + z2\*.
 Proof. Ceq. Qed.
 
-Lemma Cadd_conj : forall z : C, z + z ' = (2 * z.a) +i 0.
+Lemma Cadd_conj : forall z : C, z + z\* = (2 * z.a) +i 0.
 Proof. Ceq. Qed.
 
-Lemma Cconj_sub : forall z1 z2 : C, (z1 - z2)' = z1 ' - z2 '.
+Lemma Cconj_sub : forall z1 z2 : C, (z1 - z2)\* = z1\* - z2\*.
 Proof. Ceq. Qed.
 
-Lemma Csub_conj : forall z : C, z - z ' = 0 +i (2 * z.b).
+Lemma Csub_conj : forall z : C, z - z\* = 0 +i (2 * z.b).
 Proof. Ceq. Qed.
 
-Lemma Cconj_mul : forall z1 z2 : C, (z1 * z2)' = z1 ' * z2 '.
+Lemma Cconj_mul : forall z1 z2 : C, (z1 * z2)\* = z1\* * z2\*.
 Proof. Ceq. Qed.
 
-(** | z' | = | z | *)
-Lemma Cnorm_conj : forall z : C, |z '| = | z |.
+(** | z\* | = | z | *)
+Lemma Cnorm_conj : forall z : C, |z\*| = | z |.
 Proof. Csimpl. cbv. f_equal; ring. Qed.
 
 (* ######################################################################### *)
@@ -1273,6 +1273,7 @@ Ltac RusingC a b :=
 
 (* end hide *)
 
+
 (* ######################################################################### *)
 (** * Algebraic Structures *)
 
@@ -1452,3 +1453,71 @@ Hint Resolve C_ARing : C.
 #[export] Instance C_Field : Field Cadd C0 Copp Cmul C1 Cinv.
 Proof. constructor; auto with C. Qed.
 
+
+(* ######################################################################### *)
+(** * Instances for ElementType *)
+   
+Module ElementTypeC <: ElementType.
+  Definition A : Type := C.
+  Definition Azero : A := C0.
+  Hint Unfold A Azero : A.
+
+  Lemma AeqDec : Dec (@eq A).
+  Proof. apply Ceq_Dec. Defined.
+End ElementTypeC.
+
+Module MonoidElementTypeC <: MonoidElementType.
+  Include ElementTypeC.
+
+  Definition Aadd := Cadd.
+  
+  (** Note that, this explicit annotation is must,  *)
+(*       otherwise, the ring has no effect. (because C and T are different) *)
+  (* Definition Aadd : A -> A -> A := fun a b => Cadd a b. *)
+  Hint Unfold Aadd : A.
+  
+  Infix "+" := Aadd : A_scope.
+
+  #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
+  Proof. intros. repeat constructor; intros; autounfold with A; ring. Qed.
+End MonoidElementTypeC.
+
+Module RingElementTypeC <: RingElementType.
+  Include MonoidElementTypeC.
+
+  Definition Aone : A := C1.
+  Definition Aopp := Copp.
+  Definition Amul := Cmul.
+  Hint Unfold Aone Aadd Aopp Amul : A.
+  
+  Notation Asub := (fun x y => Aadd x (Aopp y)).
+  Infix "*" := Amul : A_scope.
+  Notation "- a" := (Aopp a) : A_scope.
+  Infix "-" := Asub : A_scope.
+
+  #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
+  Proof. repeat constructor; autounfold with A; intros; ring. Qed.
+  
+  Add Ring Ring_inst : (make_ring_theory ARing).
+End RingElementTypeC.
+
+Module FieldElementTypeC <: FieldElementType.
+  Include RingElementTypeC.
+  
+  Definition Ainv := Cinv.
+  Hint Unfold Ainv : A.
+  
+  Notation Adiv := (fun x y => Amul x (Ainv y)).
+
+  Lemma Aone_neq_Azero : Aone <> Azero.
+  Proof. cbv in *. auto with C. Qed.
+  
+  #[export] Instance Field : Field Aadd Azero Aopp Amul Aone Ainv.
+  Proof.
+    constructor. apply ARing. intros.
+    autounfold with A. field. auto.
+    apply Aone_neq_Azero.
+  Qed.
+
+  Add Field Field_inst : (make_field_theory Field).
+End FieldElementTypeC.

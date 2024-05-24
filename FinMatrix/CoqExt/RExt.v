@@ -61,10 +61,240 @@
  *)
 
 
-Require Export ZExt QExt QcExt.
+Require Export NatExt ZExt QExt QcExt.
 Require Export Lia Lra Reals.
 
 Open Scope R_scope.
+
+
+(* ######################################################################### *)
+(** * Conversion between R and other types *)
+
+(** Remark:
+    
+    We need two functions commonly used in computer: floor (rounding down), and 
+    ceiling (rounding up). Although the function "up" in Coq-std-lib is looks like
+    a rounding up function, but it is a bit different. We need to explicitly 
+    define them. Meanwhile, we tested their behaviors on negative numbers
+    
+    The behavior of "up" is this:
+        2.0 <= r < 3.0 -> up(r) = 3,
+    and there is a lemma saying this:
+        Check archimed. (* IZR (up r) > r /\ IZR (up r) - r <= 1 *)
+
+    But we need the behavior of floor and ceiling are these below exactly:
+    1. floor
+       2.0 <= r < 3.0 -> floor(r) = 2
+       So, floor(r) = up(r) - 1
+    2. ceiling
+       2.0 < r < 3.0 -> ceiling(r) = 3
+       r = 2.0 -> ceiling(r)=2
+       So, if IZR(up(r))=r，then ceiling(r)=up(r)-1，else ceiling(r)=up(r).
+
+    When talking about negative numbers, their behaviors are below:
+    floor    2.0 = 2
+    floor    2.5 = 2
+    floor   -2.0 = -2
+    floor   -2.5 = -3
+
+    ceiling  2.0 = 2
+    ceiling  2.5 = 3
+    ceiling -2.0 = -2
+    ceiling -2.5 = -2
+ *)
+
+(** ** Properties about up and IZR *)
+
+(** Eliminate the up_IZR *)
+Lemma up_IZR : forall z, up (IZR z) = (z + 1)%Z.
+Proof.
+  intros.
+  rewrite up_tech with (r:=IZR z); auto; try lra.
+  apply IZR_lt. lia.
+Qed.
+
+(** There is a unique integer if such a IZR_up equation holds. *)
+Lemma IZR_up_unique : forall r, r = IZR (up r - 1) -> exists! z, IZR z = r.
+Proof.
+  intros.
+  exists (up r - 1)%Z. split; auto.
+  intros. subst.
+  rewrite up_IZR in *.
+  apply eq_IZR. auto.
+Qed.
+
+(** There isn't any integer z and real number r such that r ∈(IZR z, IZR (z+1)) *)
+Lemma IZR_in_range_imply_no_integer : forall r z,
+    IZR z < r ->
+    r < IZR (z + 1) ->
+    ~(exists z', IZR z' = r).
+Proof.
+  intros. intro. destruct H1. subst.
+  apply lt_IZR in H0.
+  apply lt_IZR in H. lia.
+Qed.
+
+(* ======================================================================= *)
+(** ** Conversion between Z and R *)
+
+(** Z to R *)
+Definition Z2R (z : Z) : R := IZR z.
+
+(** Rounding R to z, take the floor: truncate to the nearest integer
+    not greater than it *)
+Definition R2Z_floor (r : R) : Z := (up r) - 1.
+
+(** Rounding R to z, take the ceiling: truncate to the nearest integer 
+    not less than it *)
+Definition R2Z_ceiling (r : R) : Z :=
+  let z := up r in
+  if Req_EM_T r (IZR (z - 1)%Z)
+  then z - 1
+  else z.
+
+(* Compute R2Z_floor 0.5 *)
+
+(** z <= r < z+1.0 -> floor(r) = z *)
+Lemma R2Z_floor_spec : forall r z,
+    IZR z <= r < IZR z + 1.0 -> R2Z_floor r = z.
+Proof.
+  intros. unfold R2Z_floor in *. destruct H.
+  assert (up r = z + 1)%Z; try lia.
+  rewrite <- up_tech with (z:=z); auto.
+  rewrite plus_IZR. lra.
+Qed.
+
+(** (r=z -> ceiling r = z) /\ (z < r < z + 1.0 -> ceiling r = z+1) *)
+Lemma R2Z_ceiling_spec : forall r z,
+    (r = IZR z -> R2Z_ceiling r = z) /\
+      (IZR z < r < IZR z + 1.0 -> R2Z_ceiling r = (z+1)%Z).
+Proof.
+  intros. unfold R2Z_ceiling in *. split; intros.
+  - destruct (Req_EM_T r (IZR (up r - 1))).
+    + rewrite H. rewrite up_IZR. lia.
+    + rewrite H in n. destruct n.
+      rewrite up_IZR. f_equal. lia.
+  - destruct H. destruct (Req_EM_T r (IZR (up r - 1))).
+    + apply IZR_in_range_imply_no_integer in H; auto.
+      * destruct H. exists (up r - 1)%Z; auto.
+      * rewrite plus_IZR. lra.
+    + rewrite up_tech with (r:=r); auto; try lra.
+      rewrite plus_IZR. lra.
+Qed.
+
+(** Z2R (R2Z_floor r) is less than r *)
+Lemma Z2R_R2Z_floor_le : forall r, Z2R (R2Z_floor r) <= r.
+Proof.
+  intros. unfold Z2R,R2Z_floor. rewrite minus_IZR.
+  destruct (archimed r). lra.
+Qed.
+
+(** r-1 is less than Z2R (R2Z_floor r) *)
+Lemma Z2R_R2Z_floor_gt : forall r, r - 1 < Z2R (R2Z_floor r).
+Proof.
+  intros. unfold Z2R,R2Z_floor. rewrite minus_IZR.
+  destruct (archimed r). lra.
+Qed.
+
+(* ======================================================================= *)
+(** ** Conversion between nat and R *)
+
+Definition nat2R (n : nat) : R := Z2R (nat2Z n).
+Definition R2nat_floor (r : R) : nat := Z2nat (R2Z_floor r).
+Definition R2nat_ceiling (r : R) : nat := Z2nat (R2Z_ceiling r).
+
+(* ======================================================================= *)
+(** ** Conversion from Q to R *)
+Section Q2R.
+  Import Rdefinitions.
+  Import Qreals.
+  Import QExt.
+  
+  (* Definition Q2R (x : Q) : R := Q2R x. *)
+
+  Lemma Q2R_eq_iff : forall a b : Q, Q2R a = Q2R b <-> Qeq a b.
+  Proof. intros. split; intros. apply eqR_Qeq; auto. apply Qeq_eqR; auto. Qed.
+
+  Lemma Q2R_add : forall a b : Q, Q2R (a + b) = (Q2R a + Q2R b)%R.
+  Proof. intros. apply Qreals.Q2R_plus. Qed.
+
+End Q2R.
+
+(* ======================================================================= *)
+(** ** Conversion from Qc to R *)
+Section Qc2R.
+  Import Rdefinitions.
+  Import Qreals.
+  Import QcExt.
+
+  Section QcExt_additional.
+    
+    Lemma this_Q2Qc_eq_Qred : forall a : Q, this (Q2Qc a) = Qred a.
+    Proof. auto. Qed.
+
+  End QcExt_additional.
+  
+  Definition Qc2R (x : Qc) : R := Q2R (Qc2Q x).
+
+  Lemma Qc2R_add : forall a b : Qc, Qc2R (a + b) = (Qc2R a + Qc2R b)%R.
+  Proof.
+    intros. unfold Qc2R,Qc2Q. rewrite <- Q2R_add. apply Q2R_eq_iff.
+    unfold Qcplus. rewrite this_Q2Qc_eq_Qred. apply Qred_correct.
+  Qed.
+  
+  Lemma Qc2R_0 : Qc2R 0 = 0%R.
+  Proof. intros. cbv. ring. Qed.
+  
+  Lemma Qc2R_opp : forall a : Qc, Qc2R (- a) = (- (Qc2R a))%R.
+  Proof.
+    intros. unfold Qc2R,Qc2Q. rewrite <- Q2R_opp. apply Q2R_eq_iff.
+    unfold Qcopp. rewrite this_Q2Qc_eq_Qred. apply Qred_correct.
+  Qed.
+  
+  Lemma Qc2R_mul : forall a b : Qc, Qc2R (a * b) = (Qc2R a * Qc2R b)%R.
+  Proof.
+    intros. unfold Qc2R,Qc2Q. rewrite <- Q2R_mult. apply Q2R_eq_iff.
+    unfold Qcmult. rewrite this_Q2Qc_eq_Qred. apply Qred_correct.
+  Qed.
+  
+  Lemma Qc2R_1 : Qc2R 1 = (1)%R.
+  Proof. intros. cbv. field. Qed.
+  
+  Lemma Qc2R_inv : forall a : Qc, a <> 0 -> Qc2R (/ a) = (/ (Qc2R a))%R.
+  Proof.
+    intros. unfold Qc2R,Qc2Q. rewrite <- Q2R_inv. apply Q2R_eq_iff.
+    unfold Qcinv. rewrite this_Q2Qc_eq_Qred. apply Qred_correct.
+    intro. destruct H. apply Qc_is_canon. simpl. auto.
+  Qed.
+  
+  Lemma Qc2R_eq_iff : forall a b : Qc, Qc2R a = Qc2R b <-> a = b.
+  Proof.
+    split; intros; subst; auto. unfold Qc2R, Qc2Q in H.
+    apply Qc_is_canon. apply eqR_Qeq; auto.
+  Qed.
+  
+  Lemma Qc2R_lt_iff : forall a b : Qc, (Qc2R a < Qc2R b)%R <-> a < b.
+  Proof.
+    intros. unfold Qc2R, Qc2Q,Qclt in *. split; intros.
+    apply Rlt_Qlt; auto. apply Qlt_Rlt; auto.
+  Qed.
+  
+  Lemma Qc2R_le_iff : forall a b : Qc, (Qc2R a <= Qc2R b)%R <-> a <= b.
+  Proof.
+    intros. unfold Qc2R, Qc2Q,Qclt in *. split; intros.
+    apply Rle_Qle; auto. apply Qle_Rle; auto.
+  Qed.
+
+  #[export] Instance Qc_A2R
+    : A2R Qcplus (0%Qc) Qcopp Qcmult (1%Qc) Qcinv Qclt Qcle Qc2R.
+  Proof.
+    constructor; intros.
+    apply Qc2R_add. apply Qc2R_0. apply Qc2R_opp. apply Qc2R_mul. apply Qc2R_1.
+    apply Qc2R_inv; auto. apply Qc_Order. apply Qc2R_eq_iff.
+    apply Qc2R_lt_iff. apply Qc2R_le_iff.
+  Qed.
+  
+End Qc2R.
 
 
 (* ######################################################################### *)
@@ -284,6 +514,192 @@ Proof. constructor; intros; unfold id; auto with R; try easy. Qed.
 
 
 (* ######################################################################### *)
+(** * Instances for ElementType *)
+
+(* Note that, because we need "Qc2R", thus this instance of "Qc" is here. *)
+Module NormedOrderedFieldElementTypeQc <: NormedOrderedFieldElementType.
+  Include OrderedFieldElementTypeQc.
+  Import Reals.
+
+  Definition a2r := Qc2R.
+  
+  #[export] Instance A2R
+    : A2R Aadd Azero Aopp Amul Aone Ainv Alt Ale a2r.
+  Proof. apply Qc_A2R. Qed.
+End NormedOrderedFieldElementTypeQc.
+
+Module ElementTypeR <: ElementType.
+  Definition A : Type := R.
+  Definition Azero : A := 0.
+  Hint Unfold A Azero : A.
+
+  Lemma AeqDec : Dec (@eq A).
+  Proof. apply Req_Dec. Defined.
+End ElementTypeR.
+
+Module test_ElementType.
+  Import ElementTypeNat ElementTypeR.
+  Module Import ElementTypeFunEx1 :=
+    ElementTypeFun ElementTypeNat ElementTypeR.
+
+  Definition f : A := fun i => match i with 0%nat => 1 | 1%nat => 2 | _ => 1 end.
+  Definition g : A := fun i => match i with 1%nat => 2 | _ => 1 end.
+
+  Goal f = g.
+  Proof. cbv. intros. auto. Qed.
+End test_ElementType.
+
+Module OrderedElementTypeR <: OrderedElementType.
+  Include ElementTypeR.
+
+  Definition Alt := Rlt.
+  Definition Ale := Rle.
+  Hint Unfold Ale Alt : A.
+
+  #[export] Instance Order : Order Alt Ale.
+  Proof. apply R_Order. Qed.
+End OrderedElementTypeR.
+
+Module MonoidElementTypeR <: MonoidElementType.
+  Include ElementTypeR.
+  
+  Definition Aadd := Rplus.
+  Hint Unfold Aadd : A.
+  
+  Infix "+" := Aadd : A_scope.
+
+  #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
+  Proof. intros. repeat constructor; intros; autounfold with A; ring. Qed.
+End MonoidElementTypeR.
+
+Module test_MonoidElementType.
+  Import MonoidElementTypeQc.
+  Import MonoidElementTypeR.
+  
+  Module Import MonoidElementTypeFunEx1 :=
+    MonoidElementTypeFun MonoidElementTypeQc MonoidElementTypeR.
+
+  (* Definition f : A := fun i:Qc => Qc2R i + R1. *)
+  (* Definition g : A := fun i:Qc => Qc2R (i+1). *)
+  Definition f : A := fun i => 1.
+  Definition g : A := fun i => 2.
+  Definition h : A := fun i => 3.
+
+  Goal f + g + h = f + (g + h).
+  Proof. rewrite associative. auto. Qed.
+End test_MonoidElementType.
+
+Module RingElementTypeR <: RingElementType.
+  Include MonoidElementTypeR.
+  
+  Definition Aone : A := 1.
+  Definition Aopp := Ropp.
+  Definition Amul := Rmult.
+  Hint Unfold Aone Aadd Aopp Amul : A.
+  
+  Notation Asub := (fun x y => Aadd x (Aopp y)).
+  Infix "*" := Amul : A_scope.
+  Notation "- a" := (Aopp a) : A_scope.
+  Infix "-" := Asub : A_scope.
+
+  #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
+  Proof. repeat constructor; autounfold with A; intros; ring. Qed.
+  
+  (* Add Ring Ring_inst : (make_ring_theory ARing). *)
+End RingElementTypeR.
+
+Module test_RingElementType.
+  Import RingElementTypeQc.
+  Import RingElementTypeR.
+  
+  Module Import RingElementTypeFunEx1 :=
+    RingElementTypeFun RingElementTypeQc RingElementTypeR.
+  
+  Definition f : A := fun i:Qc => (Qc2R i + R1)%R.
+  Definition g : A := fun i:Qc => Qc2R (i+1).
+
+  Goal f = g.
+  Proof. Abort.
+End test_RingElementType.
+
+
+Module OrderedRingElementTypeR <: OrderedRingElementType.
+  Include RingElementTypeR.
+  
+  Definition Ale := Rle.
+  Definition Alt := Rlt.
+  Hint Unfold Ale Alt : A.
+
+  #[export] Instance Order : Order Alt Ale.
+  Proof. apply OrderedElementTypeR.Order. Qed.
+  
+  #[export] Instance OrderedARing
+    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
+  Proof.
+    constructor. apply ARing. apply Order.
+    - intros; autounfold with A in *. lra.
+    - intros; autounfold with A in *. apply Rmult_lt_compat_r; auto.
+  Qed.
+
+  Notation "| a |" := (Aabs a) : A_scope.
+  
+End OrderedRingElementTypeR.
+
+Module FieldElementTypeR <: FieldElementType.
+  Include RingElementTypeR.
+  
+  Definition Ainv := Rinv.
+  Hint Unfold Ainv : A.
+  
+  Notation Adiv := (fun x y => Amul x (Ainv y)).
+
+  Lemma Aone_neq_Azero : Aone <> Azero.
+  Proof. cbv in *. auto with real. Qed.
+
+  #[export] Instance Field : Field Aadd Azero Aopp Amul Aone Ainv.
+  Proof.
+    constructor. apply ARing. intros.
+    autounfold with A. field. auto.
+    apply Aone_neq_Azero.
+  Qed.
+
+  (* Add Field Field_inst : (make_field_theory Field). *)
+End FieldElementTypeR.
+
+Module OrderedFieldElementTypeR <: OrderedFieldElementType.
+  Include FieldElementTypeR.
+  
+  Definition Ale := Rle.
+  Definition Alt := Rlt.
+  Hint Unfold Ale Alt : A.
+
+  #[export] Instance Order : Order Alt Ale.
+  Proof. apply OrderedElementTypeR.Order. Qed.
+  
+  #[export] Instance OrderedARing
+    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
+  Proof. apply OrderedRingElementTypeR.OrderedARing. Qed.
+  
+  #[export] Instance OrderedAField
+    : OrderedField Aadd Azero Aopp Amul Aone Ainv Alt Ale.
+  Proof. constructor. apply Field. apply OrderedRingElementTypeR.OrderedARing. Qed.
+
+  Notation "| a |" := (Aabs a) : A_scope.
+
+End OrderedFieldElementTypeR.
+
+Module NormedOrderedFieldElementTypeR <: NormedOrderedFieldElementType.
+  Include OrderedFieldElementTypeR.
+  
+  Definition a2r := id.
+  
+  #[export] Instance A2R
+    : A2R Aadd Azero Aopp Amul Aone Ainv Alt Ale a2r.
+  Proof. apply R_A2R. Qed.
+End NormedOrderedFieldElementTypeR.
+
+
+(* ######################################################################### *)
 (** * Reqb,Rleb,Rltb: Boolean comparison of R *)
 
 Definition Reqb (r1 r2 : R) : bool := Acmpb Req_Dec r1 r2.
@@ -471,6 +887,7 @@ Global Hint Resolve
 (** Control Opaque / Transparent of the definitions *)
 Global Opaque 
   PI 
+  exp
   sqrt
   Rpower 
   sin 
@@ -1843,237 +2260,6 @@ Proof.
   - subst. rewrite atan_0; cbv; ra. split; ra. assert (PI > 0); ra.
   - assert (x < 0); ra. pose proof (atan_bound_lt0 x H1); ra.
 Qed.
-
-
-(* ######################################################################### *)
-(** * Conversion between R and other types *)
-
-(** Remark:
-    
-    We need two functions commonly used in computer: floor (rounding down), and 
-    ceiling (rounding up). Although the function "up" in Coq-std-lib is looks like
-    a rounding up function, but it is a bit different. We need to explicitly 
-    define them. Meanwhile, we tested their behaviors on negative numbers
-    
-    The behavior of "up" is this:
-        2.0 <= r < 3.0 -> up(r) = 3,
-    and there is a lemma saying this:
-        Check archimed. (* IZR (up r) > r /\ IZR (up r) - r <= 1 *)
-
-    But we need the behavior of floor and ceiling are these below exactly:
-    1. floor
-       2.0 <= r < 3.0 -> floor(r) = 2
-       So, floor(r) = up(r) - 1
-    2. ceiling
-       2.0 < r < 3.0 -> ceiling(r) = 3
-       r = 2.0 -> ceiling(r)=2
-       So, if IZR(up(r))=r，then ceiling(r)=up(r)-1，else ceiling(r)=up(r).
-
-    When talking about negative numbers, their behaviors are below:
-    floor    2.0 = 2
-    floor    2.5 = 2
-    floor   -2.0 = -2
-    floor   -2.5 = -3
-
-    ceiling  2.0 = 2
-    ceiling  2.5 = 3
-    ceiling -2.0 = -2
-    ceiling -2.5 = -2
- *)
-
-(** ** Properties about up and IZR *)
-
-(** Eliminate the up_IZR *)
-Lemma up_IZR : forall z, up (IZR z) = (z + 1)%Z.
-Proof.
-  intros.
-  rewrite up_tech with (r:=IZR z); auto; ra.
-  apply IZR_lt. lia.
-Qed.
-
-(** There is a unique integer if such a IZR_up equation holds. *)
-Lemma IZR_up_unique : forall r, r = IZR (up r - 1) -> exists! z, IZR z = r.
-Proof.
-  intros.
-  exists (up r - 1)%Z. split; auto.
-  intros. subst.
-  rewrite up_IZR in *.
-  apply eq_IZR. auto.
-Qed.
-
-(** There isn't any integer z and real number r such that r ∈(IZR z, IZR (z+1)) *)
-Lemma IZR_in_range_imply_no_integer : forall r z,
-    IZR z < r ->
-    r < IZR (z + 1) ->
-    ~(exists z', IZR z' = r).
-Proof.
-  intros. intro. destruct H1. subst.
-  apply lt_IZR in H0.
-  apply lt_IZR in H. lia.
-Qed.
-
-
-(* ######################################################################### *)
-(** ** Conversion between R and other types *)
-
-(** *** Conversion between Z and R *)
-
-(** Z to R *)
-Definition Z2R (z : Z) : R := IZR z.
-
-(** Rounding R to z, take the floor: truncate to the nearest integer
-    not greater than it *)
-Definition R2Z_floor (r : R) : Z := (up r) - 1.
-
-(** Rounding R to z, take the ceiling: truncate to the nearest integer 
-    not less than it *)
-Definition R2Z_ceiling (r : R) : Z :=
-  let z := up r in
-  if Req_EM_T r (IZR (z - 1)%Z)
-  then z - 1
-  else z.
-
-(* Compute R2Z_floor 0.5 *)
-
-(** z <= r < z+1.0 -> floor(r) = z *)
-Lemma R2Z_floor_spec : forall r z,
-    IZR z <= r < IZR z + 1.0 -> R2Z_floor r = z.
-Proof.
-  intros. unfold R2Z_floor in *. destruct H.
-  assert (up r = z + 1)%Z; try lia.
-  rewrite <- up_tech with (z:=z); auto.
-  rewrite plus_IZR. lra.
-Qed.
-
-(** (r=z -> ceiling r = z) /\ (z < r < z + 1.0 -> ceiling r = z+1) *)
-Lemma R2Z_ceiling_spec : forall r z,
-    (r = IZR z -> R2Z_ceiling r = z) /\
-      (IZR z < r < IZR z + 1.0 -> R2Z_ceiling r = (z+1)%Z).
-Proof.
-  intros. unfold R2Z_ceiling in *. split; intros.
-  - destruct (Req_EM_T r (IZR (up r - 1))).
-    + rewrite H. rewrite up_IZR. lia.
-    + rewrite H in n. destruct n.
-      rewrite up_IZR. f_equal. lia.
-  - destruct H. destruct (Req_EM_T r (IZR (up r - 1))).
-    + apply IZR_in_range_imply_no_integer in H; auto.
-      * destruct H. exists (up r - 1)%Z; auto.
-      * rewrite plus_IZR. ra.
-    + rewrite up_tech with (r:=r); auto; ra.
-      rewrite plus_IZR. ra.
-Qed.
-
-(** Z2R (R2Z_floor r) is less than r *)
-Lemma Z2R_R2Z_floor_le : forall r, Z2R (R2Z_floor r) <= r.
-Proof.
-  intros. unfold Z2R,R2Z_floor. rewrite minus_IZR.
-  destruct (archimed r). ra.
-Qed.
-
-(** r-1 is less than Z2R (R2Z_floor r) *)
-Lemma Z2R_R2Z_floor_gt : forall r, r - 1 < Z2R (R2Z_floor r).
-Proof.
-  intros. unfold Z2R,R2Z_floor. rewrite minus_IZR.
-  destruct (archimed r). ra.
-Qed.
-
-(** *** Conversion between nat and R *)
-
-Definition nat2R (n : nat) : R := Z2R (nat2Z n).
-Definition R2nat_floor (r : R) : nat := Z2nat (R2Z_floor r).
-Definition R2nat_ceiling (r : R) : nat := Z2nat (R2Z_ceiling r).
-
-(** *** Conversion from Q to R *)
-Section Q2R.
-  Import Rdefinitions.
-  Import Qreals.
-  Import QExt.
-  
-  (* Definition Q2R (x : Q) : R := Q2R x. *)
-
-  Lemma Q2R_eq_iff : forall a b : Q, Q2R a = Q2R b <-> Qeq a b.
-  Proof. intros. split; intros. apply eqR_Qeq; auto. apply Qeq_eqR; auto. Qed.
-
-  Lemma Q2R_add : forall a b : Q, Q2R (a + b) = (Q2R a + Q2R b)%R.
-  Proof. intros. apply Qreals.Q2R_plus. Qed.
-
-End Q2R.
-
-
-(** *** Conversion from Qc to R *)
-Section Qc2R.
-  Import Rdefinitions.
-  Import Qreals.
-  Import QcExt.
-
-  Section QcExt_additional.
-    
-    Lemma this_Q2Qc_eq_Qred : forall a : Q, this (Q2Qc a) = Qred a.
-    Proof. auto. Qed.
-
-  End QcExt_additional.
-  
-  Definition Qc2R (x : Qc) : R := Q2R (Qc2Q x).
-
-  Lemma Qc2R_add : forall a b : Qc, Qc2R (a + b) = (Qc2R a + Qc2R b)%R.
-  Proof.
-    intros. unfold Qc2R,Qc2Q. rewrite <- Q2R_add. apply Q2R_eq_iff.
-    unfold Qcplus. rewrite this_Q2Qc_eq_Qred. apply Qred_correct.
-  Qed.
-  
-  Lemma Qc2R_0 : Qc2R 0 = 0%R.
-  Proof. intros. cbv. ring. Qed.
-  
-  Lemma Qc2R_opp : forall a : Qc, Qc2R (- a) = (- (Qc2R a))%R.
-  Proof.
-    intros. unfold Qc2R,Qc2Q. rewrite <- Q2R_opp. apply Q2R_eq_iff.
-    unfold Qcopp. rewrite this_Q2Qc_eq_Qred. apply Qred_correct.
-  Qed.
-  
-  Lemma Qc2R_mul : forall a b : Qc, Qc2R (a * b) = (Qc2R a * Qc2R b)%R.
-  Proof.
-    intros. unfold Qc2R,Qc2Q. rewrite <- Q2R_mult. apply Q2R_eq_iff.
-    unfold Qcmult. rewrite this_Q2Qc_eq_Qred. apply Qred_correct.
-  Qed.
-  
-  Lemma Qc2R_1 : Qc2R 1 = (1)%R.
-  Proof. intros. cbv. field. Qed.
-  
-  Lemma Qc2R_inv : forall a : Qc, a <> 0 -> Qc2R (/ a) = (/ (Qc2R a))%R.
-  Proof.
-    intros. unfold Qc2R,Qc2Q. rewrite <- Q2R_inv. apply Q2R_eq_iff.
-    unfold Qcinv. rewrite this_Q2Qc_eq_Qred. apply Qred_correct.
-    intro. destruct H. apply Qc_is_canon. simpl. auto.
-  Qed.
-  
-  Lemma Qc2R_eq_iff : forall a b : Qc, Qc2R a = Qc2R b <-> a = b.
-  Proof.
-    split; intros; subst; auto. unfold Qc2R, Qc2Q in H.
-    apply Qc_is_canon. apply eqR_Qeq; auto.
-  Qed.
-  
-  Lemma Qc2R_lt_iff : forall a b : Qc, (Qc2R a < Qc2R b)%R <-> a < b.
-  Proof.
-    intros. unfold Qc2R, Qc2Q,Qclt in *. split; intros.
-    apply Rlt_Qlt; auto. apply Qlt_Rlt; auto.
-  Qed.
-  
-  Lemma Qc2R_le_iff : forall a b : Qc, (Qc2R a <= Qc2R b)%R <-> a <= b.
-  Proof.
-    intros. unfold Qc2R, Qc2Q,Qclt in *. split; intros.
-    apply Rle_Qle; auto. apply Qle_Rle; auto.
-  Qed.
-
-  #[export] Instance Qc_A2R
-    : A2R Qcplus (0%Qc) Qcopp Qcmult (1%Qc) Qcinv Qclt Qcle Qc2R.
-  Proof.
-    constructor; intros.
-    apply Qc2R_add. apply Qc2R_0. apply Qc2R_opp. apply Qc2R_mul. apply Qc2R_1.
-    apply Qc2R_inv; auto. apply Qc_Order. apply Qc2R_eq_iff.
-    apply Qc2R_lt_iff. apply Qc2R_le_iff.
-  Qed.
-  
-End Qc2R.
 
 
 (* ######################################################################### *)

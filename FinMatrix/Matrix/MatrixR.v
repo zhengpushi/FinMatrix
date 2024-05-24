@@ -33,12 +33,11 @@ Require Import ExtrOcamlBasic ExtrOcamlNatInt MyExtrOCamlR.
 Include (NormedOrderedFieldMatrixTheory NormedOrderedFieldElementTypeR).
 
 (* A TEMPORARY Fix: Let "Hierarchy.le_xx" has more priority than "Nat.le_xx" *)
-Import Hierarchy.
+Import Hierarchy RExt.
 
 Open Scope R_scope.
 Open Scope vec_scope.
 Open Scope mat_scope.
-
 
 
 (* ############################################################################ *)
@@ -583,7 +582,7 @@ Hint Resolve vdot_vnorm_bound : vec.
 
 (* 2维向量的叉积的结果若为正，则夹角小于180度。 *)
 (** u × a *)
-Definition v2cross (a b : vec 2) : R := a.x * b.y - a.y * b.x.
+Definition v2cross (a b : vec 2) : R := a.1 * b.2 - a.2 * b.1.
 
 Module Export V2Notations.
   Infix "\x" := v2cross : vec_scope.
@@ -652,20 +651,20 @@ Qed.
 (** ** 2D vector theory *)
 
 (** The length of 2D vector has a equal form *)
-Lemma v2len_eq : forall a : vec 2, ||a|| = sqrt (a.x² + a.y²).
+Lemma v2len_eq : forall a : vec 2, ||a|| = sqrt (a.1² + a.2²).
 Proof. intros. cbv. f_equal. ra. Qed.
 
-(** (a.x / ||a||)² = 1 - (a.y / ||a||)² *)
+(** (a.1 / ||a||)² = 1 - (a.2 / ||a||)² *)
 Lemma sqr_x_div_vlen : forall (a : vec 2),
-    a <> vzero -> (a.x / ||a||)² = (1 - (a.y / ||a||)²)%R.
+    a <> vzero -> (a.1 / ||a||)² = (1 - (a.2 / ||a||)²)%R.
 Proof.
   intros. rewrite !Rsqr_div'. rewrite <- !vdot_same. field_simplify_eq.
   cbv; field. apply vdot_same_neq0_if_vnonzero; auto.
 Qed.
-    
-(** (a.y / ||a||)² = 1 - (a.x / ||a||)² *)
+
+(** (a.2 / ||a||)² = 1 - (a.x / ||a||)² *)
 Lemma sqr_y_div_vlen : forall (a : vec 2),
-    a <> vzero -> (a.y / ||a||)² = (1 - (a.x / ||a||)²)%R.
+    a <> vzero -> (a.2 / ||a||)² = (1 - (a.1 / ||a||)²)%R.
 Proof.
   intros. rewrite !Rsqr_div'. rewrite <- !vdot_same. field_simplify_eq.
   cbv; field. apply vdot_same_neq0_if_vnonzero; auto.
@@ -722,7 +721,7 @@ Definition v2i : vec 2 := mkvec2 1 0.
 Definition v2j : vec 2 := mkvec2 0 1.
 
 (** 任意向量都能写成该向量的坐标在标准基向量下的线性组合 *)
-Lemma v2_linear_composition : forall (a : vec 2), a = a.x \.* v2i + a.y \.* v2j.
+Lemma v2_linear_composition : forall (a : vec 2), a = a.1 \.* v2i + a.2 \.* v2j.
 Proof. intros. apply v2eq_iff. cbv. ra. Qed.
 
 (** 标准基向量的长度为 1 *)
@@ -758,23 +757,23 @@ Lemma v2j_vnorm : vnorm v2j = v2j.
 Proof. apply vnorm_vunit_eq. apply v2j_vunit. Qed.
 
 (** 标准基向量与任意向量 a 的点积等于 a 的各分量 *)
-Lemma vdot_i_l : forall (a : vec 2), <v2i, a> = a.x. Proof. intros. cbv; ra. Qed.
-Lemma vdot_i_r : forall (a : vec 2), <a, v2i> = a.x. Proof. intros. cbv; ra. Qed.
-Lemma vdot_j_l : forall (a : vec 2), <v2j, a> = a.y. Proof. intros. cbv; ra. Qed.
-Lemma vdot_j_r : forall (a : vec 2), <a, v2j> = a.y. Proof. intros. cbv; ra. Qed.
+Lemma vdot_i_l : forall (a : vec 2), <v2i, a> = a.1. Proof. intros. cbv; ra. Qed.
+Lemma vdot_i_r : forall (a : vec 2), <a, v2i> = a.1. Proof. intros. cbv; ra. Qed.
+Lemma vdot_j_l : forall (a : vec 2), <v2j, a> = a.2. Proof. intros. cbv; ra. Qed.
+Lemma vdot_j_r : forall (a : vec 2), <a, v2j> = a.2. Proof. intros. cbv; ra. Qed.
 
 (** 标准基向量的夹角 *)
 Lemma v2angle_i_j : v2i /_ v2j = PI/2.
 Proof. cbv. match goal with |- context[acos ?a] => replace a with 0 end; ra. Qed.
 
 (** 标准基向量的叉乘 *)
-Lemma v2cross_i_l : forall (a : vec 2), v2i \x a = a.y.
+Lemma v2cross_i_l : forall (a : vec 2), v2i \x a = a.2.
 Proof. intros. cbv. ring. Qed.
-Lemma v2cross_i_r : forall (a : vec 2), a \x v2i = (- a.y)%R.
+Lemma v2cross_i_r : forall (a : vec 2), a \x v2i = (- a.2)%R.
 Proof. intros. cbv. ring. Qed.
-Lemma v2cross_j_l : forall (a : vec 2), v2j \x a = (- a.x)%R.
+Lemma v2cross_j_l : forall (a : vec 2), v2j \x a = (- a.1)%R.
 Proof. intros. cbv. ring. Qed.
-Lemma v2cross_j_r : forall (a : vec 2), a \x v2j = a.x.
+Lemma v2cross_j_r : forall (a : vec 2), a \x v2j = a.1.
 Proof. intros. cbv. ring. Qed.
 
 
@@ -819,7 +818,7 @@ Proof. intros. cbv. ring. Qed.
 
 Definition vangle2A (a b : vec 2) : R := atan2 (a \x b) (<a, b>).
 
-Definition vangle2B (a b : vec 2) : R := atan2 (b.y) (b.x) - atan2 (a.y) (a.x).
+Definition vangle2B (a b : vec 2) : R := atan2 (b.2) (b.1) - atan2 (a.2) (a.1).
 
 (* Note that, vangle2C is the default choice, we will call it vangle2 for short *)
 Definition vangle2 (a b : vec 2) : R :=
@@ -927,14 +926,14 @@ Lemma sin_vangle2_eq : forall (a b : vec 2),
 Proof. intros. unfold vangle2. destruct (_??<=_); ra. Qed.
 
 (** i与任意非零向量v的夹角的余弦等于其横坐标除以长度 *)
-Lemma cos_vangle2_i : forall (a : vec 2), a <> vzero -> cos (v2i /2_ a) = (a.x / ||a||)%R.
+Lemma cos_vangle2_i : forall (a : vec 2), a <> vzero -> cos (v2i /2_ a) = (a.1 / ||a||)%R.
 Proof.
   intros. rewrite cos_vangle2_eq. unfold vangle. rewrite cos_acos; auto with vec.
   rewrite v2i_vnorm. rewrite vdot_i_l. rewrite vnth_vnorm; auto.
 Qed.
   
 (** i与任意非零向量v的夹角的正弦等于其纵坐标除以长度 *)
-Lemma sin_vangle2_i : forall (a : vec 2), a <> vzero -> sin (v2i /2_ a) = (a.y / ||a||)%R.
+Lemma sin_vangle2_i : forall (a : vec 2), a <> vzero -> sin (v2i /2_ a) = (a.2 / ||a||)%R.
 Proof.
   intros. unfold vangle2. unfold vangle. rewrite v2i_vnorm. rewrite vdot_i_l.
   rewrite vnth_vnorm; auto. pose proof (vlen_gt0 a H).
@@ -948,7 +947,7 @@ Proof.
 Qed.
 
 (** j与任意非零向量v的夹角的余弦等于其纵坐标除以长度 *)
-Lemma cos_vangle2_j : forall (a : vec 2), a <> vzero -> cos (v2j /2_ a) = (a.y / ||a||)%R.
+Lemma cos_vangle2_j : forall (a : vec 2), a <> vzero -> cos (v2j /2_ a) = (a.2 / ||a||)%R.
 Proof.
   intros. rewrite cos_vangle2_eq. unfold vangle. rewrite cos_acos.
   - rewrite v2j_vnorm. rewrite vdot_j_l. rewrite vnth_vnorm; auto.
@@ -957,49 +956,49 @@ Qed.
 
 (** j与任意非零向量v的夹角的正弦等于其横坐标取负除以长度 *)
 Lemma sin_vangle2_j : forall (a : vec 2),
-    a <> vzero -> sin (v2j /2_ a) = (- a.x / ||a||)%R.
+    a <> vzero -> sin (v2j /2_ a) = (- a.1 / ||a||)%R.
 Proof.
   intros. unfold vangle2. unfold vangle. rewrite v2j_vnorm. rewrite vdot_j_l.
   rewrite vnth_vnorm; auto. pose proof (vlen_gt0 a H).
   rewrite v2cross_j_l. destruct (_??<=_).
-  - assert (a.x <= 0); ra. rewrite sin_acos; auto with vec.
+  - assert (a.1 <= 0); ra. rewrite sin_acos; auto with vec.
     + rewrite <- sqr_x_div_vlen; auto. rewrite sqrt_Rsqr_abs.
       rewrite Rabs_left1; ra.
       assert (0 < / (||a||)); ra.
     + apply vnth_div_vlen_bound; auto.
-  - assert (a.x > 0); ra. rewrite sin_neg. rewrite sin_acos; auto with vec.
+  - assert (a.1 > 0); ra. rewrite sin_neg. rewrite sin_acos; auto with vec.
     + rewrite <- sqr_x_div_vlen; auto.
       rewrite sqrt_Rsqr_abs. rewrite Rabs_right; ra.
     + apply vnth_div_vlen_bound; auto.
 Qed.
 
-(** ||a|| * cos (i /2_ a) = a.x *)
+(** ||a|| * cos (i /2_ a) = a.1 *)
 Lemma v2len_mul_cos_vangle2_i : forall (a : vec 2),
-    a <> vzero -> (||a|| * cos (v2i /2_ a) = a.x)%R.
+    a <> vzero -> (||a|| * cos (v2i /2_ a) = a.1)%R.
 Proof.
   intros. rewrite cos_vangle2_i; auto. field_simplify; auto.
   apply vlen_neq0_iff_neq0; auto.
 Qed.
 
-(** ||a|| * sin (i /2_ a) = a.y *)
+(** ||a|| * sin (i /2_ a) = a.2 *)
 Lemma v2len_mul_sin_vangle2_i : forall (a : vec 2),
-    a <> vzero -> (||a|| * sin (v2i /2_ a) = a.y)%R.
+    a <> vzero -> (||a|| * sin (v2i /2_ a) = a.2)%R.
 Proof.
   intros. rewrite sin_vangle2_i; auto. field_simplify; auto.
   apply vlen_neq0_iff_neq0; auto.
 Qed.
 
-(** ||a|| * cos (j /2_ a) = a.y *)
+(** ||a|| * cos (j /2_ a) = a.2 *)
 Lemma v2len_mul_cos_vangle2_j : forall (a : vec 2),
-    a <> vzero -> (||a|| * cos (v2j /2_ a) = a.y)%R.
+    a <> vzero -> (||a|| * cos (v2j /2_ a) = a.2)%R.
 Proof.
   intros. rewrite cos_vangle2_j; auto. field_simplify; auto.
   apply vlen_neq0_iff_neq0; auto.
 Qed.
 
-(** ||a|| * sin (j /2_ a) = - a.x *)
+(** ||a|| * sin (j /2_ a) = - a.1 *)
 Lemma v2len_mul_sin_vangle2_j : forall (a : vec 2),
-    a <> vzero -> (||a|| * sin (v2j /2_ a) = - a.x)%R.
+    a <> vzero -> (||a|| * sin (v2j /2_ a) = - a.1)%R.
 Proof.
   intros. rewrite sin_vangle2_j; auto. field_simplify; auto.
   apply vlen_neq0_iff_neq0; auto.
@@ -1328,31 +1327,31 @@ Proof. intros. cbv. ring. Qed.
 
 (** A 3D unit vector satisfy these algebraic equations *)
 
-Lemma v3unit_sqr_xyz : forall (a : vec 3), vunit a -> (a.x² + a.y² + a.z² = 1)%R.
+Lemma v3unit_sqr_xyz : forall (a : vec 3), vunit a -> (a.1² + a.2² + a.3² = 1)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_xzy : forall (a : vec 3), vunit a -> (a.x² + a.z² + a.y² = 1)%R.
+Lemma v3unit_sqr_xzy : forall (a : vec 3), vunit a -> (a.1² + a.3² + a.2² = 1)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_yzx : forall (a : vec 3), vunit a -> (a.y² + a.z² + a.x² = 1)%R.
+Lemma v3unit_sqr_yzx : forall (a : vec 3), vunit a -> (a.2² + a.3² + a.1² = 1)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_yxz : forall (a : vec 3), vunit a -> (a.y² + a.x² + a.z² = 1)%R.
+Lemma v3unit_sqr_yxz : forall (a : vec 3), vunit a -> (a.2² + a.1² + a.3² = 1)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_zxy : forall (a : vec 3), vunit a -> (a.z² + a.x² + a.y² = 1)%R.
+Lemma v3unit_sqr_zxy : forall (a : vec 3), vunit a -> (a.3² + a.1² + a.2² = 1)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_zyx : forall (a : vec 3), vunit a -> (a.z² + a.y² + a.x² = 1)%R.
+Lemma v3unit_sqr_zyx : forall (a : vec 3), vunit a -> (a.3² + a.2² + a.1² = 1)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_x : forall (a : vec 3), vunit a -> a.x² = (1 - a.y² - a.z²)%R.
+Lemma v3unit_sqr_x : forall (a : vec 3), vunit a -> a.1² = (1 - a.2² - a.3²)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_y : forall (a : vec 3), vunit a -> a.y² = (1 - a.x² - a.z²)%R.
+Lemma v3unit_sqr_y : forall (a : vec 3), vunit a -> a.2² = (1 - a.1² - a.3²)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_z : forall (a : vec 3), vunit a -> a.z² = (1 - a.x² - a.y²)%R.
+Lemma v3unit_sqr_z : forall (a : vec 3), vunit a -> a.3² = (1 - a.1² - a.2²)%R.
 Proof. intros. cbv in *. ra. Qed.
 
 (** vnorm a = (a.1 / ||a||, a.2 / ||a||, a.3 / ||v||) *)
@@ -1434,7 +1433,7 @@ Definition v3k : vec 3 := mkvec3 0 0 1.
 
 (** 任意向量都能写成该向量的坐标在标准基向量下的线性组合 *)
 Lemma v3_linear_composition : forall (a : vec 3),
-    a = a.x \.* v3i + a.y \.* v3j + a.z \.* v3k.
+    a = a.1 \.* v3i + a.2 \.* v3j + a.3 \.* v3k.
 Proof. intros. apply v3eq_iff. cbv. ra. Qed.
 
 (** 标准基向量的长度为 1 *)
@@ -1468,12 +1467,12 @@ Lemma v3k_vnorm : vnorm v3k = v3k.
 Proof. apply vnorm_vunit_eq. apply v3k_vunit. Qed.
 
 (** 标准基向量与任意向量v的点积等于v的各分量 *)
-Lemma v3dot_i_l : forall a : vec 3, <v3i, a> = a.x. Proof. intros. cbv; ring. Qed.
-Lemma v3dot_j_l : forall a : vec 3, <v3j, a> = a.y. Proof. intros. cbv; ring. Qed.
-Lemma v3dot_k_l : forall a : vec 3, <v3k, a> = a.z. Proof. intros. cbv; ring. Qed.
-Lemma v3dot_i_r : forall a : vec 3, <a, v3i> = a.x. Proof. intros. cbv; ring. Qed.
-Lemma v3dot_j_r : forall a : vec 3, <a, v3j> = a.y. Proof. intros. cbv; ring. Qed.
-Lemma v3dot_k_r : forall a : vec 3, <a, v3k> = a.z. Proof. intros. cbv; ring. Qed.
+Lemma v3dot_i_l : forall a : vec 3, <v3i, a> = a.1. Proof. intros. cbv; ring. Qed.
+Lemma v3dot_j_l : forall a : vec 3, <v3j, a> = a.2. Proof. intros. cbv; ring. Qed.
+Lemma v3dot_k_l : forall a : vec 3, <v3k, a> = a.3. Proof. intros. cbv; ring. Qed.
+Lemma v3dot_i_r : forall a : vec 3, <a, v3i> = a.1. Proof. intros. cbv; ring. Qed.
+Lemma v3dot_j_r : forall a : vec 3, <a, v3j> = a.2. Proof. intros. cbv; ring. Qed.
+Lemma v3dot_k_r : forall a : vec 3, <a, v3k> = a.3. Proof. intros. cbv; ring. Qed.
 
 (** i × j = k, j × x = i, x × i = j *)
 Lemma v3cross_ij : v3i \x v3j = v3k. Proof. apply v3eq_iff; cbv; ra. Qed.

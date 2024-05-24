@@ -73,9 +73,9 @@ Notation "a .1" := (a.[#0]) : vec_scope.
 Notation "a .2" := (a.[#1]) : vec_scope.
 Notation "a .3" := (a.[#2]) : vec_scope.
 Notation "a .4" := (a.[#3]) : vec_scope.
-Notation "a .x" := (a.[#0]) : vec_scope.
-Notation "a .y" := (a.[#1]) : vec_scope.
-Notation "a .z" := (a.[#2]) : vec_scope.
+(* Notation "a .x" := (a.[#0]) : vec_scope. *)
+(* Notation "a .y" := (a.[#1]) : vec_scope. *)
+(* Notation "a .z" := (a.[#2]) : vec_scope. *)
 
 (* ======================================================================= *)
 (** ** Equality of vector *)

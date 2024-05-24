@@ -8,7 +8,7 @@
   date      : 2022.04
 *)
 
-Require Export Hierarchy.  
+Require Export Hierarchy ElementType.
 Require Export ZArith.
 Open Scope Z.
 
@@ -187,6 +187,80 @@ Proof.
 Qed.
 
 Hint Resolve Z_OrderedARing : Z.
+
+
+(* ######################################################################### *)
+(** * Instances for ElementType *)
+
+Module ElementTypeZ <: ElementType.
+  Definition A : Type := Z.
+  Definition Azero : A := 0.
+  Hint Unfold A Azero : A.
+
+  Lemma AeqDec : Dec (@eq A).
+  Proof. apply Z_eq_Dec. Defined.
+End ElementTypeZ.
+
+Module MonoidElementTypeZ <: MonoidElementType.
+  Include ElementTypeZ.
+
+  Definition Aadd := Zplus.
+  Hint Unfold Aadd : A.
+
+  Infix "+" := Aadd : A_scope.
+
+  #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
+  Proof. intros. repeat constructor; intros; autounfold with A; ring. Qed.
+End MonoidElementTypeZ.
+
+Module RingElementTypeZ <: RingElementType.
+  Include MonoidElementTypeZ.
+
+  Definition Aone : A := 1.
+  Definition Aopp := Z.opp.
+  Definition Amul := Zmult.
+  Hint Unfold Aone Aopp Amul : A.
+
+  Notation Asub := (fun x y => Aadd x (Aopp y)).
+  Infix "*" := Amul : A_scope.
+  Notation "- a" := (Aopp a) : A_scope.
+  Infix "-" := Asub : A_scope.
+
+  #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
+  Proof. repeat constructor; autounfold with A; intros; ring. Qed.
+
+  (* Add Ring Ring_inst : (make_ring_theory ARing). *)
+End RingElementTypeZ.
+
+Module OrderedElementTypeZ <: OrderedElementType.
+  Include ElementTypeZ.
+
+  Definition Alt := Z.lt.
+  Definition Ale := Z.le.
+  Hint Unfold Ale Alt : A.
+
+  #[export] Instance Order : Order Alt Ale.
+  Proof. apply Z_Order. Qed.
+End OrderedElementTypeZ.
+
+Module OrderedRingElementTypeZ <: OrderedRingElementType.
+  Include RingElementTypeZ.
+  
+  Definition Ale := Z.le.
+  Definition Alt := Z.lt.
+  Hint Unfold Ale Alt : A.
+
+  #[export] Instance Order : Order Alt Ale.
+  Proof. apply OrderedElementTypeZ.Order. Qed.
+  
+  #[export] Instance OrderedARing
+    : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
+  Proof.
+    constructor. apply ARing. apply Order.
+    - intros; autounfold with A in *. lia.
+    - intros; autounfold with A in *. apply Zmult_lt_compat_r; auto.
+  Qed.
+End OrderedRingElementTypeZ.
 
 
 (* ######################################################################### *)

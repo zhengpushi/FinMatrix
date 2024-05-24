@@ -11,6 +11,29 @@
   1. invertible, left invertible, right invertible
      https://en.wikipedia.org/wiki/Invertible_matrix
   2. interface for matrix inversion
+
+  remark    :
+  1. 有多种逆矩阵计算方法
+     (1) minvGE: 基于高斯消元(Gauss Elimination)的逆矩阵。
+         适合于数值计算，不可符号计算。
+         适用于 r*c 的任意形状的矩阵，所以可以计算左逆和右逆。
+         不过目前只支持了 n*n 方阵的情形。
+     (2) minvAM: 基于伴随矩阵(Adjoint)的逆矩阵。
+         适合于符号计算，也可数值计算(但可能效率较低)。
+         仅适用于 n*n 的方阵。
+  2. 在Coq中计算的不同方式及其速度比较
+     (1) 直接查看结果，不保存
+         Eval cbn/cbv/compute in exp. 速度慢
+         Eval vm_compute/native_compute in exp. 速度快
+         Compute exp.  速度快
+     (2) 不查看结果，而是保存到一个标识符。
+         Let a := Eval cbn/cbv/compute in exp. 速度慢
+         Let a := Eval vm_compute/native_compute in exp. 速度快
+     (3) 原因：
+         Compute xx 是 Eval vm_compute in xx 的缩写。
+         vm_compute 是基于字节码的虚拟机执行
+         native_compute 默认是 vm_compute，还可以进一步定制
+
  *)
 
 Require Export ElementType Matrix MatrixDet.

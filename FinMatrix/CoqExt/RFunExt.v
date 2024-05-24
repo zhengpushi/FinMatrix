@@ -141,19 +141,19 @@ Proof. intros. apply feq_iff; intros. autounfold with Rfun. field. auto. Qed.
 (* ======================================================================= *)
 (** ** Scalar multiplication of real function *)
 
-Definition fcmul (c : R) (f : R -> R) := fun x => (c * f x)%R.
-Infix "c*" := fcmul : Rfun_scope.
+Definition fcmulR (c : R) (f : R -> R) := fun x => (c * f x)%R.
+Infix "c*" := fcmulR : Rfun_scope.
 
-Lemma fcmul_ok : forall (c : R) (u : R -> R) (x : R), (c c* u) x = (c * u x)%R.
+Lemma fcmulR_ok : forall (c : R) (u : R -> R) (x : R), (c c* u) x = (c * u x)%R.
 Proof. auto. Qed.
 
 (** Properties for real function scalar multiplication *)
-Lemma fcmul_assoc1 : forall (c d : R) (u : R -> R), c c* (d c* u) = (c * d) c* u.
-Proof. intros. apply feq_iff; intros. rewrite !fcmul_ok. ring. Qed.
+Lemma fcmulR_assoc1 : forall (c d : R) (u : R -> R), c c* (d c* u) = (c * d) c* u.
+Proof. intros. apply feq_iff; intros. rewrite !fcmulR_ok. ring. Qed.
 
-Lemma fcmul_assoc2 : forall (c : R) (u v : R -> R), c c* (u *f v) = (c c* u) *f v.
+Lemma fcmulR_assoc2 : forall (c : R) (u v : R -> R), c c* (u *f v) = (c c* u) *f v.
 Proof.
-  intros. apply feq_iff; intros. rewrite ?fmulR_ok, ?fcmul_ok, ?fmulR_ok. ring.
+  intros. apply feq_iff; intros. rewrite ?fmulR_ok, ?fcmulR_ok, ?fmulR_ok. ring.
 Qed.
 
 (** Multiply with a natural number, i.e., sum the function by n times:
@@ -162,11 +162,11 @@ Qed.
     fnmul f 2 := f + f, i.e., fun x => f x + f x
     ...
     fnmul f (S n) := fun x => f x + (fnmul f n) *)
-Fixpoint fnmul (n : nat) (f : R -> R) : R -> R :=
+Fixpoint fnmulR (n : nat) (f : R -> R) : R -> R :=
   match n with
   | O => fun x => 0%R
   | S O => f
-  | S n' => faddR f (fnmul n' f)
+  | S n' => faddR f (fnmulR n' f)
   end.
 
 
@@ -365,6 +365,57 @@ Proof.
          forall x : R, f x <> R0
        *)
 Abort.
+
+
+(* ######################################################################### *)
+(** * Instances for ElementType *)
+   
+Module ElementTypeRFun <: ElementType.
+  Add Ring ring_inst : (make_ring_theory Rfun_ARing).
+  
+  Definition A : Type := R -> R.
+  Definition Azero : A := fzeroR.
+  Hint Unfold A Azero : A.
+
+  Lemma AeqDec : Dec (@eq A).
+  Proof. constructor. intros a b.
+         (* rewrite (functional_extensionality a b). *)
+  Admitted.
+End ElementTypeRFun.
+
+Module MonoidElementTypeRFun <: MonoidElementType.
+  Include ElementTypeRFun.
+  
+  Definition Aadd := faddR.
+  Hint Unfold Aadd : A.
+  
+  Infix "+" := Aadd : A_scope.
+
+  #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
+  Proof. intros. repeat constructor; intros; autounfold with A; ring. Qed.
+End MonoidElementTypeRFun.
+
+Module RingElementTypeRFun <: RingElementType.
+  Include MonoidElementTypeRFun.
+  
+  Definition Aone : A := foneR.
+  Definition Aopp := foppR.
+  Definition Amul := fmulR.
+  Hint Unfold Aone Aadd Aopp Amul : A.
+  
+  Notation Asub := (fun x y => Aadd x (Aopp y)).
+  Infix "*" := Amul : A_scope.
+  Notation "- a" := (Aopp a) : A_scope.
+  Infix "-" := Asub : A_scope.
+  
+  #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
+  Proof.
+    repeat constructor; intros;  autounfold with A;
+      apply functional_extensionality; intros; cbv; ring.
+  Qed.
+  
+  Add Ring Ring_inst : (make_ring_theory ARing).
+End RingElementTypeRFun.
 
 
 (* ######################################################################### *)

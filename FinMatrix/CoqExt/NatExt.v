@@ -11,7 +11,7 @@
   1. naming of nat variable: n, m, k, p, q, r
  *)
 
-Require Export Hierarchy.  
+Require Export Hierarchy ElementType.
 Require Export Init.Nat PeanoNat Arith Lia.
 Open Scope nat_scope.
 
@@ -162,6 +162,42 @@ Notation "m ??> n" := (@dec _ _ nat_lt_Dec n m) : nat_scope.
 Notation "m ??>= n" := (@dec _ _ nat_le_Dec n m) : nat_scope.
 Infix "??<" := (@dec _ _ nat_lt_Dec) : nat_scope.
 Infix "??<=" := (@dec _ _ nat_le_Dec) : nat_scope.
+
+
+(* ######################################################################### *)
+(** * Instances for ElementType *)
+
+Module ElementTypeNat <: ElementType.
+  Definition A : Type := nat.
+  Definition Azero : A := 0.
+  Hint Unfold A Azero : A.
+
+  Lemma AeqDec : Dec (@eq A).
+  Proof. apply nat_eq_Dec. Defined.
+End ElementTypeNat.
+
+Module OrderedElementTypeNat <: OrderedElementType.
+  Include ElementTypeNat.
+
+  Definition Alt := Nat.lt.
+  Definition Ale := Nat.le.
+  Hint Unfold Ale Alt : A.
+
+  #[export] Instance Order : Order Alt Ale.
+  Proof. apply nat_Order. Qed.
+End OrderedElementTypeNat.
+
+Module MonoidElementTypeNat <: MonoidElementType.
+  Include ElementTypeNat.
+
+  Definition Aadd := Nat.add.
+  Hint Unfold Aadd : A.
+
+  Infix "+" := Aadd : A_scope.
+
+  #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
+  Proof. intros. repeat constructor; intros; autounfold with A; ring. Qed.
+End MonoidElementTypeNat.
 
 
 (* ######################################################################### *)

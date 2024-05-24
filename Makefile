@@ -36,6 +36,10 @@ html: $(COQMAKEFILE)
 	cp $(HTML_EXTRA_DIR)/footer.html $(MY_HTML_ROOT_WITH_VERSION)/
 	cp $(HTML_EXTRA_DIR)/resources $(MY_HTML_ROOT_WITH_VERSION)/ -R
 
+# generate dependent graph
+dep:
+	@./make_dep_graph.sh
+
 install: $(COQMAKEFILE)
 	$(MAKE) -f $^ install
 

@@ -12,7 +12,7 @@
 # 2. The manual of dot is: https://www.graphviz.org/pdf/dotguide.pdf
 
 # Note, this path should be consistent with Makefile
-name=doc/FinMatrix/v1.0/dep_graph
+name=doc/FinMatrix/dep_graph
 project_file=_CoqProject
 dot_file=${name}.dot
 pdf_file=${name}.pdf
@@ -21,6 +21,10 @@ png_file=${name}.png
 # Generate "dot" file with module dependencies
 # `coqdep` is a standard utility distributed with Coq system
 coqdep -f ${project_file} -dumpgraph ${dot_file} > /dev/null
+if [ $? -ne 0 ]; then
+	echo "please make sure your coq version is <= 8.10"
+	exit 1
+fi
 
 # Modify node style in dot file: add backcolor, add URL
 sed -i -E 's/"([^"]+)"\[label="([^"]+)"\]/"\1"[label="\2"\
@@ -34,3 +38,5 @@ sed -i -E 's/"([^"]+)"\[label="([^"]+)"\]/"\1"[label="\2"\
 dot -Tpdf ${dot_file} -o ${pdf_file}
 dot -Tpng ${dot_file} -o ${png_file}
 rm ${dot_file}
+echo "Generate dependent file (png):" ${png_file}
+echo "Generate dependent file (pdf):" ${pdf_file}

@@ -104,6 +104,15 @@ Reserved Infix "//"         (at level 50).       (* Two vectors are collinear *)
 Reserved Infix "//+"        (at level 50).       (* Two vectors are parallel *)
 Reserved Infix "//-"        (at level 50).       (* Two vectors are antiparallel *)
 
+Reserved Infix "+f"         (at level 50, left associativity).    (* fadd *)
+Reserved Infix "-f"         (at level 50, left associativity).    (* fsub *)
+Reserved Infix "*f"         (at level 40, left associativity).    (* fmul *)
+Reserved Infix "/f"         (at level 40, left associativity).    (* fdiv *)
+Reserved Infix "c*"         (at level 40, left associativity).    (* cmul *)
+Reserved Notation "-f g"    (at level 35, right associativity).   (* fopp *)
+Reserved Notation "/f g"    (at level 35, right associativity).   (* finv *)
+
+
 
 (* ****************************************************** *)
 (* The precedence ∈ [1,30) are element operations *)

@@ -29,7 +29,6 @@
 
 Require Export ListExt Hierarchy.
 Require Export RExt.
-(* Require Export RExt RealFunction. *)
 Require Export Fin Sequence.
 Require Import Extraction.
 
@@ -39,7 +38,6 @@ Generalizable Variable B Badd Bzero.
 (** Control the scope *)
 Open Scope R_scope.
 Open Scope nat_scope.
-(* Open Scope fin_scope. *)
 Open Scope A_scope.
 Open Scope vec_scope.
 
@@ -1973,7 +1971,7 @@ Section vsum_vinsert_vremove.
     replace (S n) with (i + (S (n - i)))%nat at 3 by lia.
     rewrite !seqsum_plusIdx. rewrite seqsumS_head.
     match goal with
-    | |- _ = ?d+(?e+?f)-?g => replace (d+(e+f)-g) with (d+f) end.
+    | |- _ = ?d + (?e + ?f) - ?g => replace (d + (e + f) - g) with (d + f) end.
     - f_equal.
       + apply seqsum_eq; intros. unfold v2f,f2v. fin.
       + apply seqsum_eq; intros. unfold v2f,f2v. fin.

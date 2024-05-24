@@ -16,8 +16,8 @@
 
 Require Export RExt.
 Require Export FuncExt.
-Open Scope R_scope.
 Open Scope Rfun_scope.
+Open Scope R_scope.
 
 
 (* ######################################################################### *)
@@ -85,15 +85,20 @@ Notation finvR := inv_fct.
 (* Notation fdivR := div_fct. *)
 Notation fdivR f g := (fmulR f (finvR g)).
 
-Infix "-" := fsubR : Rfun_scope.
-Infix "/" := fdivR : Rfun_scope.
+Infix "+f" := faddR : Rfun_scope.
+Infix "-f" := fsubR : Rfun_scope.
+Infix "*f" := fmulR : Rfun_scope.
+Infix "/f" := fdivR : Rfun_scope.
+Infix "/f" := fdivR : Rfun_scope.
+Notation "-f g" := (foppR g) : Rfun_scope.
+Notation "/f g" := (finvR g) : Rfun_scope.
 
-Lemma faddR_ok : forall (u v : R -> R) (x : R), (u + v) x = (u x + v x)%R. auto. Qed.
-Lemma foppR_ok : forall (v : R -> R) (x : R), (- v) x = (- v x)%R. auto. Qed.
-Lemma fsubR_ok : forall (u v : R -> R) (x : R), (u - v) x = (u x - v x)%R. auto. Qed.
-Lemma fmulR_ok : forall (u v : R -> R) (x : R), (u * v) x = (u x * v x)%R. auto. Qed.
-Lemma finvR_ok : forall (v : R -> R) (x : R), (/ v) x = (/ v x)%R. auto. Qed.
-Lemma fdivR_ok : forall (u v : R -> R) (x : R), (u / v) x = (u x / v x)%R. auto. Qed.
+Lemma faddR_ok : forall (u v : R -> R) (x : R), (u +f v) x = (u x + v x)%R. auto. Qed.
+Lemma foppR_ok : forall (v : R -> R) (x : R), (-f v) x = (- v x)%R. auto. Qed.
+Lemma fsubR_ok : forall (u v : R -> R) (x : R), (u -f v) x = (u x - v x)%R. auto. Qed.
+Lemma fmulR_ok : forall (u v : R -> R) (x : R), (u *f v) x = (u x * v x)%R. auto. Qed.
+Lemma finvR_ok : forall (v : R -> R) (x : R), (/f v) x = (/ v x)%R. auto. Qed.
+Lemma fdivR_ok : forall (u v : R -> R) (x : R), (u /f v) x = (u x / v x)%R. auto. Qed.
 
 (* ======================================================================= *)
 (** ** Real constant functions *)
@@ -101,35 +106,35 @@ Definition fcnstR (C : R) : R -> R := fun _ => C.
 Definition fzeroR : R -> R := fcnstR R0.
 Definition foneR : R -> R := fcnstR R1.
 Definition fidR : R -> R := fun x => x.
-Notation "0" := fzeroR : Rfun_scope.
-Notation "1" := foneR : Rfun_scope.
+(* Notation "0" := fzeroR : Rfun_scope. *)
+(* Notation "1" := foneR : Rfun_scope. *)
 
 Hint Unfold
   faddR foppR fmulR finvR
   fcnstR fzeroR foneR fidR : Rfun.
 
-Lemma faddR_0_l : forall f, 0 + f = f.
+Lemma faddR_0_l : forall f, fzeroR +f f = f.
 Proof. intros. apply feq_iff; intros; autounfold with Rfun; ring. Qed.
 
-Lemma faddR_0_r : forall f, f + 0 = f.
+Lemma faddR_0_r : forall f, f +f fzeroR = f.
 Proof. intros. apply feq_iff; intros; autounfold with Rfun; ring. Qed.
 
-Lemma faddR_opp_l : forall f, - f + f = 0.
+Lemma faddR_opp_l : forall f, - f +f f = fzeroR.
 Proof. intros. apply feq_iff; intros; autounfold with Rfun; ring. Qed.
 
-Lemma faddR_opp_r : forall f, f + - f = 0.
+Lemma faddR_opp_r : forall f, f +f -f f = fzeroR.
 Proof. intros. apply feq_iff; intros; autounfold with Rfun; ring. Qed.
 
-Lemma fmulR_1_l : forall f, 1 * f = f.
+Lemma fmulR_1_l : forall f, foneR *f f = f.
 Proof. intros. apply feq_iff; intros; autounfold with Rfun; ring. Qed.
 
-Lemma fmulR_1_r : forall f, f * 1 = f.
+Lemma fmulR_1_r : forall f, f *f foneR = f.
 Proof. intros. apply feq_iff; intros; autounfold with Rfun; ring. Qed.
 
-Lemma fmulR_inv_l : forall f, (forall x, f x <> 0)%R -> / f * f = 1.
+Lemma fmulR_inv_l : forall f, (forall x, f x <> 0)%R -> /f f *f f = foneR.
 Proof. intros. apply feq_iff; intros. autounfold with Rfun. field. auto. Qed.
 
-Lemma fmulR_inv_r : forall f, (forall x, f x <> 0)%R -> f * / f = 1.
+Lemma fmulR_inv_r : forall f, (forall x, f x <> 0)%R -> f *f /f f = foneR.
 Proof. intros. apply feq_iff; intros. autounfold with Rfun. field. auto. Qed.
 
 
@@ -137,16 +142,16 @@ Proof. intros. apply feq_iff; intros. autounfold with Rfun. field. auto. Qed.
 (** ** Scalar multiplication of real function *)
 
 Definition fcmul (c : R) (f : R -> R) := fun x => (c * f x)%R.
-Infix "\.*" := fcmul : Rfun_scope.
+Infix "c*" := fcmul : Rfun_scope.
 
-Lemma fcmul_ok : forall (c : R) (u : R -> R) (x : R), (c \.* u) x = (c * u x)%R.
+Lemma fcmul_ok : forall (c : R) (u : R -> R) (x : R), (c c* u) x = (c * u x)%R.
 Proof. auto. Qed.
 
 (** Properties for real function scalar multiplication *)
-Lemma fcmul_assoc1 : forall (c d : R) (u : R -> R), c \.* (d \.* u) = (c * d) \.* u.
+Lemma fcmul_assoc1 : forall (c d : R) (u : R -> R), c c* (d c* u) = (c * d) c* u.
 Proof. intros. apply feq_iff; intros. rewrite !fcmul_ok. ring. Qed.
 
-Lemma fcmul_assoc2 : forall (c : R) (u v : R -> R), c \.* (u * v) = (c \.* u) * v.
+Lemma fcmul_assoc2 : forall (c : R) (u v : R -> R), c c* (u *f v) = (c c* u) *f v.
 Proof.
   intros. apply feq_iff; intros. rewrite ?fmulR_ok, ?fcmul_ok, ?fmulR_ok. ring.
 Qed.
@@ -217,16 +222,16 @@ Hint Resolve
   : Rfun.
 
 (** Identity Left/Right *)
-#[export] Instance faddR_IdL : IdentityLeft faddR 0.
+#[export] Instance faddR_IdL : IdentityLeft faddR fzeroR.
 Proof. constructor; intros. autounfold with Rfun; apply feq_iff; intros; ring. Qed.
 
-#[export] Instance faddR_IdR : IdentityRight faddR 0.
+#[export] Instance faddR_IdR : IdentityRight faddR fzeroR.
 Proof. constructor; intros. autounfold with Rfun; apply feq_iff; intros; ring. Qed.
 
-#[export] Instance fmulR_IdL : IdentityLeft fmulR 1.
+#[export] Instance fmulR_IdL : IdentityLeft fmulR foneR.
 Proof. constructor; intros. autounfold with Rfun; apply feq_iff; intros; ring. Qed.
 
-#[export] Instance fmulR_IdR : IdentityRight fmulR 1.
+#[export] Instance fmulR_IdR : IdentityRight fmulR foneR.
 Proof. constructor; intros. autounfold with Rfun; apply feq_iff; intros; ring. Qed.
 
 Hint Resolve
@@ -236,10 +241,10 @@ Hint Resolve
 
 (** Inverse Left/Right *)
 
-#[export] Instance faddR_InvL : InverseLeft faddR 0 foppR.
+#[export] Instance faddR_InvL : InverseLeft faddR fzeroR foppR.
 Proof. constructor; intros. autounfold with Rfun; apply feq_iff; intros; ring. Qed.
 
-#[export] Instance faddR_InvR : InverseRight faddR 0 foppR.
+#[export] Instance faddR_InvR : InverseRight faddR fzeroR foppR.
 Proof. constructor; intros. autounfold with Rfun; apply feq_iff; intros; ring. Qed.
 
 Hint Resolve faddR_InvL faddR_InvR : Rfun.
@@ -288,10 +293,10 @@ Proof. intros. pose proof faddR_ASGroup. asgroup. Abort.
 
 (** Monoid *)
   
-#[export] Instance faddR_Monoid : Monoid faddR 0.
+#[export] Instance faddR_Monoid : Monoid faddR fzeroR.
 Proof. constructor; auto with Rfun. Qed.
 
-#[export] Instance fmulR_Monoid : Monoid fmulR 1.
+#[export] Instance fmulR_Monoid : Monoid fmulR foneR.
 Proof. constructor; auto with Rfun. Qed.
 
 Hint Resolve
@@ -301,38 +306,38 @@ Hint Resolve
 
 (** Abelian monoid *)
   
-#[export] Instance faddR_AMonoid : AMonoid faddR 0.
+#[export] Instance faddR_AMonoid : AMonoid faddR fzeroR.
 Proof. constructor; auto with Rfun. Qed.
   
-#[export] Instance fmulR_AMonoid : AMonoid fmulR 1.
+#[export] Instance fmulR_AMonoid : AMonoid fmulR foneR.
 Proof. constructor; auto with Rfun. Qed.
 
 Hint Resolve faddR_AMonoid fmulR_AMonoid : Rfun.
 
 (** Group *)
 
-#[export] Instance faddR_Group : Group faddR 0 foppR.
+#[export] Instance faddR_Group : Group faddR fzeroR foppR.
 Proof. constructor; auto with Rfun. Qed.
 
 Hint Resolve faddR_Group : Rfun.
 
 (** AGroup *)
 
-#[export] Instance faddR_AGroup : AGroup faddR 0 foppR.
+#[export] Instance faddR_AGroup : AGroup faddR fzeroR foppR.
 Proof. constructor; auto with Rfun. Qed.
 
 Hint Resolve faddR_AGroup : Rfun.
 
 (** Ring *)
 
-#[export] Instance Rfun_Ring : Ring faddR 0 foppR fmulR 1.
+#[export] Instance Rfun_Ring : Ring faddR fzeroR foppR fmulR foneR.
 Proof. constructor; auto with Rfun. Qed.
 
 Hint Resolve Rfun_Ring : Rfun.
 
 (** ARing *)
 
-#[export] Instance Rfun_ARing : ARing faddR 0 foppR fmulR 1.
+#[export] Instance Rfun_ARing : ARing faddR fzeroR foppR fmulR foneR.
 Proof. constructor; auto with Rfun. Qed.
 
 Hint Resolve Rfun_ARing : Rfun.
@@ -340,13 +345,13 @@ Hint Resolve Rfun_ARing : Rfun.
 Section test.
   Add Ring ring_inst : (make_ring_theory Rfun_ARing).
 
-  Goal forall u v w : R -> R, u - v * (u - w) = w * v - u * v + u.
+  Goal forall u v w : R -> R, u -f v *f (u -f w) = w *f v -f u *f v +f u.
   Proof. intros. ring. Qed.
 End test.
 
 (** Field *)
 
-#[export] Instance Rfun_Field : Field faddR 0 foppR fmulR 1 finvR.
+#[export] Instance Rfun_Field : Field faddR fzeroR foppR fmulR foneR finvR.
 Proof.
   constructor; auto with Rfun.
   2:{ intro. cbv in H.

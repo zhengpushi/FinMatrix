@@ -66,8 +66,8 @@ Lemma Rsqrt_1_minus_x_eq_y : forall x y : R,
 Proof.
   intros.
   replace (1 - (x / sqrt (x² + y²))²)%R with (y² / (x² + y²))%R.
-  - rewrite sqrt_div_alt; ra. f_equal. apply sqrt_square_abs.
-  - rewrite Rsqr_div'. autorewrite with sqrt; ra. field. ra.
+  - rewrite sqrt_div_alt; ra.
+  - rewrite Rsqr_div'. rewrite Rsqr_sqrt; ra.
 Qed.
 
 Lemma Rsqrt_1_minus_y_eq_x : forall x y : R,
@@ -128,7 +128,7 @@ Qed.
 Lemma vnorm_len1 : forall {n} (a : vec n), a <> vzero -> ||vnorm a|| = 1.
 Proof.
   intros. unfold vnorm. rewrite vlen_vcmul. unfold a2r, id. rewrite Aabs_eq_Rabs.
-  pose proof (vlen_gt0 a H). rewrite Rabs_right; ra. field; ra.
+  pose proof (vlen_gt0 a H). rewrite Rabs_right; ra.
 Qed.
 
 (** Normalized vector are unit vector *)
@@ -162,8 +162,8 @@ Proof.
   f_equal. unfold sign. autounfold with A. apply vlen_neq0_iff_neq0 in H0.
   unfold a2r,id. rewrite Aabs_eq_Rabs.
   bdestruct (0 <? x).
-  - rewrite Rabs_right; ra. field. split; auto.
-  - bdestruct (x =? 0). easy. rewrite Rabs_left; ra. field. auto.
+  - rewrite Rabs_right; ra.
+  - bdestruct (x =? 0). easy. rewrite Rabs_left; ra.
 Qed.
 
 (** x > 0 -> vnorm (x \.* a) = vnorm a *)
@@ -238,8 +238,7 @@ Lemma vorth_vnorm_l : forall {n} (a b : vec n), a <> vzero -> vnorm a _|_ b <-> 
 Proof.
   intros. unfold vorth, vnorm in *. rewrite vdot_vcmul_l. autounfold with A.
   assert (1 * / (||a||) <> 0)%R; ra.
-  apply Rmult_integral_contrapositive_currified; ra.
-  apply Rinv_neq_0_compat; auto. apply vlen_neq0_iff_neq0; auto.
+  apply vlen_neq0_iff_neq0 in H; ra.
 Qed.
 
 (** a _|_ vnorm b <-> a _|_ b *)
@@ -259,7 +258,7 @@ Infix "/_" := vangle : vec_scope.
 Lemma vangle_self : forall {n} (a : vec n), a <> vzero -> a /_ a = 0.
 Proof.
   intros. unfold vangle. rewrite vdot_sameR.
-  rewrite vnorm_len1; auto. autorewrite with R. apply acos_1.
+  rewrite vnorm_len1; auto. ra.
 Qed.
 
 (** Angle is commutative *)
@@ -357,13 +356,12 @@ Qed.
 Lemma vangle_PI_iff : forall {n} (a b : vec n),
     a <> vzero -> b <> vzero -> (a /_ b = PI <-> <a, b> = (-||a|| * ||b||)%R).
 Proof.
-  intros. rewrite (vdot_eq_cos_angle a b). rewrite <- !associative.
-  replace (- (||a|| * ||b||))%R with ((||a|| * ||b||) * (-1))%R; ra.
-  split; intros.
-  - apply Rmult_eq_compat_l. rewrite H1. ra.
-  - apply Rmult_eq_reg_l in H1.
-    * apply (cos_neg1_period _ 0) in H1. ra.
-    * apply vlen_neq0_iff_neq0 in H,H0. ra.
+  intros. rewrite (vdot_eq_cos_angle a b). split; intros.
+  - rewrite H1. ra.
+  - replace (- ((||a||) * (||b||)))%R with ((||a||) * ((||b||) * (-1)))%R in H1 by ra.
+    apply Rmult_eq_reg_l in H1; try apply vlen_neq0_iff_neq0; auto.
+    apply Rmult_eq_reg_l in H1; try apply vlen_neq0_iff_neq0; auto.
+    apply (cos_neg1_period _ 0) in H1. ra.
 Qed.
 
 (** a /_ b = 0 -> <a, b>² = <a, a> * <b, b> *)
@@ -426,8 +424,7 @@ Lemma vangle_vcmul_l_gt0 : forall {n} (a b : vec n) (x : R),
 Proof.
   intros. unfold vangle. rewrite vnorm_vcmul; auto.
   rewrite vdot_vcmul_l. unfold sign. bdestruct (0 <? x); ra.
-  - rewrite !Rmult_1_l. auto.
-  - bdestruct (x =? 0); ra.
+  bdestruct (x =? 0); ra.
 Qed.
 
 (** x < 0 -> (x \.* a) /_ b = PI - a /_ b *)
@@ -436,7 +433,7 @@ Lemma vangle_vcmul_l_lt0 : forall {n} (a b : vec n) (x : R),
 Proof.
   intros. unfold vangle. rewrite vnorm_vcmul; auto.
   rewrite vdot_vcmul_l. unfold sign. bdestruct (0 <? x); ra.
-  - bdestruct (x =? 0); ra. rewrite Rmult_neg1_l. rewrite acos_opp. auto.
+  - bdestruct (x =? 0); ra.
   - bdestruct (x =? 0); ra.
 Qed.
 
@@ -446,8 +443,7 @@ Lemma vangle_vcmul_r_gt0 : forall {n} (a b : vec n) (x : R),
 Proof.
   intros. unfold vangle. rewrite vnorm_vcmul; auto.
   rewrite vdot_vcmul_r. unfold sign. bdestruct (0 <? x); ra.
-  - rewrite !Rmult_1_l. auto.
-  - bdestruct (x =? 0); ra.
+  bdestruct (x =? 0); ra.
 Qed.
 
 (** x < 0 -> a /_ (x .* b) = PI - a /_ b *)
@@ -456,7 +452,7 @@ Lemma vangle_vcmul_r_lt0 : forall {n} (a b : vec n) (x : R),
 Proof.
   intros. unfold vangle. rewrite vnorm_vcmul; auto.
   rewrite vdot_vcmul_r. unfold sign. bdestruct (0 <? x); ra.
-  - bdestruct (x =? 0); ra. rewrite Rmult_neg1_l. rewrite acos_opp. auto.
+  - bdestruct (x =? 0); ra.
   - bdestruct (x =? 0); ra.
 Qed.
 
@@ -823,7 +819,7 @@ Definition vangle2B (a b : vec 2) : R := atan2 (b.2) (b.1) - atan2 (a.2) (a.1).
 (* Note that, vangle2C is the default choice, we will call it vangle2 for short *)
 Definition vangle2 (a b : vec 2) : R :=
   let alpha := a /_ b in
-  if 0 ??<= a \x b then alpha else (-alpha)%R.
+  if 0 <=? a \x b then alpha else (-alpha)%R.
 
 Infix "/2_" := vangle2 : vec_scope.
 
@@ -843,31 +839,28 @@ Proof.
   autounfold with A.
   replace (1 / (||a||) * (1 / (||b||) * (<a, b>)))%R with ((<a, b>)/ (||a|| * ||b||)).
   2:{ field. split; apply vlen_neq0_iff_neq0; auto. }
-  destruct (<a, b> ??= 0).
+  bdestruct (<a, b> =? 0).
   - (* <a, b> = 0 *)
-    rewrite e. autorewrite with R; ra.
-    rewrite acos_0. destruct (0 ??<= a \x b).
+    rewrite H5. ra. bdestruct (0 <=? a \x b); ra.
     + rewrite atan2_X0_Yge0; ra.
     + rewrite atan2_X0_Ylt0; ra.
   - (* <a, b> <> 0 *)
-    destruct (0 ??< <a, b>).
+    bdestruct (0 <? <a, b>).
     + (* 0 < <a, b> *)
       rewrite acos_div_dot_gt0_eq; ra.
       rewrite atan2_Xgt0; ra. 
-      destruct (0 ??<= a \x b).
+      bdestruct (0 <=? a \x b).
       * (* 0 <= a × b *)
         rewrite v2cross_ge0_eq; ra.
       * (* a × b < 0*)
         rewrite v2cross_lt0_eq; ra.
-        rewrite Rdiv_opp_l. rewrite atan_opp. auto.
     + (* <a, b> < 0 *)
       rewrite acos_div_dot_lt0_eq; ra.
-      destruct (0 ??<= a \x b).
+      bdestruct (0 <=? a \x b).
       * (* 0 <= a × b *)
         rewrite atan2_Xlt0_Yge0; ra. rewrite v2cross_ge0_eq; ra.
       * (* a × b < 0*)
         rewrite atan2_Xlt0_Ylt0; ra. rewrite v2cross_lt0_eq; ra.
-        rewrite Rdiv_opp_l. rewrite atan_opp. ring.
 Qed.
 
 (* a /2_ b ∈ (-π,π] *)
@@ -878,7 +871,7 @@ Proof.
   pose proof PI_bound.
   pose proof (vangle_bound a b H H0).
   pose proof (v2cross_neq0_iff_vangle a b H H0).
-  destruct (0 ??<= a \x b); ra.
+  bdestruct (0 <=? a \x b); ra.
 Qed.
 
 (** a × b = 0 -> (a /2_ b) = (b /2_ a) *)
@@ -888,7 +881,8 @@ Proof.
   intros. remember H1 as H2. clear HeqH2.
   apply v2cross_eq0_iff_vangle in H1; auto. destruct H1.
   - unfold vangle2. rewrite (vangle_comm b a). rewrite H1.
-    destruct (_??<=_), (_??<=_); ra.
+    bdestruct (0 <=? a \x b); ra.
+    bdestruct (0 <=? b \x a); ra.
   - unfold vangle2. rewrite (vangle_comm b a). rewrite H1.
     rewrite (v2cross_comm b a). rewrite H2.
     autorewrite with R. auto.
@@ -901,7 +895,8 @@ Proof.
   intros. remember H1 as H2. clear HeqH2.
   apply v2cross_neq0_iff_vangle in H1; auto.
   unfold vangle2. rewrite (vangle_comm b a).
-  rewrite (v2cross_comm b a). destruct (_??<=_),(_??<=_); ra.
+  rewrite (v2cross_comm b a).
+  bdestruct (0 <=? a \x b); bdestruct (0 <=? - (a \x b)); ra.
 Qed.
 
 (** i /2_ j = π/2 *)
@@ -918,12 +913,12 @@ Qed.
 
 (** cos (a /2_ b) = cos (a /_ b) *)
 Lemma cos_vangle2_eq : forall (a b : vec 2), cos (a /2_ b) = cos (a /_ b).
-Proof. intros. unfold vangle2. destruct (_??<=_); ra. Qed.
+Proof. intros. unfold vangle2. bdestruct (0 <=? a \x b); ra. Qed.
 
 (** sin (a /2_ b) = (0 <= a \x b) ? sin (a /_ a) : (- sin (a /_ b)) *)
 Lemma sin_vangle2_eq : forall (a b : vec 2),
-    sin (a /2_ b) = if 0 ??<= a \x b then sin (a /_ b) else (- sin (a /_ b))%R.
-Proof. intros. unfold vangle2. destruct (_??<=_); ra. Qed.
+    sin (a /2_ b) = if 0 <=? a \x b then sin (a /_ b) else (- sin (a /_ b))%R.
+Proof. intros. unfold vangle2. destruct (0 <=? a \x b); ra. Qed.
 
 (** i与任意非零向量v的夹角的余弦等于其横坐标除以长度 *)
 Lemma cos_vangle2_i : forall (a : vec 2), a <> vzero -> cos (v2i /2_ a) = (a.1 / ||a||)%R.
@@ -937,12 +932,13 @@ Lemma sin_vangle2_i : forall (a : vec 2), a <> vzero -> sin (v2i /2_ a) = (a.2 /
 Proof.
   intros. unfold vangle2. unfold vangle. rewrite v2i_vnorm. rewrite vdot_i_l.
   rewrite vnth_vnorm; auto. pose proof (vlen_gt0 a H).
-  rewrite v2cross_i_l. destruct (_??<=_).
+  rewrite v2cross_i_l. bdestruct (0 <=? a #1).
   - rewrite sin_acos; auto with vec.
     + rewrite <- sqr_y_div_vlen; auto. ra.
     + apply vnth_div_vlen_bound; auto.
   - rewrite sin_neg. rewrite sin_acos; auto with vec.
     + rewrite <- sqr_y_div_vlen; auto. rewrite sqrt_Rsqr_abs. rewrite Rabs_left; ra.
+      assert (a #1 < 0); ra.
     + apply vnth_div_vlen_bound; auto.
 Qed.
 
@@ -960,13 +956,13 @@ Lemma sin_vangle2_j : forall (a : vec 2),
 Proof.
   intros. unfold vangle2. unfold vangle. rewrite v2j_vnorm. rewrite vdot_j_l.
   rewrite vnth_vnorm; auto. pose proof (vlen_gt0 a H).
-  rewrite v2cross_j_l. destruct (_??<=_).
+  rewrite v2cross_j_l. bdestruct (0 <=? - a #0).
   - assert (a.1 <= 0); ra. rewrite sin_acos; auto with vec.
     + rewrite <- sqr_x_div_vlen; auto. rewrite sqrt_Rsqr_abs.
       rewrite Rabs_left1; ra.
       assert (0 < / (||a||)); ra.
     + apply vnth_div_vlen_bound; auto.
-  - assert (a.1 > 0); ra. rewrite sin_neg. rewrite sin_acos; auto with vec.
+  - assert (a.1 > 0); ra. rewrite sin_acos; auto with vec.
     + rewrite <- sqr_x_div_vlen; auto.
       rewrite sqrt_Rsqr_abs. rewrite Rabs_right; ra.
     + apply vnth_div_vlen_bound; auto.
@@ -1690,11 +1686,11 @@ Proof.
     + intros. apply vsum_ge0. intros. apply sqr_ge0.
     + apply mneq_iff_exist_mnth_neq in H. destruct H as [i [j H]].
       exists i. intro. apply vsum_eq0_rev with (i:=j) in H0; auto.
-      * rewrite mnth_mat0 in H. cbv in H. ra.
+      * destruct H. rewrite mnth_mat0. unfold Azero in *. ra.
       * intros. cbv. ra.
   - rewrite H. unfold mnormF.
     apply sqrt_0_eq0. apply vsum_eq0; intros. apply vsum_eq0; intros.
-    rewrite mnth_mat0. ra.
+    rewrite mnth_mat0. unfold Azero. ra.
 Qed.
 
 Lemma mnormF_spec_mcmul : forall r c, mnorm_spec_mcmul (@mnormF r c).

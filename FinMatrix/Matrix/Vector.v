@@ -2853,7 +2853,7 @@ Section vlen.
       rewrite commutative.
       replace (a2r (|x|)%A) with (|(a2r x)|)%R.
       2:{ rewrite a2r_Aabs. auto. }
-      rewrite <- sqrt_square_abs. rewrite <- sqrt_mult_alt.
+      rewrite <- sqrt_sqr_abs. rewrite <- sqrt_mult_alt.
       - f_equal. rewrite vdot_vcmul_l, vdot_vcmul_r, <- associative.
         rewrite a2r_mul. rewrite commutative. f_equal. rewrite a2r_mul. auto.
       - apply a2r_ge0_iff. apply vdot_ge0.

@@ -72,8 +72,7 @@ Lemma C1_neq_C0 : C1 <> C0.
 Proof.
   intro H. apply (proj1 (Ceq_iff _ _)) in H. simpl in *. destruct H; auto with R.
 Qed.
-
-Hint Resolve C1_neq_C0 : C.
+#[export] Hint Resolve C1_neq_C0 : C.
 
 
 (* ======================================================================= *)
@@ -93,6 +92,13 @@ Ltac Ceq :=
   Csimpl;
   apply (proj2 (Ceq_iff _ _)); (* z1.a = z2.a /\ z2.b = z2.b -> z1 = z2 *)
   split; simpl; try lra.
+
+(** Automation for complex arithmetic *)
+Ltac ca :=
+  ra;
+  try autorewrite with C;
+  try auto with C;
+  Csimpl; ra.
 
 
 (* ======================================================================= *)
@@ -118,20 +124,15 @@ Notation "| z |2" := (Cnorm2 z)
 (* Reserved Notation "| r |"   (at level 30, r at level 25, format "| r |").  (* Rabs *) *)
 
 (** z is zero, iff its norm2 is zero *)
-Lemma C0_norm_R0 : forall z, z = C0 <-> |z |2 = 0%R.
-Proof.
-  Csimpl. cbv.
-  split; intros H; inv H; try lra.
-  assert (a = R0) by nra.
-  assert (b = R0) by nra. subst. f_equal; auto.
-Qed.
+Lemma C0_norm_0 : forall z, z = C0 <-> |z |2 = 0.
+Proof. ca; cbv in *. inv H; ra. f_equal; ra. Qed.
 
 (** z <> 0 <-> | z |2 <> 0 *)
-Lemma Cneq0_iff_norm2_neq0 : forall z : C, z <> C0 <-> | z |2 <> 0%R.
+Lemma Cneq0_iff_norm2_neq0 : forall z : C, z <> C0 <-> | z |2 <> 0.
 Proof.
   intros. split; intros; intro.
-  - apply C0_norm_R0 in H0. easy.
-  - apply C0_norm_R0 in H0. easy.
+  - apply C0_norm_0 in H0. easy.
+  - apply C0_norm_0 in H0. easy.
 Qed.
 
 (** 0 <= | z |2 *)
@@ -159,54 +160,64 @@ Notation "| z |" := (Cnorm z) : C_scope.
 Lemma Cnorm2_eq (z : C) : | z |2 = (| z |%C)².
 Proof. unfold Cnorm. rewrite Rsqr_sqrt; auto. apply Cnorm2_ge0. Qed.
 
-(** z = C0 <-> | z | = 0 *)
-Lemma Cnorm0_iff_C0 : forall z : C, z = C0 <-> | z | = R0.
-Proof.
-  Csimpl. cbv. split; intros.
-  - inv H. ring_simplify.  apply Rsqrt_plus_sqr_eq0_iff. auto.
-  - apply Rsqrt_plus_sqr_eq0_iff in H. destruct H. subst. auto.
-Qed.
-
-(** 0 <= | z | *)
-Lemma Cnorm_pos : forall z : C, 0 <= | z |%C.
-Proof. Csimpl. unfold Cnorm. ra. Qed.
-
-(** 0 <= | z | *)
-Lemma Cnorm_ge0 (z : C) : 0 <= | z |%C.
-Proof. unfold Cnorm. apply sqrt_pos. Qed.
-
-(** z <> C0 -> 0 < | z | *)
-Lemma Cnorm_pos_lt : forall z : C, z <> C0 -> 0 < | z |%C.
-Proof.
-  intros z Hz; case (Cnorm_pos z); intro H; auto.
-  apply eq_sym, Cnorm0_iff_C0 in H. easy.
-Qed.
-
-(** z <> C0 <-> | z | <> 0 *)
-Lemma Cnorm_neq0_iff_neq0 : forall z : C, z <> C0 <-> | z | <> 0%R.
-Proof.
-  intros (a,b). cbv. split; intros H.
-  - intro. apply Rsqrt_plus_sqr_eq0_iff in H0. inv H0. easy.
-  - intro. inv H0. destruct H. apply Rsqrt_plus_sqr_eq0_iff. easy.
-Qed.
-
 (** | 0 | = 0 *)
 Lemma Cnorm_C0 : |C0| = R0.
 Proof. cbv. autorewrite with R. ra. Qed.
+#[export] Hint Rewrite Cnorm_C0 : C.
+
+(** z = C0 -> | z | = 0 *)
+Lemma Cnorm0_if_C0 : forall z : C, z = C0 -> | z | = 0.
+Proof. ca. rewrite H. ca. Qed.
+#[export] Hint Resolve Cnorm0_if_C0 : C.
+
+(** | z | = 0 -> z = C0 *)
+Lemma Cnorm0_imply_C0 : forall z : C, | z | = 0 -> z = C0.
+Proof.
+  ca. apply Rsqrt_plus_sqr_eq0_iff in H. simpl in H. destruct H. subst. auto.
+Qed.
+#[export] Hint Resolve Cnorm0_imply_C0 : C.
+
+(** z = C0 <-> | z | = 0 *)
+Lemma Cnorm0_iff_C0 : forall z : C, z = C0 <-> | z | = R0.
+Proof. ca. Qed.
+
+(** 0 <= | z | *)
+Lemma Cnorm_ge0 : forall z : C, 0 <= | z |%C.
+Proof. ca. unfold Cnorm. ca. Qed.
+#[export] Hint Resolve Cnorm_ge0 : C.
+
+(** z <> C0 -> 0 < | z | *)
+Lemma Cnorm_gt0_if_neq0 : forall z : C, z <> C0 -> 0 < | z |%C.
+Proof.
+  intros. destruct (Aeqdec z C0); subst; try easy.
+  destruct (Cnorm_ge0 z); auto.
+  apply eq_sym, Cnorm0_iff_C0 in H0. easy.
+Qed.
+#[export] Hint Resolve Cnorm_gt0_if_neq0 : C.
+
+(** z <> C0 -> | z | <> 0 *)
+Lemma Cnorm_neq0_if_neq0 : forall z : C, z <> C0 -> | z | <> 0.
+Proof. ca. Qed.
+#[export] Hint Resolve Cnorm_neq0_if_neq0 : C.
+
+(** | z | <> 0 -> z <> C0 *)
+Lemma Cnorm_neq0_imply_neq0 : forall z : C, | z | <> 0 -> z <> C0.
+Proof. ca. Qed.
+#[export] Hint Resolve Cnorm_neq0_imply_neq0 : C.
 
 (** | a +i 0 | = | a | *)
 Lemma Cnorm_Cre_simpl : forall (a : R), | a +i 0 | = | a |%R.
 Proof.
-  intros; unfold Cnorm, Cnorm2; simpl.
-  rewrite <- sqrt_Rsqr_abs. f_equal. cbv. ring.
+  intros; unfold Cnorm, Cnorm2; simpl. ca.
 Qed.
+#[export] Hint Rewrite Cnorm_Cre_simpl : C.
 
 (** | 0 +i b | = | b | *)
 Lemma Cnorm_Cim_simpl : forall (b : R), | 0 +i b | = | b |%R.
 Proof.
-  intros; unfold Cnorm, Cnorm2; simpl.
-  rewrite <- sqrt_Rsqr_abs. f_equal. cbv. ring.
+  intros; unfold Cnorm, Cnorm2; simpl. ca.
 Qed.
+#[export] Hint Rewrite Cnorm_Cim_simpl : C.
 
 (** | a +i b | = | b +i a | *)
 Lemma Cnorm_comm : forall (a b : R), | a +i b | = | b +i a |.
@@ -215,29 +226,33 @@ Proof.
 Qed.
 
 (** 0 < | z | -> z <> C0 *)
-Lemma Cnorm_gt0_not_eq0 : forall z : C, 0 < | z |%C -> z <> C0.
+Lemma Cnorm_gt0_imply_neq0 : forall z : C, 0 < | z |%C -> z <> C0.
 Proof.
   intros. destruct (Aeqdec z C0); auto. subst. rewrite Cnorm_C0 in H. lra.
 Qed.
+#[export] Hint Resolve Cnorm_gt0_imply_neq0 : C.
 
 (** | R2C a | = | a | *)
 Lemma Cnorm_R2C_Rabs : forall a : R, |R2C a| = | a |%R.
-Proof. intros. unfold R2C. rewrite Cnorm_Cre_simpl. auto. Qed.
+Proof. intros. unfold R2C. ca. Qed.
+#[export] Hint Rewrite Cnorm_R2C_Rabs : C.
 
 (** | | z | | = | z |, that is: | R2C (| z |) | = | z | *)
 Lemma Cnorm_norm : forall z : C, | R2C (| z |%C) | = | z |.
 Proof.
-  intro z. rewrite Cnorm_R2C_Rabs.
-  apply Rabs_right. apply Rle_ge. apply Cnorm_pos.
+  ca. apply Rabs_right. apply Rle_ge. ca.
 Qed.
+#[export] Hint Rewrite Cnorm_norm : C.
 
 (** | 1 | = 1 *)
-Lemma Cnorm_C1 : | C1 | = 1%R.
-Proof. unfold C1. rewrite Cnorm_Cre_simpl. apply Rabs_R1. Qed.
+Lemma Cnorm_C1 : | C1 | = 1.
+Proof. unfold C1. ca. Qed.
+#[export] Hint Rewrite Cnorm_C1 : C.
 
 (** Rabs | z | = | z | *)
 Lemma Rabs_Cnorm : forall z : C, | | z |%C |%R = | z |.
-Proof. intro z; apply Rabs_right; apply Rle_ge; apply Cnorm_pos. Qed.
+Proof. intro z; apply Rabs_right; apply Rle_ge; apply Cnorm_ge0. Qed.
+#[export] Hint Rewrite Rabs_Cnorm : C.
 
 (** | a | <= | a +i b | *)
 Lemma Cre_le_Cnorm : forall z : C, | z.a | <= | z |%C.
@@ -262,8 +277,6 @@ Qed.
 (** | a +i b| <= | a | + | b | *)
 Lemma Cnorm_le_Cre_Cim : forall z : C, | z |%C <= | z.a | + | z.b |.
 Proof. Csimpl. unfold Cnorm, Cnorm2; simpl. apply R_neq5. Qed.
-
-Hint Resolve C0_norm_R0 : C.
 
 (* ======================================================================= *)
 (** ** Addition of complex numbers *)
@@ -292,11 +305,14 @@ Proof. Ceq. Qed.
 Lemma Cadd_0_r : forall z : C, z + C0 = z.
 Proof. Ceq. Qed.
 
-Hint Resolve
+#[export] Hint Rewrite
+  Cre_add Cim_add
+  Cadd_0_l Cadd_0_r
+  : C.
+
+#[export] Hint Resolve
   Cadd_comm
   Cadd_assoc
-  Cadd_0_l
-  Cadd_0_r
   : C.
 
 
@@ -325,10 +341,9 @@ Proof. Ceq. Qed.
 Lemma Cnorm_opp : forall z : C, | -z| = | z |.
 Proof. Csimpl. unfold Copp; simpl. cbv. f_equal. ring. Qed.
 
-Hint Resolve
-  Copp_opp
-  Cadd_opp_l
-  Cadd_opp_r
+#[export] Hint Rewrite
+  Cre_opp Cim_opp Copp_opp
+  Cadd_opp_l Cadd_opp_r
   : C.
 
 
@@ -359,10 +374,9 @@ Proof. Csimpl. cbv; f_equal; ring. Qed.
 
 Infix "-" := Csub : C_scope.
 
-Hint Resolve
+#[export] Hint Rewrite
   Copp_add_distr
   Copp_sub_distr
-  Csub_antisym
   : C.
 
 (* ======================================================================= *)
@@ -381,17 +395,12 @@ Section triangle_ineq.
   Lemma Cnorm_triang : forall z1 z2 : C, |z1 + z2|%C <= (|z1|%C + |z2|%C)%R.
   Proof.
     intros (a,b) (c,d). cbv.
-    apply Rsqr_incr_0_var; ra. ring_simplify.
-    autorewrite with R. rewrite ?Rsqr_sqrt; ra.
-    ring_simplify.
-    replace (a ^ 2 + 2 * a * c + c ^ 2 + b ^ 2 + 2 * b * d + d ^ 2)%R
-      with (a ^ 2 + c ^ 2 + b ^ 2 + d ^ 2 + 2 * a * c + 2 * b * d)%R by ring.
-    rewrite ?Rplus_assoc. repeat apply Rplus_le_compat_l.
-    replace (2 * a * c + 2 * b * d)%R with (2 * (a * c + b * d))%R by ring.
-    rewrite ?Rmult_assoc. apply Rmult_le_compat_l; try lra.
+    apply Rsqr_incr_0_var; ra. rewrite ?Rsqr_sqrt; ra.
+    unfold Rsqr. ring_simplify.
+    rewrite !pow2_sqrt; ra.
+    rewrite (Rmult_assoc 2 (sqrt _)).
     rewrite <- sqrt_mult; ra.
-    (* ac+bd <= \sqrt((a^2+b^2)(c^2+d^2)) *)
-    apply R_neq6.
+    pose proof (R_neq6 a b c d). ra.
   Qed.
 
   (** Rabs (|z1| - |z2|) <= |z1 - z2| *)
@@ -403,9 +412,9 @@ Section triangle_ineq.
     assert (H2 : |z2 - z1 + z1|%C <= |z2 - z1|%C + |z1|%C) by (apply Cnorm_triang).
     assert (H3 : forall a b : C, a = a - b + b). Ceq.
     unfold Rabs; case Rcase_abs; intro H; ring_simplify.
-    rewrite <- H3 in H2. apply Rminus_le; apply Rle_minus in H2.
-    ring_simplify in H2. rewrite Cnorm_sub_sym. lra.
-    rewrite <- H3 in H1; apply Rminus_le; apply Rle_minus in H1. lra.
+    - rewrite <- H3 in H2. apply Rminus_le; apply Rle_minus in H2.
+      ring_simplify in H2. rewrite Cnorm_sub_sym. lra.
+    - rewrite <- H3 in H1; apply Rminus_le; apply Rle_minus in H1. lra.
   Qed.
 
   (** |z1| - |z2| <= |z1 - z2| *)
@@ -504,7 +513,7 @@ Proof. Ceq. Qed.
     <== ring
  *)
 Lemma Cnorm_Cmult : forall z1 z2 : C, |z1 * z2| = (|z1|%C * |z2|%C)%R.
-Proof. intros (a,b) (c,d). cbv. rewrite <- sqrt_mult; ra. f_equal. ring. Qed.
+Proof. intros (a,b) (c,d). cbv. rewrite <- sqrt_mult; ra. f_equal. ra. Qed.
 
 Hint Resolve
   Cmul_comm Cmul_assoc
@@ -513,7 +522,7 @@ Hint Resolve
   : C.
 
 Lemma C_ring : ring_theory C0 C1 Cadd Cmul Csub Copp eq.
-Proof. constructor; intros; auto with C. Qed.
+Proof. constructor; intros; ca. Qed.
 
 Add Ring C_ring_inst : C_ring.
 
@@ -631,8 +640,8 @@ End coq_version_issue.
  *)
 Lemma Cnorm_inv : forall z : C, z <> C0 -> | /z | = (/(| z |%C))%R.
 Proof.
-  intros (a,b) H. cbv. rewrite <- sqrt_inv; ra. f_equal.
-  field. apply Cneq_iff in H; simpl in H. ra.
+  intros (a,b) H. cbv. rewrite <- sqrt_inv. f_equal. ra.
+  apply Cneq_iff in H; simpl in H. ra.
 Qed.
 
 (** z <> C0 -> (/z).a = z.a / | z |2 *)
@@ -750,8 +759,8 @@ Definition isCArg (z : C) (theta : R) : Prop :=
 
 (** Verify the definition of Carg *)
 
-(* (x > 0) *)
-Lemma Carg_verify_xlt0 (x y : R) :
+(** x > 0 -> /_ (x +i y) = atan (y/x) *)
+Lemma Carg_xgt0 (x y : R) :
   x > 0 -> /_ (x +i y) = atan (y/x).
 Proof.
   intros. unfold Carg. simpl.
@@ -759,18 +768,27 @@ Proof.
   bdestruct (x <? 0); try lra.
 Qed.
 
-(* (x = 0, y > 0) *)
-Lemma Carg_verify_xeq0_ygt0 (x y : R) :
-  x = 0%R -> y > 0 -> /_ (x +i y) = (PI / 2)%R.
+(** x = 0 -> y > 0 -> /_ (x +i y) = PI / 2 *)
+Lemma Carg_xeq0_ygt0 (x y : R) :
+  x = 0 -> y > 0 -> /_ (x +i y) = (PI / 2)%R.
 Proof.
   intros. unfold Carg. simpl.
   bdestruct (x =? 0); try lra.
   bdestruct (y <? 0); try lra.
 Qed.
 
-(* (x < 0, y >= 0) *)
-Lemma Carg_verify_xlt0_yge0 (x y : R) :
-  x < 0%R -> y >= 0 -> /_ (x +i y) = (atan (y/x) + PI)%R.
+(** x = 0 -> y < 0 -> /_ (x +i y) = (- PI / 2)%R *)
+Lemma Carg_xeq0_ylt0 (x y : R) :
+  x = 0 -> y < 0 -> /_ (x +i y) = (- PI / 2)%R.
+Proof.
+  intros. unfold Carg. simpl.
+  bdestruct (x =? 0); try lra.
+  bdestruct (y <? 0); try lra.
+Qed.
+
+(** x < 0 -> y >= 0 -> /_ (x +i y) = (atan (y/x) + PI)%R *)
+Lemma Carg_xlt0_yge0 (x y : R) :
+  x < 0 -> y >= 0 -> /_ (x +i y) = (atan (y/x) + PI)%R.
 Proof.
   intros. unfold Carg. simpl.
   bdestruct (x =? 0); try lra.
@@ -778,22 +796,13 @@ Proof.
   bdestruct (y <? 0); try lra.
 Qed.
 
-(* (x < 0, y < 0) *)
-Lemma Carg_verify_xlt0_ylt0 (x y : R) :
-  x < 0%R -> y < 0 -> /_ (x +i y) = (atan (y/x) - PI)%R.
+(** x < 0 -> y < 0 -> /_ (x +i y) = (atan (y/x) - PI)%R *)
+Lemma Carg_xlt0_ylt0 (x y : R) :
+  x < 0 -> y < 0 -> /_ (x +i y) = (atan (y/x) - PI)%R.
 Proof.
   intros. unfold Carg. simpl.
   bdestruct (x =? 0); try lra.
   bdestruct (x <? 0); try lra.
-  bdestruct (y <? 0); try lra.
-Qed.
-
-(* (x = 0, y < 0) *)
-Lemma Carg_verify_xeq0_ylt0 (x y : R) :
-  x = 0%R -> y < 0 -> /_ (x +i y) = (- PI / 2)%R.
-Proof.
-  intros. unfold Carg. simpl.
-  bdestruct (x =? 0); try lra.
   bdestruct (y <? 0); try lra.
 Qed.
 
@@ -801,122 +810,58 @@ Qed.
 (** Note, this equation will be used in the proof about cos(/_  z) and sin(/_  z) *)
 
 (** /(sqrt (1+(b/a)²)) = abs(a) / sqrt(a*a + b*b) *)
-Lemma Rinv_Rsqrt_1_plus_Rsqr_a_div_b (a b : R) :
-  a <> 0%R -> (/ (sqrt (1+(b/a)²)) = (Rabs a) / sqrt(a*a + b*b))%R.
+Lemma Rinv_Rsqrt_1_plus_Rsqr_b_div_a (a b : R) :
+  a <> 0 -> (/ (sqrt (1+(b/a)²)) = (Rabs a) / sqrt(a*a + b*b))%R.
 Proof.
   intros.
-  replace (1 + (b/a)²)%R with ((a*a + b*b) / (a*a))%R.
-  - rewrite sqrt_div_alt; ra.
-    replace (sqrt (a * a)%R) with (| a |%R).
-    + field. split; ra. autorewrite with R. auto with R.
-    + autorewrite with R. auto.
-  - cbv. field. auto.
+  replace (1 + (b/a)²)%R with ((a*a + b*b) / (a*a))%R; [|ra].
+  rewrite sqrt_div_alt; ra. split; ra.
 Qed.
-
-(** solve "0 < a * a" on real number *)
-Ltac tac_Rsqr_gt0 :=
-  match goal with
-  (* a < 0 *)
-  | H1 : ?a < 0%R |- 0 < ?a * ?a => 
-      apply Rsqr_pos_lt   (* x <> 0 -> 0 < x² *)
-      ; apply Rlt_not_eq  (* r1 < r2 -> r1 <> r2 *)
-      ; assumption
-  (* a <> 0 *)
-  | H1 : ?a <> 0%R |- 0 < ?a * ?a => 
-      apply Rsqr_pos_lt   (* x <> 0 -> 0 < x² *)
-      ; assumption
-  | |- _ => idtac "no match"
-  end.
-
-(** solve "0 < a*a + b*b" on real number *)
-Ltac tac_Rplus_Rsqr_Rsqr_gt0 :=
-  match goal with
-  (* a < 0, b < 0 *)
-  | H1:?a<0 , H2:?b<0 |- 0 < ?a*?a + ?b*?b =>
-      apply Rplus_lt_0_compat   (* 成为 0 < a*a, 0 < b*b *)
-      ;tac_Rsqr_gt0             (* 再调用 0 < a*a 策略 *)
-  (* a < 0, b >= 0 *)
-  | H1:?a<0 , H2:?b>=0 |- 0 < ?a*?a + ?b*?b =>
-      apply Rplus_lt_le_0_compat   (* 成为 0 < a*a, 0 <= b*b *)
-      ;[tac_Rsqr_gt0 |        (* 处理 0 < a*a *)
-         apply Rle_0_sqr]      (* 处理 0 <= b*b *)
-  (* a >= 0 *)
-  | H1:?a>=0 |- 0 < ?a*?a + ?b*?b =>
-      apply Rplus_lt_le_0_compat    (* 变成 0 < a*a, 0 <= b*b *)
-      ;[tac_Rsqr_gt0 |        (* 处理 0 < a*a *)
-         apply Rle_0_sqr]      (* 处理 0 <= b*b *)
-  | |- _ => idtac "no matching"
-  end.
 
 (** nonzero complex number, the cosine of its main argument equal to 
     real part divide magnitude (主辐角的余弦等于实部除以模长) *)
 Lemma cos_Carg_neq0 (z : C) : z <> C0 -> cos(/_ z) = (z.a / | z |%C)%R.
 Proof.
-  (* 主要是 cos(atan(y/x))*sqrt(x^2+y^2) = x，几何上看很简单 *)
-  intros. unfold Carg. destruct z as (a,b); simpl.
-  bdestruct (a =? 0).
-  - destruct (b <? 0).
-    + subst. rewrite cos_neg. rewrite cos_PI2. ra.
-    + rewrite cos_PI2. subst. ra.
-  - bdestruct (a <? 0).
-    + bdestruct (b <? 0).
-      * autorewrite with R. rewrite cos_atan.
-        unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_a_div_b; auto.
-        replace (Rabs a) with (-a)%R.
-        unfold Cnorm, Cnorm2; simpl. field.
-        apply not_eq_sym. apply Rlt_not_eq. apply sqrt_lt_R0. ra.
-        rewrite Rabs_left; auto.
-      * rewrite cos_plus,?sin_PI,?cos_PI; ring_simplify. rewrite cos_atan.
-        unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_a_div_b; auto.
-        replace (Rabs a) with (-a)%R.
-        unfold Cnorm, Cnorm2. simpl. field.
-        apply not_eq_sym. apply Rlt_not_eq. apply sqrt_lt_R0. ra.
-        rewrite Rabs_left; auto.
-    + rewrite cos_atan. 
-      unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_a_div_b; auto.
-      replace (Rabs a) with a.
-      unfold Cnorm, Cnorm2. simpl. field.
-      apply not_eq_sym. apply Rlt_not_eq. apply sqrt_lt_R0. ra.
-      rewrite Rabs_right; auto. ra.
+  Csimpl. unfold Cnorm,Cnorm2; simpl.
+  bdestruct (a >? 0).
+  - rewrite Carg_xgt0; auto. rewrite cos_atan.
+    unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_b_div_a; ra.
+    rewrite Rabs_right; ra.
+  - bdestruct (a =? 0); subst.
+    + bdestruct (b >? 0).
+      * rewrite Carg_xeq0_ygt0; ra.
+      * apply Cneq_iff in H; simpl in H. assert (b < 0) by ra.
+        rewrite Carg_xeq0_ylt0; ra. ra.
+    + bdestruct (b >=? 0).
+      * rewrite Carg_xlt0_yge0; ra. rewrite cos_atan.
+        unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_b_div_a; ra.
+        rewrite Rabs_left1 by lra. ra.
+      * rewrite Carg_xlt0_ylt0; ra. rewrite cos_atan.
+        unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_b_div_a; ra.
+        rewrite Rabs_left1 by lra. ra.
 Qed.
 
 (** nonzero complex number, the sine of its main argument equal to 
     imaginary part divide magnitude (主辐角的正弦等于虚部除以模长) *)
 Lemma sin_Carg_neq0 (z : C) : z <> C0 -> sin(/_ z) = ((Cim z) / | z |%C)%R.
 Proof.
-  intros. unfold Carg. destruct z as (a,b); simpl.
-  bdestruct (a =? 0).
-  - bdestruct (b <? 0).
-    + subst. rewrite sin_neg. rewrite sin_PI2.
-      unfold Cnorm. unfold Cnorm2. simpl. ring_simplify (0*0+b*b)%R.
-      rewrite <- Rsqr_pow2. rewrite sqrt_Rsqr_abs. rewrite Rabs_left; auto.
-      field. lra.
-    + rewrite sin_PI2.
-      unfold Cnorm. unfold Cnorm2. simpl. subst. ring_simplify (0*0+b*b)%R.
-      rewrite <- Rsqr_pow2. rewrite sqrt_Rsqr_abs. rewrite Rabs_right; auto.
-      field. intro. subst. destruct H. auto. ra.
-  - bdestruct (a <? 0).
-    + destruct (b <? 0).
-      * rewrite sin_minus,?sin_PI,?cos_PI. ring_simplify.
-        rewrite sin_atan.
-        unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_a_div_b; auto.
-        replace (Rabs a) with (-a)%R.
-        unfold Cnorm, Cnorm2. simpl. field. split; auto.
-        apply not_eq_sym. apply Rlt_not_eq. apply sqrt_lt_R0. ra.
-        rewrite Rabs_left; auto.
-      * rewrite sin_plus,?sin_PI,?cos_PI. ring_simplify.
-        rewrite sin_atan.
-        unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_a_div_b; auto.
-        replace (Rabs a) with (-a)%R.
-        unfold Cnorm, Cnorm2. simpl. field. split; auto.
-        apply not_eq_sym. apply Rlt_not_eq. apply sqrt_lt_R0. ra.
-        rewrite Rabs_left; auto.
-    + rewrite sin_atan.
-      unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_a_div_b; auto.
-      replace (Rabs a) with a.
-      unfold Cnorm, Cnorm2. simpl. field. split; auto.
-      apply not_eq_sym. apply Rlt_not_eq. apply sqrt_lt_R0. ra.
-      rewrite Rabs_right; auto. ra.
+  Csimpl. unfold Cnorm,Cnorm2; simpl.
+  bdestruct (a >? 0).
+  - rewrite Carg_xgt0; auto. rewrite sin_atan.
+    unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_b_div_a; ra.
+    rewrite Rabs_right; ra. ra.
+  - bdestruct (a =? 0); subst.
+    + bdestruct (b >? 0).
+      * rewrite Carg_xeq0_ygt0; ra. symmetry. ra.
+      * apply Cneq_iff in H; simpl in H. assert (b < 0) by ra.
+        rewrite Carg_xeq0_ylt0; ra. symmetry. ra.
+    + bdestruct (b >=? 0).
+      * rewrite Carg_xlt0_yge0; ra. rewrite sin_atan.
+        unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_b_div_a; ra.
+        rewrite Rabs_left1 by lra. ra. ra.
+      * rewrite Carg_xlt0_ylt0; ra. rewrite sin_atan.
+        unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_b_div_a; ra.
+        rewrite Rabs_left1 by lra. ra. ra.
 Qed.
 
 (** 非零复数的主辐角的正切表达式 *)
@@ -926,19 +871,19 @@ Proof.
   assert (z <> C0). apply Cneq_iff; auto.
   rewrite tan_eq.
   rewrite cos_Carg_neq0, sin_Carg_neq0; auto. field. split; auto.
-  apply Cnorm_neq0_iff_neq0; auto.
+  apply Cnorm_neq0_if_neq0; auto.
 Qed.
 
 (** 非零复数实部等于模乘以辐角余弦 *)
 Lemma Cre_eq_Cnorm_mul_cos_Carg (z : C) : z <> C0 -> z.a = (| z |%C * cos(/_ z))%R.
 Proof.
-  intros. rewrite cos_Carg_neq0; auto. field. apply Cnorm_neq0_iff_neq0 in H; auto.
+  intros. rewrite cos_Carg_neq0; auto. field. apply Cnorm_neq0_if_neq0 in H; auto.
 Qed.
 
 (** 非零复数虚部等于模乘以辐角正弦 *)
 Lemma Cim_eq_Cnorm_mul_sin_Carg (z : C) : z <> C0 -> z.b = (| z |%C * sin(/_ z))%R.
 Proof.
-  intros. rewrite sin_Carg_neq0; auto. field. apply Cnorm_neq0_iff_neq0; auto.
+  intros. rewrite sin_Carg_neq0; auto. field. apply Cnorm_neq0_if_neq0; auto.
 Qed.
 
 (** 非零复数，(相等 <-> 模长和辐角相等) *)
@@ -1075,7 +1020,7 @@ Proof.
   (* 展开z会很繁琐 *)
   intros; unfold Cconj, Ctrigo.
   rewrite cos_neg, sin_neg, ?cos_Carg_neq0, ?sin_Carg_neq0; auto.
-  unfold Ccmul. simpl. f_equal; field; apply Cnorm_neq0_iff_neq0; auto.
+  unfold Ccmul. simpl. f_equal; field; apply Cnorm_neq0_if_neq0; auto.
 Qed.
 
 (** 1/z的三角表示 *)

@@ -226,8 +226,8 @@ Fact periodic_of_tan : periodic_of tan (2*PI). Admitted.
 (* ######################################################################### *)
 (** * Analysis of basic elementary functions *)
 
-Axiom domain_of_fexpR : forall (a : R), (a > 0 /\ a <> 1) -> domain_of (fexpR a) = allR.
-Fact range_of_fexpR (a : R) : range_of (fexpR a) = fun x => x > 0. Admitted.
+Axiom domain_of_Rpower : forall (a : R), (a > 0 /\ a <> 1) -> domain_of (Rpower a) = allR.
+Fact range_of_Rpower (a : R) : range_of (Rpower a) = fun x => x > 0. Admitted.
 
 Axiom domain_of_flogR : forall (a : R),
     (a > 0 /\ a <> 1) -> domain_of (flogR a) = (fun x => x > 0).

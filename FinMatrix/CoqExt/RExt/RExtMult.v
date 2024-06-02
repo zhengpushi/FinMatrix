@@ -40,3 +40,17 @@ Proof. ra. Qed.
 (** a * c = b * c -> a <> b -> c = 0 *)
 Lemma Rmult_eq_reg_r_rev : forall c a b : R, a * c = b * c -> a <> b -> c = 0.
 Proof. ra. Qed.
+
+(** b <> 0 -> a * b = b -> a = 1 *)
+Lemma Rmult_eq_r_reg : forall a b : R, b <> 0 -> a * b = b -> a = 1.
+Proof.
+  intros. replace b with (1 * b)%R in H0 at 2 by lra.
+  apply Rmult_eq_reg_r in H0; auto.
+Qed.
+
+(** a <> 0 -> a * b = a -> b = 1 *)
+Lemma Rmult_eq_l_reg : forall a b : R, a <> 0 -> a * b = a -> b = 1.
+Proof.
+  intros. replace a with (a * 1)%R in H0 at 2 by lra.
+  apply Rmult_eq_reg_l in H0; auto.
+Qed.

@@ -43,17 +43,17 @@ Open Scope R_scope.
 Ltac ra :=
   intros;
   (* we always prefer "A -> B; B -> A" instead of "A <-> B" *)
-  try match goal with | |- _ <-> _ => split end;
+  try match goal with | |- _ <-> _ => split; intros end;
   (* first, try solve it (DONT'T unfold,rewrite ANYTHING) *)
   auto with R;
   (* next, rewrite it *)
   autorewrite with R in *; auto with R;
   (* next, unify thes expressions: use "a + -b; a * /b" instead of "a - b; a / b" *)
-  autounfold with R; auto with R;
+  (* autounfold with R; auto with R; *)
   (* finally, use lra, nra, or field *)
   try (unfold Rsqr in *; lra);
   try (unfold Rsqr in *; nra);
-  try (field; auto with R)
+  try (unfold Rsqr in *; field; auto with R)
 .
 
 

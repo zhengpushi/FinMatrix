@@ -39,11 +39,12 @@ FinMatrix/CoqExt/RExt/RExtInv.v
 FinMatrix/CoqExt/RExt/RExtSqr.v
 FinMatrix/CoqExt/RExt/RExtSqrt.v
 FinMatrix/CoqExt/RExt/RExtAbs.v
+FinMatrix/CoqExt/RExt/RExtApprox.v
 FinMatrix/CoqExt/RExt/RExtTrigo.v
+FinMatrix/CoqExt/RExt/RFunExt.v
+FinMatrix/CoqExt/RExt/RAnalysisExt.v
+FinMatrix/CoqExt/RExt/Ratan2.v
 FinMatrix/CoqExt/RExt.v
-FinMatrix/CoqExt/RFunExt.v
-FinMatrix/CoqExt/RAnalysisExt.v
-FinMatrix/CoqExt/Ratan2.v
 FinMatrix/CoqExt/Complex.v
 FinMatrix/CoqExt/LinearSpace.v
 FinMatrix/CoqExt/MyExtrOCamlR.v

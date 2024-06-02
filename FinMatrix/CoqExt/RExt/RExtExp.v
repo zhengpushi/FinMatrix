@@ -13,6 +13,17 @@
 Require Export RExtBase.
 
 
+(* ======================================================================= *)
+(** ** Basic automation *)
+
 #[export] Hint Rewrite
   exp_0               (* exp 0 = 1 *)
   : R.
+
+
+(* ======================================================================= *)
+(** ** Additional properties *)
+
+
+(* Axiom domain_of_exp : forall (a : R), (a > 0 /\ a <> 1) -> domain_of (exp a) = allR. *)
+(* Fact range_of_exp (a : R) : range_of (exp a) = fun x => x > 0. Admitted. *)

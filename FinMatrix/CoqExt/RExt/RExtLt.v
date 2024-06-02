@@ -10,7 +10,7 @@
   remark    :
  *)
 
-Require Export RExtBase RExtSqr.
+Require Export RExtBase RExtSqr RExtAbs.
 
 
 (* ======================================================================= *)
@@ -47,9 +47,15 @@ Lemma Rneq_le_lt : forall a b, a <> b -> a <= b -> a < b.
 Proof. ra. Qed.
 #[export] Hint Resolve Rneq_le_lt : R.
 
+(** a < b -> 0 < b - a *)
+(* Note, Rlt_Rminus is deprecated since 8.19 *)
+Lemma Rlt_Rminus : forall a b : R, a < b -> 0 < b - a.
+Proof. intros. apply (proj2 (Rlt_0_minus a b)); auto. Qed.
+#[export] Hint Resolve Rlt_Rminus : R.
+
 (** 0 < r -> 0 < 1 / r *)
 Lemma Rinv1_gt0 : forall r : R, 0 < r -> 0 < 1 / r.
-Proof. ra. assert (0 < / r); ra. Qed.
+Proof. ra. unfold Rdiv; ra. Qed.
 #[export] Hint Resolve Rinv1_gt0 : R.
 
 (** 0 <= a -> b < 0 -> a / b <= 0 *)
@@ -125,6 +131,19 @@ Lemma Rplus2_sqr_gt0_r : forall a b, b <> 0 -> 0 < a² + b².
 Proof. ra. Qed.
 #[export] Hint Resolve Rplus2_sqr_gt0_r : R.
 
+(** (a * c + b * d)² <= (a² + b²) * (c² + d²) *)
+Lemma Rsqr_mult_le : forall a b c d : R, (a * c + b * d)² <= (a² + b²) * (c² + d²).
+Proof.
+  intros. unfold Rsqr. ring_simplify.
+  rewrite !associative. apply Rplus_le_compat_l.
+  rewrite <- !associative. apply Rplus_le_compat_r.
+  autorewrite with R.
+  replace (a² * d²) with (a * d)²; [|ra].
+  replace (c² * b²) with (c * b)²; [|ra].
+  replace (2 * a * c * b * d) with (2 * (a * d) * (c * b)); [|ra].
+  apply R_neq1.
+Qed.
+
 (** b > 0 -> a * /b < c -> a < b * c *)
 Lemma Rdiv_le_imply_Rmul_gt a b c : b > 0 -> a * / b < c -> a < b * c.
 Proof.
@@ -142,19 +161,106 @@ Proof.
 Qed.
 #[export] Hint Resolve Rmul_gt_imply_Rdiv_le : R.
 
-(** a < b -> 0 < b - a *)
-(* Note, Rlt_Rminus is deprecated since 8.19 *)
-Lemma Rlt_Rminus : forall a b : R, a < b -> 0 < b - a.
-Proof. intros. apply (proj2 (Rlt_0_minus a b)); auto. Qed.
-#[export] Hint Resolve Rlt_Rminus : R.
-
 (** 0 < a -> 0 < b -> 0 < c -> a < b * c -> a / b < c *)
-Lemma Rdiv_lt_gt0_gt0_gt0 :
-  forall a b c : R, 0 < a -> 0 < b -> 0 < c -> a < b * c -> a / b < c.
-Proof. ra. Qed.
+Lemma Rdiv_lt_gt0_gt0_gt0 : forall a b c : R,
+    0 < a -> 0 < b -> 0 < c -> a < b * c -> a / b < c.
+Proof. ra. unfold Rdiv; ra. Qed.
+#[export] Hint Resolve Rdiv_lt_gt0_gt0_gt0 : R.
+
+(** 0 <= a -> 0 < b -> a <= b -> a / b <= 1 *)
+Lemma Rdiv_le_1 : forall x y : R, 0 <= x -> 0 < y -> x <= y -> x / y <= 1.
+Proof.
+  intros. unfold Rdiv. replace 1 with (y * / y); ra.
+  apply Rmult_le_compat_r; ra.
+Qed.
+
+(** b <> 0 -> |a| <= |b| -> |a / b| <= 1 *)
+Lemma Rdiv_abs_le_1 : forall a b : R, b <> 0 -> |a| <= |b| -> | a / b | <= 1.
+Proof.
+  intros. unfold Rdiv. rewrite Rabs_mult. rewrite Rabs_inv.
+  apply Rdiv_le_1; auto; ra. apply Rabs_pos_lt; auto.
+Qed.
+
+
+(** *** For operation sqrt  *)
+
+(** \sqrt {a² + b²} <= |a| + |b| *)
+Lemma R_neq5 : forall a b : R, sqrt (a² + b²) <= Rabs a + Rabs b.
+Proof.
+  intros.
+  rewrite <- sqrt_square.
+  - apply sqrt_le_1_alt.
+    apply Rle_trans with (Rabs a * Rabs a + Rabs b * Rabs b)%R.
+    + rewrite <- !Rabs_mult. apply Rplus_le_compat.
+      apply RRle_abs. apply RRle_abs.
+    + ring_simplify.
+      rewrite !Rplus_assoc. apply Rplus_le_compat_l.
+      rewrite <- Rplus_0_l at 1. apply Rplus_le_compat_r.
+      assert (0 <= Rabs a) by ra; assert (0 <= Rabs b) by ra. ra.
+  - assert (0 <= Rabs a) by ra; assert (0 <= Rabs b) by ra. ra.
+Qed.
+
+(** a * c + b * d <= \sqrt {(a² + b²) * (c² + d²)} *)
+Lemma R_neq6 : forall a b c d : R, a * c + b * d <= sqrt((a² + b²) * (c² + d²)).
+Proof.
+  intros.
+  apply Rsqr_incr_0_var; ra.
+  rewrite Rsqr_sqrt; ra.
+  unfold Rsqr. ring_simplify.
+  (* Tips: we should develop "sgroup" like tactci to automate these two steps *)
+  rewrite !Rplus_assoc; repeat apply Rplus_le_compat_l.
+  rewrite <- !Rplus_assoc; repeat apply Rplus_le_compat_r.
+  autorewrite with R.
+  (* 2acbd <= a² * d² + c² * b² *)
+  replace (2 * a * c * b * d) with (2 * (a * d) * (b * c)) by ra.
+  replace (a² * d² + c² * b²)%R with ((a*d)² + (b * c)²) by ra.
+  apply R_neq1.
+Qed.
+
+
+(** *** For famous inequalities *)
+
+(* QM-AM-GM-HM inequalities.
+   https://en.wikipedia.org/wiki/QM-AM-GM-HM_inequalities
+
+  Suppose that x1,x2,...,xn are positive real numbers,
+  denoted
+    调和平均数 harmonic mean (HM)   = \frac{n}{∑(1/xi)},
+    算术平均数 arithmetic mean (AM) = (∑xi)/n,
+    几何平均数 geometric mean (GM)  = n√(∏xi),
+    二次平均数 quadratic mean (QM)  = \sqrt{(∑xi^2)/n},
+  then
+    0 < HM <= AM <= GM <= QM.
+ *)
+
+(* AM-GM inequality.
+   https://en.wikipedia.org/wiki/AM%E2%80%93GM_inequality
+     a1+a2+...+an      n______________
+    -------------- >=  / a1*a2*...*an
+          n
+    and this equality holds if and only if x1 = x2 = · · · = xn. 
+ *)
+
+(* AM-QM inequality, case n = 2 *)
+Lemma Rneq_AM_GM_2 : forall a b : R,
+    0 <= a -> 0 <= b ->
+    (a + b) / 2 >= sqrt(a * b).
+Proof.
+Admitted.
+
+(* AM-QM inequality, case n = 3 *)
+Lemma Rneq_AM_GM_3 : forall a b c : R,
+    0 <= a -> 0 <= b -> 0 <= c ->
+    (a + b + c) / 3 >= sqrt(a * b).
+Admitted.
 
 
 (** *** For inequalities about PI *)
+
+(** 0 < r -> 0 < r * PI *)
+Lemma mult_PI_gt0 : forall r, 0 < r -> 0 < r * PI.
+Proof. ra. Qed.
+
 
 (* A strange problem about "lra":
    现象：
@@ -223,7 +329,7 @@ Section test.
 End test.
 
 
-(** *** Other things *)
+(** *** Other things that need to be done manually *)
 
 (* Examples that cannot automatically solved now *)
 Section examples.
@@ -261,6 +367,7 @@ Section examples.
     ra.
     assert (273.15 + T > 0); ra.
     assert (h < (273.15 + T) * 153); ra.
+    unfold Rdiv; ra.
   Qed.
 
   (* A more bit complex proposition, requires manual proof *)
@@ -269,6 +376,7 @@ Section examples.
     ra.
     assert (273.15 + T > 0); ra.
     assert (h < (273.15 + T) * (1/0.0065)); ra.
+    apply Rdiv_lt_gt0_gt0_gt0; ra.
   Qed.
   
   (* Original proposition, requires manual proof *)

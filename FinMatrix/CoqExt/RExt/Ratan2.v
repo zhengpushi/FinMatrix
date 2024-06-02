@@ -36,8 +36,19 @@
 Require Import RExt.
 Open Scope R_scope.
 
-Axiom cos_2PI_add : forall x : R, cos (2 * PI + x) = cos x.
-Axiom tan_sub_PI : forall x : R, tan (x - PI) = tan x.
+
+(** -PI < a <= PI -> a = -PI/2 \/ a = 0 \/ a = PI/2 \/
+    (-PI < a < -PI/2) \/ (-PI/2 < a < 0) \/ (0 < a < PI/2) \/ (PI/2 < a <= PI) *)
+Lemma Rsplit_neg_pi_to_pi : forall a : R,
+    -PI < a <= PI ->
+      a = -PI/2 \/ a = 0 \/ a = PI/2 \/
+        (-PI < a < -PI/2) \/ (-PI/2 < a < 0) \/
+        (0 < a < PI/2) \/ (PI/2 < a <= PI).
+Proof.
+  intros.
+  (* 引入 PI 的不等式，以便 lra 能够使用 *)
+  pose proof PI_bound. lra.
+Qed.
 
 
 (* ######################################################################### *)
@@ -106,30 +117,31 @@ Lemma atan2_sin_cos_eq1 : forall a k : R,
     atan2 (sin a * k) (cos a * k) = a.
 Proof.
   intros. apply Rsplit_neg_pi_to_pi in H.
-  repeat match goal with | H: _ \/ _ |- _ => destruct H as [? | H] end; 
-    subst; autorewrite with R.
+  repeat match goal with | H: _ \/ _ |- _ => destruct H as [? | H] end;
+    subst; ra.
   - rewrite atan2_X0_Ylt0; ra.
-  - rewrite atan2_Xgt0; ra. replace (0/k) with 0; ra. apply atan_0.
+  - rewrite atan2_Xgt0; ra.
   - rewrite atan2_X0_Yge0; ra.
-  - assert (sin a < 0). { apply sin_lt_0_var; lra. }
-    assert (cos a < 0).
-    { rewrite <- cos_2PI_add. apply cos_lt_0; ra. }
+  - assert (sin a < 0). { apply sin_lt_0_var; ra. }
+    assert (cos a < 0). { rewrite <- cos_2PI_add. apply cos_lt_0; ra. }
     rewrite atan2_Xlt0_Ylt0; ra.
-    rewrite atan_ak_bk; ra. cbv; rewrite Rtan_rw.
-    rewrite <- Rtrigo_facts.tan_pi_plus; ra. rewrite atan_tan; ra.
+    rewrite atan_ak_bk; ra.
+    replace (tan a) with (tan (a + PI)).
+    rewrite atan_tan; ra. ra.
   - assert (sin a < 0). { apply sin_lt_0_var; lra. }
     assert (0 < cos a). { apply cos_gt_0; ra. }
     rewrite atan2_Xgt0; ra.
-    rewrite atan_ak_bk; ra. cbv; rewrite Rtan_rw. rewrite atan_tan; ra.
+    rewrite atan_ak_bk; ra. rewrite atan_tan; ra.
   - assert (0 < sin a). { apply sin_gt_0; lra. }
     assert (0 < cos a). { apply cos_gt_0; ra. }
     rewrite atan2_Xgt0; ra.
-    rewrite atan_ak_bk; ra. cbv; rewrite Rtan_rw. rewrite atan_tan; ra.
+    rewrite atan_ak_bk; ra. rewrite atan_tan; ra.
   - assert (0 <= sin a). { apply sin_ge_0; lra. }
     assert (cos a < 0). { apply cos_lt_0; ra. }
     rewrite atan2_Xlt0_Yge0; ra.
-    rewrite atan_ak_bk; ra. cbv; rewrite Rtan_rw.
-    rewrite <- tan_sub_PI. rewrite atan_tan; ra.
+    rewrite atan_ak_bk; ra.
+    replace (tan a) with (tan (a - PI)).
+    rewrite atan_tan; ra. ra.
 Qed.
 
 
@@ -161,4 +173,4 @@ Qed.
   
 
 (** Don't unfold it, avoding too many details *)
-Global Opaque atan2.
+#[global] Opaque atan2.

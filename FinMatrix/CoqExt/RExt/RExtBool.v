@@ -74,4 +74,3 @@ Proof. intros. unfold Rltb,Acmpb. destruct dec,dec; auto; lra. Qed.
 (** (a - b >? 0) = (0 >? b - a) *)
 Lemma Rminus_gtb0_comm : forall a b : R, (a - b >? 0) = (0 >? b - a).
 Proof. intros. unfold Rltb,Acmpb. destruct dec,dec; auto; lra. Qed.
-

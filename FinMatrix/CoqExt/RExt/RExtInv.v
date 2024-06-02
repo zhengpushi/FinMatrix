@@ -25,6 +25,7 @@ Require Export RExtBase.
 
 #[export] Hint Resolve
   (* Rinv *)
+  Rinv_neq_0_compat   (* r <> 0 -> / r <> 0 *)
   Rinv_0_lt_compat    (* 0 < r -> 0 < / r *)
   Rinv_lt_0_compat    (* r < 0 -> / r < 0 *)
   (* Rdiv *)

@@ -63,7 +63,84 @@
 
 Require Export RExtBase RExtCvt RExtStruct RExtBool RExtLt.
 Require Export RExtPlus RExtMult RExtOpp RExtInv.
-Require Export RExtSqr RExtSqrt RExtAbs RExtTrigo.
+Require Export RExtSqr RExtSqrt RExtAbs RExtApprox RExtTrigo.
+
+
+(* ======================================================================= *)
+(** ** Sign function *)
+Definition sign : R -> R :=
+  fun x => if x >? 0 then 1 else (if x =? 0 then 0 else -1).
+
+(** x = 0 -> sign x = 0 *)
+Lemma sign_eq0 : forall x, x = 0 -> sign x = 0.
+Proof.
+  intros. unfold sign. bdestruct (0 <? x); ra. bdestruct (x =? 0); ra.
+Qed.
+
+(** x > 0 -> sign x = 1 *)
+Lemma sign_gt0 : forall x, x > 0 -> sign x = 1.
+Proof. intros. unfold sign. bdestruct (x >? 0); ra. Qed.
+
+(** x < 0 -> sign x = - 1 *)
+Lemma sign_lt0 : forall x, x < 0 -> sign x = -1.
+Proof.
+  intros. unfold sign. bdestruct (x >? 0); ra. bdestruct (x =? 0); ra.
+Qed.
+
+(** (sign x) * x = |x| *)
+Lemma sign_mul_eq_abs : forall x, ((sign x) * x)%R = Rabs x.
+Proof.
+  intros. unfold sign. bdestruct (0 <? x); ra. bdestruct (x =? 0); subst; ra.
+  rewrite Rabs_left1; ra.
+Qed.
+
+(** (sign x) * |x| = x *)
+Lemma sign_mul_abs_eq : forall x, ((sign x) * (Rabs x))%R = x.
+Proof.
+  intros. unfold sign. bdestruct (0 <? x); ra. bdestruct (x =? 0); ra.
+  rewrite Rabs_left1; ra.
+Qed.
+
+(* ======================================================================= *)
+(** ** Logarithmic function 对数函数 *)
+
+(* flogR a x = log_a x *)
+Definition flogR (a x : R) : R := ln x / ln a.
+
+(* flnR x = log_e x *)
+Definition flnR (x : R) : R := ln x.
+
+(* flgR x = log_10 x *)
+Definition flg (x : R) : R := flogR 10 x.
+
+(* Axiom domain_of_flogR : forall (a : R), *)
+(*     (a > 0 /\ a <> 1) -> domain_of (flogR a) = (fun x => x > 0). *)
+(* Fact range_of_flogR (a : R) : range_of (flogR a) = allR. Admitted. *)
+
+(** 特殊函数值 *)
+Fact flogR_a_1 (a : R) : flogR a 1 = 0.
+Proof. unfold flogR. rewrite ln_1. field. Admitted.
+
+Fact flogR_a_a (a : R) : flogR a a = 1. Admitted.
+Fact flnR_1 : ln 1 = 0. Admitted.
+Fact flnR_e : let e := 2.71828 in ln e = 1. Admitted.
+
+(** 常用公式 *)
+Fact flnR_mul : forall a x y, flogR a (x * y) = (flogR a x) + (flogR a y). Admitted.
+Fact flnR_div : forall a x y, flogR a (x / y) = (flogR a x) - (flogR a y). Admitted.
+Fact flnR_Rpower : forall a x y, flogR a (Rpower x y) = y * (flogR a x). Admitted.
+Fact flnR_chgbottom : forall a b x, flogR a x = (flogR b x) / (flogR b a). Admitted.
+Fact fexpR_flnR : forall x, exp (ln x) = x. Admitted.
+Fact flnR_fexpR : forall x, ln (exp x) = x. Admitted.
+
+Fact flnR_eq1 : forall u v : R, Rpower u v = exp (ln (Rpower u v)).
+Proof. intros. rewrite fexpR_flnR. auto. Qed.
+Fact flnR_eq2 : forall u v : R, Rpower u v = exp (v * ln u).
+Proof. intros. Admitted.
+
+
+(* ======================================================================= *)
+(** ** Test *)
 
 (* About "1" *)
 Section test.
@@ -148,158 +225,3 @@ Section test.
     r1 * r1 + r2 * r2 + r3 * r3 + r4 * r4 <> 0.
   Proof. ra. Qed.
 End test.
-
-?
-
-
-(* ######################################################################### *)
-(** * atan *)
-
-
-(* ######################################################################### *)
-(** * Approximate of two real numbers *)
-
-(** r1 ≈ r2, that means |r1 - r2| <= diff *)
-Definition Rapprox (r1 r2 diff : R) : Prop := |r1 - r2| <= diff.
-
-(** boolean version of approximate function *)
-Definition Rapproxb (r1 r2 diff : R) : bool := |r1 - r2| <=? diff.
-
-
-(* ######################################################################### *)
-(** * Additional properties *)
-
-(** (a * c + b * d)² <= (a² + b²) * (c² + d²) *)
-Lemma Rsqr_mult_le : forall a b c d : R, (a * c + b * d)² <= (a² + b²) * (c² + d²).
-Proof.
-  intros. unfold Rsqr. ring_simplify.
-  rewrite !associative. apply Rplus_le_compat_l.
-  rewrite <- !associative. apply Rplus_le_compat_r.
-  autorewrite with R.
-  replace (a² * d²) with (a * d)²; [|ra].
-  replace (c² * b²) with (c * b)²; [|ra].
-  replace (2 * a * c * b * d) with (2 * (a * d) * (c * b)); [|ra].
-  apply R_neq1.
-Qed.
-
-Lemma Rdiv_le_1 : forall x y : R, 0 <= x -> 0 < y -> x <= y -> x / y <= 1.
-Proof.
-  intros. unfold Rdiv. replace 1 with (y * / y); ra.
-  apply Rmult_le_compat_r; ra. apply Rinv_r; ra.
-Qed.
-
-(* b <> 0 -> |a| <= |b| -> |a/b| <= 1 *)
-Lemma Rdiv_abs_le_1 : forall a b : R, b <> 0 -> |a| <= |b| -> | a / b | <= 1.
-Proof.
-  intros. unfold Rdiv. rewrite Rabs_mult. rewrite Rabs_inv.
-  apply Rdiv_le_1; auto; ra. apply Rabs_pos_lt; auto.
-Qed.
-
-#[export] Hint Resolve
-  Rdiv_le_1
-  : R.
-
-
-(** b <> 0 -> a * b = b -> a = 1 *)
-Lemma Rmult_eq_r_reg : forall a b : R, b <> 0 -> a * b = b -> a = 1.
-Proof.
-  intros. replace b with (1 * b)%R in H0 at 2 by lra.
-  apply Rmult_eq_reg_r in H0; auto.
-Qed.
-
-(** a <> 0 -> a * b = a -> b = 1 *)
-Lemma Rmult_eq_l_reg : forall a b : R, a <> 0 -> a * b = a -> b = 1.
-Proof.
-  intros. replace a with (a * 1)%R in H0 at 2 by lra.
-  apply Rmult_eq_reg_l in H0; auto.
-Qed.
-
-(** Absolute function *)
-Lemma Rabs_pos_iff : forall x, |x| = x <-> x >= 0.
-Proof.
-  intros. split; intros.
-  - bdestruct (x >=? 0). lra. exfalso.
-    assert (x <= 0); try lra.
-    apply Rabs_left1 in H1. lra.
-  - apply Rabs_right. auto.
-Qed.
-
-Lemma Rabs_neg_iff : forall x, |x| = - x <-> x <= 0.
-Proof.
-  intros. split; intros.
-  - destruct (Rleb_reflect x 0); auto.
-    assert (x >= 0); try lra.
-    apply Rabs_right in H0. lra.
-  - apply Rabs_left1. auto.
-Qed.
-
-Lemma Rabs_le_rev : forall a b : R, |a| <= b -> - b <= a <= b.
-Proof.
-  intros. bdestruct (a <? 0).
-  - assert (|a| = -a). apply Rabs_neg_iff; ra. ra.
-  - assert (|a| = a). apply Rabs_pos_iff; ra. ra.
-Qed.
-
-Lemma mult_PI_gt0 : forall r, 0 < r -> 0 < r * PI.
-Proof. ra. Qed.  
-
-(** \sqrt {a² + b²} <= |a| + |b| *)
-Lemma R_neq5 : forall a b : R, sqrt (a² + b²) <= Rabs a + Rabs b.
-Proof.
-  intros.
-  rewrite <- sqrt_square.
-  - apply sqrt_le_1_alt.
-    apply Rle_trans with (Rabs a * Rabs a + Rabs b * Rabs b)%R.
-    + rewrite <- !Rabs_mult. apply Rplus_le_compat.
-      apply RRle_abs. apply RRle_abs.
-    + ring_simplify.
-      rewrite !Rplus_assoc. apply Rplus_le_compat_l.
-      rewrite <- Rplus_0_l at 1. apply Rplus_le_compat_r.
-      assert (0 <= Rabs a) by ra; assert (0 <= Rabs b) by ra. ra.
-  - assert (0 <= Rabs a) by ra; assert (0 <= Rabs b) by ra. ra.
-Qed.
-
-(** a * c + b * d <= \sqrt {(a² + b²) * (c² + d²)} *)
-Lemma R_neq6 : forall a b c d : R, a * c + b * d <= sqrt((a² + b²) * (c² + d²)).
-Proof.
-  intros.
-  apply Rsqr_incr_0_var; ra. ring_simplify.
-  autorewrite with R sqrt; ra.
-  ring_simplify.
-  rewrite !Rplus_assoc; repeat apply Rplus_le_compat_l.
-  rewrite <- !Rplus_assoc; repeat apply Rplus_le_compat_r.
-  (* 2acbd <= a^2*d^2+b^2*c^2 *)
-  autorewrite with R.
-  replace (2 * a * c * b * d)%R with (2 * (a * d) * (b * c))%R by ring.
-  replace (a² * d² + c² * b²)%R with ((a*d)² + (b * c)²)%R; try (cbv; ring).
-  apply R_neq1.
-Qed.
-
-
-(** 算术-几何平均值不等式，简称 “算几不等式” *)
-(* 设 x1,x2,...,xn 为 n 个正实数，
-     记算术平均数是 An = (∑xi)/n，
-     记几何平均数是 Gn = n√(∏xi)，
-     则 An >= Gn
-     等号成立，当且仅当 x1 = x2 = ... = xn。
-     
-     展开后的形式
-
-     a1+a2+...+an    n ______________
-     ------------ >=  / a1*a2*...*an
-          n
- *)
-
-(** 平均数不等式，或称平均值不等式、均值不等式。是算几不等式的推广 *)
-(* https://zh.wikipedia.org/wiki/平均数不等式 *)
-
-(* 在2维和3维的具体形式 *)
-Lemma R_neq7 : forall a b : R,
-    0 <= a -> 0 <= b ->
-    (a + b) / 2 >= sqrt(a * b).
-Abort.
-
-Lemma R_neq8 : forall a b c : R,
-    0 <= a -> 0 <= b -> 0 <= c ->
-    (a + b + c) / 3 >= sqrt(a * b).
-Abort.

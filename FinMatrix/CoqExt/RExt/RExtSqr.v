@@ -35,7 +35,7 @@
  *)
 
 Require Export RExtBase.
-Require Import RExtBool RExtPlus RExtMult.
+Require Export RExtBool RExtPlus RExtMult.
 
 
 (* ======================================================================= *)

@@ -49,7 +49,7 @@ Proof. intros. rewrite H. ra. Qed.
 
 (** r < 0 -> sqrt r = 0 *)
 Lemma sqrt_lt0_eq_0 : forall r, r < 0 -> sqrt r = 0.
-Proof. ra. apply sqrt_neg_0. ra. Qed.
+Proof. ra. Qed.
 #[export] Hint Resolve sqrt_lt0_eq_0 : R.
 
 (** 0 < sqrt x -> 0 < x *)
@@ -176,7 +176,7 @@ Lemma Rinv_sqrt_plus_1_sqr_div_a_b (a b : R) : a <> 0 ->
 Proof.
   intros.
   replace (1 + (b/a)²) with ((a*a + b*b) / (|a|*|a|)).
-  - rewrite sqrt_div_alt; ra.
+  - rewrite sqrt_div_alt; ra. split; ra.
   - ra. destruct (Rcase_abs a).
     + replace (|a|) with (-a); ra.
     + replace (|a|) with a; ra.

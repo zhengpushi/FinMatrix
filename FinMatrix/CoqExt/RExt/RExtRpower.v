@@ -9,7 +9,7 @@
 
   remark    :
   1. Definition of Rpower
-     Rpower x y := exp (y * ln x)
+     x ^ y = Rpower x y := exp (y * ln x)
 
      a^n       = a * a * ... * a    (* there are n numbers *)
      a^0       = 1 (a ≠ 0)
@@ -33,6 +33,39 @@ Require Export RExtBase.
 (* ======================================================================= *)
 (** ** Additional properties *)
 
+
+Fact Rpower_add : forall a x y,
+    a > 0 -> Rpower a (x + y) = (Rpower a x) * (Rpower a y).
+Admitted.
+
+Fact Rpower_sub : forall a x y,
+    a > 0 -> Rpower a (x - y) = (Rpower a x) / (Rpower a y).
+Admitted.
+
+Fact Rpower_mul : forall a x y,
+    a > 0 -> Rpower a (x * y) = Rpower (Rpower a x) y.
+Admitted.
+
+Fact Rpower_div : forall a b x,
+    a > 0 /\ b > 0 -> Rpower (a/b) x = (Rpower a x) / (Rpower b x).
+Admitted.
+
 Lemma Rpower_neq0 x y : x <> 0 -> Rpower x y <> 0.
 Proof.
-  Abort.
+Abort.
+
+Lemma Rpower_1_eq : forall x, 0 < x -> Rpower x 1 = x.
+Proof. intros. rewrite Rpower_1; auto. Qed.
+
+Lemma Rpower_n1_eq : forall x, Rpower x (-1) = (/ x)%R.
+Admitted.
+
+Lemma Rpower_2_eq : forall x, Rpower x 2 = x * x.
+Admitted.
+
+Lemma Rpower_3_eq : forall x, Rpower x 3 = x * x * x.
+Admitted.
+
+Lemma Rpower_1_2_eq : forall x, Rpower x (1/2) = sqrt x.
+Admitted.
+

@@ -92,13 +92,16 @@ Qed.
 Lemma vdot_sameR : forall {n} (a : vec n), <a, a> = (||a||)².
 Proof. intros. rewrite <- vdot_same. auto. Qed.
 
+(** vunit a -> <a, a> = 1 *)
+Lemma vunit_vdotR : forall {n} (a : vec n), vunit a -> <a, a> = 1.
+Proof. intros. pose proof (vunit_vdot a H). auto. Qed.
 
 (* ======================================================================= *)
 (** ** Vector normalization (only valid in R type) *)
 
 (** Normalization of a non-zero vector a.
       That is, make a unit vector that in the same directin as a. *)
-Definition vnorm {n} (a : vec n) : vec n := (1 / ||a||) \.* a.
+Definition vnorm {n} (a : vec n) : vec n := (1 / ||a||) c* a.
 
 (** The component of a normalized vector is equivalent to its original component 
       divide the vector's length *)
@@ -154,9 +157,9 @@ Proof. intros. split. apply vnorm_len1; auto. apply vnorm_vpara; auto. Qed.
 Lemma vnorm_idem : forall {n} (a : vec n), a <> vzero -> vnorm (vnorm a) = vnorm a.
 Proof. intros. apply vnorm_vunit_eq. apply vnorm_is_unit; auto. Qed.
 
-(** x <> 0 -> vnorm (x \.* a) = (sign x) \.* (vnorm a) *)
+(** x <> 0 -> vnorm (x c* a) = (sign x) c* (vnorm a) *)
 Lemma vnorm_vcmul : forall {n} x (a : vec n),
-    x <> 0 -> a <> vzero -> vnorm (x \.* a) = sign x \.* (vnorm a).
+    x <> 0 -> a <> vzero -> vnorm (x c* a) = sign x c* (vnorm a).
 Proof.
   intros. unfold vnorm. rewrite vlen_vcmul. rewrite !vcmul_assoc.
   f_equal. unfold sign. autounfold with A. apply vlen_neq0_iff_neq0 in H0.
@@ -166,16 +169,16 @@ Proof.
   - bdestruct (x =? 0). easy. rewrite Rabs_left; ra.
 Qed.
 
-(** x > 0 -> vnorm (x \.* a) = vnorm a *)
+(** x > 0 -> vnorm (x c* a) = vnorm a *)
 Lemma vnorm_vcmul_k_gt0 : forall {n} x (a : vec n),
-    x > 0 -> a <> vzero -> vnorm (x \.* a) = vnorm a.
+    x > 0 -> a <> vzero -> vnorm (x c* a) = vnorm a.
 Proof.
   intros. rewrite vnorm_vcmul; auto; ra. rewrite sign_gt0; auto. apply vcmul_1_l.
 Qed.
 
-(** x < 0 -> vnorm (x \.* a) = vnorm a *)
+(** x < 0 -> vnorm (x c* a) = vnorm a *)
 Lemma vnorm_vcmul_k_lt0 : forall {n} x (a : vec n),
-    x < 0 -> a <> vzero -> vnorm (x \.* a) = - vnorm a.
+    x < 0 -> a <> vzero -> vnorm (x c* a) = - vnorm a.
 Proof.
   intros. rewrite vnorm_vcmul; auto; ra. rewrite sign_lt0; auto.
   rewrite (vcmul_opp 1). f_equal. apply vcmul_1_l.
@@ -271,8 +274,7 @@ Proof. intros. unfold vangle. rewrite vdot_comm. auto. Qed.
 (** The angle between (1,0,0) and (1,1,0) is 45 degree, i.e., π/4 *)
 Fact vangle_pi4 : (@l2v 3 [1;0;0]) /_ (l2v [1;1;0]) = PI/4.
 Proof.
-  rewrite <- acos_inv_sqrt2. unfold vangle. f_equal.
-  compute. autorewrite with R. auto.
+  rewrite <- acos_inv_sqrt2. unfold vangle. f_equal. cbv. ra.
 Qed.
 
 (** 单位向量的点积介于[-1,1] *)
@@ -420,16 +422,16 @@ Proof. intros. pose proof (vangle_bound a b H H0). apply sin_gt_0; ra. Qed.
 
 (** 0 < x -> (x .* a) /_ b = a /_ b *)
 Lemma vangle_vcmul_l_gt0 : forall {n} (a b : vec n) (x : R),
-    0 < x -> a <> vzero -> b <> vzero -> (x \.* a) /_ b = a /_ b.
+    0 < x -> a <> vzero -> b <> vzero -> (x c* a) /_ b = a /_ b.
 Proof.
   intros. unfold vangle. rewrite vnorm_vcmul; auto.
   rewrite vdot_vcmul_l. unfold sign. bdestruct (0 <? x); ra.
   bdestruct (x =? 0); ra.
 Qed.
 
-(** x < 0 -> (x \.* a) /_ b = PI - a /_ b *)
+(** x < 0 -> (x c* a) /_ b = PI - a /_ b *)
 Lemma vangle_vcmul_l_lt0 : forall {n} (a b : vec n) (x : R),
-    x < 0 -> a <> vzero -> b <> vzero -> (x \.* a) /_ b = (PI - (a /_ b))%R.
+    x < 0 -> a <> vzero -> b <> vzero -> (x c* a) /_ b = (PI - (a /_ b))%R.
 Proof.
   intros. unfold vangle. rewrite vnorm_vcmul; auto.
   rewrite vdot_vcmul_l. unfold sign. bdestruct (0 <? x); ra.
@@ -439,7 +441,7 @@ Qed.
 
 (** 0 < x -> a /_ (x .* b) = a /_ b *)
 Lemma vangle_vcmul_r_gt0 : forall {n} (a b : vec n) (x : R),
-    0 < x -> a <> vzero -> b <> vzero -> a /_ (x \.* b) = a /_ b.
+    0 < x -> a <> vzero -> b <> vzero -> a /_ (x c* b) = a /_ b.
 Proof.
   intros. unfold vangle. rewrite vnorm_vcmul; auto.
   rewrite vdot_vcmul_r. unfold sign. bdestruct (0 <? x); ra.
@@ -448,7 +450,7 @@ Qed.
 
 (** x < 0 -> a /_ (x .* b) = PI - a /_ b *)
 Lemma vangle_vcmul_r_lt0 : forall {n} (a b : vec n) (x : R),
-    x < 0 -> a <> vzero -> b <> vzero -> a /_ (x \.* b) = (PI - (a /_ b))%R.
+    x < 0 -> a <> vzero -> b <> vzero -> a /_ (x c* b) = (PI - (a /_ b))%R.
 Proof.
   intros. unfold vangle. rewrite vnorm_vcmul; auto.
   rewrite vdot_vcmul_r. unfold sign. bdestruct (0 <? x); ra.
@@ -468,28 +470,28 @@ Proof. intros. unfold vangle. rewrite vnorm_idem; auto. Qed.
 
 (** 0 < x -> (x .* a) /_ a = 0 *)
 Lemma vangle_vcmul_same_l_gt0 : forall {n} (a : vec n) x,
-    a <> vzero -> 0 < x -> (x \.* a) /_ a = 0.
+    a <> vzero -> 0 < x -> (x c* a) /_ a = 0.
 Proof.
   intros. rewrite vangle_vcmul_l_gt0; auto. apply vangle_self; auto.
 Qed.
 
 (** 0 < x -> a /_ (x .* a) = 0 *)
 Lemma vangle_vcmul_same_r_gt0 : forall {n} (a : vec n) x,
-    a <> vzero -> 0 < x -> a /_ (x \.* a) = 0.
+    a <> vzero -> 0 < x -> a /_ (x c* a) = 0.
 Proof.
   intros. rewrite vangle_vcmul_r_gt0; auto. apply vangle_self; auto.
 Qed.
 
 (** x < 0 -> (x * a) /_ a = π *)
 Lemma vangle_vcmul_same_l_lt0 : forall {n} (a : vec n) x,
-    a <> vzero -> x < 0 -> (x \.* a) /_ a = PI.
+    a <> vzero -> x < 0 -> (x c* a) /_ a = PI.
 Proof.
   intros. rewrite vangle_vcmul_l_lt0; auto. rewrite vangle_self; auto. ring.
 Qed.
 
 (** x < 0 -> a /_ (x * a) = π *)
 Lemma vangle_vcmul_same_r_lt0 : forall {n} (a : vec n) x,
-    a <> vzero -> x < 0 -> a /_ (x \.* a) = PI.
+    a <> vzero -> x < 0 -> a /_ (x c* a) = PI.
 Proof.
   intros. rewrite vangle_vcmul_r_lt0; auto. rewrite vangle_self; auto. ring.
 Qed.
@@ -717,7 +719,7 @@ Definition v2i : vec 2 := mkvec2 1 0.
 Definition v2j : vec 2 := mkvec2 0 1.
 
 (** 任意向量都能写成该向量的坐标在标准基向量下的线性组合 *)
-Lemma v2_linear_composition : forall (a : vec 2), a = a.1 \.* v2i + a.2 \.* v2j.
+Lemma v2_linear_composition : forall (a : vec 2), a = a.1 c* v2i + a.2 c* v2j.
 Proof. intros. apply v2eq_iff. cbv. ra. Qed.
 
 (** 标准基向量的长度为 1 *)
@@ -1115,12 +1117,12 @@ Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
 (** (x .* a) × b = x .* (a × b) *)
 Lemma v3cross_vcmul_assoc_l : forall (x : R) (a b : vec 3),
-    (x \.* a) \x b = x \.* (a \x b).
+    (x c* a) \x b = x c* (a \x b).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
-(** a × (x .* b) = x \.* (a × b) *)
+(** a × (x .* b) = x c* (a × b) *)
 Lemma v3cross_vcmul_assoc_r : forall (x : R) (a b : vec 3),
-    a \x (x \.* b) = x \.* (a \x b).
+    a \x (x c* b) = x c* (a \x b).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
 (** <a × b, c> = <c × a, b> *)
@@ -1147,19 +1149,19 @@ Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 Lemma v3cross_a_ab : forall a b : vec 3, a \x (a \x b) = - ((a \x b) \x a).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
-(** (a × b) × a = <a, a> \.* a - <a, b> \.* a *)
+(** (a × b) × a = <a, a> c* a - <a, b> c* a *)
 Lemma v3cross_ab_a_eq_minus : forall a b : vec 3,
-    (a \x b) \x a = <a, a> \.* b - <a, b> \.* a.
+    (a \x b) \x a = <a, a> c* b - <a, b> c* a.
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
-(** a × (b × a) = <a, a> \.* b - <a, b> \.* a *)
+(** a × (b × a) = <a, a> c* b - <a, b> c* a *)
 Lemma v3cross_a_ba_eq_minus : forall a b : vec 3,
-    a \x (b \x a) = <a, a> \.* b - <a, b> \.* a.
+    a \x (b \x a) = <a, a> c* b - <a, b> c* a.
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
-(** a × (a × b) = <a, b> \.* a - <a, a> \.* b *)
+(** a × (a × b) = <a, b> c* a - <a, a> c* b *)
 Lemma v3cross_a_ab_eq_minus : forall a b : vec 3,
-    a \x (a \x b) = <a, b> \.* a - <a, a> \.* b.
+    a \x (a \x b) = <a, b> c* a - <a, a> c* b.
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
 (** <a × b, c × d> = <a, c> * <b, d> - <a, d> * <b, c> *)
@@ -1227,15 +1229,15 @@ Proof.
   -
 Abort.
 
-(** a × b = (sin (u ∠ a) * ||a|| * ||b||) \.* vnorm (a × b) *)
+(** a × b = (sin (u ∠ a) * ||a|| * ||b||) c* vnorm (a × b) *)
 Lemma v3cross_eq_vcmul : forall (a b : vec 3),
     a <> vzero -> b <> vzero ->
     a /_ b <> 0 -> a /_ b <> PI ->
-    a \x b = ((sin (a /_ b) * ||a|| * ||b||)%R \.* vnorm (a \x b)).
+    a \x b = ((sin (a /_ b) * ||a|| * ||b||)%R c* vnorm (a \x b)).
 Proof.
   intros. unfold vnorm. rewrite vlen_v3cross; auto.
   rewrite vcmul_assoc.
-  match goal with |- context [?x \.* _] => replace x with 1 end.
+  match goal with |- context [?x c* _] => replace x with 1 end.
   rewrite vcmul_1_l; easy.
   autounfold with A. field. repeat split.
   - pose proof (sin_vangle_gt0 a b H H0). ra.
@@ -1275,8 +1277,22 @@ Definition skew3 (a : vec 3) : mat 3 3 :=
        [-a.2; a.1;  0   ]]%R.
 Notation "`| a |x" := (skew3 a) : vec_scope.
 
-Lemma skew3_spec : forall a, skewP (skew3 a).
+(** skewP (`| a |x) *)
+Lemma skew3_spec : forall a, skewP (`| a |x).
 Proof. intros. rewrite skewP3_eq. cbv. lra. Qed.
+
+(** (`| a |x)\T = - a *)
+Lemma mtrans_skew3 : forall a, (`| a |x)\T = `| - a |x.
+Proof. intros. meq; ra. Qed.
+
+(** `| -a |x = - `| a |x *)
+Lemma skew3_vopp : forall a, `| - a |x = (- (`| a |x))%M.
+Proof. intros. meq; ra. Qed.
+
+(** (`| -a |x)\T = `| a |x *)
+Lemma mtrans_skew3_vopp : forall a, (`| - a |x)\T = `| a |x.
+Proof. intros. meq; ra. Qed.
+
 
 (** Convert a skew-symmetric matrix to its corresponding vector *)
 Definition vex3 (M : mat 3 3) : vec 3 := l2v [M.32; M.13; M.21].
@@ -1345,7 +1361,7 @@ Lemma v3unit_sqr_x : forall (a : vec 3), vunit a -> a.1² = (1 - a.2² - a.3²)%
 Proof. intros. cbv in *. ra. Qed.
 
 Lemma v3unit_sqr_y : forall (a : vec 3), vunit a -> a.2² = (1 - a.1² - a.3²)%R.
-Proof. intros. cbv in *. ra. Qed.
+Proof. intros. v2e a. rewrite Ha in *. cbv in H. cbv. ra. Qed.
 
 Lemma v3unit_sqr_z : forall (a : vec 3), vunit a -> a.3² = (1 - a.1² - a.2²)%R.
 Proof. intros. cbv in *. ra. Qed.
@@ -1377,7 +1393,7 @@ Qed.
       l2m [[x * x; x * y; x * z];
            [y * x; y * y; y * z];
            [z * x; z * y; z * z]]%R in
-    (1 / <a, a>) \.* (M * u).
+    (1 / <a, a>) c* (M * u).
 
   Lemma v3proj_spec : forall a b : vec 3, v3proj a b = vproj a b.
   Proof. apply v3eq_iff; cbv; ra. Qed.
@@ -1429,7 +1445,7 @@ Definition v3k : vec 3 := mkvec3 0 0 1.
 
 (** 任意向量都能写成该向量的坐标在标准基向量下的线性组合 *)
 Lemma v3_linear_composition : forall (a : vec 3),
-    a = a.1 \.* v3i + a.2 \.* v3j + a.3 \.* v3k.
+    a = a.1 c* v3i + a.2 c* v3j + a.3 c* v3k.
 Proof. intros. apply v3eq_iff. cbv. ra. Qed.
 
 (** 标准基向量的长度为 1 *)
@@ -1658,7 +1674,7 @@ Definition mnorm_spec_pos {r c} (mnorm : mat r c -> R) : Prop :=
 
 Definition mnorm_spec_mcmul {r c} (mnorm : mat r c -> R) : Prop :=
   forall (M : mat r c) (x : R),
-    mnorm (x \.* M) = ((Rabs x) * (mnorm M))%R.
+    mnorm (x c* M) = ((Rabs x) * (mnorm M))%R.
 
 Definition mnorm_spec_trig {r c} (mnorm : mat r c -> R) : Prop :=
   forall (M N : mat r c),
@@ -1787,7 +1803,7 @@ Section morth_keep_cross_try.
   Notation "M \-1" := (minvAM M) : mat_scope.
 
   Goal forall (M : smat 3) (a b : vec 3),
-      mdet M <> 0 -> (M *v a) \x (M *v b) = ((mdet M) \.* (M\-1\T *v (a \x b)))%V.
+      mdet M <> 0 -> (M *v a) \x (M *v b) = ((mdet M) c* (M\-1\T *v (a \x b)))%V.
   Proof.
     intros. rewrite <- mmulv_mcmul.
     (* rewrite <- mcomat_eq; auto. *)

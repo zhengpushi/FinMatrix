@@ -164,9 +164,10 @@ End x_sin2_x_cos2.
   x_cos2_plus_x_sin2 cos2_x_plus_x_sin2 x_cos2_plus_sin2_x cos2_x_plus_sin2_x
   : R.
 
-(** - PI / 2 < r < PI / 2 -> cos r <> 0 *)
-Lemma cos_neg0 : forall r : R, - PI / 2 < r < PI / 2 -> cos r <> 0.
+(** - PI / 2 < r -> r < PI / 2 -> cos r <> 0 *)
+Lemma cos_neg0 : forall r : R, - PI / 2 < r -> r < PI / 2 -> cos r <> 0.
 Proof. intros. assert (0 < cos r); ra. apply cos_gt_0; ra. Qed.
+#[export] Hint Resolve cos_neg0 : R.
 
 (** *** 特殊三角函数值 *)
 Fact sin_0 : sin 0 = 0. Admitted.
@@ -211,18 +212,6 @@ Fact cos_3PI2_add : forall x, cos (3 * PI / 2 + x) = sin x. Admitted.
 Fact cos_2PI_add : forall x, cos (2 * PI + x) = cos x. Admitted.
 
 (** *** 周期性 *)
-
-(** cos x = 1 -> x = 2kπ *)
-Lemma cos_1_period : forall (x : R) (k : Z), cos x = 1 -> x = 2 * IZR k * PI.
-Admitted.
-
-(** cos x = -1 -> x = 2kπ + π *)
-Lemma cos_neg1_period : forall (x : R) (k : Z), cos x = -1 -> x = 2 * IZR k * PI + PI.
-Admitted.
-
-(** cos x = 0 -> x = kπ + π/2 *)
-Lemma cos_0_period : forall (x : R) (k : Z), cos x = 0 -> x = IZR k * PI + PI/2.
-Admitted.
 
 (** Periodicity of sin over Z type. Note std-lib support it over nat type:
     sin (x + 2 * IZR k * PI) = sin x *)
@@ -276,6 +265,26 @@ Proof.
         { rewrite S_INR. ring. }
     + rewrite positive_nat_Z. auto.
 Qed.
+
+(** sin x = 1 -> x = 2kπ + π/2 *)
+Lemma sin_1_period : forall (x : R) (k : nat), sin x = 1 -> x = 2 * INR k * PI + PI/2.
+Admitted.
+
+(** cos x = 1 -> x = 2kπ *)
+Lemma cos_1_period : forall (x : R) (k : Z), cos x = 1 -> x = 2 * IZR k * PI.
+Admitted.
+
+(** cos x = -1 -> x = 2kπ + π *)
+Lemma cos_neg1_period : forall (x : R) (k : Z), cos x = -1 -> x = 2 * IZR k * PI + PI.
+Admitted.
+
+(** cos x = 0 -> x = kπ + π/2 *)
+Lemma cos_0_period : forall (x : R) (k : Z), cos x = 0 -> x = IZR k * PI + PI/2.
+Admitted.
+
+(** -π/2 <= x -> x <= π/2 -> sin x = 1 -> x = π/2 *)
+Lemma sin_eq1_imply : forall (x : R), -PI/2 <= x -> x <= PI/2 -> sin x = 1 -> x = PI/2.
+Proof. intros. apply (sin_1_period x 0) in H1. ra. Qed.
 
 
 (* ======================================================================= *)
@@ -434,20 +443,20 @@ Fact atan_sqrt3_3 : atan ((sqrt 3) / 3) = PI / 6. Admitted.
 (* Fact atan_1 : atan 1 = PI. Admitted. *)
 Fact atan_sqrt3 : atan (sqrt 3) = PI / 3. Admitted.
 
-(* In the proof of atan2, we need to simplify the expression such as
-   atan ((a * b) / (a * c)) *)
-Section atan_ab_ac.
+(* (* In the proof of atan2, we need to simplify the expression such as *)
+(*    atan ((a * b) / (a * c)) *) *)
+(* Section atan_ab_ac. *)
 
-  (** atan ((k * a) / (k * b)) = atan (a / b) *)
-  Lemma atan_ka_kb : forall a b k : R,
-      b <> 0 -> k <> 0 -> atan ((k * a) / (k * b)) = atan (a/b).
-  Proof. intros. f_equal. field. ra. Qed.
+(*   (** atan ((k * a) / (k * b)) = atan (a / b) *) *)
+(*   Lemma atan_ka_kb : forall a b k : R, *)
+(*       b <> 0 -> k <> 0 -> atan ((k * a) / (k * b)) = atan (a/b). *)
+(*   Proof. intros. f_equal. field. ra. Qed. *)
 
-  (** atan ((a * k) / (b * k)) = atan (a / b) *)
-  Lemma atan_ak_bk : forall a b k : R,
-      b <> 0 -> k <> 0 -> atan ((a * k) / (b * k)) = atan (a/b).
-  Proof. intros. f_equal. field. ra. Qed.
-End atan_ab_ac.
+(*   (** atan ((a * k) / (b * k)) = atan (a / b) *) *)
+(*   Lemma atan_ak_bk : forall a b k : R, *)
+(*       b <> 0 -> k <> 0 -> atan ((a * k) / (b * k)) = atan (a/b). *)
+(*   Proof. intros. f_equal. field. ra. Qed. *)
+(* End atan_ab_ac. *)
 
 (** 0 < atan x < π/2 *)
 Lemma atan_bound_gt0 : forall x, x > 0 -> 0 < atan x < PI/2.

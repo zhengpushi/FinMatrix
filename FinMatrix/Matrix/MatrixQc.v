@@ -95,7 +95,7 @@ Section test.
   
   (* Compute m2l M. *)
   (* Compute m2l (M * M). *)
-  (* Compute m2l ((Q2Qc 5) \.* M). *)
+  (* Compute m2l ((Q2Qc 5) c* M). *)
   (* Compute m2l (minvAM M). *)
   (* Compute m2l (minvGE M). *)
   (* Compute m2l (minv M). *)

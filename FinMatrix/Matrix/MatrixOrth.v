@@ -196,10 +196,10 @@ Module MatrixOrth (F : FieldElementType).
       forall i1 i2, i1 <> i2 -> M.[i1] _|_ M.[i2].
 
     Lemma mtrans_mcolsOrth : forall {r c} (M : mat r c), mrowsOrth M -> mcolsOrth (M\T).
-    Proof. intros. hnf in *. intros. rewrite !mcol_mtrans_eq_mrow. auto. Qed.
+    Proof. intros. hnf in *. intros. rewrite mcol_eq_mtrans. auto. Qed.
 
     Lemma mtrans_mrowsOrth : forall {r c} (M : mat r c), mcolsOrth M -> mrowsOrth (M\T).
-    Proof. intros. hnf in *. intros. rewrite !mrow_mtrans_eq_mcol. auto. Qed.
+    Proof. intros. hnf in *. intros. auto. Qed.
 
     (*
   (** bool version *)
@@ -233,11 +233,14 @@ Module MatrixOrth (F : FieldElementType).
 
     Lemma mtrans_mcolsUnit : forall {r c} (M : mat r c),
         mrowsUnit M -> mcolsUnit (M\T).
-    Proof. intros. hnf in *. intros. rewrite mcol_mtrans_eq_mrow. auto. Qed.
+    Proof.
+      intros. hnf in *. intros. rewrite mcol_eq_mtrans.
+      rewrite mtrans_mtrans. auto.
+    Qed.
 
     Lemma mtrans_mrowsUnit : forall {r c} (M : mat r c),
         mcolsUnit M -> mrowsUnit (M\T).
-    Proof. intros. hnf in *. intros. rewrite mrow_mtrans_eq_mcol. auto. Qed.
+    Proof. intros. hnf in *. intros. rewrite <- mcol_eq_mtrans. auto. Qed.
 
     (*
   (** bool version *)
@@ -324,7 +327,7 @@ Module MatrixOrth (F : FieldElementType).
     Proof. intros. hnf. rewrite mtrans_mat1, mmul_1_r. easy. Qed.
 
     (** orthogonal M -> orthogonal p -> orthogonal (m * p) *)
-    Lemma morth_mul : forall {n} (M N : smat n),
+    Lemma morth_mmul : forall {n} (M N : smat n),
         morth M -> morth N -> morth (M * N).
     Proof.
       intros. hnf. hnf in H, H0. rewrite mtrans_mmul.
@@ -469,7 +472,7 @@ Module MatrixOrth (F : FieldElementType).
     Definition GOn_mul {n} (x1 x2 : @GOn n) : @GOn n.
       refine (Build_GOn (x1 * x2) _).
       destruct x1 as [M1 Horth1], x2 as [M2 Horth2]. simpl.
-      apply morth_mul; auto.
+      apply morth_mmul; auto.
     Defined.
 
     (** Identity element in GOn *)
@@ -573,6 +576,13 @@ Module MatrixOrth (F : FieldElementType).
     Proof.
       intros. hnf in *. destruct H. split.
       apply morth_mtrans; auto. rewrite mdet_mtrans; auto.
+    Qed.
+
+    (** The multiplication also keep SOn *)
+    Lemma SOnP_mmul : forall {n} (M N : smat n), SOnP M -> SOnP N -> SOnP (M * N).
+    Proof.
+      intros. hnf in *. destruct H,H0. split.
+      apply morth_mmul; auto. rewrite mdet_mmul,H1,H2; ra.
     Qed.
 
     (** Create a SOn from a matrix satisfing `SOnP` *)

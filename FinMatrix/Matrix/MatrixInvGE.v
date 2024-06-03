@@ -41,7 +41,7 @@ Section minv.
   Notation smat n := (smat A n).
   Notation mat1 := (@mat1 _ Azero Aone).
   Notation mcmul := (@mcmul _ Amul).
-  Infix "\.*" := mcmul : mat_scope.
+  Infix "c*" := mcmul : mat_scope.
   Notation mmul := (@mmul _ Aadd Azero Amul).
   Infix "*" := mmul : mat_scope.
   Infix "*" := mmul : mat_scope.
@@ -271,7 +271,7 @@ Module MinvCoreGE (E : FieldElementType) <: MinvCore E.
   Local Notation smat n := (smat A n).
   Local Notation mat1 := (@mat1 _ Azero Aone).
   Local Notation mcmul := (@mcmul _ Amul).
-  Local Infix "\.*" := mcmul : mat_scope.
+  Local Infix "c*" := mcmul : mat_scope.
   Local Notation mmul := (@mmul _ Aadd Azero Amul).
   Local Infix "*" := mmul : mat_scope.
   Local Infix "*" := mmul : mat_scope.

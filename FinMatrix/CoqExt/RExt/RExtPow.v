@@ -10,7 +10,7 @@
   remark    :
  *)
 
-Require Export RExtBase.
+Require Export RExtBase RExtSqr.
 
 
 #[export] Hint Rewrite
@@ -25,4 +25,5 @@ Ltac simp_pow :=
   match goal with
   | |- context[?a ^ 4] => replace (a ^ 4) with ((a ^ 2) ^ 2); [|ring]
   | |- context[?a ^ 3] => replace (a ^ 3) with ((a ^ 2) * a)%R; [|ring]
-  end.
+  end;
+  try rewrite !Rpow2_Rsqr.

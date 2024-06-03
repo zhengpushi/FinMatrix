@@ -125,21 +125,17 @@ Proof.
   - assert (sin a < 0). { apply sin_lt_0_var; ra. }
     assert (cos a < 0). { rewrite <- cos_2PI_add. apply cos_lt_0; ra. }
     rewrite atan2_Xlt0_Ylt0; ra.
-    rewrite atan_ak_bk; ra.
     replace (tan a) with (tan (a + PI)).
     rewrite atan_tan; ra. ra.
   - assert (sin a < 0). { apply sin_lt_0_var; lra. }
     assert (0 < cos a). { apply cos_gt_0; ra. }
-    rewrite atan2_Xgt0; ra.
-    rewrite atan_ak_bk; ra. rewrite atan_tan; ra.
+    rewrite atan2_Xgt0; ra. rewrite atan_tan; ra.
   - assert (0 < sin a). { apply sin_gt_0; lra. }
     assert (0 < cos a). { apply cos_gt_0; ra. }
-    rewrite atan2_Xgt0; ra.
-    rewrite atan_ak_bk; ra. rewrite atan_tan; ra.
+    rewrite atan2_Xgt0; ra. rewrite atan_tan; ra.
   - assert (0 <= sin a). { apply sin_ge_0; lra. }
     assert (cos a < 0). { apply cos_lt_0; ra. }
     rewrite atan2_Xlt0_Yge0; ra.
-    rewrite atan_ak_bk; ra.
     replace (tan a) with (tan (a - PI)).
     rewrite atan_tan; ra. ra.
 Qed.

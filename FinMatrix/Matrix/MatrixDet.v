@@ -94,7 +94,7 @@ Section mdet.
   Notation vadd := (@vadd _ Aadd).
   Infix "+" := vadd : vec_scope.
   Notation vcmul := (@vcmul _ Amul).
-  Infix "\.*" := vcmul : vec_scope.
+  Infix "c*" := vcmul : vec_scope.
 
   Notation smat n := (smat A n).
   Notation mmul := (@mmul _ Aadd 0 Amul).
@@ -211,7 +211,7 @@ Section mdet.
   (** Property 2 : | M with x*row(M,i) | = x * |M| *)
   Lemma mdet_row_scale : forall {n} (M1 M2 : smat n) (i : 'I_n) (x : A),
       (forall j, j <> i -> M1.[j] = M2.[j]) ->
-      (M1.[i] = x \.* M2.[i])%V -> |M1| = (x * |M2|)%A.
+      (M1.[i] = x c* M2.[i])%V -> |M1| = (x * |M2|)%A.
   Proof.
     intros. unfold mdet.
     rewrite fold_left_map.
@@ -419,7 +419,7 @@ Section mdet.
     
     (* Property 6: 两行成比例，行列式的值为 0 *)
     Lemma mdet_row_cmul : forall {n} (M : smat n) (i j : 'I_n) (x : A),
-        i <> j -> M.[i] = (x \.* M.[j])%A -> |M| = 0.
+        i <> j -> M.[i] = (x c* M.[j])%A -> |M| = 0.
     Proof.
       intros. rewrite (mdet_row_scale M (vset M i M.[j]) i x).
       - pose proof (mdet_row_vset_eq0 M i j H). rewrite H1. ring.
@@ -430,10 +430,10 @@ Section mdet.
 
     (* When i-th row is replaced with (x * j-th row) (i <> j), |M| = 0 *)
     Corollary mdet_row_vset_cmul_eq0 : forall {n} (M : smat n) (i j : 'I_n) x,
-        i <> j -> |vset M i (x \.* M j)| = 0.
+        i <> j -> |vset M i (x c* M j)| = 0.
     Proof.
       intros.
-      pose proof (mdet_row_cmul (vset M i (x \.* M j)) i j x H).
+      pose proof (mdet_row_cmul (vset M i (x c* M j)) i j x H).
       rewrite vnth_vset_eq, vnth_vset_neq in H0; auto.
     Qed.
     
@@ -441,10 +441,10 @@ Section mdet.
     Lemma mdet_row_addRow : forall {n} (M1 M2 : smat n) (i j : 'I_n) (x : A),
         i <> j ->
         (forall k, k <> i -> M1.[k] = M2.[k]) ->
-        M1.[i] = (M2.[i] + x \.*M2.[j])%V -> |M1| = |M2|.
+        M1.[i] = (M2.[i] + x c*M2.[j])%V -> |M1| = |M2|.
     Proof.
       intros.
-      pose proof (mdet_row_add M2 (vset M2 i (x \.* M2.[j])) M1 i).
+      pose proof (mdet_row_add M2 (vset M2 i (x c* M2.[j])) M1 i).
       rewrite H2; auto.
       - rewrite (mdet_row_vset_cmul_eq0); auto. ring.
       - intros k Hk. rewrite H0; auto. split; auto.
@@ -1043,7 +1043,7 @@ Section madj.
   Notation smat n := (smat A n).
   Notation mat1 := (@mat1 _ 0 1).
   Notation mcmul := (@mcmul _ Amul).
-  Infix "\.*" := mcmul : mat_scope.
+  Infix "c*" := mcmul : mat_scope.
   Notation mmul := (@mmul _ Aadd 0 Amul).
   Infix "*" := mmul : mat_scope.
   Notation mmulv := (@mmulv _ Aadd 0 Amul).
@@ -1091,7 +1091,7 @@ Section madj.
   (* Proof. intros. rewrite <- mtrans_madj, mtrans_mtrans. auto. Qed. *)
 
   (** M * (M\A) = |M| * I *)
-  Lemma mmul_madj_r : forall {n} (M : smat n), M * M\A = |M| \.* mat1.
+  Lemma mmul_madj_r : forall {n} (M : smat n), M * M\A = |M| c* mat1.
   Proof.
     intros. apply meq_iff_mnth; intros.
     unfold madj. destruct n. fin.
@@ -1108,7 +1108,7 @@ Section madj.
   Qed.
 
   (** (M\A) * M = |M| * I *)
-  Lemma mmul_madj_l : forall {n} (M : smat n), M\A * M = |M| \.* mat1.
+  Lemma mmul_madj_l : forall {n} (M : smat n), M\A * M = |M| c* mat1.
   Proof.
     intros. apply meq_iff_mnth; intros.
     unfold madj. destruct n. fin.
@@ -1126,7 +1126,7 @@ Section madj.
   
   (** (/|M| .* M\A) * M = mat1 *)
   Lemma mmul_det_cmul_adj_l : forall {n} (M : smat n),
-  |M| <> 0 -> (/|M| \.* M\A) * M = mat1.
+  |M| <> 0 -> (/|M| c* M\A) * M = mat1.
   Proof.
     intros. rewrite mmul_mcmul_l. rewrite mmul_madj_l. rewrite mcmul_assoc.
     rewrite field_mulInvL; auto. apply mcmul_1_l.
@@ -1134,7 +1134,7 @@ Section madj.
 
   (** M * (/|M| .* M\A) = mat1 *)
   Lemma mmul_det_cmul_adj_r : forall {n} (M : smat n),
-  |M| <> 0 -> M * (/|M| \.* M\A) = mat1.
+  |M| <> 0 -> M * (/|M| c* M\A) = mat1.
   Proof.
     intros. rewrite mmul_mcmul_r. rewrite mmul_madj_r. rewrite mcmul_assoc.
     rewrite field_mulInvL; auto. apply mcmul_1_l.
@@ -1143,18 +1143,18 @@ Section madj.
   (** |M| <> 0 -> (exists N : smat n, N * M = mat1) *)
   Lemma mdet_neq0_imply_mmul_eq1_l : forall {n} (M : smat n),
   |M| <> 0 -> (exists N : smat n, N * M = mat1).
-  Proof. intros. exists (/|M| \.* M\A). apply mmul_det_cmul_adj_l. auto. Qed.
+  Proof. intros. exists (/|M| c* M\A). apply mmul_det_cmul_adj_l. auto. Qed.
 
   (** |M| <> 0 -> (exists N : smat n, M * N = mat1) *)
   Lemma mdet_neq0_imply_mmul_eq1_r : forall {n} (M : smat n),
   |M| <> 0 -> (exists N : smat n, M * N = mat1).
-  Proof. intros. exists (/|M| \.* M\A). apply mmul_det_cmul_adj_r. auto. Qed.
+  Proof. intros. exists (/|M| c* M\A). apply mmul_det_cmul_adj_r. auto. Qed.
 
   (** |M| <> 0 -> (exists N : smat n, N * M = mat1 /\ M * N = mat1) *)
   Lemma mdet_neq0_imply_mmul_eq1 : forall {n} (M : smat n),
   |M| <> 0 -> (exists N : smat n, N * M = mat1 /\ M * N = mat1).
   Proof.
-    intros. exists (/|M| \.* M\A). split.
+    intros. exists (/|M| c* M\A). split.
     apply mmul_det_cmul_adj_l. auto.
     apply mmul_det_cmul_adj_r. auto.
   Qed.

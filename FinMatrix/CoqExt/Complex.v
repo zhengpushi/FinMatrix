@@ -439,24 +439,24 @@ End triangle_ineq.
 
 (** scalar multiplication *)
 Definition Ccmul (k : R) (z : C) : C := (k * z.a) +i (k * z.b).
-Infix "\.*" := Ccmul: C_scope.
+Infix "c*" := Ccmul: C_scope.
 
-Lemma Cre_cmul : forall z k, (k \.* z).a = (k * z.a)%R.
+Lemma Cre_cmul : forall z k, (k c* z).a = (k * z.a)%R.
 Proof. intros (a,b) k; auto. Qed.
 
-Lemma Cim_cmul : forall z k, (k \.* z).b = (k * z.b)%R.
+Lemma Cim_cmul : forall z k, (k c* z).b = (k * z.b)%R.
 Proof. intros (a,b) k; auto. Qed.
 
-Lemma Ccmul_1 : forall z : C, 1 \.* z = z.
+Lemma Ccmul_1 : forall z : C, 1 c* z = z.
 Proof. Ceq. Qed.
 
-Lemma Ccmul_add_distr_l : forall k z1 z2, k \.* (z1 + z2) = k \.* z1 + k \.* z2.
+Lemma Ccmul_add_distr_l : forall k z1 z2, k c* (z1 + z2) = k c* z1 + k c* z2.
 Proof. Ceq. Qed.
 
-Lemma Ccmul_add_distr_r : forall k1 k2 z, (k1 + k2)%R \.* z = k1 \.* z + k2 \.* z.
+Lemma Ccmul_add_distr_r : forall k1 k2 z, (k1 + k2)%R c* z = k1 c* z + k2 c* z.
 Proof. Ceq. Qed.
 
-Lemma Ccmul_mul_swap_l : forall k1 k2 z, (k1 * k2)%R \.* z = k1 \.* (k2 \.* z).
+Lemma Ccmul_mul_swap_l : forall k1 k2 z, (k1 * k2)%R c* z = k1 c* (k2 c* z).
 Proof. Ceq. Qed.
 
 (** |k * z| = |k| * | z | *)
@@ -465,7 +465,7 @@ Proof. Ceq. Qed.
     <== \sqrt((ka)^2 + (kb)^2) = |k| * \sqrt(a^2 + b^2)
     <== (ka)^2 + (kb)^2 = k^2 * (a^2 +b^2)
  *)
-Lemma Cnorm_cmul : forall k z, |k \.* z| = (| k | * | z |%C)%R.
+Lemma Cnorm_cmul : forall k z, |k c* z| = (| k | * | z |%C)%R.
 Proof.
   intros k (a,b). unfold Cnorm; unfold Cnorm2; simpl.
   rewrite <- sqrt_Rsqr_abs. rewrite <- sqrt_mult; ra.
@@ -587,7 +587,7 @@ Definition Cinv (z : C) : C := (z.a / | z |2) +i (-z.b / | z |2).
 Notation "/ z" := (Cinv z) : C_scope.
 
 Lemma Cinv_rew : forall a b : R,
-    (a +i b) <> C0 -> /(a +i b) = (/ (a*a + b*b)) \.* (a +i - b)%R.
+    (a +i b) <> C0 -> /(a +i b) = (/ (a*a + b*b)) c* (a +i - b)%R.
 Proof. Ceq. cbv; lra. cbv; lra. Qed.
 
 Lemma Cmul_inv_l : forall z : C, z <> C0 -> / z * z = C1.
@@ -849,7 +849,7 @@ Proof.
   bdestruct (a >? 0).
   - rewrite Carg_xgt0; auto. rewrite sin_atan.
     unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_b_div_a; ra.
-    rewrite Rabs_right; ra. ra.
+    rewrite Rabs_right; ra.
   - bdestruct (a =? 0); subst.
     + bdestruct (b >? 0).
       * rewrite Carg_xeq0_ygt0; ra. symmetry. ra.
@@ -858,10 +858,10 @@ Proof.
     + bdestruct (b >=? 0).
       * rewrite Carg_xlt0_yge0; ra. rewrite sin_atan.
         unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_b_div_a; ra.
-        rewrite Rabs_left1 by lra. ra. ra.
+        rewrite Rabs_left1 by lra. ra.
       * rewrite Carg_xlt0_ylt0; ra. rewrite sin_atan.
         unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_b_div_a; ra.
-        rewrite Rabs_left1 by lra. ra. ra.
+        rewrite Rabs_left1 by lra. ra.
 Qed.
 
 (** 非零复数的主辐角的正切表达式 *)
@@ -919,7 +919,7 @@ Proof. apply Cnorm_triang_rev. Qed.
 (** ** 1.2.3 复数的三角表示 *)
 
 (** 复数三角表示的定义 *)
-Definition Ctrigo (r θ : R) : C := r \.* (cos θ +i sin θ).
+Definition Ctrigo (r θ : R) : C := r c* (cos θ +i sin θ).
 Infix "^^" := Ctrigo (at level 30) : C_scope.
 
 (** 复数三角表示的重写形式 *)
@@ -935,7 +935,7 @@ Infix "^^" := Ctrigo (at level 30) : C_scope.
 (** 复数的三角表示有无穷多种选择 *)
 Lemma Ctrigo_many : forall (r θ : R) (k : Z),
     let θ' : R := (θ + 2 * (IZR k) * PI)%R in
-    r ^^ θ = r \.* (cos θ' +i sin θ').
+    r ^^ θ = r c* (cos θ' +i sin θ').
 Proof.
   intros. unfold Ctrigo, θ'. rewrite cos_period_Z, sin_period_Z.
   auto.

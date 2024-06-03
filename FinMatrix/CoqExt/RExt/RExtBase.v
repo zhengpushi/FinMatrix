@@ -46,11 +46,14 @@ Ltac ra :=
   try match goal with | |- _ <-> _ => split; intros end;
   (* first, try solve it (DONT'T unfold,rewrite ANYTHING) *)
   auto with R;
-  (* next, rewrite it *)
+  try (unfold Rsqr in *; lra);
+  try (unfold Rsqr in *; nra);
+  try (unfold Rsqr in *; field; auto with R);
+  (* next, rewrite it and try to solve it *)
   autorewrite with R in *; auto with R;
   (* next, unify thes expressions: use "a + -b; a * /b" instead of "a - b; a / b" *)
   (* autounfold with R; auto with R; *)
-  (* finally, use lra, nra, or field *)
+  (* finally, try to solve it again *)
   try (unfold Rsqr in *; lra);
   try (unfold Rsqr in *; nra);
   try (unfold Rsqr in *; field; auto with R)

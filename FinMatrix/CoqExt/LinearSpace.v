@@ -121,7 +121,7 @@ Section props.
   Notation "- v" := (Vopp v) : VectorSpace_scope.
   Notation Vsub u v := (u + -v).
   Infix "-" := Vsub : VectorSpace_scope.
-  Infix "\.*" := Vcmul : VectorSpace_scope.
+  Infix "c*" := Vcmul : VectorSpace_scope.
 
   (** 0 + v = v *)
   #[export] Instance vs_vaddIdL : IdentityLeft Vadd 0.
@@ -198,25 +198,25 @@ Section props.
   Proof. intros. eapply group_opp_uniq_r; auto. Qed.
   
   (** 0 .* v = 0 *)
-  Theorem vs_vcmul_0_l : forall v : V, 0%A \.* v = 0.
+  Theorem vs_vcmul_0_l : forall v : V, 0%A c* v = 0.
   Proof.
     (* 0 .* v = (0 + 0) .* v = 0 .* v + 0 .* v, 0 .* v = 0 + 0 .* v,
        Hence, 0 .* v + 0 .* v = 0 + 0 .* v. By the cancellation law, then ... *)
     intros. pose proof vs_vadd_AGroup as HAGroup_vadd.
-    assert (0%A \.* v + 0%A \.* v = 0%A \.* v + 0).
+    assert (0%A c* v + 0%A c* v = 0%A c* v + 0).
     - rewrite <- vs_vcmul_aadd. agroup. f_equal. field.
     - apply vs_cancel_l in H. auto.
   Qed.
 
   (** a .* 0 = 0 *)
-  Theorem vs_vcmul_0_r : forall a : A, a \.* 0 = 0.
+  Theorem vs_vcmul_0_r : forall a : A, a c* 0 = 0.
   Proof.
     (* a*0 = a*0 + 0, a*0 = a*(0 + 0) = a*0 + a*0,
        Thus, a*0 + 0 = a*0 + a*0. By the cancellation law, then ... *)
     intros. pose proof vs_vadd_AGroup as HAGroup_vadd.
-    assert (a \.* 0 = a \.* 0 + a \.* 0).
+    assert (a c* 0 = a c* 0 + a c* 0).
     { rewrite <- vs_vcmul_vadd. f_equal. agroup. }
-    assert (a \.* 0 = a \.* 0 + 0). agroup.
+    assert (a c* 0 = a c* 0 + 0). agroup.
     rewrite H in H0 at 1. apply vs_cancel_l in H0. auto.
   Qed.
 
@@ -229,7 +229,7 @@ Section props.
   Proof. intros. apply group_sol_r; auto. Qed.
   
   (** (- c) * v = - (c * v) *)
-  Theorem vs_vcmul_opp : forall c v, (- c)%A \.* v = - (c \.* v).
+  Theorem vs_vcmul_opp : forall c v, (- c)%A c* v = - (c c* v).
   Proof.
     (* c*v + (-c)*v = 0, So, ... *)
     intros. symmetry. apply vs_vopp_uniq_l; auto.
@@ -237,7 +237,7 @@ Section props.
   Qed.
   
   (** c * (- v) = - (c * v) *)
-  Theorem vs_vcmul_vopp : forall c v, c \.* (- v) = - (c \.* v).
+  Theorem vs_vcmul_vopp : forall c v, c c* (- v) = - (c c* v).
   Proof.
     (* c*v + c*(-v) = 0, So, ... *)
     intros. symmetry. apply vs_vopp_uniq_l; auto.
@@ -245,7 +245,7 @@ Section props.
   Qed.
   
   (** (-1) * v = - v *)
-  Theorem vs_vcmul_opp1 : forall v : V, (-(1))%A \.* v = -v.
+  Theorem vs_vcmul_opp1 : forall v : V, (-(1))%A c* v = -v.
   Proof. intros. rewrite vs_vcmul_opp, vs_vcmul_1_l; auto. Qed.
 
   (** v - v = 0 *)
@@ -256,17 +256,17 @@ Section props.
     Context {AeqDec : Dec (@eq A)}.
     
     (** a .* v = 0 -> a = 0 \/ v = 0 *)
-    Theorem vs_vcmul_eq0_imply_k0_or_v0 : forall a v, a \.* v = 0 -> a = 0%A \/ v = 0.
+    Theorem vs_vcmul_eq0_imply_k0_or_v0 : forall a v, a c* v = 0 -> a = 0%A \/ v = 0.
     Proof.
       intros. destruct (Aeqdec a 0%A); auto. right.
-      assert (/a \.* (a \.* v) = /a \.* 0) by (rewrite H; auto).
+      assert (/a c* (a c* v) = /a c* 0) by (rewrite H; auto).
       rewrite <- vs_vcmul_assoc in H0.
       rewrite field_mulInvL in H0; auto.
       rewrite vs_vcmul_1_l, vs_vcmul_0_r in H0. auto.
     Qed.
 
     (** a <> 0 -> v <> 0 -> a .* v <> 0 *)
-    Corollary vs_vcmul_neq0_if_neq0_neq0 : forall a v, a <> 0%A -> v <> 0 -> a \.* v <> 0.
+    Corollary vs_vcmul_neq0_if_neq0_neq0 : forall a v, a <> 0%A -> v <> 0 -> a c* v <> 0.
     Proof.
       intros. intro. apply vs_vcmul_eq0_imply_k0_or_v0 in H1. destruct H1; auto.
     Qed.

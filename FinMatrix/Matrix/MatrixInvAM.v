@@ -45,7 +45,7 @@ Section minv.
   Notation smat n := (smat A n).
   Notation mat1 := (@mat1 _ Azero Aone).
   Notation mcmul := (@mcmul _ Amul).
-  Infix "\.*" := mcmul : mat_scope.
+  Infix "c*" := mcmul : mat_scope.
   Notation mmul := (@mmul _ Aadd Azero Amul).
   Infix "*" := mmul : mat_scope.
   Notation mmulv := (@mmulv _ Aadd 0 Amul).
@@ -95,7 +95,7 @@ Section minv.
   (** Inverse matrix (option version) *)
   Definition minvo {n} (M : smat n) : option (smat n) :=
     if minvtbleb M
-    then Some ((/ mdetEx M) \.* (madj M))
+    then Some ((/ mdetEx M) c* (madj M))
     else None.
 
   (** `minvo` return `Some`, iff M is invertible *)
@@ -105,7 +105,7 @@ Section minv.
     intros. rewrite minvtble_iff_minvtbleb_true. split; intros.
     - destruct H as [M' H]. unfold minvo in H.
       destruct minvtbleb; try easy.
-    - exists ((/ mdetEx M) \.* (madj M)). unfold minvo.
+    - exists ((/ mdetEx M) c* (madj M)). unfold minvo.
       destruct minvtbleb; try easy.
   Qed.
 
@@ -142,7 +142,7 @@ Section minv.
   
   (** Inverse matrix (with identity matrix as default value) *)
   Definition minv {n} (M : smat n) :=
-    if minvtbleb M then (/ mdetEx M) \.* (madj M) else mat1.
+    if minvtbleb M then (/ mdetEx M) c* (madj M) else mat1.
   Notation "M \-1" := (minv M) : mat_scope.
 
   (** If `minvo M` return `Some N`, then `M\-1` equal to `N` *)
@@ -172,7 +172,7 @@ Section minv.
   (** ** Inverse matrix (No-check version) *)
 
   (** Inverse matrix (won't check the inversibility) *)
-  Definition minvNoCheck {n} (M : smat n) := (/ mdetEx M) \.* (madj M).
+  Definition minvNoCheck {n} (M : smat n) := (/ mdetEx M) c* (madj M).
 
   (** If `M` is invertible, then [minvNoCheckAM] is equivalent to [minvAM] *)
   Lemma minvNoCheck_spec : forall {n} (M : smat n), minvtble M -> minvNoCheck M = M\-1.
@@ -248,7 +248,7 @@ Section minv.
   Qed.
 
   Definition minv2 (M : smat 2) : smat 2 :=
-    /(mdet2 M) \.*
+    /(mdet2 M) c*
       l2m 0 [[M.22; -M.12]; [-M.21; M.11]].
 
   (** minvtble M -> minv2 M = inv M *)
@@ -263,7 +263,7 @@ Section minv.
   
   (* Note, this formula come from matlab, needn't manual work *)
   Definition minv3 (M : smat 3) : smat 3 :=
-    /(mdet3 M) \.*
+    /(mdet3 M) c*
       l2m 0 [[(M.22*M.33-M.23*M.32); -(M.12*M.33-M.13*M.32); (M.12*M.23-M.13*M.22)];
              [-(M.21*M.33-M.23*M.31); (M.11*M.33-M.13*M.31); -(M.11*M.23-M.13*M.21)];
              [(M.21*M.32-M.22*M.31); -(M.11*M.32-M.12*M.31); (M.11*M.22-M.12*M.21)]]%A.
@@ -281,7 +281,7 @@ Section minv.
   (* Qed. *)
 
   Definition minv4 (M : smat 4) : smat 4 :=
-    /(mdet4 M) \.*
+    /(mdet4 M) c*
       l2m 0 [[(M.22*M.33*M.44 - M.22*M.34*M.43 - M.23*M.32*M.44 + M.23*M.34*M.42 +
                  M.24*M.32*M.43 - M.24*M.33*M.42);
               -(M.12*M.33*M.44 - M.12*M.34*M.43 - M.13*M.32*M.44 + M.13*M.34*M.42 +
@@ -355,7 +355,7 @@ Module MinvCoreAM (E : FieldElementType) <: MinvCore E.
   Local Notation smat n := (smat A n).
   Local Notation mat1 := (@mat1 _ Azero Aone).
   Local Notation mcmul := (@mcmul _ Amul).
-  Local Infix "\.*" := mcmul : mat_scope.
+  Local Infix "c*" := mcmul : mat_scope.
   Local Notation mmul := (@mmul _ Aadd Azero Amul).
   Local Infix "*" := mmul : mat_scope.
   Local Notation mmulv := (@mmulv _ Aadd 0 Amul).
@@ -466,7 +466,7 @@ Module MinvAM (E : FieldElementType).
   Local Notation smat n := (smat A n).
   Local Notation mat1 := (@mat1 _ Azero Aone).
   Local Notation mcmul := (@mcmul _ Amul).
-  Local Infix "\.*" := mcmul : mat_scope.
+  Local Infix "c*" := mcmul : mat_scope.
   Local Notation mmul := (@mmul _ Aadd Azero Amul).
   Local Infix "*" := mmul : mat_scope.
   Local Notation mmulv := (@mmulv _ Aadd 0 Amul).

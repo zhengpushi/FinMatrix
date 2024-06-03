@@ -35,6 +35,7 @@ FinMatrix/CoqExt/RExt/RExtLt.v
 FinMatrix/CoqExt/RExt/RExtPlus.v
 FinMatrix/CoqExt/RExt/RExtOpp.v
 FinMatrix/CoqExt/RExt/RExtMult.v
+FinMatrix/CoqExt/RExt/RExtPow.v
 FinMatrix/CoqExt/RExt/RExtInv.v
 FinMatrix/CoqExt/RExt/RExtSqr.v
 FinMatrix/CoqExt/RExt/RExtSqrt.v

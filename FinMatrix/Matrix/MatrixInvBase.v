@@ -63,7 +63,7 @@ Section minvtble.
   Notation mvmul := (@mvmul _ Aadd 0 Amul).
   Infix "v*" := mvmul : mat_scope.
   Notation mcmul := (@mcmul _ Amul).
-  Infix "\.*" := mcmul : mat_scope.
+  Infix "c*" := mcmul : mat_scope.
   Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).
   Notation "| M |" := (mdet M) : mat_scope.
   Notation madj := (@madj _ Aadd 0 Aopp Amul 1).
@@ -256,7 +256,7 @@ Section minvtble.
 
   (** M * N = mat1 -> M = /|N| .* N\A *)
   Lemma mmul_eq1_imply_det_cmul_adj_l : forall {n} (M N : smat n),
-      M * N = mat1 -> M = /|N| \.* N\A.
+      M * N = mat1 -> M = /|N| c* N\A.
   Proof.
     intros. apply mmul_eq1_uniq_l with (M:=N); auto.
     apply mmul_det_cmul_adj_l. apply mmul_eq1_imply_mdet_neq0_r in H. auto.
@@ -264,7 +264,7 @@ Section minvtble.
 
   (** M * N = mat1 -> N = /|M| .* M\A *)
   Lemma mmul_eq1_imply_det_cmul_adj_r : forall {n} (M N : smat n),
-      M * N = mat1 -> N = /|M| \.* M\A.
+      M * N = mat1 -> N = /|M| c* M\A.
   Proof.
     intros. apply mmul_eq1_uniq_r with (M:=M); auto.
     apply mmul_det_cmul_adj_r. apply mmul_eq1_imply_mdet_neq0_l in H. auto.
@@ -318,7 +318,7 @@ Module Type MinvCore (E : FieldElementType).
   Notation mvmul := (@mvmul _ Aadd 0 Amul).
   Infix "v*" := mvmul : mat_scope.
   Notation mcmul := (@mcmul _ Amul).
-  Infix "\.*" := mcmul : mat_scope.
+  Infix "c*" := mcmul : mat_scope.
   Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).
   Notation "| M |" := (mdet M) : mat_scope.
   Notation madj := (@madj _ Aadd 0 Aopp Amul 1).

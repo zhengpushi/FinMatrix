@@ -108,28 +108,6 @@ Proof.
 Qed.
 
 (* ======================================================================= *)
-(** ** Get row and column of a matrix *)
-Section mrow_mcol.
-  Context {A} {Azero : A}.
-  Notation vzero := (vzero Azero).
-
-  Definition mrow {r c} (M : mat A r c) (i : 'I_r) : @vec A c := M i.
-
-  Lemma vnth_mrow : forall {r c} (M : mat A r c) (i : 'I_r) (j : 'I_c),
-      (mrow M i).[j] = M.[i].[j].
-  Proof. intros. auto. Qed.
-
-  Definition mcol {r c} (M : mat A r c) (j : 'I_c) : @vec A r := fun i => M i j.
-  Notation "M &[ i ]" := (mcol M i) : mat_scope.
-
-  Lemma vnth_mcol : forall {r c} (M : mat A r c) (i : 'I_r) (j : 'I_c),
-      M&[j].[i] = M.[i].[j].
-  Proof. intros. auto. Qed.
-
-End mrow_mcol.
-Notation "M &[ i ]" := (mcol M i) : mat_scope.
-
-(* ======================================================================= *)
 (** ** matrix transpose *)
 Section mtrans.
   Context {A} (Azero : A).
@@ -160,17 +138,38 @@ Section mtrans.
     specialize (H j i). auto.
   Qed.
 
-  Lemma mcol_mtrans_eq_mrow : forall {r c} (M : mat A r c) (i : 'I_r),
-      (M\T)&[i] = M.[i].
-  Proof. auto. Qed.
-
-  Lemma mrow_mtrans_eq_mcol : forall {r c} (M : mat A r c) (j : 'I_c),
-      (M\T).[j] = M&[j].
-  Proof. auto. Qed.
-
 End mtrans.
-
 Notation "M \T" := (mtrans M) : mat_scope.
+
+(* ======================================================================= *)
+(** ** Get row and column of a matrix *)
+Section mrow_mcol.
+  Context {A} {Azero : A}.
+  Notation vzero := (vzero Azero).
+
+  Definition mrow {r c} (M : mat A r c) (i : 'I_r) : @vec A c := M i.
+
+  Lemma vnth_mrow : forall {r c} (M : mat A r c) (i : 'I_r) (j : 'I_c),
+      (mrow M i).[j] = M.[i].[j].
+  Proof. intros. auto. Qed.
+
+  (** mrow M = M *)
+  Lemma mrow_eq : forall {r c} (M : mat A r c), mrow M = M.
+  Proof. auto. Qed.
+  
+  Definition mcol {r c} (M : mat A r c) (j : 'I_c) : @vec A r := fun i => M i j.
+  Notation "M &[ i ]" := (mcol M i) : mat_scope.
+
+  Lemma vnth_mcol : forall {r c} (M : mat A r c) (i : 'I_r) (j : 'I_c),
+      M&[j].[i] = M.[i].[j].
+  Proof. intros. auto. Qed.
+
+  (** mcol M = M\T *)
+  Lemma mcol_eq_mtrans : forall {r c} (M : mat A r c), mcol M = M\T.
+  Proof. auto. Qed.
+
+End mrow_mcol.
+Notation "M &[ i ]" := (mcol M i) : mat_scope.
 
 (* ======================================================================= *)
 (** ** Get head or tail row *)
@@ -1348,7 +1347,7 @@ Section malg.
   Add Ring ring_inst : (make_ring_theory HARing).
 
   Notation vcmul := (@vcmul _ Amul).
-  Infix "\.*" := vcmul : vec_scope.
+  Infix "c*" := vcmul : vec_scope.
   Notation vdot v1 v2 := (@vdot _ Aadd 0 Amul _ v1 v2).
   Notation "< v1 , v2 >" := (vdot v1 v2) : vec_scope.
   
@@ -1414,41 +1413,41 @@ Section malg.
   (** ** Matrix Scalar Multiplication *)
   Section mcmul.
     Definition mcmul {r c : nat} (a : A) (M : mat r c) : mat r c := mmap (Amul a) M.
-    Infix "\.*" := mcmul : mat_scope.
+    Infix "c*" := mcmul : mat_scope.
 
     (** (a * M)[i] = a * M[i] *)
     Lemma vnth_mcmul : forall {r c} (M : mat r c) a i,
-        (a \.* M).[i] = (a \.* (M.[i]))%V.
+        (a c* M).[i] = (a c* (M.[i]))%V.
     Proof. intros. auto. Qed.
 
     (** (a * M)&i = a * M&i *)
     Lemma mcol_mcmul : forall {r c} (M : mat r c) a i,
-        (a \.* M)&[i] = (a \.* M&[i])%V.
+        (a c* M)&[i] = (a c* M&[i])%V.
     Proof. intros. auto. Qed.
 
     (** (a * M)[i,j] = a * M[i,j] *)
     Lemma mnth_mcmul : forall {r c} (M : mat r c) a i j,
-        (a \.* M).[i].[j] = a * (M.[i].[j]).
+        (a c* M).[i].[j] = a * (M.[i].[j]).
     Proof. intros. unfold mcmul. rewrite !vnth_vmap. auto. Qed.
 
     Lemma cv2v_mcmul : forall {n} (x : A) (a : cvec A n),
-        cv2v (x \.* a) = (x \.* (cv2v a))%V.
+        cv2v (x c* a) = (x c* (cv2v a))%V.
     Proof. intros. apply veq_iff_vnth; intros. cbv. auto. Qed.
 
 
     (** a * (b * M) = (a * b) * M *)
     Lemma mcmul_assoc : forall {r c} (M : mat r c) a b,
-        a \.* (b \.* M) = (a * b)%A \.* M.
+        a c* (b c* M) = (a * b)%A c* M.
     Proof. intros. apply meq_iff_mnth; intros. rewrite !mnth_mcmul. agroup. Qed.
     
     (** a * (b * M) = b * (a * M) *)
     Lemma mcmul_perm : forall {r c} (M : mat r c) a b,
-        a \.* (b \.* M) = b \.* (a \.* M).
+        a c* (b c* M) = b c* (a c* M).
     Proof. intros. rewrite !mcmul_assoc. f_equal. ring. Qed.
 
     (** a * (M + N) = (a * M) + (a * N) *)
     Lemma mcmul_madd_distr : forall {r c} a (M N : mat r c),
-        a \.* (M + N) = (a \.* M) + (a \.* N).
+        a c* (M + N) = (a c* M) + (a c* N).
     Proof.
       intros. apply meq_iff_mnth; intros.
       rewrite !mnth_mcmul, !mnth_madd, !mnth_mcmul. ring.
@@ -1456,30 +1455,30 @@ Section malg.
     
     (** (a + b) * M = (a * M) + (b * M) *)
     Lemma mcmul_add_distr : forall {r c} a b (M : mat r c),
-        (a + b)%A \.* M = (a \.* M) + (b \.* M).
+        (a + b)%A c* M = (a c* M) + (b c* M).
     Proof.
       intros. apply meq_iff_mnth; intros.
       rewrite !mnth_mcmul, !mnth_madd, !mnth_mcmul. ring.
     Qed.
 
-    (* 0 \.* M = mat0 *)
-    Lemma mcmul_0_l : forall {r c} (M : mat r c), 0 \.* M = mat0.
+    (* 0 c* M = mat0 *)
+    Lemma mcmul_0_l : forall {r c} (M : mat r c), 0 c* M = mat0.
     Proof.
       intros. apply meq_iff_mnth; intros. rewrite !mnth_mcmul, !mnth_mat0. ring.
     Qed.
 
-    (** a \.* mat0 = mat0 *)
-    Lemma mcmul_0_r : forall {r c} a, a \.* (@Matrix.mat0 _ 0 r c) = mat0.
+    (** a c* mat0 = mat0 *)
+    Lemma mcmul_0_r : forall {r c} a, a c* (@Matrix.mat0 _ 0 r c) = mat0.
     Proof.
       intros. apply meq_iff_mnth; intros. rewrite !mnth_mcmul, !mnth_mat0. ring.
     Qed.
     
-    (** 1 \.* M = M *)
-    Lemma mcmul_1_l : forall {r c} (M : mat r c), 1 \.* M = M.
+    (** 1 c* M = M *)
+    Lemma mcmul_1_l : forall {r c} (M : mat r c), 1 c* M = M.
     Proof. intros. apply meq_iff_mnth; intros. rewrite !mnth_mcmul. ring. Qed.
 
-    (** a \.* mat1 = mdiag([a,a,...]) *)
-    Lemma mcmul_1_r : forall {n} a, a \.* (@mat1 n) = mdiagMk 0 (vrepeat a).
+    (** a c* mat1 = mdiag([a,a,...]) *)
+    Lemma mcmul_1_r : forall {n} a, a c* (@mat1 n) = mdiagMk 0 (vrepeat a).
     Proof.
       intros. apply meq_iff_mnth; intros. rewrite mnth_mcmul.
       destruct (i ??= j) as [E|E]; fin.
@@ -1490,13 +1489,13 @@ Section malg.
     Qed.
     
     (* (-a) * M = - (a * M) *)
-    Lemma mcmul_opp : forall {r c} a (M : mat r c), (- a)%A \.* M = - (a \.* M).
+    Lemma mcmul_opp : forall {r c} a (M : mat r c), (- a)%A c* M = - (a c* M).
     Proof.
       intros. apply meq_iff_mnth; intros. rewrite mnth_mopp,!mnth_mcmul. ring.
     Qed.
     
     (* a * (- M) = - (a * M) *)
-    Lemma mcmul_mopp : forall {r c} a (M : mat r c), a \.* (- M) = - (a \.* M).
+    Lemma mcmul_mopp : forall {r c} a (M : mat r c), a c* (- M) = - (a c* M).
     Proof.
       intros. apply meq_iff_mnth; intros.
       rewrite !mnth_mopp,!mnth_mcmul,mnth_mopp. ring.
@@ -1504,29 +1503,29 @@ Section malg.
     
     (* (-a) * (- M) = a * M *)
     Lemma mcmul_opp_mopp : forall {r c} a (M : mat r c),
-        (- a)%A \.* (- M) = a \.* M.
+        (- a)%A c* (- M) = a c* M.
     Proof. intros. rewrite mcmul_mopp, mcmul_opp. apply group_opp_opp. Qed.
 
-    (** a \.* (M - N) = (a \.* M) - (a \.* N) *)
+    (** a c* (M - N) = (a c* M) - (a c* N) *)
     Lemma mcmul_msub : forall {r c} a (M N : mat r c),
-        a \.* (M - N) = (a \.* M) - (a \.* N).
+        a c* (M - N) = (a c* M) - (a c* N).
     Proof. intros. rewrite mcmul_madd_distr. rewrite mcmul_mopp. auto. Qed.
 
-    (** (a \.* M)\T = a \.* (m\T) *)
-    Lemma mtrans_mcmul : forall {r c} (a : A) (M : mat r c), (a \.* M)\T = a \.* (M\T).
+    (** (a c* M)\T = a c* (m\T) *)
+    Lemma mtrans_mcmul : forall {r c} (a : A) (M : mat r c), (a c* M)\T = a c* (M\T).
     Proof.
       intros. apply meq_iff_mnth; intros.
       rewrite mnth_mtrans, !mnth_mcmul, mnth_mtrans. auto.
     Qed.
 
-    (** tr (a \.* M) = a * tr (m) *)
-    Lemma mtrace_mcmul : forall {n} (a : A) (M : smat n), tr (a \.* M) = (a * tr M)%A.
+    (** tr (a c* M) = a * tr (m) *)
+    Lemma mtrace_mcmul : forall {n} (a : A) (M : smat n), tr (a c* M) = (a * tr M)%A.
     Proof.
       intros. unfold mcmul, mtrace. rewrite vsum_cmul_l; intros.
       apply vsum_eq; intros. rewrite mnth_mmap. auto.
     Qed.
   End mcmul.
-  Infix "\.*" := mcmul : mat_scope.
+  Infix "c*" := mcmul : mat_scope.
 
   
   (* ======================================================================= *)
@@ -1669,18 +1668,18 @@ Section malg.
       apply vsum_unique with (i:=j); fin.
     Qed.
 
-    (** (a \.* M) * N = a \.* (M * N) *)
+    (** (a c* M) * N = a c* (M * N) *)
     Lemma mmul_mcmul_l : forall {r c s} (a : A) (M : mat r c) (N : mat c s), 
-        (a \.* M) * N = a \.* (M * N).
+        (a c* M) * N = a c* (M * N).
     Proof.
       intros. apply meq_iff_mnth; intros.
       repeat rewrite ?mnth_mmul, ?mnth_mcmul.
       rewrite vnth_mcmul. rewrite vdot_vcmul_l. auto.
     Qed.
     
-    (** M * (a \.* N) = a \.* (M * N) *)
+    (** M * (a c* N) = a c* (M * N) *)
     Lemma mmul_mcmul_r : forall {r c s} (a : A) (M : mat r c) (N : mat c s), 
-        M * (a \.* N) = a \.* (M * N).
+        M * (a c* N) = a c* (M * N).
     Proof.
       intros. apply meq_iff_mnth; intros.
       repeat rewrite ?mnth_mmul, ?mnth_mcmul.
@@ -1836,7 +1835,7 @@ Section malg.
 
     (** (x .* M) *v a = x .* (M *v a) *)
     Lemma mmulv_mcmul : forall {r c} (x : A) (M : mat r c) (a : vec c), 
-        (x \.* M) *v a = (x \.* (M *v a))%V.
+        (x c* M) *v a = (x c* (M *v a))%V.
     Proof.
       intros. apply veq_iff_vnth; intros.
       repeat rewrite ?vnth_mmulv, ?vnth_vcmul, ?vnth_mcmul.
@@ -1845,7 +1844,7 @@ Section malg.
     
     (** M *v (x .* v) = x .* (M *v a) *)
     Lemma mmulv_vcmul : forall {r c} (x : A) (M : mat r c) (a : vec c), 
-        M *v (x \.* a)%V = (x \.* (M *v a))%V.
+        M *v (x c* a)%V = (x c* (M *v a))%V.
     Proof.
       intros. apply veq_iff_vnth; intros.
       repeat rewrite ?vnth_mmulv, ?vnth_vcmul, ?vnth_mcmul.
@@ -1969,7 +1968,7 @@ Section malg.
 
     (** a v* (x .* M) = x .* (a v* M) *)
     Lemma mvmul_mcmul : forall {r c} (a : vec r) (x : A) (M : mat r c), 
-        a v* (x \.* M) = (x \.* (a v* M))%V.
+        a v* (x c* M) = (x c* (a v* M))%V.
     Proof.
       intros. apply veq_iff_vnth; intros.
       repeat rewrite vnth_mvmul, !vnth_vcmul. rewrite vnth_mvmul.
@@ -1978,7 +1977,7 @@ Section malg.
     
     (** (x .* a) v* M  = x .* (a v* M) *)
     Lemma mvmul_vcmul : forall {r c} (a : vec r) (x : A) (M : mat r c), 
-        (x \.* a)%V v* M = (x \.* (a v* M))%V.
+        (x c* a)%V v* M = (x c* (a v* M))%V.
     Proof.
       intros. apply veq_iff_vnth; intros.
       repeat rewrite ?vnth_mvmul, ?vnth_vcmul, ?vnth_mcmul.
@@ -2060,7 +2059,7 @@ Section malg.
     
     (** (M <> 0 /\ N <> 0 /\ x .* M = N) -> x <> 0 *)
     Lemma mcmul_eq_imply_not_x0 : forall {r c} (M N : mat r c) x,
-        M <> mat0 -> N <> mat0 -> x \.* M = N -> x <> 0.
+        M <> mat0 -> N <> mat0 -> x c* M = N -> x <> 0.
     Proof.
       intros. destruct (Aeqdec x 0); auto. exfalso. subst.
       rewrite mcmul_0_l in H0. easy.
@@ -2077,7 +2076,7 @@ Section malg.
   
     (** x * M = 0 -> (x = 0) \/ (M = 0) *)
     Lemma mcmul_eq0_imply_x0_or_m0 : forall {r c} (M : mat r c) x,
-        x \.* M = mat0 -> (x = 0)%A \/ (M = mat0).
+        x c* M = mat0 -> (x = 0)%A \/ (M = mat0).
     Proof.
       intros. destruct (Aeqdec x 0); auto. right.
       apply meq_iff_mnth; intros. rewrite meq_iff_mnth in H. specialize (H i j).
@@ -2086,12 +2085,12 @@ Section malg.
 
     (** (M <> 0 /\ x * M = 0) -> M = 0 *)
     Lemma mcmul_mnonzero_eq0_imply_x0 : forall {r c} (M : mat r c) x,
-        M <> mat0 -> x \.* M = mat0 -> (x = 0)%A.
+        M <> mat0 -> x c* M = mat0 -> (x = 0)%A.
     Proof. intros. apply mcmul_eq0_imply_x0_or_m0 in H0; auto. tauto. Qed.
 
     (** x * M = M -> x = 1 \/ M = 0 *)
     Lemma mcmul_same_imply_x1_or_m0 : forall {r c} x (M : mat r c),
-        x \.* M = M -> (x = 1)%A \/ (M = mat0).
+        x c* M = M -> (x = 1)%A \/ (M = mat0).
     Proof.
       intros. destruct (Aeqdec x 1); auto. right.
       apply meq_iff_mnth; intros. rewrite meq_iff_mnth in H. specialize (H i j).
@@ -2324,7 +2323,7 @@ Section test.
   Notation l2m := (l2m 0).
   Infix "+" := (madd (Aadd:=Rplus)) : mat_scope.
   Infix "*" := (mmul (Aadd:=Rplus) (Amul:=Rmult) (Azero:=R0)) : mat_scope.
-  Infix "\.*" := (mcmul (Amul:=Rmult)) : mat_scope.
+  Infix "c*" := (mcmul (Amul:=Rmult)) : mat_scope.
 
   Open Scope mat_scope.
 
@@ -2350,7 +2349,7 @@ Section test.
     
     Let M4 : mat 2 3 := l2m [[1; 8;-3];[4;-2; 5]].
     Let M5 : mat 2 3 := l2m [[2;16;-6];[8;-4;10]].
-    Goal 2 \.* M4 = M5.
+    Goal 2 c* M4 = M5.
     Proof. apply m2l_inj. cbv. list_eq; ring. Qed.
     
     Let M6 : mat 2 3 := l2m [[1;2;3];[0;-6;7]].

@@ -406,15 +406,15 @@ Ltac v2e a :=
   match type of a with
   | vec 2 =>
       (* idtac "#vec 2"; *)
-      destruct (veq_exist_2 a) as (a1,(a2,Ha)); rewrite Ha; clear a Ha;
+      destruct (veq_exist_2 a) as (a1,(a2,Ha)); rewrite Ha; try clear a Ha;
       try (v2e a1; v2e a2)
   | vec 3 =>
       (* idtac "#vec 3"; *)
-      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); rewrite Ha; clear a Ha;
+      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); rewrite Ha; try clear a Ha;
       try (v2e a1; v2e a2; v2e a3)
   | vec 4 =>
       (* idtac "#vec 4"; *)
-      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha; clear a Ha;
+      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha; try clear a Ha;
       try (v2e a1; v2e a2; v2e a3; v2e a4)
   end.
 
@@ -2327,65 +2327,65 @@ Section vcmul.
   Notation "a - b" := ((a + (-b))%V) : vec_scope.
   
   Definition vcmul {n : nat} (x : A) (a : vec n) : vec n := vmap (fun y => Amul x y) a.
-  Infix "\.*" := vcmul : vec_scope.
+  Infix "c*" := vcmul : vec_scope.
 
   (** (x .* a).i = x * a.i *)
-  Lemma vnth_vcmul : forall {n} (a : vec n) x i, (x \.* a).[i] = x * (a.[i]).
+  Lemma vnth_vcmul : forall {n} (a : vec n) x i, (x c* a).[i] = x * (a.[i]).
   Proof. intros. cbv. auto. Qed.
 
   (** x .* (y .* a) = (x * y) .* a *)
   Lemma vcmul_assoc : forall {n} (a : vec n) x y,
-      x \.* (y \.* a) = (x * y)%A \.* a.
+      x c* (y c* a) = (x * y)%A c* a.
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
 
   (** x .* (y .* a) = y .* (x .* a) *)
   Lemma vcmul_perm : forall {n} (a : vec n) x y,
-      x \.* (y \.* a) = y \.* (x \.* a).
+      x c* (y c* a) = y c* (x c* a).
   Proof. intros. rewrite !vcmul_assoc. f_equal. ring. Qed.
   
   (** (x + y) .* a = (x .* a) + (y .* a) *)
   Lemma vcmul_add : forall {n} x y (a : vec n),
-      (x + y)%A \.* a = (x \.* a) + (y \.* a).
+      (x + y)%A c* a = (x c* a) + (y c* a).
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
 
   (** x .* (a + b) = (x .* a) + (x .* b) *)
   Lemma vcmul_vadd : forall {n} x (a b : vec n),
-      x \.* (a + b) = (x \.* a) + (x \.* b).
+      x c* (a + b) = (x c* a) + (x c* b).
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
 
   (** 0 .* a = vzero *)
-  Lemma vcmul_0_l : forall {n} (a : vec n), Azero \.* a = vzero.
+  Lemma vcmul_0_l : forall {n} (a : vec n), Azero c* a = vzero.
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
 
   (** a .* vzero = vzero *)
-  Lemma vcmul_0_r : forall {n} a, a \.* vzero = (@Vector.vzero _ Azero n).
+  Lemma vcmul_0_r : forall {n} a, a c* vzero = (@Vector.vzero _ Azero n).
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
   
   (** 1 .* a = a *)
-  Lemma vcmul_1_l : forall {n} (a : vec n), Aone \.* a = a.
+  Lemma vcmul_1_l : forall {n} (a : vec n), Aone c* a = a.
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
   
   (** - 1 .* a = - a *)
-  Lemma vcmul_neg1_l : forall {n} (a : vec n), (- Aone)%A \.* a = - a.
+  Lemma vcmul_neg1_l : forall {n} (a : vec n), (- Aone)%A c* a = - a.
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
   
   (** (- x) .* a = - (x .* a) *)
-  Lemma vcmul_opp : forall {n} x (a : vec n), (- x)%A \.* a = - (x \.* a).
+  Lemma vcmul_opp : forall {n} x (a : vec n), (- x)%A c* a = - (x c* a).
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
 
   (* Tips: this proof shows a proof by computation, due to the Fin-Function 
      model. *)
   (** x .* (- a) = - (x .* a) *)
-  Lemma vcmul_vopp : forall {n} x (a : vec n), x \.* (- a) = - (x \.* a).
+  Lemma vcmul_vopp : forall {n} x (a : vec n), x c* (- a) = - (x c* a).
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
 
   (* Tips: this proof shows a proof by derivation *)
   (** (- x) .* (- a) = x .* a *)
-  Lemma vcmul_opp_vopp : forall {n} x (a : vec n), (- x)%A \.* (- a) = x \.* a.
+  Lemma vcmul_opp_vopp : forall {n} x (a : vec n), (- x)%A c* (- a) = x c* a.
   Proof. intros. rewrite vcmul_vopp, vcmul_opp. rewrite vopp_vopp. auto. Qed.
 
   (** x .* (a - b) = (x .* a) - (x .* b) *)
-  Lemma vcmul_vsub : forall {n} x (a b : vec n), x \.* (a - b) = (x \.* a) - (x \.* b).
+  Lemma vcmul_vsub : forall {n} x (a b : vec n), x c* (a - b) = (x c* a) - (x c* b).
   Proof. intros. rewrite vcmul_vadd. rewrite vcmul_vopp. auto. Qed.
   
   (* If equip a `Dec` *)
@@ -2394,7 +2394,7 @@ Section vcmul.
 
     (** a <> 0 -> b <> 0 -> x .* a = b -> x <> 0 *)
     Lemma vcmul_eq_imply_x_neq0 : forall {n} x (a b : vec n),
-        a <> vzero -> b <> vzero -> x \.* a = b -> x <> Azero.
+        a <> vzero -> b <> vzero -> x c* a = b -> x <> Azero.
     Proof.
       intros. destruct (Aeqdec x Azero); auto. exfalso. subst.
       rewrite vcmul_0_l in H0. easy.
@@ -2408,7 +2408,7 @@ Section vcmul.
     
     (** x .* a = 0 -> (x = 0) \/ (a = 0) *)
     Lemma vcmul_eq0_imply_x0_or_v0 : forall {n} x (a : vec n),
-        x \.* a = vzero -> (x = Azero) \/ (a = vzero).
+        x c* a = vzero -> (x = Azero) \/ (a = vzero).
     Proof.
       intros. destruct (Aeqdec x Azero); auto. right.
       apply veq_iff_vnth; intros. rewrite veq_iff_vnth in H. specialize (H i).
@@ -2417,22 +2417,22 @@ Section vcmul.
 
     (** x .* a = 0 -> a <> 0 -> x = 0 *)
     Corollary vcmul_eq0_imply_x0 : forall {n} x (a : vec n),
-        x \.* a = vzero -> a <> vzero -> x = Azero.
+        x c* a = vzero -> a <> vzero -> x = Azero.
     Proof. intros. apply (vcmul_eq0_imply_x0_or_v0 x a) in H; tauto. Qed.
 
     (** x .* a = 0 -> x <> 0 -> a = 0 *)
     Corollary vcmul_eq0_imply_v0 : forall {n} x (a : vec n),
-        x \.* a = vzero -> x <> Azero -> a = vzero.
+        x c* a = vzero -> x <> Azero -> a = vzero.
     Proof. intros. apply (vcmul_eq0_imply_x0_or_v0 x a) in H; tauto. Qed.
 
-    (** x <> 0 -> a <> 0 -> x \.* a <> 0 *)
+    (** x <> 0 -> a <> 0 -> x c* a <> 0 *)
     Corollary vcmul_neq0_neq0_neq0 : forall {n} x (a : vec n),
-        x <> Azero -> a <> vzero -> x \.* a <> vzero.
+        x <> Azero -> a <> vzero -> x c* a <> vzero.
     Proof. intros. intro. apply vcmul_eq0_imply_x0_or_v0 in H1; tauto. Qed.
     
     (** x .* a = a -> x = 1 \/ a = 0 *)
     Lemma vcmul_same_imply_x1_or_v0 : forall {n} x (a : vec n),
-        x \.* a = a -> (x = Aone) \/ (a = vzero).
+        x c* a = a -> (x = Aone) \/ (a = vzero).
     Proof.
       intros. destruct (Aeqdec x Aone); auto. right.
       apply veq_iff_vnth; intros. rewrite veq_iff_vnth in H. specialize (H i).
@@ -2441,24 +2441,24 @@ Section vcmul.
     
     (** x = 1 \/ a = 0 -> x .* a = a *)
     Lemma vcmul_same_if_x1_or_v0 : forall {n} x (a : vec n),
-        (x = Aone \/ a = vzero) -> x \.* a = a.
+        (x = Aone \/ a = vzero) -> x c* a = a.
     Proof.
       intros. destruct H; subst. apply vcmul_1_l; auto. apply vcmul_0_r; auto.
     Qed.
     
     (** x .* a = a -> a <> 0 -> x = 1 *)
     Corollary vcmul_same_imply_x1 : forall {n} x (a : vec n),
-        x \.* a = a -> a <> vzero -> x = Aone.
+        x c* a = a -> a <> vzero -> x = Aone.
     Proof. intros. apply (vcmul_same_imply_x1_or_v0 x a) in H; tauto. Qed.
     
     (** x .* a = a -> x <> 1 -> a = 0 *)
     Corollary vcmul_same_imply_v0 : forall {n} x (a : vec n),
-        x \.* a = a -> x <> Aone -> a = vzero.
+        x c* a = a -> x <> Aone -> a = vzero.
     Proof. intros. apply (vcmul_same_imply_x1_or_v0 x a) in H; tauto. Qed.
 
     (** x .* a = y .* a -> (x = y \/ a = 0) *)
     Lemma vcmul_sameV_imply_eqX_or_v0 : forall {n} x y (a : vec n), 
-        x \.* a = y \.* a -> (x = y \/ a = vzero).
+        x c* a = y c* a -> (x = y \/ a = vzero).
     Proof.
       intros. destruct (Aeqdec x y); auto. right. rewrite veq_iff_vnth in H.
       rewrite veq_iff_vnth. intros. specialize (H i). rewrite !vnth_vcmul in H.
@@ -2467,12 +2467,12 @@ Section vcmul.
 
     (** x .* a = y * a -> a <> 0 -> x = y *)
     Corollary vcmul_sameV_imply_eqX : forall {n} x y (a : vec n), 
-        x \.* a = y \.* a -> a <> vzero -> x = y.
+        x c* a = y c* a -> a <> vzero -> x = y.
     Proof. intros. apply vcmul_sameV_imply_eqX_or_v0 in H; tauto. Qed.
 
     (** x .* a  = y .* a -> x <> y -> a = 0 *)
     Corollary vcmul_sameV_imply_v0 : forall {n} x y (a : vec n), 
-        x \.* a = y \.* a -> x <> y -> a = vzero.
+        x c* a = y c* a -> x <> y -> a = vzero.
     Proof. intros. apply vcmul_sameV_imply_eqX_or_v0 in H; tauto. Qed.
   End Dec_Field.
 End vcmul.
@@ -2502,7 +2502,7 @@ Section vdot.
   Infix "+" := vadd : vec_scope.
   Notation "- a" := (vopp a) : vec_scope.
   Notation "a - b" := ((a + -b)%V) : vec_scope.
-  Infix "\.*" := vcmul : vec_scope.
+  Infix "c*" := vcmul : vec_scope.
   
   Definition vdot {n : nat} (a b : vec n) : A := vsum (vmap2 Amul a b).
   Notation "< a , b >" := (vdot a b) : vec_scope.
@@ -2555,14 +2555,14 @@ Section vdot.
   Proof. intros. rewrite vdot_vadd_r. f_equal. apply vdot_vopp_r. Qed.
 
   (** <x .* a, b> = x .* <a, b> *)
-  Lemma vdot_vcmul_l : forall {n} (a b : vec n) x, <x \.* a, b> = x * <a, b>.
+  Lemma vdot_vcmul_l : forall {n} (a b : vec n) x, <x c* a, b> = x * <a, b>.
   Proof.
     intros. unfold vdot. rewrite vsum_cmul_l; intros.
     apply vsum_eq; intros. rewrite !vnth_vmap2. rewrite vnth_vcmul. ring.
   Qed.
   
   (** <a, x .* b> = x .* <a, b> *)
-  Lemma vdot_vcmul_r : forall {n} (a b : vec n) x, <a, x \.* b> = x * <a, b>.
+  Lemma vdot_vcmul_r : forall {n} (a b : vec n) x, <a, x c* b> = x * <a, b>.
   Proof.
     intros. rewrite vdot_comm. rewrite vdot_vcmul_l. f_equal; apply vdot_comm.
   Qed.
@@ -2785,7 +2785,7 @@ Section vlen.
   Infix "+" := vadd : vec_scope.
   Notation "- a" := (vopp a) : vec_scope.
   Notation "a - b" := ((a + -b)%V) : vec_scope.
-  Infix "\.*" := vcmul : vec_scope.
+  Infix "c*" := vcmul : vec_scope.
   Notation "< a , b >" := (vdot a b) : vec_scope.
 
   (** Length (magnitude) of a vector, is derived by inner-product *)
@@ -2847,7 +2847,7 @@ Section vlen.
     Qed.
 
     (** ||x .* a|| = |x| * ||a|| *)
-    Lemma vlen_vcmul : forall n x (a : vec n), ||x \.* a|| = ((a2r (|x|))%A * ||a||)%R.
+    Lemma vlen_vcmul : forall n x (a : vec n), ||x c* a|| = ((a2r (|x|))%A * ||a||)%R.
     Proof.
       intros. unfold vlen.
       rewrite commutative.
@@ -3018,6 +3018,18 @@ Section vunit.
     Lemma vunit_spec : forall {n} (a : vec n), vunit a <-> ||a|| = 1%R.
     Proof. intros. split; intros; apply vlen_eq1_iff_vdot1; auto. Qed.
 
+    Section OrderedARing.
+      Context `{HOrderedARing : OrderedARing A Aadd Azero Aopp Amul Aone Alt Ale}.
+
+      (** vunit a -> <a, a> = 1 *)
+      Lemma vunit_vdot : forall {n} (a : vec n), vunit a -> a2r (<a, a>) = 1%R.
+      Proof.
+        intros. rewrite vdot_same.
+        apply vunit_spec in H. rewrite H. ra.
+      Qed.
+
+    End OrderedARing.
+
   End A2R.
 
 (** If column of a and column of b all are unit, 
@@ -3057,7 +3069,7 @@ Section vorth.
   Infix "+" := vadd : vec_scope.
   Notation "- a" := (vopp a) : vec_scope.
   Notation "a - b" := ((a + -b)%V) : vec_scope.
-  Infix "\.*" := vcmul : vec_scope.
+  Infix "c*" := vcmul : vec_scope.
   Notation "< a , b >" := (vdot a b) : vec_scope.
   
   Definition vorth {n} (a b : vec n) : Prop := <a, b> = Azero.
@@ -3074,7 +3086,7 @@ Section vorth.
     
     (** (x .* a) _|_ b <-> a _|_ b *)
     Lemma vorth_vcmul_l : forall {n} x (a b : vec n),
-        x <> Azero -> ((x \.* a) _|_ b <-> a _|_ b).
+        x <> Azero -> ((x c* a) _|_ b <-> a _|_ b).
     Proof.
       intros. unfold vorth in *. rewrite vdot_vcmul_l. split; intros.
       - apply field_mul_eq0_iff in H0. destruct H0; auto. easy.
@@ -3083,7 +3095,7 @@ Section vorth.
     
     (** a _|_ (x .* b) <-> a _|_ b *)
     Lemma vorth_vcmul_r : forall {n} x (a b : vec n),
-        x <> Azero -> (a _|_ (x \.* b) <-> a _|_ b).
+        x <> Azero -> (a _|_ (x c* b) <-> a _|_ b).
     Proof.
       intros. split; intros.
       - apply vorth_comm in H0. apply vorth_comm. apply vorth_vcmul_l in H0; auto.
@@ -3118,12 +3130,12 @@ Section vproj.
   Infix "+" := vadd : vec_scope.
   Notation "- a" := (vopp a) : vec_scope.
   Notation "a - b" := ((a + -b)%V) : vec_scope.
-  Infix "\.*" := vcmul : vec_scope.
+  Infix "c*" := vcmul : vec_scope.
   Notation "< a , b >" := (vdot a b) : vec_scope.
   Infix "_|_" := vorth : vec_scope.
   
   (** The projection component of `a` onto `b` *)
-  Definition vproj {n} (a b : vec n) : vec n := (<a, b> / <b, b>) \.* b.
+  Definition vproj {n} (a b : vec n) : vec n := (<a, b> / <b, b>) c* b.
 
   (** a _|_ b -> vproj a b = vzero *)
   Lemma vorth_imply_vproj_eq0 : forall {n} (a b : vec n), a _|_ b -> vproj a b = vzero.
@@ -3134,7 +3146,7 @@ Section vproj.
   Qed.
 
   (** vunit b -> vproj a b = <a, b> .* b *)
-  Lemma vproj_vunit : forall {n} (a b : vec n), vunit b -> vproj a b = <a, b> \.* b.
+  Lemma vproj_vunit : forall {n} (a b : vec n), vunit b -> vproj a b = <a, b> c* b.
   Proof. intros. unfold vproj. f_equal. rewrite H. field. apply field_1_neq_0. Qed.
 
   (* If equip a `Field` *)
@@ -3151,7 +3163,7 @@ Section vproj.
     
     (** vproj (x .* a) b = x .* (vproj a b) *)
     Lemma vproj_vcmul : forall {n} (a b : vec n) x,
-        b <> vzero -> (vproj (x \.* a) b = x \.* (vproj a b))%V.
+        b <> vzero -> (vproj (x c* a) b = x c* (vproj a b))%V.
     Proof.
       intros. unfold vproj. rewrite vdot_vcmul_l. rewrite vcmul_assoc. f_equal.
       field. apply vdot_same_neq0_if_vnonzero; auto.
@@ -3192,7 +3204,7 @@ Section vperp.
   Infix "+" := vadd : vec_scope.
   Notation "- a" := (vopp a) : vec_scope.
   Notation "a - b" := ((a + -b)%V) : vec_scope.
-  Infix "\.*" := vcmul : vec_scope.
+  Infix "c*" := vcmul : vec_scope.
   Notation "< a , b >" := (vdot a b) : vec_scope.
   Infix "_|_" := vorth : vec_scope.
   
@@ -3246,7 +3258,7 @@ Section vperp.
 
     (** vperp (x .* a) b = x .* (vperp a b) *)
     Lemma vperp_vcmul : forall {n} (x : A) (a b : vec n),
-        b <> vzero -> (vperp (x \.* a) b = x \.* (vperp a b))%V.
+        b <> vzero -> (vperp (x c* a) b = x c* (vperp a b))%V.
     Proof.
       intros. unfold vperp. rewrite vproj_vcmul; auto. rewrite vcmul_vsub. auto.
     Qed.
@@ -3330,7 +3342,7 @@ Section vcoll_vpara_vantipara.
   Infix "+" := vadd : vec_scope.
   Notation "- a" := (vopp a) : vec_scope.
   Notation "a - b" := ((a + -b)%V) : vec_scope.
-  Infix "\.*" := vcmul : vec_scope.
+  Infix "c*" := vcmul : vec_scope.
 
 
   (** *** Colinear *)
@@ -3339,7 +3351,7 @@ Section vcoll_vpara_vantipara.
     (** Two non-zero vectors are collinear, if the components are proportional *)
     (* Note, x <> 0 could be removed, but it need a prove *)
     Definition vcoll {n} (a b : vec n) : Prop :=
-      a <> vzero /\ b <> vzero /\ exists x : A, x <> 0 /\ x \.* a = b.
+      a <> vzero /\ b <> vzero /\ exists x : A, x <> 0 /\ x c* a = b.
     Infix "//" := vcoll : vec_scope.
     
     (** a // a *)
@@ -3372,7 +3384,7 @@ Section vcoll_vpara_vantipara.
 
     (** a // b => ∃! x, x <> 0 /\ x .* a = b *)
     Lemma vcoll_imply_uniqueX : forall {n} (a b : vec n),
-        a // b -> (exists ! x, x <> 0 /\ x \.* a = b).
+        a // b -> (exists ! x, x <> 0 /\ x c* a = b).
     Proof.
       intros. destruct H as [H1 [H2 [x [H3 H4]]]]. exists x. split; auto.
       intros j [H5 H6]. rewrite <- H4 in H6.
@@ -3381,7 +3393,7 @@ Section vcoll_vpara_vantipara.
 
     (** a // b -> (x .* a) // b *)
     Lemma vcoll_vcmul_l : forall {n} x (a b : vec n),
-        x <> 0 -> a // b -> x \.* a // b.
+        x <> 0 -> a // b -> x c* a // b.
     Proof.
       intros. hnf in *. destruct H0 as [H1 [H2 [x1 [H3 H4]]]].
       repeat split; auto.
@@ -3391,9 +3403,9 @@ Section vcoll_vpara_vantipara.
         rewrite <- H4. rewrite vcmul_assoc. f_equal. field. auto.
     Qed.
 
-    (** a // b -> a // (x \.* b) *)
+    (** a // b -> a // (x c* b) *)
     Lemma vcoll_vcmul_r : forall {n} x (a b : vec n),
-        x <> 0 -> a // b -> a // (x \.* b).
+        x <> 0 -> a // b -> a // (x c* b).
     Proof.
       intros. apply vcoll_sym in H0. apply vcoll_sym. apply vcoll_vcmul_l; auto.
     Qed.
@@ -3406,7 +3418,7 @@ Section vcoll_vpara_vantipara.
     
     (** Two non-zero vectors are parallel, if positive proportional *)
     Definition vpara {n} (a b : vec n) : Prop :=
-      a <> vzero /\ b <> vzero /\ exists x : A, 0 < x /\ x \.* a = b.
+      a <> vzero /\ b <> vzero /\ exists x : A, 0 < x /\ x c* a = b.
     Infix "//+" := vpara : vec_scope.
     
     (** a //+ a *)
@@ -3436,16 +3448,16 @@ Section vcoll_vpara_vantipara.
 
     (** a //+ b => ∃! x, 0 < x /\ x .* a = b *)
     Lemma vpara_imply_uniqueX : forall {n} (a b : vec n),
-        a //+ b -> (exists ! x, 0 < x /\ x \.* a = b).
+        a //+ b -> (exists ! x, 0 < x /\ x c* a = b).
     Proof.
       intros. destruct H as [H1 [H2 [x [H3 H4]]]]. exists x. split; auto.
       intros j [H5 H6]. rewrite <- H4 in H6.
       apply vcmul_sameV_imply_eqX in H6; auto.
     Qed.
 
-    (** a //+ b -> (x \.* a) //+ b *)
+    (** a //+ b -> (x c* a) //+ b *)
     Lemma vpara_vcmul_l : forall {n} x (a b : vec n),
-        0 < x -> a //+ b -> x \.* a //+ b.
+        0 < x -> a //+ b -> x c* a //+ b.
     Proof.
       intros. hnf in *. destruct H0 as [H1 [H2 [x1 [H3 H4]]]].
       repeat split; auto.
@@ -3457,9 +3469,9 @@ Section vcoll_vpara_vantipara.
           symmetry. apply lt_not_eq. auto.
     Qed.
 
-    (** a //+ b -> a //+ (x \.* b) *)
+    (** a //+ b -> a //+ (x c* b) *)
     Lemma vpara_vcmul_r : forall {n} x (a b : vec n),
-        0 < x -> a //+ b -> a //+ (x \.* b).
+        0 < x -> a //+ b -> a //+ (x c* b).
     Proof.
       intros. apply vpara_sym in H0. apply vpara_sym. apply vpara_vcmul_l; auto.
     Qed.
@@ -3472,7 +3484,7 @@ Section vcoll_vpara_vantipara.
     
     (** Two non-zero vectors are antiparallel, if negative proportional *)
     Definition vantipara {n} (a b : vec n) : Prop :=
-      a <> vzero /\ b <> vzero /\ exists x : A, x < 0 /\ x \.* a = b.
+      a <> vzero /\ b <> vzero /\ exists x : A, x < 0 /\ x c* a = b.
     Infix "//-" := vantipara : vec_scope.
     
     (** a //- a *)
@@ -3506,7 +3518,7 @@ Section vcoll_vpara_vantipara.
 
     (** a //- b => ∃! x, x < 0 /\ x .* a = b *)
     Lemma vantipara_imply_uniqueX : forall {n} (a b : vec n),
-        a //- b -> (exists ! x, x < 0 /\ x \.* a = b).
+        a //- b -> (exists ! x, x < 0 /\ x c* a = b).
     Proof.
       intros. destruct H as [H1 [H2 [x [H3 H4]]]]. exists x. split; auto.
       intros j [H5 H6]. rewrite <- H4 in H6.
@@ -3515,7 +3527,7 @@ Section vcoll_vpara_vantipara.
 
     (** a //- b -> (x .* a) //- b *)
     Lemma vantipara_vcmul_l : forall {n} x (a b : vec n),
-        0 < x -> a //- b -> x \.* a //- b.
+        0 < x -> a //- b -> x c* a //- b.
     Proof.
       intros. hnf in *. destruct H0 as [H1 [H2 [x1 [H3 H4]]]].
       repeat split; auto.
@@ -3529,7 +3541,7 @@ Section vcoll_vpara_vantipara.
 
     (** a //- b -> a //- (x .* b) *)
     Lemma vantipara_vcmul_r : forall {n} x (a b : vec n),
-        0 < x -> a //- b -> a //- (x \.* b).
+        0 < x -> a //- b -> a //- (x c* b).
     Proof.
       intros. apply vantipara_sym in H0. apply vantipara_sym.
       apply vantipara_vcmul_l; auto.

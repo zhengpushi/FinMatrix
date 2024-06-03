@@ -21,7 +21,14 @@ Require Export RExtBase.
   Rinv_1            (* / 1 = 1 *)
   Rdiv_plus_distr   (* (a + b) / c = a / c + b / c *)
   Rsqr_div'         (* (x / y)² = x² / y² *)
+  Rdiv_mult_l_l     (* r <> 0 -> (r * r1) / (r * r2) = r1 / r2 *)
+  Rdiv_mult_r_r     (* r <> 0 -> (r1 * r) / (r2 * r) = r1 / r2 *)
   : R.
+
+Hint Rewrite
+     <- Rdiv_def    (* r1 / r2 = r1 * / r2 *)
+  : R.
+
 
 #[export] Hint Resolve
   (* Rinv *)

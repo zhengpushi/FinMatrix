@@ -3578,6 +3578,14 @@ Module NormedOrderedFieldMatrixTheory (E : NormedOrderedFieldElementType).
   Lemma vunit_spec : forall {n} (a : vec n), vunit a <-> ||a|| = 1%R.
   Proof. intros. apply vunit_spec. Qed.
 
+  (** vunit a -> || a || = 1 *)
+  Lemma vunit_imply_vlen_eq1 : forall {n} (a : vec n), vunit a -> ||a|| = 1%R.
+  Proof. intros. apply vunit_spec; auto. Qed.
+
+  (** vunit a -> || a || = 1 *)
+  Lemma vlen_eq1_imply_vunit : forall {n} (a : vec n), ||a|| = 1%R -> vunit a.
+  Proof. intros. apply vunit_spec; auto. Qed.
+
   (* Context `{HOrderedField : OrderedField A Aadd Azero Aopp Amul Aone Ainv}. *)
   (* Context `{HConvertToR *)
   (*     : ConvertToR A Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb a2r}. *)

@@ -237,7 +237,7 @@ Proof.
 Qed.
 
 (** vnorm a _|_ b <-> a _|_ b *)
-Lemma vorth_vnorm_l : forall {n} (a b : vec n), a <> vzero -> vnorm a _|_ b <-> a _|_ b.
+Lemma vorth_vnorm_l : forall {n} (a b : vec n), a <> vzero -> (vnorm a _|_ b <-> a _|_ b).
 Proof.
   intros. unfold vorth, vnorm in *. rewrite vdot_vcmul_l. autounfold with A.
   assert (1 * / (||a||) <> 0)%R; ra.
@@ -245,10 +245,13 @@ Proof.
 Qed.
 
 (** a _|_ vnorm b <-> a _|_ b *)
-Lemma vorth_vnorm_r : forall {n} (a b : vec n), b <> vzero -> a _|_ vnorm b -> a _|_ b.
+Lemma vorth_vnorm_r : forall {n} (a b : vec n), b <> vzero -> (a _|_ vnorm b <-> a _|_ b).
 Proof.
-  intros. apply vorth_comm. apply vorth_comm in H0. apply vorth_vnorm_l; auto.
+  intros. split; intros.
+  - apply vorth_comm in H0. rewrite vorth_vnorm_l in H0; auto. apply vorth_comm; auto.
+  - apply vorth_comm. apply vorth_vnorm_l; auto. apply vorth_comm; auto.
 Qed.
+
 
 (* ======================================================================= *)
 (** ** Angle between two vectors *)
@@ -586,6 +589,10 @@ Module Export V2Notations.
   Infix "\x" := v2cross : vec_scope.
 End V2Notations.
 
+(** a × a = 0 *)
+Lemma v2cross_self : forall (a : vec 2), a \x a = 0.
+Proof. intros. cbv; ra. Qed.
+
 (** a × b = - (b × a) *)
 Lemma v2cross_comm : forall (a b : vec 2), a \x b = (- (b \x a))%R.
 Proof. intros. cbv; ra. Qed.
@@ -822,17 +829,21 @@ Definition vangle2B (a b : vec 2) : R := atan2 (b.2) (b.1) - atan2 (a.2) (a.1).
 Definition vangle2 (a b : vec 2) : R :=
   let alpha := a /_ b in
   if 0 <=? a \x b then alpha else (-alpha)%R.
-
 Infix "/2_" := vangle2 : vec_scope.
+Notation vangle2C := vangle2.
 
-Lemma vangle2B_vangle2A_equiv : forall (a b : vec 2), vangle2B a b = vangle2A a b.
+(** vangle2A a b = vangle2B a b *)
+Lemma vangle2A_eq_vangle2B : forall (a b : vec 2), vangle2A a b = vangle2B a b.
 Proof.
-  intros. cbv. pose proof (atan2_minus_eq). unfold Rminus in H. rewrite H.
+  intros. unfold vangle2A, vangle2B.
+  v2e a. v2e b. cbv.
+  pose proof (atan2_minus_eq). unfold Rminus in H. rewrite H.
   f_equal; ra.
 Qed.
 
-Lemma vangle2C_vangle2A_equiv : forall (a b : vec 2),
-    a <> vzero -> b <> vzero -> vangle2 a b = vangle2A a b.
+(** vangle2A a b = vangle2C a b *)
+Lemma vangle2A_eq_vangle2C : forall (a b : vec 2),
+    a <> vzero -> b <> vzero -> vangle2A a b = vangle2C a b.
 Proof.
   intros. unfold vangle2A,vangle2,vangle,vnorm.
   rewrite !vdot_vcmul_l,!vdot_vcmul_r.
@@ -865,7 +876,14 @@ Proof.
         rewrite atan2_Xlt0_Ylt0; ra. rewrite v2cross_lt0_eq; ra.
 Qed.
 
-(* a /2_ b ∈ (-π,π] *)
+(** vangle2B a b = vangle2C a b *)
+Lemma vangle2B_eq_vangle2C : forall (a b : vec 2),
+    a <> vzero -> b <> vzero -> vangle2B a b = vangle2C a b.
+Proof.
+  intros. rewrite <- vangle2A_eq_vangle2B, <- vangle2A_eq_vangle2C; auto.
+Qed.
+
+(** a /2_ b ∈ (-π,π] *)
 Lemma vangle2_bound : forall (a b : vec 2),
     a <> vzero -> b <> vzero -> - PI < a /2_ b <= PI.
 Proof.
@@ -901,16 +919,24 @@ Proof.
   bdestruct (0 <=? a \x b); bdestruct (0 <=? - (a \x b)); ra.
 Qed.
 
+(** a /2_ a = 0 *)
+Lemma vangle2_self : forall (a : vec 2), a <> vzero -> a /2_ a = 0.
+Proof.
+  intros. unfold vangle2.
+  rewrite v2cross_self. bdestruct (0 <=? 0); ra.
+  rewrite vangle_self; auto.
+Qed.
+
 (** i /2_ j = π/2 *)
 Fact vangle2_i_j : v2i /2_ v2j = PI/2.
 Proof.
-  rewrite vangle2C_vangle2A_equiv; auto with vec. cbv. apply atan2_X0_Yge0; ra.
+  rewrite <- vangle2A_eq_vangle2C; auto with vec. cbv. apply atan2_X0_Yge0; ra.
 Qed.
 
 (** j /2_ j = - π/2 *)
 Fact vangle2_j_i : v2j /2_ v2i = - PI/2.
 Proof.
-  rewrite vangle2C_vangle2A_equiv; auto with vec. cbv. apply atan2_X0_Ylt0; ra.
+  rewrite <- vangle2A_eq_vangle2C; auto with vec. cbv. apply atan2_X0_Ylt0; ra.
 Qed.
 
 (** cos (a /2_ b) = cos (a /_ b) *)
@@ -922,14 +948,14 @@ Lemma sin_vangle2_eq : forall (a b : vec 2),
     sin (a /2_ b) = if 0 <=? a \x b then sin (a /_ b) else (- sin (a /_ b))%R.
 Proof. intros. unfold vangle2. destruct (0 <=? a \x b); ra. Qed.
 
-(** i与任意非零向量v的夹角的余弦等于其横坐标除以长度 *)
+(** a <> vzero -> cos (v2i /2_ a) = a.1 / ||a|| *)
 Lemma cos_vangle2_i : forall (a : vec 2), a <> vzero -> cos (v2i /2_ a) = (a.1 / ||a||)%R.
 Proof.
   intros. rewrite cos_vangle2_eq. unfold vangle. rewrite cos_acos; auto with vec.
   rewrite v2i_vnorm. rewrite vdot_i_l. rewrite vnth_vnorm; auto.
 Qed.
   
-(** i与任意非零向量v的夹角的正弦等于其纵坐标除以长度 *)
+(** a <> vzero -> sin (v2i /2_ a) = a.2 / ||a|| *)
 Lemma sin_vangle2_i : forall (a : vec 2), a <> vzero -> sin (v2i /2_ a) = (a.2 / ||a||)%R.
 Proof.
   intros. unfold vangle2. unfold vangle. rewrite v2i_vnorm. rewrite vdot_i_l.
@@ -944,7 +970,7 @@ Proof.
     + apply vnth_div_vlen_bound; auto.
 Qed.
 
-(** j与任意非零向量v的夹角的余弦等于其纵坐标除以长度 *)
+(** a <> vzero -> cos (v2j /2_ a) = a.2 / ||a|| *)
 Lemma cos_vangle2_j : forall (a : vec 2), a <> vzero -> cos (v2j /2_ a) = (a.2 / ||a||)%R.
 Proof.
   intros. rewrite cos_vangle2_eq. unfold vangle. rewrite cos_acos.
@@ -952,7 +978,7 @@ Proof.
   - apply vdot_vnorm_bound; auto. apply v2j_nonzero.
 Qed.
 
-(** j与任意非零向量v的夹角的正弦等于其横坐标取负除以长度 *)
+(** a <> vzero -> cos (v2j /2_ a) = - a.1 / ||a|| *)
 Lemma sin_vangle2_j : forall (a : vec 2),
     a <> vzero -> sin (v2j /2_ a) = (- a.1 / ||a||)%R.
 Proof.
@@ -1001,6 +1027,90 @@ Proof.
   intros. rewrite sin_vangle2_j; auto. field_simplify; auto.
   apply vlen_neq0_iff_neq0; auto.
 Qed.
+
+(** a /2_ b + b /2_ c = a /2_ c *)
+Lemma vangle2_add : forall (a b c : vec 2),
+    a <> vzero -> b <> vzero -> c <> vzero ->
+    a /2_ c = ((a /2_ b) + (b /2_ c))%R.
+Proof.
+  intros.
+  rewrite <- !vangle2B_eq_vangle2C; auto.
+  v2e a; v2e b; v2e c; cbv.
+  ring_simplify; auto.
+Qed.
+
+Section test.
+
+  Let v1 : vec 2 := l2v [1;0].
+  Let v2 : vec 2 := l2v [0;-1].
+  Let v3 : vec 2 := l2v [0;1].
+
+  Let eq12 : v1 /2_ v2 = - PI / 2.
+  Proof.
+    unfold vangle2.
+    bdestruct (0 <=? v1 \x v2).
+    - cbv in H. lra.
+    - unfold vangle.
+      replace (vnorm v1) with v1 by (veq;ra).
+      replace (vnorm v2) with v2 by (veq;ra).
+      replace (<v1, v2>) with 0 by (cbv;ra).
+      ra.
+  Qed.
+
+  Let eq23 : v2 /2_ v3 = PI.
+  Proof.
+    unfold vangle2.
+    bdestruct (0 <=? v2 \x v3).
+    - unfold vangle.
+      replace (vnorm v2) with v2 by (veq;ra).
+      replace (vnorm v3) with v3 by (veq;ra).
+      replace (<v2, v3>) with (-1) by (cbv;ra).
+      ra.
+    - cbv in H. lra.
+  Qed.
+
+  Let eq32 : v3 /2_ v2 = PI.
+  Proof.
+    unfold vangle2.
+    bdestruct (0 <=? v3 \x v2).
+    - unfold vangle.
+      replace (vnorm v2) with v2 by (veq;ra).
+      replace (vnorm v3) with v3 by (veq;ra).
+      replace (<v3, v2>) with (-1) by (cbv;ra).
+      ra.
+    - cbv in H. lra.
+  Qed.
+
+  (* Note that, "vangle2_add" has bug now, caused by atan2_minus_eq *)
+  Let eq22 : v2 /2_ v2 = 0.
+  Proof.
+    rewrite vangle2_self; auto.
+    apply v2neq_iff. cbv. ra.
+  Qed.
+
+  (* Here, we got an error conclusion *)
+  Let eqErr : 0 = (PI + PI)%R.
+  Proof.
+    rewrite <- eq22.
+    rewrite <- eq23 at 1. rewrite <- eq32.
+    rewrite <- vangle2_add; auto.
+    - apply v2neq_iff; cbv; ra.
+    - apply v2neq_iff; cbv; ra.
+    - apply v2neq_iff; cbv; ra.
+  Qed.
+
+End test.
+
+
+(** 给定两个向量，若将这两个向量同时旋转θ角，则向量之和在旋转前后的夹角也是θ。*)
+Lemma vangle_vadd : forall {n} (a b c d : vec n),
+    a <> vzero -> b <> vzero ->
+    ||a||%V = ||c||%V -> ||b||%V = ||d||%V ->
+    a /_ b = c /_ d ->
+    ((a + b) /_ (c + d) = b /_ d)%V.
+Proof.
+Admitted.
+
 
 (* ======================================================================= *)
 (** ** Properties about parallel, orthogonal of 3D vectors *)

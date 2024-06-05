@@ -403,6 +403,7 @@ Ltac v2e a :=
   let a2 := fresh "a2" in
   let a3 := fresh "a3" in
   let a4 := fresh "a4" in
+  let Ha := fresh "Ha" in
   match type of a with
   | vec 2 =>
       (* idtac "#vec 2"; *)
@@ -3018,6 +3019,14 @@ Section vunit.
     Lemma vunit_spec : forall {n} (a : vec n), vunit a <-> ||a|| = 1%R.
     Proof. intros. split; intros; apply vlen_eq1_iff_vdot1; auto. Qed.
 
+    (** vunit a -> || a || = 1 *)
+    Lemma vunit_imply_vlen_eq1 : forall {n} (a : vec n), vunit a -> ||a|| = 1%R.
+    Proof. intros. apply vunit_spec; auto. Qed.
+
+    (** vunit a -> || a || = 1 *)
+    Lemma vlen_eq1_imply_vunit : forall {n} (a : vec n), ||a|| = 1%R -> vunit a.
+    Proof. intros. apply vunit_spec; auto. Qed.
+    
     Section OrderedARing.
       Context `{HOrderedARing : OrderedARing A Aadd Azero Aopp Amul Aone Alt Ale}.
 

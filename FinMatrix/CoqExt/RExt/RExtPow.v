@@ -22,8 +22,8 @@ Require Export RExtBase RExtSqr.
 
 (** Convert `a ^ (n + 2)` to `(a ^ 2) * (a ^ n)` *)
 Ltac simp_pow :=
-  match goal with
-  | |- context[?a ^ 4] => replace (a ^ 4) with ((a ^ 2) ^ 2); [|ring]
-  | |- context[?a ^ 3] => replace (a ^ 3) with ((a ^ 2) * a)%R; [|ring]
-  end;
-  try rewrite !Rpow2_Rsqr.
+  try match goal with
+    | |- context[?a ^ 4] => replace (a ^ 4) with ((a ^ 2) ^ 2); [|ring]
+    | |- context[?a ^ 3] => replace (a ^ 3) with ((a ^ 2) * a)%R; [|ring]
+    end;
+  try rewrite !Rpow2_Rsqr in *.

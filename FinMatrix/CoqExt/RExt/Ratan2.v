@@ -30,6 +30,12 @@
 
   2. https://en.wikipedia.org/wiki/Atan2
   * 在这里还介绍了几个等价的紧凑版本，其等价性及代码生成是Coq验证的强项。以后再补充。
+
+  3. https://ww2.mathworks.cn/help/matlab/ref/atan2.html
+  这里是matlab中的实现，其定义与 IEEE-754 中的定义有区别。
+
+  4. https://www.medcalc.org/manual/atan2-function.php
+  Online calculator for atan2
  *)
 
 
@@ -151,11 +157,31 @@ Qed.
   其证明需要借助复平面的幅角 Arg，这里暂未进行形式化。
  *)
 Lemma atan2_plus_eq : forall x1 y1 x2 y2 : R,
-    atan2 y1 x1 + atan2 y2 x2 = atan2 (y1*x2+y2*x1) (x1*x2-y1*y2).
+    atan2 y1 x1 + atan2 y2 x2 = atan2 (y1*x2+x1*y2) (x1*x2-y1*y2).
 Admitted.
 
 Lemma atan2_minus_eq : forall x1 y1 x2 y2 : R,
-    atan2 y1 x1 - atan2 y2 x2 = atan2 (y1*x2-y2*x1) (x1*x2+y1*y2).
+    x1 * x2 + y1 * y2 <> 0 ->
+    - PI / 2 < atan (y1 / x1) - atan (y2 / x2) < PI / 2 ->
+    atan2 y1 x1 - atan2 y2 x2 = atan2 (y1*x2-x1*y2) (x1*x2+y1*y2).
+Proof.
+  intros. unfold atan2.
+  bdestruct (0 <? x1).
+  - bdestruct (0 <? x2).
+    + bdestruct (0 <? x1 * x2 + y1 * y2).
+      * rewrite (atan_sub_correct (y1/x1) (y2/x2)); auto.
+        ** ring_simplify. unfold atan_sub. f_equal. field; ra.
+        ** intro H4; field_simplify in H4; try lra; revert H4.
+           apply Rmult_integral_contrapositive. split; ra.
+        ** unfold atan_sub. apply atan_bound.
+      * bdestruct (x1 * x2 + y1 * y2 <? 0); ra.
+        bdestruct (0 <=? y1 * x2 - x1 * y2); ra.
+        ** rewrite (atan_sub_correct (y1/x1) (y2/x2)); auto.
+           *** ring_simplify. unfold atan_sub.
+Abort.
+
+Lemma atan2_minus_eq : forall x1 y1 x2 y2 : R,
+    atan2 y1 x1 - atan2 y2 x2 = atan2 (y1*x2-x1*y2) (x1*x2+y1*y2).
 Admitted.
 
 

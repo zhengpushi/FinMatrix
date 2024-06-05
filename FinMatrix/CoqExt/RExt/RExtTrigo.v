@@ -8,6 +8,10 @@
   date      : 2021.05
 
   remark    :
+
+  reference :
+  1. https://en.wikipedia.org/wiki/Inverse_trigonometric_functions
+
  *)
 
 Require Export RExtBase RExtPlus RExtMult RExtSqr RExtOpp RExtInv RExtBool.
@@ -428,6 +432,9 @@ Fact acos_sqrt2_2 : acos ((sqrt 2) / 2) = PI / 4. Admitted.
 Fact acos_sqrt3_2 : acos ((sqrt 3) / 2) = PI / 2. Admitted.
 (* Fact acos_1 : acos 1 = 0. Admitted. *)
 Fact acos_neg1 : acos (-1) = PI. Admitted.
+#[export] Hint Rewrite
+  acos_neg1
+  : R.
 
 (** acos is injective in its domain *)
 Lemma acos_inj : forall x1 x2 : R,

@@ -683,6 +683,21 @@ Proof. intros. apply meq_iff_mnth; intros. unfold mmap2. apply associative. Qed.
 Section mset.
   Context {A} (Azero : A).
 
+  (** set element of a matrix *)
+  Definition mset {r c} (M : mat A r c) (a : A) (i0 : 'I_r) (j0 : 'I_c) : mat A r c :=
+    fun i j => if (i =? i0) && (j =? j0) then a else M.[i].[j].
+
+  Lemma mnth_mset_same : forall {r c} (M : mat A r c) (a : A) i j,
+      (mset M a i j).[i].[j] = a.
+  Proof.
+  Admitted.
+                             
+  Lemma mnth_mset_diff : forall {r c} (M : mat A r c) (a : A) i0 j0 i j,
+      i <> i0 \/ j <> j0 -> (mset M a i0 j0).[i].[j] = M.[i].[j].
+  Proof.
+  Admitted.
+
+
   (** set row *)
   Definition msetr {r c} (M : mat A r c) (a : @vec A c) (i0 : 'I_r) : mat A r c :=
     fun i j => if i ??= i0 then a.[j] else M.[i].[j].

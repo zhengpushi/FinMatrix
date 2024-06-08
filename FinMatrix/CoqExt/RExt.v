@@ -63,7 +63,7 @@
 
 Require Export RExtBase RExtCvt RExtStruct RExtBool RExtLt.
 Require Export RExtPlus RExtMult RExtPow RExtOpp RExtInv.
-Require Export RExtSqr RExtSqrt RExtAbs RExtApprox RExtTrigo.
+Require Export RExtSqr RExtSqrt RExtAbs RExtExp RExtApprox RExtTrigo.
 
 
 (* ======================================================================= *)

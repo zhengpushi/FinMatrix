@@ -291,6 +291,10 @@ Qed.
 (* ######################################################################### *)
 (** * Other properties *)
 
+(** Z.eqb reflects Z.eq *)
+#[export] Hint Resolve Z.eqb_spec : bdestruct.
+
+
 (** Boolean equality of Zadd satisfy right cancelling rule *)
 Lemma Zadd_eqb_cancel_r : forall (z1 z2 a : Z),
   (z1 + a =? z2 + a)%Z = (z1 =? z2)%Z.

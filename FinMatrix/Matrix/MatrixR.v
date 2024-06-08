@@ -33,7 +33,7 @@ Require Import ExtrOcamlBasic ExtrOcamlNatInt MyExtrOCamlR.
 Include (NormedOrderedFieldMatrixTheory NormedOrderedFieldElementTypeR).
 
 (* A TEMPORARY Fix: Let "Hierarchy.le_xx" has more priority than "Nat.le_xx" *)
-Import Hierarchy RExt.
+Import RExt Hierarchy.
 
 Open Scope R_scope.
 Open Scope vec_scope.
@@ -1039,13 +1039,13 @@ Proof.
   ring_simplify; auto.
 Qed.
 
-Section test.
+Module vangle2_error.
 
-  Let v1 : vec 2 := l2v [1;0].
-  Let v2 : vec 2 := l2v [0;-1].
-  Let v3 : vec 2 := l2v [0;1].
+  Example v1 : vec 2 := l2v [1;0].
+  Example v2 : vec 2 := l2v [0;-1].
+  Example v3 : vec 2 := l2v [0;1].
 
-  Let eq12 : v1 /2_ v2 = - PI / 2.
+  Fact eq12 : v1 /2_ v2 = - PI / 2.
   Proof.
     unfold vangle2.
     bdestruct (0 <=? v1 \x v2).
@@ -1057,7 +1057,7 @@ Section test.
       ra.
   Qed.
 
-  Let eq23 : v2 /2_ v3 = PI.
+  Fact eq23 : v2 /2_ v3 = PI.
   Proof.
     unfold vangle2.
     bdestruct (0 <=? v2 \x v3).
@@ -1069,7 +1069,7 @@ Section test.
     - cbv in H. lra.
   Qed.
 
-  Let eq32 : v3 /2_ v2 = PI.
+  Fact eq32 : v3 /2_ v2 = PI.
   Proof.
     unfold vangle2.
     bdestruct (0 <=? v3 \x v2).
@@ -1082,14 +1082,14 @@ Section test.
   Qed.
 
   (* Note that, "vangle2_add" has bug now, caused by atan2_minus_eq *)
-  Let eq22 : v2 /2_ v2 = 0.
+  Fact eq22 : v2 /2_ v2 = 0.
   Proof.
     rewrite vangle2_self; auto.
     apply v2neq_iff. cbv. ra.
   Qed.
 
   (* Here, we got an error conclusion *)
-  Let eqErr : 0 = (PI + PI)%R.
+  Fact eqErr : 0 = (PI + PI)%R.
   Proof.
     rewrite <- eq22.
     rewrite <- eq23 at 1. rewrite <- eq32.
@@ -1099,7 +1099,7 @@ Section test.
     - apply v2neq_iff; cbv; ra.
   Qed.
 
-End test.
+End vangle2_error.
 
 
 (** 给定两个向量，若将这两个向量同时旋转θ角，则向量之和在旋转前后的夹角也是θ。*)

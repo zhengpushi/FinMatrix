@@ -2222,7 +2222,7 @@ Section dlist_app.
 
 End dlist_app.
 
-Notation "l @@ r" := (dlappc l r) (at level 40) : dlist_scope.
+Notation "l @@ r" := (dlappc l r) (at level 40) : list_scope.
 
 
 (* ===================================================================== *)
@@ -2284,7 +2284,7 @@ Section dlzero.
   
   (** append two dlzeros by column equal to whole *)
   Lemma dlzero_app_col : forall r c1 c2,
-      ((dlzero r c1) @@ (dlzero r c2))%dlist = dlzero r (c1 + c2).
+      (dlzero r c1) @@ (dlzero r c2) = dlzero r (c1 + c2).
   Proof.
     induction r; intros; simpl; try easy. unfold dlzero,lzero in *.
     rewrite IHr. simpl. rewrite repeat_app. easy.
@@ -2591,7 +2591,7 @@ Section dmap_A_B_C.
 
   (** dmap extensional law  *)
   Lemma dmap_ext : forall dl (f g : A -> B) (H : forall a, f a = g a),
-      (dmap f dl = dmap g dl)%dlist.
+      dmap f dl = dmap g dl.
   Proof.
     intros. unfold dmap.
     apply map_ext. intros. induction a; simpl; auto. f_equal; auto.

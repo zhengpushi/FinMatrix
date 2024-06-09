@@ -187,6 +187,10 @@ Reserved Notation "M &4"       (at level 25, format "M &4").
 (* Notation "~~ b" := (negb b) (at level 35, right associativity) : bool_scope. *)
 
 
+(* fix Bellet behavior, caused by Mathcomp.ssreflect.ssreflect.v *)
+#[export] Set Bullet Behavior "Strict Subproofs".
+
+
 (* ######################################################################### *)
 (** * Eliminate Warning. *)
 
@@ -374,18 +378,18 @@ Delimit Scope A_scope with A.
 Open Scope A.
 
 (** Scope for list type *)
-Declare Scope list_scope.
-Delimit Scope list_scope with list.
-Open Scope list.
+(* Declare Scope list_scope. *)
+(* Delimit Scope list_scope with list. *)
+(* Open Scope list. *)
 
 (** Scope for list list type *)
-Declare Scope dlist_scope.
-Delimit Scope dlist_scope with dlist.
-Open Scope dlist.
+(* Declare Scope dlist_scope. *)
+(* Delimit Scope dlist_scope with dlist. *)
+(* Open Scope dlist. *)
 
 (** Scope for function (especially for nat-indexed function such as "nat -> A") *)
-Declare Scope fun_scope.
-Delimit Scope fun_scope with F. (* Note that, Ranalysis1 defined Rfun_scope with F *)
+(* Declare Scope fun_scope. *)
+(* Delimit Scope fun_scope with F. (* Note that, Ranalysis1 defined Rfun_scope with F *) *)
 (* Open Scope fun_scope. *)
 
 (** Scope for vector type *)

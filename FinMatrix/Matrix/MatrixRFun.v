@@ -55,9 +55,8 @@ End test.
 
 Section Example4CoordinateSystem.
   Open Scope A_scope.
-  Open Scope fun_scope.
-  Notation "1" := Aone : fun_scope.
-  Notation "0" := Azero : fun_scope.
+  Notation "1" := Aone : Rfun_scope.
+  Notation "0" := Azero : Rfun_scope.
   
   Variable ψ θ ϕ : A.
   Let cθ : A := fun t => cos (θ t).

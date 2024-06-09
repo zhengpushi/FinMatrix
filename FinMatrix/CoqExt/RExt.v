@@ -63,80 +63,8 @@
 
 Require Export RExtBase RExtCvt RExtStruct RExtBool RExtLt.
 Require Export RExtPlus RExtMult RExtPow RExtOpp RExtInv.
-Require Export RExtSqr RExtSqrt RExtAbs RExtExp RExtApprox RExtTrigo.
-
-
-(* ======================================================================= *)
-(** ** Sign function *)
-Definition sign : R -> R :=
-  fun x => if x >? 0 then 1 else (if x =? 0 then 0 else -1).
-
-(** x = 0 -> sign x = 0 *)
-Lemma sign_eq0 : forall x, x = 0 -> sign x = 0.
-Proof.
-  intros. unfold sign. bdestruct (0 <? x); ra. bdestruct (x =? 0); ra.
-Qed.
-
-(** x > 0 -> sign x = 1 *)
-Lemma sign_gt0 : forall x, x > 0 -> sign x = 1.
-Proof. intros. unfold sign. bdestruct (x >? 0); ra. Qed.
-
-(** x < 0 -> sign x = - 1 *)
-Lemma sign_lt0 : forall x, x < 0 -> sign x = -1.
-Proof.
-  intros. unfold sign. bdestruct (x >? 0); ra. bdestruct (x =? 0); ra.
-Qed.
-
-(** (sign x) * x = |x| *)
-Lemma sign_mul_eq_abs : forall x, ((sign x) * x)%R = Rabs x.
-Proof.
-  intros. unfold sign. bdestruct (0 <? x); ra. bdestruct (x =? 0); subst; ra.
-  rewrite Rabs_left1; ra.
-Qed.
-
-(** (sign x) * |x| = x *)
-Lemma sign_mul_abs_eq : forall x, ((sign x) * (Rabs x))%R = x.
-Proof.
-  intros. unfold sign. bdestruct (0 <? x); ra. bdestruct (x =? 0); ra.
-  rewrite Rabs_left1; ra.
-Qed.
-
-(* ======================================================================= *)
-(** ** Logarithmic function 对数函数 *)
-
-(* flogR a x = log_a x *)
-Definition flogR (a x : R) : R := ln x / ln a.
-
-(* flnR x = log_e x *)
-Definition flnR (x : R) : R := ln x.
-
-(* flgR x = log_10 x *)
-Definition flg (x : R) : R := flogR 10 x.
-
-(* Axiom domain_of_flogR : forall (a : R), *)
-(*     (a > 0 /\ a <> 1) -> domain_of (flogR a) = (fun x => x > 0). *)
-(* Fact range_of_flogR (a : R) : range_of (flogR a) = allR. Admitted. *)
-
-(** 特殊函数值 *)
-Fact flogR_a_1 (a : R) : flogR a 1 = 0.
-Proof. unfold flogR. rewrite ln_1. field. Admitted.
-
-Fact flogR_a_a (a : R) : flogR a a = 1. Admitted.
-Fact flnR_1 : ln 1 = 0. Admitted.
-Fact flnR_e : let e := 2.71828 in ln e = 1. Admitted.
-
-(** 常用公式 *)
-Fact flnR_mul : forall a x y, flogR a (x * y) = (flogR a x) + (flogR a y). Admitted.
-Fact flnR_div : forall a x y, flogR a (x / y) = (flogR a x) - (flogR a y). Admitted.
-Fact flnR_Rpower : forall a x y, flogR a (Rpower x y) = y * (flogR a x). Admitted.
-Fact flnR_chgbottom : forall a b x, flogR a x = (flogR b x) / (flogR b a). Admitted.
-Fact fexpR_flnR : forall x, exp (ln x) = x. Admitted.
-Fact flnR_fexpR : forall x, ln (exp x) = x. Admitted.
-
-Fact flnR_eq1 : forall u v : R, Rpower u v = exp (ln (Rpower u v)).
-Proof. intros. rewrite fexpR_flnR. auto. Qed.
-Fact flnR_eq2 : forall u v : R, Rpower u v = exp (v * ln u).
-Proof. intros. Admitted.
+Require Export RExtSqr RExtSqrt RExtAbs RExtSign RExtExp RExtLog.
+Require Export RExtApprox RExtTrigo.
 
 
 (* ======================================================================= *)

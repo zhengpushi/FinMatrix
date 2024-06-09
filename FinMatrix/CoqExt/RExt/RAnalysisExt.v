@@ -87,14 +87,14 @@ Definition range_of (f : R -> R) : setR :=
 (** ** Composition of real functions. *)
 
 (** composition of two real functions f and g, with right associativity *)
-Definition fcompR (f g : R -> R) : R -> R := fun x => f (g x).
-Infix "\o" := fcompR : Rfun_scope.
+Definition fcomp (f g : R -> R) : R -> R := fun x => f (g x).
+Infix "\o" := fcomp : RFun_scope.
 
-Fact fcompR_rw : forall u v : R -> R, (fun x => u (v x)) = (u \o v)%F.
+Fact fcomp_rw : forall u v : R -> R, (fun x => u (v x)) = (u \o v).
 Proof. auto. Qed.
 
 (** 两个函数可以复合的条件是：内函数的值域与外函数的定义域的交集非空 *)
-Definition fcompR_valid (u v : R -> R) : Prop :=
+Definition fcomp_valid (u v : R -> R) : Prop :=
   let Du := domain_of u in
   let Rv := range_of v in
   exists x, (Du x /\ Rv x).
@@ -102,12 +102,12 @@ Definition fcompR_valid (u v : R -> R) : Prop :=
 Section test.
   Goal let f := fun x => (x * x + / x)%R in
        let g := fun x => (x + / x)%R in
-       fcompR_valid f g ->
-       (f \o g)%F = fun x =>
+       fcomp_valid f g ->
+       (f \o g) = fun x =>
                      let x2 := (x * x)%R in
                      (x2 + / x2 + (x / (x2 + 1)) + 2)%R.
   Proof.
-    intros. unfold f, g, fcompR, fcompR_valid in *. apply feq_iff; intros.
+    intros. unfold f, g, fcomp, fcomp_valid in *. apply feq_iff; intros.
     field.
   Abort.
 End test.
@@ -158,48 +158,49 @@ Fact bound_cos : bound_of cos 1. Admitted.
 Definition oddf (f : R -> R) : Prop := forall x, f (-x) = - (f x).
 Definition evenf (f : R -> R) : Prop := forall x, f (-x) = f x.
 
-Fact oddf_fidR : evenf fidR. Admitted.
+Fact oddf_fid : evenf fid. Admitted.
 Fact oddf_pow3 : evenf (fun x => x ^ 3). Admitted.
 Fact oddf_sin : evenf sin. Admitted.
 Fact oddf_tan : evenf tan. Admitted.
 
-Fact evenf_fcnstR : forall (C : R), evenf (fcnstR C). Admitted.
+Fact evenf_fcnst : forall (C : R), evenf (fcnst C). Admitted.
 Fact evenf_pow2 : evenf (fun x => x ^ 2). Admitted.
 Fact evenf_pow2n : forall (n : nat), evenf (fun x => x ^ (2 * n)). Admitted.
 Fact evenf_cos : evenf cos. Admitted.
 
-Lemma faddR_odd_odd : forall u v, oddf u -> oddf v -> oddf (u + v)%F.
+Lemma fadd_odd_odd : forall u v, oddf u -> oddf v -> oddf (u +f v).
 Admitted.
 
-Lemma fsubR_odd_odd : forall u v, oddf u -> oddf v -> oddf (u - v)%F.
+Lemma fsub_odd_odd : forall u v, oddf u -> oddf v -> oddf (u -f v).
 Admitted.
 
-Lemma fmulR_odd_odd : forall u v, oddf u -> oddf v -> evenf (u * v)%F.
+Lemma fmul_odd_odd : forall u v, oddf u -> oddf v -> evenf (u *f v).
 Admitted.
 
-Lemma fdivR_odd_odd : forall u v, oddf u -> oddf v -> evenf (u / v)%F.
+Lemma fdiv_odd_odd : forall u v, oddf u -> oddf v -> evenf (u /f v).
 Admitted.
 
-Lemma faddR_even_even : forall u v, evenf u -> evenf v -> evenf (u + v)%F.
+Lemma fadd_even_even : forall u v, evenf u -> evenf v -> evenf (u +f v).
 Admitted.
 
-Lemma fsubR_even_even : forall u v, evenf u -> evenf v -> evenf (u - v)%F.
+Lemma fsub_even_even : forall u v, evenf u -> evenf v -> evenf (u -f v).
 Admitted.
 
-Lemma fmulR_even_even : forall u v, evenf u -> evenf v -> evenf (u * v)%F.
+Lemma fmul_even_even : forall u v, evenf u -> evenf v -> evenf (u *f v).
 Admitted.
 
-Lemma fdivR_even_even : forall u v, evenf u -> evenf v -> evenf (u / v)%F.
+Lemma fdiv_even_even : forall u v, evenf u -> evenf v -> evenf (u /f v).
 Admitted.
 
-Lemma fcompR_any_even : forall u v, evenf v -> evenf (u \o v).
+Lemma fcomp_any_even : forall u v, evenf v -> evenf (u \o v).
 Admitted.
 
-Lemma fcompR_odd_odd : forall u v, oddf u -> oddf v -> oddf (u \o v).
+Lemma fcomp_odd_odd : forall u v, oddf u -> oddf v -> oddf (u \o v).
 Admitted.
 
-Lemma fcompR_even_odd : forall u v, evenf u -> oddf v -> evenf (u \o v).
+Lemma fcomp_even_odd : forall u v, evenf u -> oddf v -> evenf (u \o v).
 Admitted.
+
 
 (** ** 周期函数 *)
 (* ======================================================================= *)
@@ -229,7 +230,7 @@ Fact periodic_of_tan : periodic_of tan (2*PI). Admitted.
 Axiom domain_of_Rpower : forall (a : R), (a > 0 /\ a <> 1) -> domain_of (Rpower a) = allR.
 Fact range_of_Rpower (a : R) : range_of (Rpower a) = fun x => x > 0. Admitted.
 
-Axiom domain_of_flogR : forall (a : R),
-    (a > 0 /\ a <> 1) -> domain_of (flogR a) = (fun x => x > 0).
-Fact range_of_flogR (a : R) : range_of (flogR a) = allR. Admitted.
+Axiom domain_of_Rlog : forall (a : R),
+    (a > 0 /\ a <> 1) -> domain_of (Rlog a) = (fun x => x > 0).
+Fact range_of_Rlog (a : R) : range_of (Rlog a) = allR. Admitted.
 

@@ -158,7 +158,7 @@ Fact bound_cos : bound_of cos 1. Admitted.
 Definition oddf (f : R -> R) : Prop := forall x, f (-x) = - (f x).
 Definition evenf (f : R -> R) : Prop := forall x, f (-x) = f x.
 
-Fact oddf_fid : evenf fid. Admitted.
+Fact oddf_id : evenf id. Admitted.
 Fact oddf_pow3 : evenf (fun x => x ^ 3). Admitted.
 Fact oddf_sin : evenf sin. Admitted.
 Fact oddf_tan : evenf tan. Admitted.

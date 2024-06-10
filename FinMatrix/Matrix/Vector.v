@@ -366,6 +366,15 @@ Section l2v_v2l.
 
 End l2v_v2l.
 
+
+(* ======================================================================= *)
+(** ** Automation for vector equality proofs *)
+
+(** Convert equality of two vectors to point-wise element equalities *)
+Ltac veq :=
+  apply v2l_inj; cbv; list_eq.
+
+
 Section test.
   (* [1;2;3] *)
   Let v : vec 3 := fun (i : 'I_3) => S i.
@@ -374,6 +383,9 @@ Section test.
   
   Goal @l2v _ 0 3 [1;2;3] = v.
   Proof.
+    (* method 1: calculated all elements *)
+    (* veq. *)
+    (* method 2: one element every time *)
     apply veq_iff_vnth; intros.
     repeat (destruct i; simpl; auto; try lia).
   Qed.
@@ -417,6 +429,25 @@ Ltac v2e a :=
       (* idtac "#vec 4"; *)
       destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha; try clear a Ha;
       try (v2e a1; v2e a2; v2e a3; v2e a4)
+  end.
+
+(* Only unfold 1 level *)
+Ltac v2e1 a :=
+  let a1 := fresh "a1" in
+  let a2 := fresh "a2" in
+  let a3 := fresh "a3" in
+  let a4 := fresh "a4" in
+  let Ha := fresh "Ha" in
+  match type of a with
+  | vec 2 =>
+      (* idtac "#vec 2"; *)
+      destruct (veq_exist_2 a) as (a1,(a2,Ha)); rewrite Ha; try clear a Ha
+  | vec 3 =>
+      (* idtac "#vec 3"; *)
+      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); rewrite Ha; try clear a Ha
+  | vec 4 =>
+      (* idtac "#vec 4"; *)
+      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha; try clear a Ha
   end.
 
 Section test.

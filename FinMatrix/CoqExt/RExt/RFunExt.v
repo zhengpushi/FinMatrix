@@ -51,14 +51,6 @@ Notation "-f g" := (fopp g) : RFun_scope.
 Notation "/f g" := (finv g) : RFun_scope.
 Infix "c*" := fcmul : RFun_scope.
 
-Lemma fadd_ok : forall (u v : R -> R) (x : R), (u +f v) x = u x + v x. auto. Qed.
-Lemma fopp_ok : forall (v : R -> R) (x : R), (-f v) x = - v x. auto. Qed.
-Lemma fsub_ok : forall (u v : R -> R) (x : R), (u -f v) x = u x - v x. auto. Qed.
-Lemma fmul_ok : forall (u v : R -> R) (x : R), (u *f v) x = u x * v x. auto. Qed.
-Lemma finv_ok : forall (v : R -> R) (x : R), (/f v) x = / v x. auto. Qed.
-Lemma fdiv_ok : forall (u v : R -> R) (x : R), (u /f v) x = u x / v x. auto. Qed.
-Lemma fcmul_ok : forall (c : R) (u : R -> R) (x : R), (c c* u) x = c * u x. auto. Qed.
-
 
 (* ======================================================================= *)
 (** ** Real constant functions *)
@@ -66,13 +58,24 @@ Lemma fcmul_ok : forall (c : R) (u : R -> R) (x : R), (c c* u) x = c * u x. auto
 Definition fcnst (C : R) : R -> R := fun _ => C.
 Definition fzero : R -> R := fcnst R0.
 Definition fone : R -> R := fcnst R1.
-Definition fid : R -> R := fun x => x.
+(* Definition fid : R -> R := fun x => x. *)
 (* Notation "0" := fzero : RFun_scope. *)
 (* Notation "1" := fone : RFun_scope. *)
 
-Hint Unfold
-  fadd fopp fmul finv
-  fcnst fzero fone fid : Rfun.
+
+(* ======================================================================= *)
+(** ** Properties of real functions *)
+
+
+Hint Unfold fadd fopp fmul finv fcnst fzero fone : RFun.
+
+Lemma fadd_ok : forall (u v : R -> R) (x : R), (u +f v) x = u x + v x. intros. auto. Qed.
+Lemma fopp_ok : forall (v : R -> R) (x : R), (-f v) x = - v x. auto. Qed.
+Lemma fsub_ok : forall (u v : R -> R) (x : R), (u -f v) x = u x - v x. auto. Qed.
+Lemma fmul_ok : forall (u v : R -> R) (x : R), (u *f v) x = u x * v x. auto. Qed.
+Lemma finv_ok : forall (v : R -> R) (x : R), (/f v) x = / v x. auto. Qed.
+Lemma fdiv_ok : forall (u v : R -> R) (x : R), (u /f v) x = u x / v x. auto. Qed.
+Lemma fcmul_ok : forall (c : R) (u : R -> R) (x : R), (c c* u) x = c * u x. auto. Qed.
 
 
 (* ======================================================================= *)
@@ -84,7 +87,7 @@ Ltac feq :=
   let x := fresh "x" in
   extensionality x;
   repeat (rewrite ?fadd_ok,?fopp_ok,?fsub_ok,?fmul_ok,?finv_ok,?fdiv_ok, ?fcmul_ok);
-  autounfold with Rfun;
+  autounfold with RFun;
   ra.
   (* try unfold fzero; *)
   (* try unfold fcnst. *)

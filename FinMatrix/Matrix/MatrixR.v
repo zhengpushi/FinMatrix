@@ -1391,6 +1391,15 @@ Notation "`| a |x" := (skew3 a) : vec_scope.
 Lemma skew3_spec : forall a, skewP (`| a |x).
 Proof. intros. rewrite skewP3_eq. cbv. lra. Qed.
 
+(** a × b = [a] b *)
+Lemma v3cross_eq_skew_mul_vec : forall (a b : vec 3),
+    a \x b = `|a|x *v b.
+Proof. intros; veq; ra. Qed.
+
+Lemma v3cross_eq_skew_mul_cvec : forall (a b : cvec 3),
+    cv2v a \x (cv2v b) = cv2v ((`|cv2v a|x * b)%M).
+Proof. intros; veq; ra. Qed.
+
 (** (`| a |x)\T = - a *)
 Lemma mtrans_skew3 : forall a, (`| a |x)\T = `| - a |x.
 Proof. intros. meq; ra. Qed.
@@ -1412,14 +1421,6 @@ Proof. intros. apply skewP3_eq in H. cbv in H. meq; ra. Qed.
 
 Lemma vex3_skew3 : forall (a : vec 3), vex3 (skew3 a) = a.
 Proof. intros. veq. Qed.
-
-Lemma v3cross_eq_skew_mul_vec : forall (a b : vec 3),
-    a \x b = `|a|x *v b.
-Proof. intros; veq; ra. Qed.
-
-Lemma v3cross_eq_skew_mul_cvec : forall (a b : cvec 3),
-    cv2v a \x (cv2v b) = cv2v ((`|cv2v a|x * b)%M).
-Proof. intros; veq; ra. Qed.
 
 Section examples.
   
@@ -2060,6 +2061,50 @@ Section SO3_keep_v3cross.
   Qed.
 
 End SO3_keep_v3cross.
+
+(* A useful property involving rotations and skew-symmetric matrices *)
+(* reference: Modern Robotics, KEVIN M. LYNCH, 2017. page 75, Proposition 3.8  *)
+
+(* (** Convert a vector to its corresponding skew-symmetric matrix *) *)
+(* Definition skew3 (a : vec 3) : mat 3 3 := *)
+(*   l2m [[0;    -a.3; a.2 ]; *)
+(*        [a.3;  0;    -a.1]; *)
+(*        [-a.2; a.1;  0   ]]%R. *)
+(* Notation "`| a |x" := (skew3 a) : vec_scope. *)
+
+(* Lemma skew3 : (skew3 a) i j *)
+  
+
+(** M * [a] * M^T = [M *v ω], where, M\in SO(3), a\in R^3 *)
+Lemma SO3_skew3_eq : forall (M : smat 3) (a : vec 3),
+    SOnP M -> M * `|a|x * (M\T) = `|M *v a|x.
+Proof.
+  intros.
+  apply meq_iff_mnth; intros.
+  assert ((M * `| a |x * M\T) i j = < M i, a \x (M j) >).
+  { rewrite mmul_assoc. rewrite mnth_mmul. f_equal.
+    rewrite v3cross_eq_skew_mul_vec. auto. }
+  rewrite H0; clear H0.
+  (* let vector `a` to the right *)
+  rewrite vdot_comm. rewrite v3cross_dot_r.
+  (* <M[i] × M[i], a> = 0 *)
+  assert (forall k, <M #k \x M #k, a> = 0).
+  { intros. rewrite v3cross_self. apply vdot_0_l. }
+  (* 9 cases *)
+  (* unfold skew3. *)
+  destruct i as [i], j as [j].
+  do 3 (try destruct i as [|i]; try lia);
+  do 3 (try destruct j as [|j]; try lia).
+  all: do 2 try replace (Fin 0 _) with (@nat2finS 2 0); fin.
+  all: do 2 try replace (Fin 1 _) with (@nat2finS 2 1); fin.
+  all: do 2 try replace (Fin 2 _) with (@nat2finS 2 2); fin.
+  all: unfold skew3, l2m, Matrix.l2m, Vector.l2v; simpl.
+  all: try rewrite ?SO3_v3cross_r12,?SO3_v3cross_r23,?SO3_v3cross_r31; auto.
+  all: rewrite v3cross_anticomm.
+  all: rewrite ?SO3_v3cross_r12,?SO3_v3cross_r23,?SO3_v3cross_r31; auto.
+  all: rewrite vdot_vopp_l; auto.
+Qed.
+
 
 (* ======================================================================= *)
 (** ** SO2 and SO3 *)

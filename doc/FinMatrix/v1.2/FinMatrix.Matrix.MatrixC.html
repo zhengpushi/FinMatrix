@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.Matrix.MatrixC</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.Complex.html#"><span class="id" title="library">Complex</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#"><span class="id" title="library">MatrixModule</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab808"></a><h1 class="section">Matrix theory come from common implementations</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Include</span> (<a class="idref" href="FinMatrix.Matrix.MatrixModule.html#FieldMatrixTheory"><span class="id" title="module">FieldMatrixTheory</span></a> <a class="idref" href="FinMatrix.CoqExt.Complex.html#FieldElementTypeC"><span class="id" title="module">FieldElementTypeC</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">C_scope</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">vec_scope</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mat_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab809"></a><h1 class="section">Matrix theory applied to this type</h1>
+
+</div>
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab810"></a><h1 class="section">Usage demo</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="test" class="idref" href="#test"><span class="id" title="section">test</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">vec_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <a id="test.u" class="idref" href="#test.u"><span class="id" title="variable">u</span></a> := @<a class="idref" href="FinMatrix.Matrix.MatrixC.html#l2v"><span class="id" title="definition">l2v</span></a> 3 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">[</span></a>1 <a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">+</span></a><a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">i</span></a> 2<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a> 3 <a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">+</span></a><a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">i</span></a> 4<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a> 5 <a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">+</span></a><a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">i</span></a> 6<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">]</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <a id="test.v" class="idref" href="#test.v"><span class="id" title="variable">v</span></a> := @<a class="idref" href="FinMatrix.Matrix.MatrixC.html#l2v"><span class="id" title="definition">l2v</span></a> 3 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">[</span></a>0 <a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">+</span></a><a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">i</span></a> 2<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a> 3 <a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">+</span></a><a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">i</span></a> 4<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a> 5 <a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">+</span></a><a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">i</span></a> 6<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">]</span></a>.<br/>
+
+<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mat_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <a id="test.M" class="idref" href="#test.M"><span class="id" title="variable">M</span></a> := @<a class="idref" href="FinMatrix.Matrix.MatrixC.html#l2m"><span class="id" title="definition">l2m</span></a> 2 2 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">[[</span></a>1 <a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">+</span></a><a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">i</span></a> 2<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a> 3 <a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">+</span></a><a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">i</span></a> 4<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">];[</span></a>5 <a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">+</span></a><a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">i</span></a> 6<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">;</span></a> 7 <a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">+</span></a><a class="idref" href="FinMatrix.CoqExt.Complex.html#6eb47460c28b4b58526ab6e000ad7c78"><span class="id" title="notation">i</span></a> 8<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#e76c6291366b599375c28eba0aae94bb"><span class="id" title="notation">]]</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Example</span> <a id="mat_C_ex1" class="idref" href="#mat_C_ex1"><span class="id" title="definition">mat_C_ex1</span></a> : <span class="id" title="keyword">forall</span> <a id="r:1" class="idref" href="#r:1"><span class="id" title="binder">r</span></a> <a id="c:2" class="idref" href="#c:2"><span class="id" title="binder">c</span></a> <a id="s:3" class="idref" href="#s:3"><span class="id" title="binder">s</span></a> (<a id="m1:4" class="idref" href="#m1:4"><span class="id" title="binder">m1</span></a> <a id="m2:5" class="idref" href="#m2:5"><span class="id" title="binder">m2</span></a> : <a class="idref" href="FinMatrix.Matrix.MatrixC.html#mat"><span class="id" title="abbreviation">mat</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#r:1"><span class="id" title="variable">r</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#c:2"><span class="id" title="variable">c</span></a>) (<a id="m3:6" class="idref" href="#m3:6"><span class="id" title="binder">m3</span></a> : <a class="idref" href="FinMatrix.Matrix.MatrixC.html#mat"><span class="id" title="abbreviation">mat</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#c:2"><span class="id" title="variable">c</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#s:3"><span class="id" title="variable">s</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="FinMatrix.Matrix.MatrixModule.html#72b6a683778f57c6755cb9c4fb911868"><span class="id" title="notation">(</span></a><a class="idref" href="FinMatrix.Matrix.MatrixC.html#m1:4"><span class="id" title="variable">m1</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#RingMatrixTheory.::mat_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m2:5"><span class="id" title="variable">m2</span></a><a class="idref" href="FinMatrix.Matrix.MatrixModule.html#72b6a683778f57c6755cb9c4fb911868"><span class="id" title="notation">)</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#72b6a683778f57c6755cb9c4fb911868"><span class="id" title="notation">*</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m3:6"><span class="id" title="variable">m3</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m1:4"><span class="id" title="variable">m1</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#72b6a683778f57c6755cb9c4fb911868"><span class="id" title="notation">*</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m3:6"><span class="id" title="variable">m3</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#RingMatrixTheory.::mat_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m2:5"><span class="id" title="variable">m2</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#72b6a683778f57c6755cb9c4fb911868"><span class="id" title="notation">*</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m3:6"><span class="id" title="variable">m3</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">rewrite</span> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#mmul_msub_distr_r"><span class="id" title="lemma">mmul_msub_distr_r</span></a>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Example</span> <a id="mat_C_ex2" class="idref" href="#mat_C_ex2"><span class="id" title="definition">mat_C_ex2</span></a> : <span class="id" title="keyword">forall</span> <a id="r:7" class="idref" href="#r:7"><span class="id" title="binder">r</span></a> <a id="c:8" class="idref" href="#c:8"><span class="id" title="binder">c</span></a> (<a id="m1:9" class="idref" href="#m1:9"><span class="id" title="binder">m1</span></a> <a id="m2:10" class="idref" href="#m2:10"><span class="id" title="binder">m2</span></a> : <a class="idref" href="FinMatrix.Matrix.MatrixC.html#mat"><span class="id" title="abbreviation">mat</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#r:7"><span class="id" title="variable">r</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#c:8"><span class="id" title="variable">c</span></a>) <a id="x:11" class="idref" href="#x:11"><span class="id" title="binder">x</span></a>, <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m1:9"><span class="id" title="variable">m1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m2:10"><span class="id" title="variable">m2</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#x:11"><span class="id" title="variable">x</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#55d5bda7cf612f2bdb6e25d78fad07f5"><span class="id" title="notation">c</span></a><a class="idref" href="FinMatrix.Matrix.MatrixModule.html#55d5bda7cf612f2bdb6e25d78fad07f5"><span class="id" title="notation">*</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m1:9"><span class="id" title="variable">m1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#x:11"><span class="id" title="variable">x</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#55d5bda7cf612f2bdb6e25d78fad07f5"><span class="id" title="notation">c</span></a><a class="idref" href="FinMatrix.Matrix.MatrixModule.html#55d5bda7cf612f2bdb6e25d78fad07f5"><span class="id" title="notation">*</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m2:10"><span class="id" title="variable">m2</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">f_equal</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Example</span> <a id="mat_C_ex3" class="idref" href="#mat_C_ex3"><span class="id" title="definition">mat_C_ex3</span></a> : <span class="id" title="keyword">forall</span> <a id="r:12" class="idref" href="#r:12"><span class="id" title="binder">r</span></a> <a id="c:13" class="idref" href="#c:13"><span class="id" title="binder">c</span></a> (<a id="m1:14" class="idref" href="#m1:14"><span class="id" title="binder">m1</span></a> <a id="m2:15" class="idref" href="#m2:15"><span class="id" title="binder">m2</span></a> : <a class="idref" href="FinMatrix.Matrix.MatrixC.html#mat"><span class="id" title="abbreviation">mat</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#r:12"><span class="id" title="variable">r</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#c:13"><span class="id" title="variable">c</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="FinMatrix.Matrix.MatrixModule.html#RingMatrixTheory.::mat_scope:x_'-'_x"><span class="id" title="notation">(</span></a><a class="idref" href="FinMatrix.Matrix.MatrixC.html#mat0"><span class="id" title="definition">mat0</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#48bb86703bb3881cf47f4e2860c33484"><span class="id" title="notation">+</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m1:14"><span class="id" title="variable">m1</span></a><a class="idref" href="FinMatrix.Matrix.MatrixModule.html#RingMatrixTheory.::mat_scope:x_'-'_x"><span class="id" title="notation">)</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#RingMatrixTheory.::mat_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#RingMatrixTheory.::mat_scope:x_'-'_x"><span class="id" title="notation">(</span></a><a class="idref" href="FinMatrix.Matrix.MatrixC.html#mat0"><span class="id" title="definition">mat0</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#RingMatrixTheory.::mat_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m2:15"><span class="id" title="variable">m2</span></a><a class="idref" href="FinMatrix.Matrix.MatrixModule.html#RingMatrixTheory.::mat_scope:x_'-'_x"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#m2:15"><span class="id" title="variable">m2</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#48bb86703bb3881cf47f4e2860c33484"><span class="id" title="notation">+</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#48bb86703bb3881cf47f4e2860c33484"><span class="id" title="notation">(</span></a><a class="idref" href="FinMatrix.Matrix.MatrixC.html#m1:14"><span class="id" title="variable">m1</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixModule.html#RingMatrixTheory.::mat_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#mat0"><span class="id" title="definition">mat0</span></a><a class="idref" href="FinMatrix.Matrix.MatrixModule.html#48bb86703bb3881cf47f4e2860c33484"><span class="id" title="notation">)</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<a class="idref" href="FinMatrix.Matrix.MatrixC.html#madd_AGroup"><span class="id" title="instance">madd_AGroup</span></a> <span class="id" title="var">r</span> <span class="id" title="var">c</span>). <span class="id" title="var">agroup</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.Matrix.MatrixC.html#test"><span class="id" title="section">test</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

@@ -39,7 +39,7 @@
  *)
 
 
-Require Import RExt.
+Require Import RExtBool RExtLt RExtTrigo.
 Open Scope R_scope.
 
 

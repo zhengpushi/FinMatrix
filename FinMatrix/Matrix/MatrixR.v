@@ -23,7 +23,7 @@
      |v| = √<v, v>
  *)
 
-Require Export Hierarchy RExt RFunExt Ratan2.
+Require Export Hierarchy RExt RFunExt.
 Require Export MatrixModule.
 Require Import ExtrOcamlBasic ExtrOcamlNatInt MyExtrOCamlR.
 

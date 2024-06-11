@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.CoqExt.RExt.RExtSign</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBase.html#"><span class="id" title="library">RExtBase</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#"><span class="id" title="library">RExtBool</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtMult.html#"><span class="id" title="library">RExtMult</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtAbs.html#"><span class="id" title="library">RExtAbs</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtLt.html#"><span class="id" title="library">RExtLt</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab324"></a><h2 class="section">Basic automation</h2>
+
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab325"></a><h2 class="section">Definition of sign</h2>
+
+<div class="paragraph"> </div>
+
+ sign x = 
+    1   if x&gt;0
+    0   if x=0
+<ul class="doclist">
+<li>1  if x&lt;0
+
+</li>
+</ul>
+ 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="sign" class="idref" href="#sign"><span class="id" title="definition">sign</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.R"><span class="id" title="axiom">R</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.R"><span class="id" title="axiom">R</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <a id="x:1" class="idref" href="#x:1"><span class="id" title="binder">x</span></a> =&gt; <span class="id" title="keyword">if</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:1"><span class="id" title="variable">x</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#1fad2073be52ee05da2acbb8ccc9a379"><span class="id" title="notation">&gt;?</span></a> 0 <span class="id" title="keyword">then</span> 1 <span class="id" title="keyword">else</span> (<span class="id" title="keyword">if</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:1"><span class="id" title="variable">x</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#d0475bd5661d92c5c2f933fbb926f497"><span class="id" title="notation">=?</span></a> 0 <span class="id" title="keyword">then</span> 0 <span class="id" title="keyword">else</span> -1).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab326"></a><h2 class="section">Additional properties</h2>
+
+<div class="paragraph"> </div>
+
+ x = 0 -&gt; sign x = 0 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="sign_eq0" class="idref" href="#sign_eq0"><span class="id" title="lemma">sign_eq0</span></a> : <span class="id" title="keyword">forall</span> <a id="x:2" class="idref" href="#x:2"><span class="id" title="binder">x</span></a>, <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:2"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#sign"><span class="id" title="definition">sign</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:2"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#sign"><span class="id" title="definition">sign</span></a>. <span class="id" title="var">bdestruct</span> (0 <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#9a26acc6ec28cb05a022cce5b78e5a9b"><span class="id" title="notation">&lt;?</span></a> <span class="id" title="var">x</span>); <span class="id" title="var">ra</span>. <span class="id" title="var">bdestruct</span> (<span class="id" title="var">x</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#d0475bd5661d92c5c2f933fbb926f497"><span class="id" title="notation">=?</span></a> 0); <span class="id" title="var">ra</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+x &gt; 0 -&gt; sign x = 1 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="sign_gt0" class="idref" href="#sign_gt0"><span class="id" title="lemma">sign_gt0</span></a> : <span class="id" title="keyword">forall</span> <a id="x:3" class="idref" href="#x:3"><span class="id" title="binder">x</span></a>, <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:3"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#::R_scope:x_'&gt;'_x"><span class="id" title="notation">&gt;</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#sign"><span class="id" title="definition">sign</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:3"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#sign"><span class="id" title="definition">sign</span></a>. <span class="id" title="var">bdestruct</span> (<span class="id" title="var">x</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#1fad2073be52ee05da2acbb8ccc9a379"><span class="id" title="notation">&gt;?</span></a> 0); <span class="id" title="var">ra</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+x &lt; 0 -&gt; sign x = - 1 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="sign_lt0" class="idref" href="#sign_lt0"><span class="id" title="lemma">sign_lt0</span></a> : <span class="id" title="keyword">forall</span> <a id="x:4" class="idref" href="#x:4"><span class="id" title="binder">x</span></a>, <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:4"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#::R_scope:x_'&lt;'_x"><span class="id" title="notation">&lt;</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#sign"><span class="id" title="definition">sign</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:4"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> -1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#sign"><span class="id" title="definition">sign</span></a>. <span class="id" title="var">bdestruct</span> (<span class="id" title="var">x</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#1fad2073be52ee05da2acbb8ccc9a379"><span class="id" title="notation">&gt;?</span></a> 0); <span class="id" title="var">ra</span>. <span class="id" title="var">bdestruct</span> (<span class="id" title="var">x</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#d0475bd5661d92c5c2f933fbb926f497"><span class="id" title="notation">=?</span></a> 0); <span class="id" title="var">ra</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+(sign x) * x = |x| 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="sign_mul_eq_abs" class="idref" href="#sign_mul_eq_abs"><span class="id" title="lemma">sign_mul_eq_abs</span></a> : <span class="id" title="keyword">forall</span> <a id="x:5" class="idref" href="#x:5"><span class="id" title="binder">x</span></a>, (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">(</span></a><a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#sign"><span class="id" title="definition">sign</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:5"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">*</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:5"><span class="id" title="variable">x</span></a>)%<span class="id" title="var">R</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rbasic_fun.html#Rabs"><span class="id" title="definition">Rabs</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:5"><span class="id" title="variable">x</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#sign"><span class="id" title="definition">sign</span></a>. <span class="id" title="var">bdestruct</span> (0 <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#9a26acc6ec28cb05a022cce5b78e5a9b"><span class="id" title="notation">&lt;?</span></a> <span class="id" title="var">x</span>); <span class="id" title="var">ra</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">bdestruct</span> (<span class="id" title="var">x</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#d0475bd5661d92c5c2f933fbb926f497"><span class="id" title="notation">=?</span></a> 0); <span class="id" title="tactic">subst</span>; <span class="id" title="var">ra</span>. <span class="id" title="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rbasic_fun.html#Rabs_left1"><span class="id" title="lemma">Rabs_left1</span></a>; <span class="id" title="var">ra</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+(sign x) * |x| = x 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="sign_mul_abs_eq" class="idref" href="#sign_mul_abs_eq"><span class="id" title="lemma">sign_mul_abs_eq</span></a> : <span class="id" title="keyword">forall</span> <a id="x:6" class="idref" href="#x:6"><span class="id" title="binder">x</span></a>, (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">(</span></a><a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#sign"><span class="id" title="definition">sign</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:6"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">*</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">(</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rbasic_fun.html#Rabs"><span class="id" title="definition">Rabs</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:6"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">)</span></a>)%<span class="id" title="var">R</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#x:6"><span class="id" title="variable">x</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtSign.html#sign"><span class="id" title="definition">sign</span></a>. <span class="id" title="var">bdestruct</span> (0 <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#9a26acc6ec28cb05a022cce5b78e5a9b"><span class="id" title="notation">&lt;?</span></a> <span class="id" title="var">x</span>); <span class="id" title="var">ra</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">bdestruct</span> (<span class="id" title="var">x</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#d0475bd5661d92c5c2f933fbb926f497"><span class="id" title="notation">=?</span></a> 0); <span class="id" title="var">ra</span>. <span class="id" title="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rbasic_fun.html#Rabs_left1"><span class="id" title="lemma">Rabs_left1</span></a>; <span class="id" title="var">ra</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

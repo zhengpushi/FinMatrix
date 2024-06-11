@@ -1,0 +1,537 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.CoqExt.ZExt</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#"><span class="id" title="library">Hierarchy</span></a> <a class="idref" href="FinMatrix.Matrix.ElementType.html#"><span class="id" title="library">ElementType</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.ZArith.html#"><span class="id" title="library">ZArith</span></a>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab258"></a><h1 class="section">Algebraic Structures</h1>
+
+<div class="paragraph"> </div>
+
+ equality is equivalence relation: Equivalence (@eq Z) 
+</div>
+<div class="code">
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">eq_equivalence</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+operations are well-defined. Eg: Proper (eq ==&gt; eq ==&gt; eq) add 
+</div>
+<div class="code">
+<span class="id" title="keyword">Hint Resolve</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Z.add_wd</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Z.opp_wd</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Z.sub_wd</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Z.mul_wd</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Decidable 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Z_eq_Dec" class="idref" href="#Z_eq_Dec"><span class="id" title="instance">Z_eq_Dec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> (@<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.eq_dec"><span class="id" title="definition">Z.eq_dec</span></a>. <span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Z_le_Dec" class="idref" href="#Z_le_Dec"><span class="id" title="instance">Z_le_Dec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.le"><span class="id" title="definition">Z.le</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">destruct</span> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.ZArith_dec.html#Z_le_gt_dec"><span class="id" title="definition">Z_le_gt_dec</span></a> <span class="id" title="var">a</span> <span class="id" title="var">b</span>); <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Z_lt_Dec" class="idref" href="#Z_lt_Dec"><span class="id" title="instance">Z_lt_Dec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.lt"><span class="id" title="definition">Z.lt</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">destruct</span> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.ZArith_dec.html#Z_lt_le_dec"><span class="id" title="lemma">Z_lt_le_dec</span></a> <span class="id" title="var">a</span> <span class="id" title="var">b</span>); <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">right</span>. <span class="id" title="var">lia</span>. <span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Associative 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zadd_Assoc" class="idref" href="#Zadd_Assoc"><span class="id" title="instance">Zadd_Assoc</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Associative"><span class="id" title="class">Associative</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zmul_Assoc" class="idref" href="#Zmul_Assoc"><span class="id" title="instance">Zmul_Assoc</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Associative"><span class="id" title="class">Associative</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Zadd_Assoc</span> <span class="id" title="var">Zmul_Assoc</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Commutative 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zadd_Comm" class="idref" href="#Zadd_Comm"><span class="id" title="instance">Zadd_Comm</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Commutative"><span class="id" title="class">Commutative</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zmul_Comm" class="idref" href="#Zmul_Comm"><span class="id" title="instance">Zmul_Comm</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Commutative"><span class="id" title="class">Commutative</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Zadd_Comm</span> <span class="id" title="var">Zmul_Comm</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Identity Left/Right 
+</div>
+<div class="code">
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zadd_IdL" class="idref" href="#Zadd_IdL"><span class="id" title="instance">Zadd_IdL</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#IdentityLeft"><span class="id" title="class">IdentityLeft</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> 0.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zadd_IdR" class="idref" href="#Zadd_IdR"><span class="id" title="instance">Zadd_IdR</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#IdentityRight"><span class="id" title="class">IdentityRight</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> 0.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zmul_IdL" class="idref" href="#Zmul_IdL"><span class="id" title="instance">Zmul_IdL</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#IdentityLeft"><span class="id" title="class">IdentityLeft</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zmul_IdR" class="idref" href="#Zmul_IdR"><span class="id" title="instance">Zmul_IdR</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#IdentityRight"><span class="id" title="class">IdentityRight</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Zadd_IdL</span> <span class="id" title="var">Zadd_IdR</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Zmul_IdL</span> <span class="id" title="var">Zmul_IdR</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Inverse Left/Right 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zadd_InvL" class="idref" href="#Zadd_InvL"><span class="id" title="instance">Zadd_InvL</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#InverseLeft"><span class="id" title="class">InverseLeft</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.opp"><span class="id" title="definition">Z.opp</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zadd_InvR" class="idref" href="#Zadd_InvR"><span class="id" title="instance">Zadd_InvR</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#InverseRight"><span class="id" title="class">InverseRight</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.opp"><span class="id" title="definition">Z.opp</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Zadd_InvL</span> <span class="id" title="var">Zadd_InvR</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Distributive 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zmul_add_DistrL" class="idref" href="#Zmul_add_DistrL"><span class="id" title="instance">Zmul_add_DistrL</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#DistrLeft"><span class="id" title="class">DistrLeft</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zmul_add_DistrR" class="idref" href="#Zmul_add_DistrR"><span class="id" title="instance">Zmul_add_DistrR</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#DistrRight"><span class="id" title="class">DistrRight</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Zmul_add_DistrL</span> <span class="id" title="var">Zmul_add_DistrR</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Semigroup 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zadd_SGroup" class="idref" href="#Zadd_SGroup"><span class="id" title="instance">Zadd_SGroup</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#SGroup"><span class="id" title="class">SGroup</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zmul_SGroup" class="idref" href="#Zmul_SGroup"><span class="id" title="instance">Zmul_SGroup</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#SGroup"><span class="id" title="class">SGroup</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Zadd_SGroup</span> <span class="id" title="var">Zmul_SGroup</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Abelian semigroup 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zadd_ASGroup" class="idref" href="#Zadd_ASGroup"><span class="id" title="instance">Zadd_ASGroup</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#ASGroup"><span class="id" title="class">ASGroup</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zmul_ASGroup" class="idref" href="#Zmul_ASGroup"><span class="id" title="instance">Zmul_ASGroup</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#ASGroup"><span class="id" title="class">ASGroup</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Zadd_ASGroup</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Zmul_ASGroup</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Monoid 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zadd_Monoid" class="idref" href="#Zadd_Monoid"><span class="id" title="instance">Zadd_Monoid</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Monoid"><span class="id" title="class">Monoid</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> 0.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zmul_Monoid" class="idref" href="#Zmul_Monoid"><span class="id" title="instance">Zmul_Monoid</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Monoid"><span class="id" title="class">Monoid</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Zadd_Monoid</span> <span class="id" title="var">Zmul_Monoid</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Abelian monoid 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zadd_AMonoid" class="idref" href="#Zadd_AMonoid"><span class="id" title="instance">Zadd_AMonoid</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#AMonoid"><span class="id" title="class">AMonoid</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> 0.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zmul_AMonoid" class="idref" href="#Zmul_AMonoid"><span class="id" title="instance">Zmul_AMonoid</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#AMonoid"><span class="id" title="class">AMonoid</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Zadd_AMonoid</span> <span class="id" title="var">Zmul_AMonoid</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Group 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zadd_Group" class="idref" href="#Zadd_Group"><span class="id" title="instance">Zadd_Group</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Group"><span class="id" title="class">Group</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.opp"><span class="id" title="definition">Z.opp</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Zadd_Group</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+AGroup 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Zadd_AGroup" class="idref" href="#Zadd_AGroup"><span class="id" title="instance">Zadd_AGroup</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#AGroup"><span class="id" title="class">AGroup</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.opp"><span class="id" title="definition">Z.opp</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Zadd_AGroup</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Ring 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Z_Ring" class="idref" href="#Z_Ring"><span class="id" title="instance">Z_Ring</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Ring"><span class="id" title="class">Ring</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.opp"><span class="id" title="definition">Z.opp</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Z_Ring</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+ARing 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Z_ARing" class="idref" href="#Z_ARing"><span class="id" title="instance">Z_ARing</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#ARing"><span class="id" title="class">ARing</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.opp"><span class="id" title="definition">Z.opp</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Z_ARing</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Order 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Z_Order" class="idref" href="#Z_Order"><span class="id" title="instance">Z_Order</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Order"><span class="id" title="class">Order</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.lt"><span class="id" title="definition">Z.lt</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.le"><span class="id" title="definition">Z.le</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">try</span> <span class="id" title="var">lia</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.ZArith_dec.html#Z_dec'"><span class="id" title="lemma">Z_dec'</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Z_Order</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="Z_OrderedARing" class="idref" href="#Z_OrderedARing"><span class="id" title="instance">Z_OrderedARing</span></a> :<br/>
+&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#OrderedARing"><span class="id" title="class">OrderedARing</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add"><span class="id" title="definition">Z.add</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.opp"><span class="id" title="definition">Z.opp</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.mul"><span class="id" title="definition">Z.mul</span></a> 1 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.lt"><span class="id" title="definition">Z.lt</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.le"><span class="id" title="definition">Z.le</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Z</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>; <span class="id" title="var">lia</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.Zorder.html#Zmult_lt_compat_r"><span class="id" title="lemma">Zmult_lt_compat_r</span></a>; <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Z_OrderedARing</span> : <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab259"></a><h1 class="section">Instances for ElementType</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="ElementTypeZ" class="idref" href="#ElementTypeZ"><span class="id" title="module">ElementTypeZ</span></a> &lt;: <a class="idref" href="FinMatrix.Matrix.ElementType.html#ElementType"><span class="id" title="module">ElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="ElementTypeZ.A" class="idref" href="#ElementTypeZ.A"><span class="id" title="definition">A</span></a> : <span class="id" title="keyword">Type</span> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="ElementTypeZ.Azero" class="idref" href="#ElementTypeZ.Azero"><span class="id" title="definition">Azero</span></a> : <a class="idref" href="FinMatrix.CoqExt.ZExt.html#ElementTypeZ.A"><span class="id" title="definition">A</span></a> := 0.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#ElementTypeZ.A"><span class="id" title="definition">A</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#ElementTypeZ.Azero"><span class="id" title="definition">Azero</span></a> : <span class="id" title="var">A</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="ElementTypeZ.AeqDec" class="idref" href="#ElementTypeZ.AeqDec"><span class="id" title="lemma">AeqDec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> (@<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#ElementTypeZ.A"><span class="id" title="definition">A</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#Z_eq_Dec"><span class="id" title="instance">Z_eq_Dec</span></a>. <span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#ElementTypeZ"><span class="id" title="module">ElementTypeZ</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="MonoidElementTypeZ" class="idref" href="#MonoidElementTypeZ"><span class="id" title="module">MonoidElementTypeZ</span></a> &lt;: <a class="idref" href="FinMatrix.Matrix.ElementType.html#MonoidElementType"><span class="id" title="module">MonoidElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#ElementTypeZ"><span class="id" title="module">ElementTypeZ</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="MonoidElementTypeZ.Aadd" class="idref" href="#MonoidElementTypeZ.Aadd"><span class="id" title="definition">Aadd</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Zplus"><span class="id" title="abbreviation">Zplus</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#MonoidElementTypeZ.Aadd"><span class="id" title="definition">Aadd</span></a> : <span class="id" title="var">A</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="6a0954c5c105455f4028fe7c176cc204" class="idref" href="#6a0954c5c105455f4028fe7c176cc204"><span class="id" title="notation">&quot;</span></a>+" := <a class="idref" href="FinMatrix.CoqExt.ZExt.html#MonoidElementTypeZ.Aadd"><span class="id" title="definition">Aadd</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="MonoidElementTypeZ.Aadd_AMonoid" class="idref" href="#MonoidElementTypeZ.Aadd_AMonoid"><span class="id" title="instance">Aadd_AMonoid</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#AMonoid"><span class="id" title="class">AMonoid</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#MonoidElementTypeZ.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#MonoidElementTypeZ.Azero"><span class="id" title="definition">Azero</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">A</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#MonoidElementTypeZ"><span class="id" title="module">MonoidElementTypeZ</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="RingElementTypeZ" class="idref" href="#RingElementTypeZ"><span class="id" title="module">RingElementTypeZ</span></a> &lt;: <a class="idref" href="FinMatrix.Matrix.ElementType.html#RingElementType"><span class="id" title="module">RingElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#MonoidElementTypeZ"><span class="id" title="module">MonoidElementTypeZ</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="RingElementTypeZ.Aone" class="idref" href="#RingElementTypeZ.Aone"><span class="id" title="definition">Aone</span></a> : <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.A"><span class="id" title="definition">A</span></a> := 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="RingElementTypeZ.Aopp" class="idref" href="#RingElementTypeZ.Aopp"><span class="id" title="definition">Aopp</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.opp"><span class="id" title="definition">Z.opp</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="RingElementTypeZ.Amul" class="idref" href="#RingElementTypeZ.Amul"><span class="id" title="definition">Amul</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Zmult"><span class="id" title="abbreviation">Zmult</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Aone"><span class="id" title="definition">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Amul"><span class="id" title="definition">Amul</span></a> : <span class="id" title="var">A</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="RingElementTypeZ.Asub" class="idref" href="#RingElementTypeZ.Asub"><span class="id" title="abbreviation">Asub</span></a> := (<span class="id" title="keyword">fun</span> <a id="x:1" class="idref" href="#x:1"><span class="id" title="binder">x</span></a> <a id="y:2" class="idref" href="#y:2"><span class="id" title="binder">y</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#x:1"><span class="id" title="variable">x</span></a> (<a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#y:2"><span class="id" title="variable">y</span></a>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="06574a89c8ebfcaf42cd7d34bc782155" class="idref" href="#06574a89c8ebfcaf42cd7d34bc782155"><span class="id" title="notation">&quot;</span></a>*" := <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Amul"><span class="id" title="definition">Amul</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="RingElementTypeZ.::A_scope:'-'_x" class="idref" href="#RingElementTypeZ.::A_scope:'-'_x"><span class="id" title="notation">&quot;</span></a>- a" := (<a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Aopp"><span class="id" title="definition">Aopp</span></a> <span class="id" title="var">a</span>) : <span class="id" title="var">A_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="RingElementTypeZ.::A_scope:x_'-'_x" class="idref" href="#RingElementTypeZ.::A_scope:x_'-'_x"><span class="id" title="notation">&quot;</span></a>-" := <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Asub"><span class="id" title="abbreviation">Asub</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="RingElementTypeZ.ARing" class="idref" href="#RingElementTypeZ.ARing"><span class="id" title="instance">ARing</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#ARing"><span class="id" title="class">ARing</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Azero"><span class="id" title="definition">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ.Aone"><span class="id" title="definition">Aone</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">constructor</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">A</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ"><span class="id" title="module">RingElementTypeZ</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="OrderedElementTypeZ" class="idref" href="#OrderedElementTypeZ"><span class="id" title="module">OrderedElementTypeZ</span></a> &lt;: <a class="idref" href="FinMatrix.Matrix.ElementType.html#OrderedElementType"><span class="id" title="module">OrderedElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#ElementTypeZ"><span class="id" title="module">ElementTypeZ</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="OrderedElementTypeZ.Alt" class="idref" href="#OrderedElementTypeZ.Alt"><span class="id" title="definition">Alt</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.lt"><span class="id" title="definition">Z.lt</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="OrderedElementTypeZ.Ale" class="idref" href="#OrderedElementTypeZ.Ale"><span class="id" title="definition">Ale</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.le"><span class="id" title="definition">Z.le</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedElementTypeZ.Ale"><span class="id" title="definition">Ale</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedElementTypeZ.Alt"><span class="id" title="definition">Alt</span></a> : <span class="id" title="var">A</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="OrderedElementTypeZ.Order" class="idref" href="#OrderedElementTypeZ.Order"><span class="id" title="instance">Order</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Order"><span class="id" title="class">Order</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedElementTypeZ.Alt"><span class="id" title="definition">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedElementTypeZ.Ale"><span class="id" title="definition">Ale</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#Z_Order"><span class="id" title="instance">Z_Order</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedElementTypeZ"><span class="id" title="module">OrderedElementTypeZ</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="OrderedRingElementTypeZ" class="idref" href="#OrderedRingElementTypeZ"><span class="id" title="module">OrderedRingElementTypeZ</span></a> &lt;: <a class="idref" href="FinMatrix.Matrix.ElementType.html#OrderedRingElementType"><span class="id" title="module">OrderedRingElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#RingElementTypeZ"><span class="id" title="module">RingElementTypeZ</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="OrderedRingElementTypeZ.Ale" class="idref" href="#OrderedRingElementTypeZ.Ale"><span class="id" title="definition">Ale</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.le"><span class="id" title="definition">Z.le</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="OrderedRingElementTypeZ.Alt" class="idref" href="#OrderedRingElementTypeZ.Alt"><span class="id" title="definition">Alt</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.lt"><span class="id" title="definition">Z.lt</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.Ale"><span class="id" title="definition">Ale</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.Alt"><span class="id" title="definition">Alt</span></a> : <span class="id" title="var">A</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="OrderedRingElementTypeZ.Order" class="idref" href="#OrderedRingElementTypeZ.Order"><span class="id" title="instance">Order</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Order"><span class="id" title="class">Order</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.Alt"><span class="id" title="definition">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.Ale"><span class="id" title="definition">Ale</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedElementTypeZ.Order"><span class="id" title="instance">OrderedElementTypeZ.Order</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="OrderedRingElementTypeZ.OrderedARing" class="idref" href="#OrderedRingElementTypeZ.OrderedARing"><span class="id" title="instance">OrderedARing</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#OrderedARing"><span class="id" title="class">OrderedARing</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.Azero"><span class="id" title="definition">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.Aone"><span class="id" title="definition">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.Alt"><span class="id" title="definition">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.Ale"><span class="id" title="definition">Ale</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.ARing"><span class="id" title="instance">ARing</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ.Order"><span class="id" title="instance">Order</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">A</span> <span class="id" title="tactic">in</span> *. <span class="id" title="var">lia</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">A</span> <span class="id" title="tactic">in</span> *. <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.Zorder.html#Zmult_lt_compat_r"><span class="id" title="lemma">Zmult_lt_compat_r</span></a>; <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#OrderedRingElementTypeZ"><span class="id" title="module">OrderedRingElementTypeZ</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab260"></a><h1 class="section">Conversion between Z and other types</h1>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="nat2Z" class="idref" href="#nat2Z"><span class="id" title="definition">nat2Z</span></a> (<a id="n:3" class="idref" href="#n:3"><span class="id" title="binder">n</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.of_nat"><span class="id" title="definition">Z.of_nat</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#n:3"><span class="id" title="variable">n</span></a>.<br/>
+<span class="id" title="keyword">Definition</span> <a id="Z2nat" class="idref" href="#Z2nat"><span class="id" title="definition">Z2nat</span></a> (<a id="z:4" class="idref" href="#z:4"><span class="id" title="binder">z</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.to_nat"><span class="id" title="definition">Z.to_nat</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#z:4"><span class="id" title="variable">z</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab261"></a><h1 class="section">Properties for Zeqb and Zeq</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a id="Zeqb" class="idref" href="#Zeqb"><span class="id" title="definition">Zeqb</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.eqb"><span class="id" title="definition">Z.eqb</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Infix</span>     <a id="f10153ef1a81fe79ed16d848b456c79b" class="idref" href="#f10153ef1a81fe79ed16d848b456c79b"><span class="id" title="notation">&quot;</span></a>=?"          := <a class="idref" href="FinMatrix.CoqExt.ZExt.html#Zeqb"><span class="id" title="definition">Zeqb</span></a>           : <span class="id" title="var">Z_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Reflection of (=) and (=?) 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="Zeqb_true_iff" class="idref" href="#Zeqb_true_iff"><span class="id" title="lemma">Zeqb_true_iff</span></a> : <span class="id" title="keyword">forall</span> <a id="x:5" class="idref" href="#x:5"><span class="id" title="binder">x</span></a> <a id="y:6" class="idref" href="#y:6"><span class="id" title="binder">y</span></a>, <a class="idref" href="FinMatrix.CoqExt.ZExt.html#x:5"><span class="id" title="variable">x</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#f10153ef1a81fe79ed16d848b456c79b"><span class="id" title="notation">=?</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#y:6"><span class="id" title="variable">y</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#x:5"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#y:6"><span class="id" title="variable">y</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.eqb_eq"><span class="id" title="lemma">Z.eqb_eq</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="Zeqb_false_iff" class="idref" href="#Zeqb_false_iff"><span class="id" title="lemma">Zeqb_false_iff</span></a> : <span class="id" title="keyword">forall</span> <a id="x:7" class="idref" href="#x:7"><span class="id" title="binder">x</span></a> <a id="y:8" class="idref" href="#y:8"><span class="id" title="binder">y</span></a>, <a class="idref" href="FinMatrix.CoqExt.ZExt.html#x:7"><span class="id" title="variable">x</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#f10153ef1a81fe79ed16d848b456c79b"><span class="id" title="notation">=?</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#y:8"><span class="id" title="variable">y</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#false"><span class="id" title="constructor">false</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#x:7"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#y:8"><span class="id" title="variable">y</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.eqb_neq"><span class="id" title="lemma">Z.eqb_neq</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab262"></a><h1 class="section">Other properties</h1>
+
+<div class="paragraph"> </div>
+
+ Z.eqb reflects Z.eq 
+</div>
+<div class="code">
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Resolve</span> <span class="id" title="var">Z.eqb_spec</span> : <span class="id" title="var">bdestruct</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Boolean equality of Zadd satisfy right cancelling rule 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="Zadd_eqb_cancel_r" class="idref" href="#Zadd_eqb_cancel_r"><span class="id" title="lemma">Zadd_eqb_cancel_r</span></a> : <span class="id" title="keyword">forall</span> (<a id="z1:9" class="idref" href="#z1:9"><span class="id" title="binder">z1</span></a> <a id="z2:10" class="idref" href="#z2:10"><span class="id" title="binder">z2</span></a> <a id="a:11" class="idref" href="#a:11"><span class="id" title="binder">a</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Numbers.BinNums.html#Z"><span class="id" title="inductive">Z</span></a>),<br/>
+&nbsp;&nbsp;(<a class="idref" href="FinMatrix.CoqExt.ZExt.html#z1:9"><span class="id" title="variable">z1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#46584eddd5fdb16176a10a2843177d3a"><span class="id" title="notation">+</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#a:11"><span class="id" title="variable">a</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#f10153ef1a81fe79ed16d848b456c79b"><span class="id" title="notation">=?</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#z2:10"><span class="id" title="variable">z2</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#46584eddd5fdb16176a10a2843177d3a"><span class="id" title="notation">+</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#a:11"><span class="id" title="variable">a</span></a>)%<span class="id" title="var">Z</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> (<a class="idref" href="FinMatrix.CoqExt.ZExt.html#z1:9"><span class="id" title="variable">z1</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#f10153ef1a81fe79ed16d848b456c79b"><span class="id" title="notation">=?</span></a> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#z2:10"><span class="id" title="variable">z2</span></a>)%<span class="id" title="var">Z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">remember</span> (<span class="id" title="var">z1</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#f10153ef1a81fe79ed16d848b456c79b"><span class="id" title="notation">=?</span></a> <span class="id" title="var">z2</span>)%<span class="id" title="var">Z</span> <span class="id" title="keyword">as</span> <span class="id" title="var">b1</span> <span class="id" title="var">eqn</span> : <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">remember</span> (<span class="id" title="var">z1</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#46584eddd5fdb16176a10a2843177d3a"><span class="id" title="notation">+</span></a> <span class="id" title="var">a</span> <a class="idref" href="FinMatrix.CoqExt.ZExt.html#f10153ef1a81fe79ed16d848b456c79b"><span class="id" title="notation">=?</span></a> <span class="id" title="var">z2</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#46584eddd5fdb16176a10a2843177d3a"><span class="id" title="notation">+</span></a> <span class="id" title="var">a</span>)%<span class="id" title="var">Z</span> <span class="id" title="keyword">as</span> <span class="id" title="var">b2</span> <span class="id" title="var">eqn</span> : <span class="id" title="var">H2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">b1</span>,<span class="id" title="var">b2</span>; <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq_sym"><span class="id" title="lemma">eq_sym</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>,<span class="id" title="var">H2</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.eqb_eq"><span class="id" title="lemma">Z.eqb_eq</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.eqb_neq"><span class="id" title="lemma">Z.eqb_neq</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq_sym"><span class="id" title="lemma">eq_sym</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>,<span class="id" title="var">H2</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.eqb_neq"><span class="id" title="lemma">Z.eqb_neq</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.eqb_eq"><span class="id" title="lemma">Z.eqb_eq</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.ZArith.BinInt.html#Z.add_cancel_r"><span class="id" title="lemma">Z.add_cancel_r</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H2</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H1</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H2</span>. <span class="id" title="var">easy</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

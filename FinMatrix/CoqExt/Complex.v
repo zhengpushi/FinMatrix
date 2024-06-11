@@ -9,7 +9,7 @@
  *)
 
 Require Export Hierarchy ElementType.
-Require Export RExt RFunExt.
+Require Export RExt.
 Open Scope R_scope.
 
 Declare Scope C_scope.

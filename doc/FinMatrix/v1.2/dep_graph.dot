@@ -1,0 +1,167 @@
+digraph dependencies {
+"FinMatrix.Matrix.MatrixInvGE_test"[label="MatrixInvGE_test"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixInvGE_test.html"]
+"FinMatrix.Matrix.MatrixInvAM_test"[label="MatrixInvAM_test"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixInvAM_test.html"]
+"FinMatrix.Matrix.MatrixRFun"[label="MatrixRFun"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixRFun.html"]
+"FinMatrix.Matrix.MatrixC"[label="MatrixC"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixC.html"]
+"FinMatrix.Matrix.MatrixR"[label="MatrixR"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixR.html"]
+"FinMatrix.Matrix.MatrixQc"[label="MatrixQc"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixQc.html"]
+"FinMatrix.Matrix.MatrixQ"[label="MatrixQ"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixQ.html"]
+"FinMatrix.Matrix.MatrixZ"[label="MatrixZ"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixZ.html"]
+"FinMatrix.Matrix.MatrixNat"[label="MatrixNat"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixNat.html"]
+"FinMatrix.Matrix.MatrixModule"[label="MatrixModule"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixModule.html"]
+"FinMatrix.Matrix.ElementType"[label="ElementType"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.ElementType.html"]
+"FinMatrix.Matrix.MatrixOrth"[label="MatrixOrth"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixOrth.html"]
+"FinMatrix.Matrix.MatrixInvGE"[label="MatrixInvGE"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixInvGE.html"]
+"FinMatrix.Matrix.MatrixInvAM"[label="MatrixInvAM"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixInvAM.html"]
+"FinMatrix.Matrix.MatrixInvBase"[label="MatrixInvBase"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixInvBase.html"]
+"FinMatrix.Matrix.MatrixGauss"[label="MatrixGauss"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixGauss.html"]
+"FinMatrix.Matrix.MatrixDet"[label="MatrixDet"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.MatrixDet.html"]
+"FinMatrix.Matrix.Permutation"[label="Permutation"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.Permutation.html"]
+"FinMatrix.Matrix.Matrix"[label="Matrix"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.Matrix.html"]
+"FinMatrix.Matrix.Vector"[label="Vector"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.Vector.html"]
+"FinMatrix.Matrix.Sequence"[label="Sequence"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.Sequence.html"]
+"FinMatrix.Matrix.Fin"[label="Fin"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.Matrix.Fin.html"]
+"FinMatrix.CoqExt.MyExtrOCamlR"[label="MyExtrOCamlR"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.MyExtrOCamlR.html"]
+"FinMatrix.CoqExt.LinearSpace"[label="LinearSpace"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.LinearSpace.html"]
+"FinMatrix.CoqExt.Complex"[label="Complex"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.Complex.html"]
+"FinMatrix.CoqExt.RAnalysisExt"[label="RAnalysisExt"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.RAnalysisExt.html"]
+"FinMatrix.CoqExt.RFunExt"[label="RFunExt"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.RFunExt.html"]
+"FinMatrix.CoqExt.RExt"[label="RExt"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.RExt.html"]
+"FinMatrix.CoqExt.QcExt"[label="QcExt"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.QcExt.html"]
+"FinMatrix.CoqExt.QExt"[label="QExt"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.QExt.html"]
+"FinMatrix.CoqExt.ZExt"[label="ZExt"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.ZExt.html"]
+"FinMatrix.CoqExt.PositiveExt"[label="PositiveExt"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.PositiveExt.html"]
+"FinMatrix.CoqExt.NatExt"[label="NatExt"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.NatExt.html"]
+"FinMatrix.CoqExt.Hierarchy"[label="Hierarchy"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.Hierarchy.html"]
+"FinMatrix.CoqExt.ListExt"[label="ListExt"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.ListExt.html"]
+"FinMatrix.CoqExt.StrExt"[label="StrExt"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.StrExt.html"]
+"FinMatrix.CoqExt.FuncExt"[label="FuncExt"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.FuncExt.html"]
+"FinMatrix.CoqExt.BoolExt"[label="BoolExt"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.BoolExt.html"]
+"FinMatrix.CoqExt.Basic"[label="Basic"
+	, style=filled, fillcolor=lightblue 
+	, URL="FinMatrix.CoqExt.Basic.html"]
+"FinMatrix.CoqExt.RExt" -> "FinMatrix.CoqExt.Complex"
+"FinMatrix.Matrix.ElementType" -> "FinMatrix.CoqExt.Complex"
+"FinMatrix.CoqExt.Basic" -> "FinMatrix.CoqExt.Hierarchy"
+"FinMatrix.CoqExt.BoolExt" -> "FinMatrix.CoqExt.Hierarchy"
+"FinMatrix.CoqExt.Hierarchy" -> "FinMatrix.CoqExt.LinearSpace"
+"FinMatrix.CoqExt.NatExt" -> "FinMatrix.CoqExt.ListExt"
+"FinMatrix.CoqExt.StrExt" -> "FinMatrix.CoqExt.ListExt"
+"FinMatrix.Matrix.ElementType" -> "FinMatrix.CoqExt.NatExt"
+"FinMatrix.CoqExt.Hierarchy" -> "FinMatrix.CoqExt.PositiveExt"
+"FinMatrix.CoqExt.PositiveExt" -> "FinMatrix.CoqExt.QExt"
+"FinMatrix.CoqExt.ZExt" -> "FinMatrix.CoqExt.QExt"
+"FinMatrix.CoqExt.QExt" -> "FinMatrix.CoqExt.QcExt"
+"FinMatrix.CoqExt.RFunExt" -> "FinMatrix.CoqExt.RAnalysisExt"
+"FinMatrix.CoqExt.FuncExt" -> "FinMatrix.CoqExt.RFunExt"
+"FinMatrix.CoqExt.RExt" -> "FinMatrix.CoqExt.RFunExt"
+"FinMatrix.Matrix.ElementType" -> "FinMatrix.CoqExt.ZExt"
+"FinMatrix.CoqExt.Hierarchy" -> "FinMatrix.Matrix.ElementType"
+"FinMatrix.CoqExt.ListExt" -> "FinMatrix.Matrix.Fin"
+"FinMatrix.Matrix.Vector" -> "FinMatrix.Matrix.Matrix"
+"FinMatrix.CoqExt.Complex" -> "FinMatrix.Matrix.MatrixC"
+"FinMatrix.Matrix.MatrixModule" -> "FinMatrix.Matrix.MatrixC"
+"FinMatrix.Matrix.Permutation" -> "FinMatrix.Matrix.MatrixDet"
+"FinMatrix.CoqExt.MyExtrOCamlR" -> "FinMatrix.Matrix.MatrixGauss"
+"FinMatrix.CoqExt.QcExt" -> "FinMatrix.Matrix.MatrixGauss"
+"FinMatrix.Matrix.Matrix" -> "FinMatrix.Matrix.MatrixGauss"
+"FinMatrix.Matrix.MatrixInvBase" -> "FinMatrix.Matrix.MatrixInvAM"
+"FinMatrix.CoqExt.QcExt" -> "FinMatrix.Matrix.MatrixInvAM_test"
+"FinMatrix.Matrix.MatrixInvAM" -> "FinMatrix.Matrix.MatrixInvAM_test"
+"FinMatrix.Matrix.MatrixDet" -> "FinMatrix.Matrix.MatrixInvBase"
+"FinMatrix.Matrix.MatrixGauss" -> "FinMatrix.Matrix.MatrixInvGE"
+"FinMatrix.Matrix.MatrixInvBase" -> "FinMatrix.Matrix.MatrixInvGE"
+"FinMatrix.Matrix.MatrixInvGE" -> "FinMatrix.Matrix.MatrixInvGE_test"
+"FinMatrix.Matrix.MatrixInvGE" -> "FinMatrix.Matrix.MatrixModule"
+"FinMatrix.Matrix.MatrixOrth" -> "FinMatrix.Matrix.MatrixModule"
+"FinMatrix.Matrix.MatrixModule" -> "FinMatrix.Matrix.MatrixNat"
+"FinMatrix.Matrix.MatrixInvAM" -> "FinMatrix.Matrix.MatrixOrth"
+"FinMatrix.Matrix.MatrixQc" -> "FinMatrix.Matrix.MatrixQ"
+"FinMatrix.Matrix.MatrixModule" -> "FinMatrix.Matrix.MatrixQc"
+"FinMatrix.CoqExt.RFunExt" -> "FinMatrix.Matrix.MatrixR"
+"FinMatrix.Matrix.MatrixModule" -> "FinMatrix.Matrix.MatrixR"
+"FinMatrix.CoqExt.RFunExt" -> "FinMatrix.Matrix.MatrixRFun"
+"FinMatrix.Matrix.MatrixModule" -> "FinMatrix.Matrix.MatrixRFun"
+"FinMatrix.Matrix.MatrixModule" -> "FinMatrix.Matrix.MatrixZ"
+"FinMatrix.Matrix.Matrix" -> "FinMatrix.Matrix.Permutation"
+"FinMatrix.CoqExt.ListExt" -> "FinMatrix.Matrix.Sequence"
+"FinMatrix.CoqExt.RExt" -> "FinMatrix.Matrix.Vector"
+"FinMatrix.Matrix.Fin" -> "FinMatrix.Matrix.Vector"
+"FinMatrix.Matrix.Sequence" -> "FinMatrix.Matrix.Vector"
+}

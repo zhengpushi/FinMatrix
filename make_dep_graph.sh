@@ -26,10 +26,12 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-# Modify node style in dot file: add backcolor, add URL
+# modify node style in dot file: add backcolor, add URL
 sed -i -E 's/"([^"]+)"\[label="([^"]+)"\]/"\1"[label="\2"\
 	, style=filled, fillcolor=lightblue \
 	, URL="\1.html"]/g' ${dot_file}
+# replace all "/" to "." in any string
+sed -i -E 's/"([^"]*)"/"\1"/g; s/(^|[^"])\/([^"]|$)/\1.\2/g' ${dot_file}
 
 # Generate a pdf with toposorted graph from the dot file
 # `dot` utility is distributed with graphviz utility collection
@@ -37,6 +39,6 @@ sed -i -E 's/"([^"]+)"\[label="([^"]+)"\]/"\1"[label="\2"\
 #    brew install graphviz
 dot -Tpdf ${dot_file} -o ${pdf_file}
 dot -Tpng ${dot_file} -o ${png_file}
-rm ${dot_file}
+# rm ${dot_file}
 echo "Generate dependent file (png):" ${png_file}
 echo "Generate dependent file (pdf):" ${pdf_file}

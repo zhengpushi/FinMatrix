@@ -3208,6 +3208,10 @@ Module FieldMatrixTheory (E : FieldElementType).
   Lemma SOnP_mmul : forall {n} (M N : smat n), SOnP M -> SOnP N -> SOnP (M * N).
   Proof. intros. apply SOnP_mmul; auto. Qed.
 
+  (** I is SOn *)
+  Lemma mat1_SOnP : forall {n}, SOnP (@mat1 n).
+  Proof. intros. apply mat1_SOnP. Qed.
+
   (** Create a SOn from a matrix satisfing `SOnP` *)
   Definition mkSOn {n} (M : smat n) (H : SOnP M) : @SOn n := mkSOn M H.
 

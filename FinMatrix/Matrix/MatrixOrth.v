@@ -585,6 +585,10 @@ Module MatrixOrth (F : FieldElementType).
       apply morth_mmul; auto. rewrite mdet_mmul,H1,H2; ra.
     Qed.
 
+    (** I is SOn *)
+    Lemma mat1_SOnP : forall {n}, SOnP (@mat1 n).
+    Proof. intros. hnf in *. split. apply morth_mat1. apply mdet_mat1. Qed.
+
     (** Create a SOn from a matrix satisfing `SOnP` *)
     Definition mkSOn {n} (m : smat n) (H : SOnP m) : @SOn n.
       refine (Build_SOn (Build_GOn _ m _) _). apply H.

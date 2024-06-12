@@ -256,11 +256,11 @@ Module NormedOrderedFieldElementTypeQc <: NormedOrderedFieldElementType.
 End NormedOrderedFieldElementTypeQc.
 
 Module ElementTypeR <: ElementType.
-  Definition A : Type := R.
-  Definition Azero : A := 0.
-  Hint Unfold A Azero : A.
+  Definition tA : Type := R.
+  Definition Azero : tA := 0.
+  Hint Unfold tA Azero : tA.
 
-  Lemma AeqDec : Dec (@eq A).
+  Lemma AeqDec : Dec (@eq tA).
   Proof. apply Req_Dec. Defined.
 End ElementTypeR.
 
@@ -269,8 +269,8 @@ Module test_ElementType.
   Module Import ElementTypeFunEx1 :=
     ElementTypeFun ElementTypeNat ElementTypeR.
 
-  Definition f : A := fun i => match i with 0%nat => 1 | 1%nat => 2 | _ => 1 end.
-  Definition g : A := fun i => match i with 1%nat => 2 | _ => 1 end.
+  Definition f : tA := fun i => match i with 0%nat => 1 | 1%nat => 2 | _ => 1 end.
+  Definition g : tA := fun i => match i with 1%nat => 2 | _ => 1 end.
 
   Goal f = g.
   Proof. cbv. intros. auto. Qed.
@@ -281,7 +281,7 @@ Module OrderedElementTypeR <: OrderedElementType.
 
   Definition Alt := Rlt.
   Definition Ale := Rle.
-  Hint Unfold Ale Alt : A.
+  Hint Unfold Ale Alt : tA.
 
   #[export] Instance Order : Order Alt Ale.
   Proof. apply R_Order. Qed.
@@ -291,12 +291,12 @@ Module MonoidElementTypeR <: MonoidElementType.
   Include ElementTypeR.
   
   Definition Aadd := Rplus.
-  Hint Unfold Aadd : A.
+  Hint Unfold Aadd : tA.
   
   Infix "+" := Aadd : A_scope.
 
   #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
-  Proof. intros. repeat constructor; intros; autounfold with A; ring. Qed.
+  Proof. intros. repeat constructor; intros; autounfold with tA; ring. Qed.
 End MonoidElementTypeR.
 
 Module test_MonoidElementType.
@@ -306,11 +306,11 @@ Module test_MonoidElementType.
   Module Import MonoidElementTypeFunEx1 :=
     MonoidElementTypeFun MonoidElementTypeQc MonoidElementTypeR.
 
-  (* Definition f : A := fun i:Qc => Qc2R i + R1. *)
-  (* Definition g : A := fun i:Qc => Qc2R (i+1). *)
-  Definition f : A := fun i => 1.
-  Definition g : A := fun i => 2.
-  Definition h : A := fun i => 3.
+  (* Definition f : tA := fun i:Qc => Qc2R i + R1. *)
+  (* Definition g : tA := fun i:Qc => Qc2R (i+1). *)
+  Definition f : tA := fun i => 1.
+  Definition g : tA := fun i => 2.
+  Definition h : tA := fun i => 3.
 
   Goal f + g + h = f + (g + h).
   Proof. rewrite associative. auto. Qed.
@@ -319,10 +319,10 @@ End test_MonoidElementType.
 Module RingElementTypeR <: RingElementType.
   Include MonoidElementTypeR.
   
-  Definition Aone : A := 1.
+  Definition Aone : tA := 1.
   Definition Aopp := Ropp.
   Definition Amul := Rmult.
-  Hint Unfold Aone Aadd Aopp Amul : A.
+  Hint Unfold Aone Aadd Aopp Amul : tA.
   
   Notation Asub := (fun x y => Aadd x (Aopp y)).
   Infix "*" := Amul : A_scope.
@@ -330,7 +330,7 @@ Module RingElementTypeR <: RingElementType.
   Infix "-" := Asub : A_scope.
 
   #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
-  Proof. repeat constructor; autounfold with A; intros; ring. Qed.
+  Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
   
   (* Add Ring Ring_inst : (make_ring_theory ARing). *)
 End RingElementTypeR.
@@ -342,8 +342,8 @@ Module test_RingElementType.
   Module Import RingElementTypeFunEx1 :=
     RingElementTypeFun RingElementTypeQc RingElementTypeR.
   
-  Definition f : A := fun i:Qc => (Qc2R i + R1)%R.
-  Definition g : A := fun i:Qc => Qc2R (i+1).
+  Definition f : tA := fun i:Qc => (Qc2R i + R1)%R.
+  Definition g : tA := fun i:Qc => Qc2R (i+1).
 
   Goal f = g.
   Proof. Abort.
@@ -355,7 +355,7 @@ Module OrderedRingElementTypeR <: OrderedRingElementType.
   
   Definition Ale := Rle.
   Definition Alt := Rlt.
-  Hint Unfold Ale Alt : A.
+  Hint Unfold Ale Alt : tA.
 
   #[export] Instance Order : Order Alt Ale.
   Proof. apply OrderedElementTypeR.Order. Qed.
@@ -364,8 +364,8 @@ Module OrderedRingElementTypeR <: OrderedRingElementType.
     : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
   Proof.
     constructor. apply ARing. apply Order.
-    - intros; autounfold with A in *. lra.
-    - intros; autounfold with A in *. apply Rmult_lt_compat_r; auto.
+    - intros; autounfold with tA in *. lra.
+    - intros; autounfold with tA in *. apply Rmult_lt_compat_r; auto.
   Qed.
 
   Notation "| a |" := (Aabs a) : A_scope.
@@ -376,7 +376,7 @@ Module FieldElementTypeR <: FieldElementType.
   Include RingElementTypeR.
   
   Definition Ainv := Rinv.
-  Hint Unfold Ainv : A.
+  Hint Unfold Ainv : tA.
   
   Notation Adiv := (fun x y => Amul x (Ainv y)).
 
@@ -386,7 +386,7 @@ Module FieldElementTypeR <: FieldElementType.
   #[export] Instance Field : Field Aadd Azero Aopp Amul Aone Ainv.
   Proof.
     constructor. apply ARing. intros.
-    autounfold with A. field. auto.
+    autounfold with tA. field. auto.
     apply Aone_neq_Azero.
   Qed.
 
@@ -398,7 +398,7 @@ Module OrderedFieldElementTypeR <: OrderedFieldElementType.
   
   Definition Ale := Rle.
   Definition Alt := Rlt.
-  Hint Unfold Ale Alt : A.
+  Hint Unfold Ale Alt : tA.
 
   #[export] Instance Order : Order Alt Ale.
   Proof. apply OrderedElementTypeR.Order. Qed.

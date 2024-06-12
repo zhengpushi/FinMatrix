@@ -30,25 +30,25 @@ Require Export Hierarchy.
 (* ######################################################################### *)
 (** * ElementType *)
 
-(** A type with decidable equality and zero element *)
+(** One type with decidable equality and zero element *)
 Module Type ElementType.
-  Parameter A : Type.
-  Parameter Azero : A.
+  Parameter tA : Type.
+  Parameter Azero : tA.
   Notation "0" := Azero : A_scope.
 
-  Axiom AeqDec : Dec (@eq A).
+  Axiom AeqDec : Dec (@eq tA).
   #[export] Existing Instance AeqDec.
 End ElementType.
 
 (** ** Instances *)
 
 Module ElementTypeFun (I O : ElementType) <: ElementType.
-  Definition A : Type := I.A -> O.A.
-  Definition Azero : A := fun _ => O.Azero.
-  Hint Unfold A Azero : A.
+  Definition tA : Type := I.tA -> O.tA.
+  Definition Azero : tA := fun _ => O.Azero.
+  Hint Unfold tA Azero : tA.
 
-  Lemma AeqDec : Dec (@eq A).
-  Proof. constructor. intros a b. unfold A in *.
+  Lemma AeqDec : Dec (@eq tA).
+  Proof. constructor. intros a b. unfold tA in *.
   Admitted.
 End ElementTypeFun.
 
@@ -60,7 +60,7 @@ End ElementTypeFun.
 Module Type OrderedElementType <: ElementType.
   Include ElementType.
   
-  Parameter Alt Ale : A -> A -> Prop.
+  Parameter Alt Ale : tA -> tA -> Prop.
 
   Infix "<" := Alt : A_scope.
   Infix "<=" := Ale : A_scope.
@@ -78,7 +78,7 @@ Module Type MonoidElementType <: ElementType.
   Include ElementType.
   Open Scope A_scope.
 
-  Parameter Aadd : A -> A -> A.
+  Parameter Aadd : tA -> tA -> tA.
   Infix "+" := Aadd : A_scope.
 
   Axiom Aadd_AMonoid : AMonoid Aadd Azero.
@@ -93,39 +93,39 @@ Module MonoidElementTypeFun (I O : MonoidElementType) <: MonoidElementType.
   Include (ElementTypeFun I O).
   Open Scope A_scope.
 
-  Definition Aadd (f g : A) : A := fun x : I.A => O.Aadd (f x) (g x).
-  Hint Unfold Aadd : A.
+  Definition Aadd (f g : tA) : tA := fun x : I.tA => O.Aadd (f x) (g x).
+  Hint Unfold Aadd : tA.
   
   Infix "+" := Aadd : A_scope.
 
   Lemma Aadd_Associative : Associative Aadd.
   Proof.
-    intros. constructor; intros; autounfold with A.
+    intros. constructor; intros; autounfold with tA.
     extensionality x. apply O.Aadd_AMonoid.
   Qed.
   
   Lemma Aadd_Commutative : Commutative Aadd.
   Proof.
-    intros. constructor; intros; autounfold with A.
+    intros. constructor; intros; autounfold with tA.
     extensionality x. apply O.Aadd_AMonoid.
   Qed.
   
   Lemma Aadd_IdentityLeft : IdentityLeft Aadd Azero.
   Proof.
-    intros. constructor; intros; autounfold with A.
+    intros. constructor; intros; autounfold with tA.
     extensionality x. apply O.Aadd_AMonoid.
   Qed.
   
   Lemma Aadd_IdentityRight : IdentityRight Aadd Azero.
   Proof.
-    intros. constructor; intros; autounfold with A.
+    intros. constructor; intros; autounfold with tA.
     extensionality x. apply O.Aadd_AMonoid.
   Qed.
 
   #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
   Proof.
-    intros. constructor; intros; autounfold with A.
-    intros. constructor; intros; autounfold with A.
+    intros. constructor; intros; autounfold with tA.
+    intros. constructor; intros; autounfold with tA.
     constructor. apply Aadd_Associative.
     apply Aadd_IdentityLeft. apply Aadd_IdentityRight.
     constructor. apply Aadd_Associative.
@@ -145,9 +145,9 @@ Module Type RingElementType <: MonoidElementType.
   Include MonoidElementType.
   Open Scope A_scope.
 
-  Parameter Aone : A.
-  Parameter Amul : A -> A -> A.
-  Parameter Aopp : A -> A.
+  Parameter Aone : tA.
+  Parameter Amul : tA -> tA -> tA.
+  Parameter Aopp : tA -> tA.
 
   Notation Asub := (fun x y => Aadd x (Aopp y)).
   Infix "*" := Amul : A_scope.
@@ -156,7 +156,7 @@ Module Type RingElementType <: MonoidElementType.
   Notation "- a" := (Aopp a) : A_scope.
   Infix "-" := Asub : A_scope.
 
-  (** A Ring structure can be derived from the context *)
+  (** Ring structure can be derived from the context *)
   Axiom ARing : ARing Aadd 0 Aopp Amul 1.
   
   #[export] Existing Instance ARing.
@@ -173,14 +173,14 @@ Module RingElementTypeFun (I O : RingElementType) <: RingElementType.
   
   Include (MonoidElementTypeFun I O).
 
-  Definition Aone : A := fun _ => O.Aone.
-  Definition Aopp (f : A) : A := fun x : I.A => O.Aopp (f x).
-  Definition Amul (f g : A) : A := fun x : I.A => O.Amul (f x) (g x).
+  Definition Aone : tA := fun _ => O.Aone.
+  Definition Aopp (f : tA) : tA := fun x : I.tA => O.Aopp (f x).
+  Definition Amul (f g : tA) : tA := fun x : I.tA => O.Amul (f x) (g x).
   Notation Asub := (fun x y => Aadd x (Aopp y)).
 
   #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
   Proof.
-    repeat constructor; autounfold with A; intros;
+    repeat constructor; autounfold with tA; intros;
       apply functional_extensionality; intros; cbv; ring.
   Qed.
   
@@ -195,7 +195,7 @@ End RingElementTypeFun.
 Module Type OrderedRingElementType <: RingElementType <: OrderedElementType.
   Include RingElementType.
 
-  Parameter Alt Ale : A -> A -> Prop.
+  Parameter Alt Ale : tA -> tA -> Prop.
 
   Infix "<" := Alt : A_scope.
   Infix "<=" := Ale : A_scope.
@@ -220,7 +220,7 @@ Module Type FieldElementType <: RingElementType.
   Include RingElementType.
   Open Scope A_scope.
 
-  Parameter Ainv : A -> A.
+  Parameter Ainv : tA -> tA.
 
   Notation Adiv := (fun x y => Amul x (Ainv y)).
   Notation "/ a" := (Ainv a) : A_scope.
@@ -241,7 +241,7 @@ End FieldElementType.
 (* Module FieldElementTypeFun (I O : FieldElementType) <: FieldElementType. *)
 (*   Include (RingElementTypeFun I O). *)
 
-(*   Definition Ainv : A -> A. *)
+(*   Definition Ainv : tA -> tA. *)
 (*     cbv. intros [f Pf]. *)
 (*     refine (exist _ (fun x : I.T => O.Ainv (f x)) _). *)
 (*     constructor. intros. *)
@@ -301,7 +301,7 @@ End FieldElementType.
 Module Type OrderedFieldElementType <: FieldElementType <: OrderedRingElementType.
   Include FieldElementType.
 
-  Parameter Alt Ale : A -> A -> Prop.
+  Parameter Alt Ale : tA -> tA -> Prop.
 
   Infix "<" := Alt : A_scope.
   Infix "<=" := Ale : A_scope.
@@ -328,7 +328,7 @@ Module Type NormedOrderedFieldElementType <: OrderedFieldElementType.
   Include OrderedFieldElementType.
   Import Reals.
 
-  Parameter a2r : A -> R.
+  Parameter a2r : tA -> R.
   Axiom A2R : A2R Aadd Azero Aopp Amul Aone Ainv Alt Ale a2r.
   #[export] Existing Instance A2R.
 End NormedOrderedFieldElementType.

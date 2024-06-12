@@ -21,14 +21,14 @@ Require Import NatExt.
 Require Export Matrix MatrixDet MatrixInvBase.
 Require ZArith Reals.
 
-Generalizable Variable A Aadd Azero Aopp Amul Aone Ainv.
+Generalizable Variable tA Aadd Azero Aopp Amul Aone Ainv.
 
 
 (* ############################################################################ *)
 (** * Matrix Inversion by Adjoint Matrix (Typeclass version) *)
 
 Section minv.
-  Context `{HField : Field} {AeqDec : Dec (@eq A)}.
+  Context `{HField : Field} {AeqDec : Dec (@eq tA)}.
   Add Field field_thy_inst : (make_field_theory HField).
   Open Scope A_scope.
   Open Scope mat_scope.
@@ -42,7 +42,7 @@ Section minv.
   Notation "/ a" := (Ainv a) : A_scope.
   Notation "a / b" := ((a * /b)%A) : A_scope.
 
-  Notation smat n := (smat A n).
+  Notation smat n := (smat tA n).
   Notation mat1 := (@mat1 _ Azero Aone).
   Notation mcmul := (@mcmul _ Amul).
   Infix "c*" := mcmul : mat_scope.
@@ -58,7 +58,7 @@ Section minv.
   Notation madj := (@madj _ Aadd 0 Aopp Amul 1).
   Notation "M \A" := (madj M) : mat_scope.
   Notation mcofactorEx := (@mcofactorEx _ Aadd 0 Aopp Amul 1).
-  Notation mdet1 := (@mdet1 A).
+  Notation mdet1 := (@mdet1 tA).
   Notation mdet2 := (@mdet2 _ Aadd Aopp Amul).
   Notation mdet3 := (@mdet3 _ Aadd Aopp Amul).
   Notation mdet4 := (@mdet4 _ Aadd Aopp Amul).
@@ -188,7 +188,7 @@ Section minv.
   (* Note: the purpose of this function is to support quickly evaluation *)
 
   (** Get (i,j) element of inverse matrix of matrix `M` *)
-  Definition minvElement {n} (M : smat (S n)) (i j : 'I_(S n)) : A :=
+  Definition minvElement {n} (M : smat (S n)) (i j : 'I_(S n)) : tA :=
     ((/ (mdetEx M)) * mcofactorEx M j i)%A.
 
   (** If `M` is invertible, minvElement M i j = (M\-1).[i].[j] *)
@@ -205,7 +205,7 @@ Section minv.
 
   (* Get the formulas by computation *)
   Section formulas_by_computtation.
-    Variable a11 a12 a13 a14 a21 a22 a23 a24 a31 a32 a33 a34 a41 a42 a43 a44 : A.
+    Variable a11 a12 a13 a14 a21 a22 a23 a24 a31 a32 a33 a34 a41 a42 a43 a44 : tA.
     Let M1 : smat 1 := l2m 0 [[a11]].
     Let M2 : smat 2 := l2m 0 [[a11;a12];[a21;a22]].
     Let M3 : smat 3 := l2m 0 [[a11;a12;a13];[a21;a22;a23];[a31;a32;a33]].
@@ -352,7 +352,7 @@ Module MinvCoreAM (E : FieldElementType) <: MinvCore E.
   Local Notation "/ a" := (Ainv a) : A_scope.
   Local Notation "a / b" := ((a * /b)%A) : A_scope.
 
-  Local Notation smat n := (smat A n).
+  Local Notation smat n := (smat tA n).
   Local Notation mat1 := (@mat1 _ Azero Aone).
   Local Notation mcmul := (@mcmul _ Amul).
   Local Infix "c*" := mcmul : mat_scope.
@@ -463,7 +463,7 @@ Module MinvAM (E : FieldElementType).
   Local Notation "/ a" := (Ainv a) : A_scope.
   Local Notation "a / b" := ((a * /b)%A) : A_scope.
 
-  Local Notation smat n := (smat A n).
+  Local Notation smat n := (smat tA n).
   Local Notation mat1 := (@mat1 _ Azero Aone).
   Local Notation mcmul := (@mcmul _ Amul).
   Local Infix "c*" := mcmul : mat_scope.
@@ -480,7 +480,7 @@ Module MinvAM (E : FieldElementType).
   Local Notation msingular := (@msingular _ Aadd 0 Amul 1).
   
   Notation mcofactorEx := (@mcofactorEx _ Aadd 0 Aopp Amul 1).
-  Notation mdet1 := (@mdet1 A).
+  Notation mdet1 := (@mdet1 tA).
   Notation mdet2 := (@mdet2 _ Aadd Aopp Amul).
   Notation mdet3 := (@mdet3 _ Aadd Aopp Amul).
   Notation mdet4 := (@mdet4 _ Aadd Aopp Amul).
@@ -490,27 +490,27 @@ Module MinvAM (E : FieldElementType).
   (* ======================================================================= *)
   (** ** Solve equation by inverse matrix without check the inversibility *)
 
-  (** Solve the equation with the form of C*x=b, but without check the inversibility. *)
-  Definition solveEqNoCheck {n} (C : smat n) (b : vec n) : vec n :=
-    (minvNoCheck C) *v b.
+  (** Solve the equation with the form of A*x=b, but without check the inversibility. *)
+  Definition solveEqNoCheck {n} (A : smat n) (b : vec n) : vec n :=
+    (minvNoCheck A) *v b.
 
-  (** minvtble C -> solveEqNoCheck C b = solveEq C b *)
-  Theorem solveEqNoCheck_spec : forall {n} (C : smat n) (b : @vec A n),
-      minvtble C -> solveEqNoCheck C b = solveEq C b.
+  (** minvtble A -> solveEqNoCheck A b = solveEq A b *)
+  Theorem solveEqNoCheck_spec : forall {n} (A : smat n) (b : @vec tA n),
+      minvtble A -> solveEqNoCheck A b = solveEq A b.
   Proof. intros. unfold solveEqNoCheck. rewrite minvNoCheck_spec; auto. Qed.
 
-  (** Solve the equation with the form of C*x=b over list, but without check the 
+  (** Solve the equation with the form of A*x=b over list, but without check the 
       inversibility *)
-  Definition solveEqListNoCheck (n : nat) (lC : dlist A) (lb : list A) : list A :=
-    let C : smat n := l2m 0 lC in
+  Definition solveEqListNoCheck (n : nat) (lA : dlist tA) (lb : list tA) : list tA :=
+    let A : smat n := l2m 0 lA in
     let b : vec n := l2v 0 lb in
-    let x := solveEqNoCheck C b in
+    let x := solveEqNoCheck A b in
     v2l x.
 
-  (** minvtble {lC} -> {solveEqListNoCheck lC lb} = solveEqList {lC} {lb} *)
-  Theorem solveEqListNoCheck_spec : forall n (lC : dlist A) (lb : list A),
-      let C : smat n := l2m 0 lC in
-      minvtble C -> solveEqListNoCheck n lC lb = solveEqList n lC lb.
+  (** minvtble {lA} -> {solveEqListNoCheck lA lb} = solveEqList {lA} {lb} *)
+  Theorem solveEqListNoCheck_spec : forall n (lA : dlist tA) (lb : list tA),
+      let A : smat n := l2m 0 lA in
+      minvtble A -> solveEqListNoCheck n lA lb = solveEqList n lA lb.
   Proof. intros. unfold solveEqListNoCheck. rewrite solveEqNoCheck_spec; auto. Qed.
 
   
@@ -520,7 +520,7 @@ Module MinvAM (E : FieldElementType).
   (* Note: the purpose of this function is to support quickly evaluation *)
 
   (** Get (i,j) element of inverse matrix of matrix `M` *)
-  Definition minvElement {n} (M : smat (S n)) (i j : 'I_(S n)) : A :=
+  Definition minvElement {n} (M : smat (S n)) (i j : 'I_(S n)) : tA :=
     @minvElement _ Aadd 0 Aopp Amul 1 Ainv _ M i j.
 
   (** If `M` is invertible, minvElement M i j = (M\-1).[i].[j] *)

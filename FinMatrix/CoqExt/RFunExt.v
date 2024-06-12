@@ -328,11 +328,11 @@ Abort.
 Module ElementTypeRFun <: ElementType.
   Add Ring ring_inst : (make_ring_theory Rfun_ARing).
   
-  Definition A : Type := R -> R.
-  Definition Azero : A := fzero.
-  Hint Unfold A Azero : A.
+  Definition tA : Type := R -> R.
+  Definition Azero : tA := fzero.
+  Hint Unfold tA Azero : tA.
 
-  Lemma AeqDec : Dec (@eq A).
+  Lemma AeqDec : Dec (@eq tA).
   Proof. constructor. intros a b.
          (* rewrite (functional_extensionality a b). *)
   Admitted.
@@ -342,21 +342,21 @@ Module MonoidElementTypeRFun <: MonoidElementType.
   Include ElementTypeRFun.
   
   Definition Aadd := fadd.
-  Hint Unfold Aadd : A.
+  Hint Unfold Aadd : tA.
   
   Infix "+" := Aadd : A_scope.
 
   #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
-  Proof. intros. repeat constructor; intros; autounfold with A; ring. Qed.
+  Proof. intros. repeat constructor; intros; autounfold with tA; ring. Qed.
 End MonoidElementTypeRFun.
 
 Module RingElementTypeRFun <: RingElementType.
   Include MonoidElementTypeRFun.
   
-  Definition Aone : A := fone.
+  Definition Aone : tA := fone.
   Definition Aopp := fopp.
   Definition Amul := fmul.
-  Hint Unfold Aone Aadd Aopp Amul : A.
+  Hint Unfold Aone Aadd Aopp Amul : tA.
   
   Notation Asub := (fun x y => Aadd x (Aopp y)).
   Infix "*" := Amul : A_scope.
@@ -365,7 +365,7 @@ Module RingElementTypeRFun <: RingElementType.
   
   #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
   Proof.
-    repeat constructor; intros;  autounfold with A;
+    repeat constructor; intros;  autounfold with tA;
       apply functional_extensionality; intros; cbv; ring.
   Qed.
   

@@ -79,12 +79,12 @@ Section test.
 
   (* Time Eval vm_compute in mdet M4. *)
   (*      = -93336855 *)
-  (*      : A *)
+  (*      : tA *)
   (* Finished transaction in 9.056 secs (9.052u,0.004s) (successful) *)
 
   (* Time Eval vm_compute in mdetEx M4. *)
   (*      = -93336855 *)
-  (*      : A *)
+  (*      : tA *)
   (* Finished transaction in 8.715 secs (8.714u,0.s) (successful) *)
 
   Let M5 :=

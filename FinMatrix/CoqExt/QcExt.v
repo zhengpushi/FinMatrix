@@ -342,11 +342,11 @@ Hint Resolve Qc_OrderedField : Qc.
 (** * Instances for ElementType *)
 
 Module ElementTypeQc <: ElementType.
-  Definition A : Type := Qc.
-  Definition Azero : A := 0.
-  Hint Unfold A Azero : A.
+  Definition tA : Type := Qc.
+  Definition Azero : tA := 0.
+  Hint Unfold tA Azero : tA.
 
-  Lemma AeqDec : Dec (@eq A).
+  Lemma AeqDec : Dec (@eq tA).
   Proof. apply Qc_eq_Dec. Defined.
 
 End ElementTypeQc.
@@ -356,7 +356,7 @@ Module OrderedElementTypeQc <: OrderedElementType.
 
   Definition Alt := Qclt.
   Definition Ale := Qcle.
-  Hint Unfold Ale Alt : A.
+  Hint Unfold Ale Alt : tA.
 
   #[export] Instance Order : Order Alt Ale.
   Proof. apply Qc_Order. Qed.
@@ -366,21 +366,21 @@ Module MonoidElementTypeQc <: MonoidElementType.
   Include ElementTypeQc.
 
   Definition Aadd := Qcplus.
-  Hint Unfold Aadd : A.
+  Hint Unfold Aadd : tA.
   
   Infix "+" := Aadd : A_scope.
 
   #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
-  Proof. intros. repeat constructor; intros; autounfold with A; ring. Qed.
+  Proof. intros. repeat constructor; intros; autounfold with tA; ring. Qed.
 End MonoidElementTypeQc.
 
 Module RingElementTypeQc <: RingElementType.
   Include MonoidElementTypeQc.
 
-  Definition Aone : A := 1.
+  Definition Aone : tA := 1.
   Definition Aopp := Qcopp.
   Definition Amul := Qcmult.
-  Hint Unfold Aone Aadd Aopp Amul : A.
+  Hint Unfold Aone Aadd Aopp Amul : tA.
   
   Notation Asub := (fun x y => Aadd x (Aopp y)).
   Infix "*" := Amul : A_scope.
@@ -388,7 +388,7 @@ Module RingElementTypeQc <: RingElementType.
   Infix "-" := Asub : A_scope.
   
   #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
-  Proof. repeat constructor; autounfold with A; intros; ring. Qed.
+  Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
   
   Add Ring Ring_inst : (make_ring_theory ARing).
 End RingElementTypeQc.
@@ -398,7 +398,7 @@ Module OrderedRingElementTypeQc <: OrderedRingElementType.
 
   Definition Ale := Qcle.
   Definition Alt := Qclt.
-  Hint Unfold Ale Alt : A.
+  Hint Unfold Ale Alt : tA.
   
   #[export] Instance Order : Order Alt Ale.
   Proof. apply OrderedElementTypeQc.Order. Qed.
@@ -407,8 +407,8 @@ Module OrderedRingElementTypeQc <: OrderedRingElementType.
     : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
   Proof.
     constructor. apply ARing. apply Order.
-    - intros; autounfold with A in *. apply Qcplus_lt_compat_r; auto.
-    - intros; autounfold with A in *. apply Qcmult_lt_compat_r; auto.
+    - intros; autounfold with tA in *. apply Qcplus_lt_compat_r; auto.
+    - intros; autounfold with tA in *. apply Qcmult_lt_compat_r; auto.
   Qed.
 End OrderedRingElementTypeQc.
 
@@ -416,7 +416,7 @@ Module FieldElementTypeQc <: FieldElementType.
   Include RingElementTypeQc.
 
   Definition Ainv := Qcinv.
-  Hint Unfold Ainv : A.
+  Hint Unfold Ainv : tA.
   
   Notation Adiv := (fun x y => Amul x (Ainv y)).
 
@@ -426,7 +426,7 @@ Module FieldElementTypeQc <: FieldElementType.
   #[export] Instance Field : Field Aadd Azero Aopp Amul Aone Ainv.
   Proof.
     constructor. apply ARing.
-    intros. autounfold with A. field. auto.
+    intros. autounfold with tA. field. auto.
     apply Aone_neq_Azero.
   Qed.
 
@@ -438,7 +438,7 @@ Module OrderedFieldElementTypeQc <: OrderedFieldElementType.
 
   Definition Ale := Qcle.
   Definition Alt := Qclt.
-  Hint Unfold Ale Alt : A.
+  Hint Unfold Ale Alt : tA.
 
   #[export] Instance Order : Order Alt Ale.
   Proof. apply OrderedElementTypeQc.Order. Qed.

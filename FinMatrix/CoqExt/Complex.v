@@ -1403,11 +1403,11 @@ Proof. constructor; auto with C. Qed.
 (** * Instances for ElementType *)
    
 Module ElementTypeC <: ElementType.
-  Definition A : Type := C.
-  Definition Azero : A := C0.
-  Hint Unfold A Azero : A.
+  Definition tA : Type := C.
+  Definition Azero : tA := C0.
+  Hint Unfold tA Azero : tA.
 
-  Lemma AeqDec : Dec (@eq A).
+  Lemma AeqDec : Dec (@eq tA).
   Proof. apply Ceq_Dec. Defined.
 End ElementTypeC.
 
@@ -1418,22 +1418,22 @@ Module MonoidElementTypeC <: MonoidElementType.
   
   (** Note that, this explicit annotation is must,  *)
 (*       otherwise, the ring has no effect. (because C and T are different) *)
-  (* Definition Aadd : A -> A -> A := fun a b => Cadd a b. *)
-  Hint Unfold Aadd : A.
+  (* Definition Aadd : tA -> tA -> tA := fun a b => Cadd a b. *)
+  Hint Unfold Aadd : tA.
   
   Infix "+" := Aadd : A_scope.
 
   #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
-  Proof. intros. repeat constructor; intros; autounfold with A; ring. Qed.
+  Proof. intros. repeat constructor; intros; autounfold with tA; ring. Qed.
 End MonoidElementTypeC.
 
 Module RingElementTypeC <: RingElementType.
   Include MonoidElementTypeC.
 
-  Definition Aone : A := C1.
+  Definition Aone : tA := C1.
   Definition Aopp := Copp.
   Definition Amul := Cmul.
-  Hint Unfold Aone Aadd Aopp Amul : A.
+  Hint Unfold Aone Aadd Aopp Amul : tA.
   
   Notation Asub := (fun x y => Aadd x (Aopp y)).
   Infix "*" := Amul : A_scope.
@@ -1441,7 +1441,7 @@ Module RingElementTypeC <: RingElementType.
   Infix "-" := Asub : A_scope.
 
   #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
-  Proof. repeat constructor; autounfold with A; intros; ring. Qed.
+  Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
   
   Add Ring Ring_inst : (make_ring_theory ARing).
 End RingElementTypeC.
@@ -1450,7 +1450,7 @@ Module FieldElementTypeC <: FieldElementType.
   Include RingElementTypeC.
   
   Definition Ainv := Cinv.
-  Hint Unfold Ainv : A.
+  Hint Unfold Ainv : tA.
   
   Notation Adiv := (fun x y => Amul x (Ainv y)).
 
@@ -1460,7 +1460,7 @@ Module FieldElementTypeC <: FieldElementType.
   #[export] Instance Field : Field Aadd Azero Aopp Amul Aone Ainv.
   Proof.
     constructor. apply ARing. intros.
-    autounfold with A. field. auto.
+    autounfold with tA. field. auto.
     apply Aone_neq_Azero.
   Qed.
 

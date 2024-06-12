@@ -61,7 +61,7 @@
                                         abelian-ring, along with order relation
      OrderedField Aadd Azero Aopp Amul Aone Ainv Alt Ale
                                         field, along with order relation
-     A2R Aadd Azero Aopp Amul Aone Ainv Alt Ale (a2r:A->R)
+     A2R Aadd Azero Aopp Amul Aone Ainv Alt Ale (a2r : tA -> R)
                                         The `a2r` operation is consistent
   
      ============= The structure of algebraic structure ===============
@@ -94,7 +94,7 @@
 
   3. important lemmas
      * Ring
-       make_ring_theory (H:ARing)      make a ring_theory, to use `ring` tactic.
+       make_ring_theory (H : ARing)      make a ring_theory, to use `ring` tactic.
      * Field
        make_field_theory (H:Field)     make a field_theory, to use `field` tactic.
  *)
@@ -114,7 +114,7 @@ Open Scope A_scope.
 Set Implicit Arguments.
 Unset Strict Implicit.
 
-Generalizable Variables A Aadd Azero Aopp Amul Aone Ainv Adiv Alt.
+Generalizable Variables tA Aadd Azero Aopp Amul Aone Ainv Adiv Alt.
 
 
 (* ######################################################################### *)
@@ -125,14 +125,14 @@ Ltac split_intro :=
   repeat (try split; try intro).
 
 (** Applicate a unary function for n-times, i.e. f ( .. (f a0) ...) *)
-Fixpoint iterate {A} (f : A -> A) (n : nat) (a0 : A) : A :=
+Fixpoint iterate {tA} (f : tA -> tA) (n : nat) (a0 : tA) : tA :=
   match n with
   | O => a0
   | S n' => f (iterate f n' a0)
   end.
 
 Section test.
-  Context {A} {f : A -> A} (Azero : A).
+  Context {tA} {f : tA -> tA} (Azero : tA).
   (* Compute iterate f 3 Azero. *)
 End test.
 
@@ -159,7 +159,7 @@ End Examples.
 
 
 (* ######################################################################### *)
-(** * A relation is equivalence relation *)
+(** * Equivalence relation *)
 
 (** ** Class *)
 
@@ -173,41 +173,41 @@ End Examples.
 
 
 (* ######################################################################### *)
-(** * A relation is decidable *)
+(** * Decidable relation *)
 
 (** ** Class *)
 
-Class Dec {A:Type} (Acmp:A->A->Prop) := {
-    dec : forall (a b : A), {Acmp a b} + {~(Acmp a b)};
+Class Dec {tA} (Acmp : tA -> tA -> Prop) := {
+    dec : forall (a b : tA), {Acmp a b} + {~(Acmp a b)};
   }.
 
 (* We prefer don't simpl `dec` *)
-Arguments dec {A} _ {_} : simpl never.
+Arguments dec {tA} _ {_} : simpl never.
 
 (* Global Hint Constructors Dec : core. *)
 
 (* equality relation is decidable *)
-Definition Aeqdec {A} {AeqDec:Dec (@eq A)} := @dec _ (@eq A) AeqDec.
+Definition Aeqdec {tA} {AeqDec:Dec (@eq tA)} := @dec _ (@eq tA) AeqDec.
 
 
 (** ** Instances *)
 Section Instances.
   Import Arith ZArith Reals.
 
-  #[export] Instance Dec_list `{Dec _ (@eq A)} : Dec (@eq (list A)).
+  #[export] Instance Dec_list `{Dec _ (@eq tA)} : Dec (@eq (list tA)).
   Proof. constructor. intros. apply list_eq_dec. apply Aeqdec. Defined.
 
   (** Equality of two pairs, iff their corresponding components are all equal. *)
-  Lemma prod_eq_iff : forall {A B} (z1 z2 : A * B),
+  Lemma prod_eq_iff : forall {tA tB} (z1 z2 : tA * tB),
       z1 = z2 <-> fst z1 = fst z2 /\ snd z1 = snd z2.
   Proof.
-    intros A B (a1,b1) (a2,b2). split; intros H; inv H; auto.
+    intros tA tB (a1,b1) (a2,b2). split; intros H; inv H; auto.
     simpl in *; subst. auto.
   Qed.
 
   (** Inequality of two pairs, iff at least one of components are not equal. *)
-  Lemma prod_neq_iff : forall {A B} {AeqDec:Dec (@eq A)} {BeqDec:Dec (@eq B)}
-                         (z1 z2 : A * B),
+  Lemma prod_neq_iff : forall {tA tB} {AeqDec:Dec (@eq tA)} {BeqDec:Dec (@eq tB)}
+                         (z1 z2 : tA * tB),
       z1 <> z2 <-> fst z1 <> fst z2 \/ snd z1 <> snd z2.
   Proof.
     intros. rewrite prod_eq_iff. split; intros.
@@ -225,7 +225,7 @@ Section Dec_theory.
   (** Tips: these theories are useful for R type *)
   
   (** Calculate equality to boolean, with the help of equality decidability *)
-  Definition Acmpb (a b : A) : bool := if dec Acmp a b then true else false.
+  Definition Acmpb (a b : tA) : bool := if dec Acmp a b then true else false.
 
   (** Acmpb is true iff Acmp hold. *)
   Lemma Acmpb_true : forall a b, Acmpb a b = true <-> Acmp a b.
@@ -237,7 +237,7 @@ Section Dec_theory.
   Lemma Acmpb_false : forall a b, Acmpb a b = false <-> ~(Acmp a b).
   Proof. intros. rewrite <- Acmpb_true. split; solve_bool. Qed.
 
-  Lemma Acmp_reflect : forall a b : A, reflect (Acmp a b) (Acmpb a b).
+  Lemma Acmp_reflect : forall a b : tA, reflect (Acmp a b) (Acmpb a b).
   Proof. intros. unfold Acmpb. destruct (dec Acmp a b); constructor; auto. Qed.
 
 End Dec_theory.
@@ -257,16 +257,16 @@ End Dec_theory.
 
 (* (** ** Class *) *)
 
-(* (** A unary operation is respect to the equality relation *) *)
-(* Class RespectUnary {A B:Type} (op:A->B) (Aeq:A->A->Prop) (Beq:B->B->Prop) := { *)
-(*     respectUnary : forall x y : A, *)
+(* (** One unary operation is respect to the equality relation *) *)
+(* Class RespectUnary {tA tB:Type} (op : A->B) (Aeq:A->A->Prop) (Beq:B->B->Prop) := { *)
+(*     respectUnary : forall x y : tA, *)
 (*       Aeq x y -> Beq (op x) (op y) *)
 (*   }. *)
 
-(* (** A binary operation is respect to the equality relation *) *)
-(* Class RespectBinary {A B C:Type} (op:A->B->C) *)
+(* (** One binary operation is respect to the equality relation *) *)
+(* Class RespectBinary {tA tB tC : Type} (op:A->B->C) *)
 (*   (Aeq:A->A->Prop) (Beq:B->B->Prop) (Ceq:C->C->Prop):= { *)
-(*     respectBinary : forall x y : A, *)
+(*     respectBinary : forall x y : tA, *)
 (*       Aeq x y -> forall x0 y0 : B, Beq x0 y0 -> Ceq (op x x0) (op y y0) *)
 (*   }. *)
 
@@ -286,22 +286,22 @@ Hint Resolve
 
 (** ** Class *)
 
-Class Injective {A B} (phi: A -> B) := {
-    injective : forall a1 a2 : A, a1 <> a2 -> phi a1 <> phi a2
+Class Injective {tA tB} (phi: tA -> tB) := {
+    injective : forall a1 a2 : tA, a1 <> a2 -> phi a1 <> phi a2
   }.
   
 (** ** Instances *)
 
 (** ** Extra Theories *)
 Section theory.
-  Context {A B : Type}.
+  Context {tA tB : Type}.
   
   (** Second form of injective *)
-  Definition injective_form2 (phi: A -> B) :=
+  Definition injective_form2 (phi: tA -> tB) :=
     forall a1 a2, phi a1 = phi a2 -> a1 = a2.
 
   (** These two forms are equal *)
-  Lemma injective_eq_injective_form2 (phi: A -> B) :
+  Lemma injective_eq_injective_form2 (phi: tA -> tB) :
     Injective phi <-> injective_form2 phi.
   Proof.
     split; intros.
@@ -313,7 +313,7 @@ Section theory.
   Qed.
 
   (** Injective function preserve equal relation *)
-  Lemma injective_preserve_eq : forall (f : A -> B),
+  Lemma injective_preserve_eq : forall (f : tA -> tB),
       Injective f -> (forall a1 a2, f a1 = f a2 -> a1 = a2).
   Proof.
     intros. apply injective_eq_injective_form2 in H. apply H. auto.
@@ -330,7 +330,7 @@ End theory.
 
 (** ** Class *)
 
-Class Surjective {A B} (phi: A -> B) := {
+Class Surjective {tA tB} (phi: tA -> tB) := {
     surjective : forall b, (exists a, phi a = b)
   }.
 
@@ -347,7 +347,7 @@ Class Surjective {A B} (phi: A -> B) := {
 
 (** ** Class *)
 
-Class Bijective {A B} (phi: A -> B) := {
+Class Bijective {tA tB} (phi: tA -> tB) := {
     bijInjective :: Injective phi;
     bijSurjective :: Surjective phi
   }.
@@ -358,7 +358,7 @@ Coercion bijSurjective : Bijective >-> Surjective.
 
 (** ** Extra Theories *)
 Section theory.
-  Context {A B : Type}.
+  Context {tA tB : Type}.
   
   (** There exist inverse function from a bijective function.
 
@@ -369,11 +369,11 @@ Section theory.
       ex makes a Prop, sig makes a Type. 
       Here, we proof the ex version. the sig version could be derived by an axiom:
       [constructive_definite_description : 
-      forall (A : Type) (P : A -> Prop), (exists ! x : A, P x) -> {x : A | P x} ]
+      forall (A : Type) (P : tA -> Prop), (exists ! x : tA, P x) -> {x : tA | P x} ]
    *)
 
-  Lemma bij_inverse_exist : forall (phi : A -> B) (Hbij: Bijective phi),
-    {psi : B -> A | (forall a : A, psi (phi a) = a) /\  (forall b : B, phi (psi b) = b)}.
+  Lemma bij_inverse_exist : forall (phi : tA -> tB) (Hbij: Bijective phi),
+    {psi : tB -> tA | (forall a : tA, psi (phi a) = a) /\  (forall b : tB, phi (psi b) = b)}.
   Proof.
     intros. destruct Hbij as [Hinj [Hsurj]].
     apply injective_eq_injective_form2 in Hinj. hnf in *.
@@ -391,9 +391,9 @@ Section theory.
       destruct H0. rewrite <- e. auto.
   Defined.
 
-  (** A bijective function preserve equal relation *)
-  Lemma bijective_preserve_eq : forall (f : A -> B),
-      Bijective f -> (forall (a1 a2 : A), f a1 = f a2 -> a1 = a2).
+  (** bijective function preserve equal relation *)
+  Lemma bijective_preserve_eq : forall (f : tA -> tB),
+      Bijective f -> (forall (a1 a2 : tA), f a1 = f a2 -> a1 = a2).
   Proof.
     intros. destruct H as [Hinj Hsurj].
     apply injective_preserve_eq in H0; auto.
@@ -410,20 +410,20 @@ End theory.
 
 (** ** Class *)
 
-Class Homomorphic {A B}
-  (fa : A -> A -> A) (fb : B -> B -> B) (phi: A -> B) := {
-    homomorphic : forall (a1 a2 : A), phi (fa a1 a2) = fb (phi a1) (phi a2)
+Class Homomorphic {tA tB}
+  (fa : tA -> tA -> tA) (fb : tB -> tB -> tB) (phi: tA -> tB) := {
+    homomorphic : forall (a1 a2 : tA), phi (fa a1 a2) = fb (phi a1) (phi a2)
   }.
 
 (** ** Instances *)
 
 (** ** Extra Theories *)
 
-(* Definition homo_inj (phi : A -> B) : Prop := *)
+(* Definition homo_inj (phi : tA -> tB) : Prop := *)
 (*   homomorphic phi /\ injective phi. *)
 
 (* (** phi is a homomorphic and surjective mapping *) *)
-(* Definition homo_surj (phi : A -> B) : Prop := *)
+(* Definition homo_surj (phi : tA -> tB) : Prop := *)
 (*   homomorphic phi /\ surjective phi. *)
 
 (** ** Examples *)
@@ -437,14 +437,14 @@ Class Homomorphic {A B}
 
 (** If there exist a homomorphic and surjective mapping from <A,+> to <B,⊕>,
     then we said <A,+> and <B,⊕> is homomorphism *)
-Class Homomorphism {A B} (fa : A -> A -> A) (fb : B -> B -> B) := {
-    homomorphism : exists (phi: A -> B), Homomorphic fa fb phi /\ Surjective phi
+Class Homomorphism {tA tB} (fa : tA -> tA -> tA) (fb : tB -> tB -> tB) := {
+    homomorphism : exists (phi: tA -> tB), Homomorphic fa fb phi /\ Surjective phi
   }.
 
 (** If there exist two homomorphic and surjective mapping from <A,+> to <B,⊕>
     and from <A,*> to <B,⊗>, then we said <A,+,*> and <B,⊕,⊗> is homomorphism *)
-Class Homomorphism2 {A B} (fa ga : A -> A -> A) (fb gb : B -> B -> B) := {
-    homomorphism2 : exists (phi: A -> B),
+Class Homomorphism2 {tA tB} (fa ga : tA -> tA -> tA) (fb gb : tB -> tB -> tB) := {
+    homomorphism2 : exists (phi: tA -> tB),
       Homomorphic fa fb phi /\ Homomorphic ga gb phi /\ Surjective phi
   }.
 
@@ -463,14 +463,14 @@ Class Homomorphism2 {A B} (fa ga : A -> A -> A) (fb gb : B -> B -> B) := {
 
 (** If there exist a homomorphic and bijective mapping from <A,+> to <B,⊕>,
     then we said <A,+> and <B,⊕> is isomorphism *)
-Class Isomorphism {A B} (fa : A -> A -> A) (fb : B -> B -> B) := {
-    isomorphism : exists (phi: A -> B), Homomorphic fa fb phi /\ Bijective phi
+Class Isomorphism {tA tB} (fa : tA -> tA -> tA) (fb : tB -> tB -> tB) := {
+    isomorphism : exists (phi: tA -> tB), Homomorphic fa fb phi /\ Bijective phi
   }.
 
 (** If there exist two homomorphic and bijective mapping from <A,+> to <B,⊕>
     and from <A,*> to <B,⊗>, then we said <A,+,*> and <B,⊕,⊗> is isomorphism *)
-Class Isomorphism2 {A B} (fa ga : A -> A -> A) (fb gb : B -> B -> B) := {
-    isomorphism2 : exists (phi: A -> B),
+Class Isomorphism2 {tA tB} (fa ga : tA -> tA -> tA) (fb gb : tB -> tB -> tB) := {
+    isomorphism2 : exists (phi: tA -> tB),
       Homomorphic fa fb phi /\ Homomorphic ga gb phi /\ Bijective phi
   }.
 
@@ -486,9 +486,9 @@ Class Isomorphism2 {A B} (fa ga : A -> A -> A) (fb gb : B -> B -> B) := {
 (** * Subset *)
 
 (** ** Class *)
-(* C is subset of P *)
-Class Subset (C P : Type) := {
-    sub_phi : C -> P;
+(* tC is subset of tP *)
+Class Subset (tC tP : Type) := {
+    sub_phi : tC -> tP;
     sub_phi_inj : Injective sub_phi
   }.
 
@@ -516,7 +516,7 @@ End Examples.
 (** * Associative *)
 
 (** ** Class *)
-Class Associative {A} (Aop : A -> A -> A) := {
+Class Associative {tA} (Aop : tA -> tA -> tA) := {
     associative : forall a b c, Aop (Aop a b) c = Aop a (Aop b c);
   }.
 
@@ -538,7 +538,7 @@ Goal forall a b c : nat, ((a + b) + c = a + (b + c)).
 (** * Commutative *)
 
 (** ** Class *)
-Class Commutative {A} (Aop : A -> A -> A) := {
+Class Commutative {tA} (Aop : tA -> tA -> tA) := {
     commutative : forall a b, Aop a b = Aop b a
   }.
 
@@ -563,11 +563,11 @@ Goal forall a b : nat, (a * b = b * a)%nat.
 (** * Identity Left/Right *)
 
 (** ** Class *)
-Class IdentityLeft {A} (Aop : A -> A -> A) (Ae : A) := {
+Class IdentityLeft {tA} (Aop : tA -> tA -> tA) (Ae : tA) := {
     identityLeft : forall a, Aop Ae a = a
   }.
 
-Class IdentityRight {A} (Aop : A -> A -> A) (Ae : A) := {
+Class IdentityRight {tA} (Aop : tA -> tA -> tA) (Ae : tA) := {
     identityRight : forall a, Aop a Ae = a
   }.
 
@@ -582,12 +582,12 @@ Class IdentityRight {A} (Aop : A -> A -> A) (Ae : A) := {
 (** * Inverse Left/Right *)
 
 (** ** Class *)
-Class InverseLeft {A} (Aop : A -> A -> A) (Ae : A) (Aopinv : A -> A)
+Class InverseLeft {tA} (Aop : tA -> tA -> tA) (Ae : tA) (Aopinv : tA -> tA)
   := {
     inverseLeft : forall a, Aop (Aopinv a) a = Ae
   }.
 
-Class InverseRight {A} (Aop : A -> A -> A) (Ae : A) (Aopinv : A -> A)
+Class InverseRight {tA} (Aop : tA -> tA -> tA) (Ae : tA) (Aopinv : tA -> tA)
   := {
     inverseRight : forall a, Aop a (Aopinv a) = Ae
   }.
@@ -604,17 +604,17 @@ Class InverseRight {A} (Aop : A -> A -> A) (Ae : A) (Aopinv : A -> A)
 
 (** ** Class *)
 
-(* Class DistributiveUnary {A} (Tadd:A -> A -> A) (Aopp : A -> A) := { *)
+(* Class DistributiveUnary {tA} (Tadd:tA -> tA -> tA) (Aopp : tA -> tA) := { *)
 (*     distributiveUnary : forall a b, *)
 (*       Aopp (Tadd a b) = Tadd (Aopp a) (Aopp b) *)
 (*   }. *)
 
-Class DistrLeft {A} (Aadd Amul : A -> A -> A) := {
+Class DistrLeft {tA} (Aadd Amul : tA -> tA -> tA) := {
     distrLeft : forall a b c,
       Amul a (Aadd b c) = Aadd (Amul a b) (Amul a c)
   }.
 
-Class DistrRight {A} (Aadd Amul : A -> A -> A) := {
+Class DistrRight {tA} (Aadd Amul : tA -> tA -> tA) := {
     distrRight : forall a b c,
       Amul (Aadd a b) c = Aadd (Amul a c) (Amul b c)
   }.
@@ -632,7 +632,7 @@ Class DistrRight {A} (Aadd Amul : A -> A -> A) := {
 
 (** ** Class *)
 
-(* Class Involution {A : Type} (Aopp : A -> A) := { *)
+(* Class Involution {A : Type} (Aopp : tA -> tA) := { *)
 (*     involution : forall a, Aopp (Aopp a) = a *)
 (*   }. *)
 
@@ -647,12 +647,12 @@ Class DistrRight {A} (Aadd Amul : A -> A -> A) := {
 (** * Semigroup 半群 *)
 
 (** ** Class *)
-Class SGroup {A} (Aadd : A -> A -> A) := {
+Class SGroup {tA} (Aadd : tA -> tA -> tA) := {
     sgroupAssoc :: Associative Aadd;
   }.
 
 (** Get parameter of this structure *)
-(* Definition sgroupAadd `{SG:SGroup} : A -> A -> A := Aadd. *)
+(* Definition sgroupAadd `{SG:SGroup} : tA -> tA -> tA := Aadd. *)
 
 (** ** Instances *)
 Section Instances.
@@ -700,7 +700,7 @@ Section test.
   Context `{HSGroup : SGroup}. Infix "+" := Aadd.
 
   (* Test bench *)
-  Variable a b c d e f g h i j k : A.
+  Variable a b c d e f g h i j k : tA.
                                                                     
   (* 1 level *)
   Goal a + b = a + k. progress sgroup. Abort.
@@ -736,13 +736,13 @@ End test.
 (** * Abelian semigroup 交换半群 *)
 
 (** ** Class *)
-Class ASGroup {A} (Aadd : A -> A -> A) := {
+Class ASGroup {tA} (Aadd : tA -> tA -> tA) := {
     asgroupSGroup :: SGroup Aadd;
     asgroupComm :: Commutative Aadd
   }.
 
 (** Get parameter of this structure *)
-(* Definition asgroupAadd `{ASG : ASGroup} : A -> A -> A := Aadd. *)
+(* Definition asgroupAadd `{ASG : tASGroup} : tA -> tA -> tA := Aadd. *)
 
 (** ** Instances *)
 Section Instances.
@@ -779,7 +779,7 @@ Ltac move2t c :=
 
 Section test.
   Context `{HASGroup : ASGroup}. Infix "+" := Aadd.
-  Variable a0 a1 a2 a3 a4 a5 a6 : A.
+  Variable a0 a1 a2 a3 a4 a5 a6 : tA.
 
   (* 这个例子表明，任何的项都可以调整到头部，多步调整后得到了相同形式 *)
   Goal a0 + (a1 + a2) + a3 = a3 + (a0 + a2) + a1.
@@ -837,7 +837,7 @@ Section try1.
 
   Section test.
     Context `{HASGroup : ASGroup}. Infix "+" := Aadd.
-    Variable a0 a1 a2 a3 a4 a5 a6 b1 b2 c1 c2 : A.
+    Variable a0 a1 a2 a3 a4 a5 a6 b1 b2 c1 c2 : tA.
 
     (** 第一种情形，等式两侧完全相同 *)
 
@@ -955,7 +955,7 @@ Section try2.
   
   Section test.
     Context `{HASGroup : ASGroup}. Infix "+" := Aadd.
-    Variable a0 a1 a2 a3 a4 a5 a6 b1 b2 c1 c2 : A.
+    Variable a0 a1 a2 a3 a4 a5 a6 b1 b2 c1 c2 : tA.
     
     Goal b1 + a0 + b2 = c1 + a0 + c2.
     Proof. asgroup. Abort.
@@ -971,12 +971,12 @@ Ltac asgroup_only f :=
   rewrite <- ?associative;
   repeat
     (match goal with
-     | |- ?A = ?B =>
-         (* 找出 A 中所有 a+b 的子表达式 *)
-         match A with
+     | |- ?A1 = ?A2 =>
+         (* 找出 A1 中所有 a+b 的子表达式 *)
+         match A1 with
          | context [f ?a ?b] =>
              (* 在 B 中找 a+c, c+a, c+b, b+c 这四种模式  *)
-             match B with
+             match A2 with
              | context [f a _] => do 2 move2t a; f_equal
              | context [f _ a] => do 2 move2t a; f_equal
              | context [f b _] => do 2 move2t b; f_equal
@@ -997,7 +997,7 @@ Section test.
   Context `{HASGroup : ASGroup}. Infix "+" := Aadd.
 
   (* Test bench *)
-  Variable a b c d e f g h i j k : A.
+  Variable a b c d e f g h i j k : tA.
                                                                     
   (* 1 level *)
   Goal a + b = a + k. progress asgroup. Abort.
@@ -1036,7 +1036,7 @@ Section test.
   Goal k + b = a + b + c + d + e + f. progress asgroup. Abort.
 
   (* 头部和尾部均不相同时的混合情形 *)
-  Goal forall x1 x2 y1 y2 : A, x1 + a + b + c + x2 = y1 + c + (b + a) + y2.
+  Goal forall x1 x2 y1 y2 : tA, x1 + a + b + c + x2 = y1 + c + (b + a) + y2.
   Proof. intros. progress asgroup. Abort.
 End test.
 
@@ -1045,7 +1045,7 @@ End test.
 (** * Monoid 幺半群、独异点 *)
 
 (** ** Class *)
-Class Monoid {A} (Aadd : A -> A -> A) (Azero : A) := {
+Class Monoid {tA} (Aadd : tA -> tA -> tA) (Azero : tA) := {
     monoidAssoc :: Associative Aadd;
     monoidIdL :: IdentityLeft Aadd Azero;
     monoidIdR :: IdentityRight Aadd Azero;
@@ -1053,8 +1053,8 @@ Class Monoid {A} (Aadd : A -> A -> A) (Azero : A) := {
   }.
 
 (** Get parameter of a monoid *)
-(* Definition monoidAadd `{M:Monoid} : A -> A -> A := Aadd. *)
-(* Definition monoidAzero `{M:Monoid} : A := Azero. *)
+(* Definition monoidAadd `{M:Monoid} : tA -> tA -> tA := Aadd. *)
+(* Definition monoidAzero `{M:Monoid} : tA := Azero. *)
 
 (** ** Instances *)
 Section Instances.
@@ -1126,7 +1126,7 @@ Section Examples.
   Notation "0" := Azero : A_scope.
   Infix "+" := Aadd : A_scope.
 
-  Goal forall a b c d : A, 0 + a + 0 + (b + 0 + c) = a + (0 + b) + (c + 0).
+  Goal forall a b c d : tA, 0 + a + 0 + (b + 0 + c) = a + (0 + b) + (c + 0).
   Proof. intros. monoid. Qed.
 
 End Examples.
@@ -1136,8 +1136,8 @@ End Examples.
 (** * Abelian monoid *)
 
 (** ** Class *)
-Class AMonoid {A} Aadd Azero := {
-    amonoidMonoid :: @Monoid A Aadd Azero;
+Class AMonoid {tA} Aadd Azero := {
+    amonoidMonoid :: @Monoid tA Aadd Azero;
     amonoidComm :: Commutative Aadd;
     amonoidASGroup :: ASGroup Aadd
   }.
@@ -1172,12 +1172,12 @@ End Theory.
 Ltac amonoid :=
   repeat
     (match goal with
-     | AM:AMonoid ?f ?e |- _ =>
+     | AM : AMonoid ?f ?e |- _ =>
          try pose proof (@amonoidMonoid _ f e AM) as HMonoid; try monoid;
          try pose proof (@amonoidASGroup _ f e AM) as HASGroup; asgroup
-     | [M:Monoid ?f ?e |- _] => monoid
-     | [ASG:ASGroup ?f |- _] => asgroup
-     | [SG:ASGroup ?f |- _] => sgroup
+     | [M : Monoid ?f ?e |- _] => monoid
+     | [ASG : ASGroup ?f |- _] => asgroup
+     | [SG : ASGroup ?f |- _] => sgroup
      end;
      auto).
 
@@ -1187,7 +1187,7 @@ Section Examples.
   Infix "+" := Aadd : A_scope.
   Notation "0" := Azero : A_scope.
 
-  Goal forall a b c : A, a + (0 + b + c + 0) = 0 + c + (b + a + 0) + 0.
+  Goal forall a b c : tA, a + (0 + b + c + 0) = 0 + c + (b + a + 0) + 0.
   Proof. simp. amonoid. Qed.
 End Examples.
 
@@ -1197,7 +1197,7 @@ End Examples.
 
 (** ** Class *)
 (* Notice that, this is a one-sided definition, it is equivalence to double-sided *)
-Class Group {A} Aadd Azero (Aopp : A -> A) := {
+Class Group {tA} Aadd Azero (Aopp : tA -> tA) := {
     groupMonoid :: Monoid Aadd Azero;
     groupInvL :: InverseLeft Aadd Azero Aopp;
     groupInvR :: InverseRight Aadd Azero Aopp;
@@ -1273,15 +1273,15 @@ Section example.
   Notation "- a" := (Aopp a) : A_scope.
 
   (* `group_basic` can finish "monoid" tasks *)
-  Goal forall a b c : A, a + 0 = 0 + a -> (a + b) + 0 + c = 0 + a + 0 + (b + 0 + c).
+  Goal forall a b c : tA, a + 0 = 0 + a -> (a + b) + 0 + c = 0 + a + 0 + (b + 0 + c).
   Proof. simp. group_basic. Qed.
 
   (* `group_basic` can do `group inv` tasks *)
-  Goal forall a b c d e : A, c + -c + - d + d = e -> - a + a + b + - b = e.
+  Goal forall a b c d e : tA, c + -c + - d + d = e -> - a + a + b + - b = e.
   Proof. simp. group_basic. Qed.
 
   (* group inverse with associativity *)
-  Goal forall a b : A, -a + (a + b) = b.
+  Goal forall a b : tA, -a + (a + b) = b.
   Proof. simp. group_basic. Qed.
 
 End example.
@@ -1336,7 +1336,7 @@ Section GroupTheory.
 
   (** left inverse element is unique *)
   (* a + b = 0 -> - a = b *)
-  Theorem group_opp_uniq_l : forall a b : A, a + b = 0 -> -a = b.
+  Theorem group_opp_uniq_l : forall a b : tA, a + b = 0 -> -a = b.
   Proof.
     (* -a = -a + 0 = -a + a + b = 0 + b = b *)
     intros.
@@ -1346,7 +1346,7 @@ Section GroupTheory.
   
   (** right inverse element is unique *)
   (* a + b = 0 -> -b = a *)
-  Theorem group_opp_uniq_r : forall a b : A, a + b = 0 -> -b = a.
+  Theorem group_opp_uniq_r : forall a b : tA, a + b = 0 -> -b = a.
   Proof.
     (* -b = 0 + -b = a + b + b = a + 0 = a *)
     intros.
@@ -1384,7 +1384,7 @@ Section GroupTheory.
   Proof. intros. group_basic. Qed.
     
   (** - a = - b -> a = b *)
-  Lemma group_opp_inj : forall a b : A, - a = - b -> a = b.
+  Lemma group_opp_inj : forall a b : tA, - a = - b -> a = b.
   Proof.
     intros. rewrite <- group_opp_opp. rewrite <- H. rewrite group_opp_opp. auto.
   Qed.
@@ -1401,7 +1401,7 @@ Section GroupTheory.
   Qed.
 
   (** - a = 0 <-> a = 0 *)
-  Lemma group_opp_eq0_iff : forall a : A, - a = 0 <-> a = 0.
+  Lemma group_opp_eq0_iff : forall a : tA, - a = 0 <-> a = 0.
   Proof.
     intros. split; intros.
     - apply group_cancel_l with (-a). group_basic.
@@ -1409,7 +1409,7 @@ Section GroupTheory.
   Qed.
 
   (** - a <> 0 <-> a <> 0 *)
-  Lemma group_opp_neq0_iff : forall a : A, - a <> 0 <-> a <> 0.
+  Lemma group_opp_neq0_iff : forall a : tA, - a <> 0 <-> a <> 0.
   Proof. intros. rewrite group_opp_eq0_iff. easy. Qed.
     
   (* Theorem 14.2 *)
@@ -1432,20 +1432,20 @@ Section GroupTheory.
   Qed.
 
   (** Definition 14.1 (multiple operations) *)
-  (* batch : list A -> A
+  (* batch : list tA -> tA
     [] = e
     [a1] = a1
     [a1;a2] = a1 * a2
     [a1;a2;a3] = (a1*a2)*a3
     [a1;a2;...;a_n-1;an] = ((...(a1*a2)* ... )*a_n-1)*an *)
-  Definition group_batch (l:list A) :=
+  Definition group_batch (l:list tA) :=
     match l with
     | [] => 0
     | x :: l' => fold_left Aadd l' x
     end.
   
   Section test.
-    Variable (a1 a2 a3 a4 : A).
+    Variable (a1 a2 a3 a4 : tA).
     
     (* Compute group_batch []. *)
     (* Compute group_batch [a1]. *)
@@ -1460,13 +1460,13 @@ Section GroupTheory.
 
     Notation "'Σ' a '&' l " := (fold_left Aadd l a) (at level 10).
     
-    Theorem group_assoc_general (l1 l2 : list A) :
+    Theorem group_assoc_general (l1 l2 : list tA) :
       (group_batch l1) + (group_batch l2) =  group_batch (l1 ++ l2).
     Proof.
       (* reduct to fold_left *)
       destruct l1,l2; simpl; group_basic.
       - rewrite app_nil_r. auto.
-      - rename a into a1, a0 into a2.
+      - rename t into a1, t0 into a2.
         (* H1. forall a l1 l2, Σ a & (l1 ++ l2) = Σ (Σ a & l1) & l2
            H2. forall a b l, a + Σ b & l = Σ (a + b) & l
            H3. forall a b l, Σ a & (b :: l) = Σ (a + b) & l
@@ -1502,7 +1502,7 @@ Section GroupTheory.
       a ^ n      = a ^ (n-1) * a, for n >= 1
       a ^ (-n)   = (-a) ^ n,  for n >= 1
      *)
-    Definition group_power (a : A) (n : Z) : A :=
+    Definition group_power (a : tA) (n : Z) : tA :=
       match n with
       | Z0 => 0
       | Zpos m => iterate (fun x => Aadd x a) (Pos.to_nat m) 0
@@ -1511,7 +1511,7 @@ Section GroupTheory.
     Infix "^" := group_power.
     
     Section test.
-      Variable (a1 a2 a3 a4 : A).
+      Variable (a1 a2 a3 a4 : tA).
       (* Compute group_power a1 3. *)
       (* Compute group_power a1 (-3). *)
 
@@ -1544,15 +1544,15 @@ Section GroupTheory.
   (** *** my added lemmas (part 2) *)
 
   (* b = 0 -> a + b = a *)
-  Lemma group_add_eq_l : forall a b : A, b = 0 -> a + b = a.
+  Lemma group_add_eq_l : forall a b : tA, b = 0 -> a + b = a.
   Proof. intros. rewrite H. apply identityRight. Qed.
 
   (* a = 0 -> a + b = b *)
-  Lemma group_add_eq_r : forall a b : A, a = 0 -> a + b = b.
+  Lemma group_add_eq_r : forall a b : tA, a = 0 -> a + b = b.
   Proof. intros. rewrite H. apply identityLeft. Qed.
 
   (* a + b = a -> b = 0 *)
-  Lemma group_add_eq_l_inv : forall a b : A, a + b = a -> b = 0.
+  Lemma group_add_eq_l_inv : forall a b : tA, a + b = a -> b = 0.
   Proof.
     intros.
     assert (a + b = a + 0). rewrite H. rewrite identityRight; auto.
@@ -1560,7 +1560,7 @@ Section GroupTheory.
   Qed.
 
   (* a + b = b -> a = 0 *)
-  Lemma group_add_eq_r_inv : forall a b : A, a + b = b -> a = 0.
+  Lemma group_add_eq_r_inv : forall a b : tA, a + b = b -> a = 0.
   Proof.
     intros.
     assert (a + b = 0 + b). rewrite H. rewrite identityLeft; auto.
@@ -1568,11 +1568,11 @@ Section GroupTheory.
   Qed.
 
   (* - a = b -> a = - b *)
-  Lemma group_opp_exchg_l : forall a b : A, - a = b -> a = - b.
+  Lemma group_opp_exchg_l : forall a b : tA, - a = b -> a = - b.
   Proof. intros. rewrite <- H. rewrite group_opp_opp. auto. Qed.
 
   (* a = - b -> - a = b *)
-  Lemma group_opp_exchg_r : forall a b : A, a = - b -> - a = b.
+  Lemma group_opp_exchg_r : forall a b : tA, a = - b -> - a = b.
   Proof. intros. rewrite H. rewrite group_opp_opp. auto. Qed.
 
 End GroupTheory.
@@ -1657,25 +1657,25 @@ Section Examples.
   Notation Asub a b := (a + -b).
   Infix "-" := Asub : A_scope.
          
-  Goal forall a b c d : A, - (a + 0 + (b - c)) + (- - d + 0) = c - b + - (- d + a).
+  Goal forall a b c d : tA, - (a + 0 + (b - c)) + (- - d + 0) = c - b + - (- d + a).
   Proof. intros. group. Qed.
 
-  Goal forall a b : A, b = 0 -> a + b = a.
+  Goal forall a b : tA, b = 0 -> a + b = a.
   Proof. intros. group. Qed.
 
-  Goal forall a b : A, a = 0 -> a + b = b.
+  Goal forall a b : tA, a = 0 -> a + b = b.
   Proof. intros. group. Qed.
 
-  Goal forall a b : A, a + b = b -> a = 0.
+  Goal forall a b : tA, a + b = b -> a = 0.
   Proof. intros. group. Qed.
 
-  Goal forall a b : A, a + b = a -> b = 0.
+  Goal forall a b : tA, a + b = a -> b = 0.
   Proof. intros. group. Qed.
 
-  Goal forall a b : A, a = - b -> - a = b.
+  Goal forall a b : tA, a = - b -> - a = b.
   Proof. intros. group. Qed.
   
-  Goal forall a b : A, - a = b -> a = - b.
+  Goal forall a b : tA, - a = b -> a = - b.
   Proof. intros. group. Qed.
   
 End Examples.
@@ -1685,7 +1685,7 @@ End Examples.
 (** * Abelian Group *)
 
 (** ** Class *)
-Class AGroup {A} Aadd (Azero:A) Aopp := {
+Class AGroup {tA} Aadd (Azero : tA) Aopp := {
     agroupGroup :: Group Aadd Azero Aopp;
     agroupAM :: AMonoid Aadd Azero;
     agroupComm :: Commutative Aadd;
@@ -1786,10 +1786,10 @@ Section Examples.
   Notation Asub a b := (a + -b).
   Infix "-" := Asub : A_scope.
 
-  Goal forall a b c d : A, - (a + 0 + (b - c)) + (- - d + 0) = c - b + - (- d + a).
+  Goal forall a b c d : tA, - (a + 0 + (b - c)) + (- - d + 0) = c - b + - (- d + a).
   Proof. intros. agroup. Qed.
 
-  Goal forall a b c : A, ((a - b) - c = a - (b + c)).
+  Goal forall a b c : tA, ((a - b) - c = a - (b + c)).
   Proof. intros. agroup. Qed.
 
 End Examples.
@@ -1801,7 +1801,7 @@ End Examples.
 
 (** ** Class *)
 
-Class SRing {A} Aadd (Azero:A) Amul Aone := {
+Class SRing {tA} Aadd (Azero : tA) Amul Aone := {
     sringAddAM :: AMonoid Aadd Azero; (* 不确定交换性是否必要，姑且先留下 *)
     sringMulAM :: AMonoid Amul Aone; (* 不确定交换性是否必要，姑且先留下 *)
     sringDistrL :: DistrLeft Aadd Amul;
@@ -1853,7 +1853,7 @@ End Examples.
    but ring theory in Coq need it.
    We will distinguish ring and abelian ring with class name Ring and ARing.  *)
 
-Class Ring {A} Aadd (Azero:A) Aopp Amul Aone := {
+Class Ring {tA} Aadd (Azero : tA) Aopp Amul Aone := {
     ringAddAG :: AGroup Aadd Azero Aopp;
     ringMulM :: Monoid Amul Aone;
     ringDistrL :: DistrLeft Aadd Amul;
@@ -1910,8 +1910,8 @@ End Examples.
 
 (** ** Class *)
 
-Class ARing {A} Aadd Azero Aopp Amul Aone := {
-    aringRing :: @Ring A Aadd Azero Aopp Amul Aone;
+Class ARing {tA} Aadd Azero Aopp Amul Aone := {
+    aringRing :: @Ring tA Aadd Azero Aopp Amul Aone;
     aringMulComm :: Commutative Amul;
     aringMulAMonoid :: AMonoid Amul Aone;
     aringMulASGroup :: ASGroup Amul
@@ -1953,16 +1953,16 @@ Section Theory.
     
   (** a * 0 = 0 *)
   (* 证明思路：a*0 + 0 = a*0 = a*(0+0) = a*0 + a*0，然后消去律 *)
-  Lemma ring_mul_0_r : forall a : A, a * 0 = 0.
+  Lemma ring_mul_0_r : forall a : tA, a * 0 = 0.
   Proof. intros. ring. Qed.
 
   (** 0 * a = 0 *)
-  Lemma ring_mul_0_l : forall a : A, 0 * a = 0.
+  Lemma ring_mul_0_l : forall a : tA, 0 * a = 0.
   Proof. intros. ring. Qed.
 
   (** a * a = 1, then a = 1 or a = -1 *)
   (* Tips: I can't prove it now..., and this is used in `OrthogonalMatrix` *)
-  Lemma ring_sqr_eq1_imply_1_neg1 : forall (a : A),
+  Lemma ring_sqr_eq1_imply_1_neg1 : forall (a : tA),
       a * a = Aone -> a = Aone \/ a = (- Aone).
   Proof.
   Admitted.
@@ -2001,7 +2001,7 @@ Module Demo_AbsARing.
 
   Add Ring ring_inst : (make_ring_theory HARing).
 
-  Goal forall a b c : A, (a + b) * c = 0 + b * c * 1 + 0 + 1 * c * a.
+  Goal forall a b c : tA, (a + b) * c = 0 + b * c * 1 + 0 + 1 * c * a.
   Proof. intros. ring. Qed.
   
 End Demo_AbsARing.
@@ -2021,11 +2021,11 @@ A={a b e}.
 2 0 2 0 2
 3 0 3 2 1
    *)
-  Inductive A := Azero | A1 | A2 | A3.
+  Inductive tA := Azero | A1 | A2 | A3.
   Notation "0" := Azero. Notation "1" := A1.
   Notation "2" := A2. Notation "3" := A3.
 
-  Definition add  (a b : A) :=
+  Definition add  (a b : tA) :=
     match a,b with
     | 0,_ => b
     | 1,0 => 1 | 1,1 => 2 | 1,2 => 3 | 1,3 => 0
@@ -2034,14 +2034,14 @@ A={a b e}.
     end.
   Infix "+" := add.
 
-  Definition opp (a:A) :=
+  Definition opp (a : tA) :=
     match a with
     | 0 => 0 | 1 => 3 | 2 => 2 | 3 => 1
     end.
   Notation "- a" := (opp a).
   Notation "a - b" := (a + (-b)).
   
-  Definition mul  (a b : A) :=
+  Definition mul  (a b : tA) :=
     match a,b with
     | 0,_ => 0
     | 1,_ => b
@@ -2071,7 +2071,7 @@ A={a b e}.
   Qed.
   (* Add Ring ring_thy_inst2 : (make_ring_theory ARing_inst). *)
 
-  Goal forall a b c : A, a + b + c - b = a + c.
+  Goal forall a b c : tA, a + b + c - b = a + c.
   Proof.
     (* Tips, the proof is simple *)
     intros. ring.
@@ -2087,7 +2087,7 @@ End Demo_ConcrateRing.
 (* Tips: 也许还遗漏了一个条件，即：0 没有逆元。但此处不知如何修复 *)
 
 (** ** Class *)
-Class Field {A} Aadd (Azero:A) Aopp Amul Aone Ainv := {
+Class Field {tA} Aadd (Azero : tA) Aopp Amul Aone Ainv := {
     fieldRing :: ARing Aadd Azero Aopp Amul Aone;
     field_mulInvL : forall a, a <> Azero -> Amul (Ainv a) a = Aone;
     field_1_neq_0 : Aone <> Azero;
@@ -2151,19 +2151,19 @@ Section Theory.
   Add Field field_inst : (make_field_theory HField).
 
   (** a <> 0 -> a * / a = 1 *)
-  Lemma field_mulInvR : forall a : A, a <> 0 -> a * /a = 1.
+  Lemma field_mulInvR : forall a : tA, a <> 0 -> a * /a = 1.
   Proof. intros. rewrite commutative. rewrite field_mulInvL; easy. Qed.
 
   (** a <> 0 -> (1/a) * a = 1 *)
-  Lemma field_mulInvL_inv1 : forall a : A, a <> 0 -> (1/a) * a = 1.
+  Lemma field_mulInvL_inv1 : forall a : tA, a <> 0 -> (1/a) * a = 1.
   Proof. intros. simpl. field; auto. Qed.
   
   (** a <> 0 -> a * (1/a) = 1 *)
-  Lemma field_mulInvR_inv1 : forall a : A, a <> 0 -> a * (1/a) = 1.
+  Lemma field_mulInvR_inv1 : forall a : tA, a <> 0 -> a * (1/a) = 1.
   Proof. intros. simpl. field. auto. Qed.
 
   (** a <> 0 -> / a <> 0 *)
-  Lemma field_inv_neq0_if_neq0 : forall a : A, a <> 0 -> / a <> 0.
+  Lemma field_inv_neq0_if_neq0 : forall a : tA, a <> 0 -> / a <> 0.
   Proof.
     intros. intro.
     pose proof (field_mulInvL H). rewrite H0 in H1. rewrite ring_mul_0_l in H1.
@@ -2178,7 +2178,7 @@ Section Theory.
   Qed.
   
   (** a <> 0 -> a * b = a * c -> b = c *)
-  Lemma field_mul_cancel_l : forall a b c : A,
+  Lemma field_mul_cancel_l : forall a b c : tA,
       a <> 0 -> a * b = a * c -> b = c.
   Proof.
     intros.
@@ -2190,7 +2190,7 @@ Section Theory.
   Qed.
 
   (** c <> 0 -> a * c = b * c -> a = b *)
-  Lemma field_mul_cancel_r : forall a b c : A,
+  Lemma field_mul_cancel_r : forall a b c : tA,
       c <> 0 -> a * c = b * c -> a = b.
   Proof.
     intros.
@@ -2202,21 +2202,21 @@ Section Theory.
   Qed.
 
   (** a * b = 1 -> / a = b *)
-  Lemma field_inv_eq_l : forall a b : A, a <> 0 -> a * b = 1 -> / a = b.
+  Lemma field_inv_eq_l : forall a b : tA, a <> 0 -> a * b = 1 -> / a = b.
   Proof.
     intros. apply (@field_mul_cancel_l a (/ a) b); auto.
     rewrite field_mulInvR; auto.
   Qed.
 
   (** a * b = 1 -> / b = a *)
-  Lemma field_inv_eq_r : forall a b : A, b <> 0 -> a * b = 1 -> / b = a.
+  Lemma field_inv_eq_r : forall a b : tA, b <> 0 -> a * b = 1 -> / b = a.
   Proof.
     intros. apply (@field_mul_cancel_r (/ b) a b); auto.
     rewrite field_mulInvL; auto.
   Qed.
 
   (** / / a = a *)
-  Lemma field_inv_inv : forall a : A, a <> 0 -> / / a = a.
+  Lemma field_inv_inv : forall a : tA, a <> 0 -> / / a = a.
   Proof.
     intros. pose proof (field_inv_neq0_if_neq0 H).
     apply field_mul_cancel_l with (/ a); auto.
@@ -2224,14 +2224,14 @@ Section Theory.
   Qed.
 
   (** / a = / b -> a = b *)
-  Lemma field_inv_inj : forall a b : A, a <> 0 -> b <> 0 -> / a = / b -> a = b.
+  Lemma field_inv_inj : forall a b : tA, a <> 0 -> b <> 0 -> / a = / b -> a = b.
   Proof.
     intros. rewrite <- field_inv_inv; auto. rewrite <- H1.
     rewrite field_inv_inv; auto.
   Qed.
 
   (** / (- a) = - (/ a) *)
-  Lemma field_inv_opp : forall a : A, a <> 0 -> / (- a) = - (/ a).
+  Lemma field_inv_opp : forall a : tA, a <> 0 -> / (- a) = - (/ a).
   Proof.
     intros. apply field_inv_eq_l. apply group_opp_neq0_iff; auto.
     rewrite ring_mul_opp_opp. apply field_mulInvR; auto.
@@ -2270,10 +2270,10 @@ Section Theory.
 
   
   Section Dec.
-    Context {AeqDec : Dec (@eq A)}.
+    Context {AeqDec : Dec (@eq tA)}.
     
     (** a * b = 0 <-> a = 0 \/ b = 0 *)
-    Lemma field_mul_eq0_iff : forall a b : A, a * b = 0 <-> a = 0 \/ b = 0.
+    Lemma field_mul_eq0_iff : forall a b : tA, a * b = 0 <-> a = 0 \/ b = 0.
     Proof.
       intros. split; intros.
       - destruct (Aeqdec a 0), (Aeqdec b 0); auto.
@@ -2287,11 +2287,11 @@ Section Theory.
     Qed.
     
     (** a * b <> 0 <-> (a <> 0 /\ b <> 0) *)
-    Lemma field_mul_neq0_iff : forall a b : A, a * b <> 0 <-> (a <> 0 /\ b <> 0).
+    Lemma field_mul_neq0_iff : forall a b : tA, a * b <> 0 <-> (a <> 0 /\ b <> 0).
     Proof. intros. rewrite field_mul_eq0_iff. tauto. Qed.
     
     (** / a <> 0 -> a <> 0 *)
-    Lemma field_inv_neq0_imply_neq0 : forall a : A, / a <> 0 -> a <> 0.
+    Lemma field_inv_neq0_imply_neq0 : forall a : tA, / a <> 0 -> a <> 0.
     Proof.
       intros. intro.
     (* 备注：
@@ -2306,18 +2306,18 @@ Section Theory.
     Admitted.
 
     (** / a <> 0 <-> a <> 0 *)
-    Lemma field_inv_neq0_iff : forall a : A, / a <> 0 <-> a <> 0.
+    Lemma field_inv_neq0_iff : forall a : tA, / a <> 0 <-> a <> 0.
     Proof.
       intros; split. apply field_inv_neq0_imply_neq0.
       apply field_inv_neq0_if_neq0.
     Qed.
     
     (** a * a = 0 -> a = 0 *)
-    Lemma field_sqr_eq0_reg : forall a : A, a * a = 0 -> a = 0.
+    Lemma field_sqr_eq0_reg : forall a : tA, a * a = 0 -> a = 0.
     Proof. intros. apply field_mul_eq0_iff in H. destruct H; auto. Qed.
 
     (** a * b = b -> a = 1 \/ b = 0 *)
-    Lemma field_mul_eq_imply_a1_or_b0 : forall (a b : A),
+    Lemma field_mul_eq_imply_a1_or_b0 : forall (a b : tA),
         a * b = b -> (a = 1) \/ (b = 0).
     Proof.
       intros. destruct (Aeqdec a 1), (Aeqdec b 0); auto.
@@ -2356,18 +2356,18 @@ End Examples.
  *)
 
 (** ** Class *)
-Class Order {A} (Alt Ale : A -> A -> Prop) := {
+Class Order {tA} (Alt Ale : tA -> tA -> Prop) := {
     (* Lt is anti-reflexivi *)
-    lt_irrefl : forall a : A, ~ (Alt a a);
+    lt_irrefl : forall a : tA, ~ (Alt a a);
     (* Lt is anti-symmetric *)
-    lt_antisym : forall a b : A, Alt a b -> Alt b a -> a = b;
+    lt_antisym : forall a b : tA, Alt a b -> Alt b a -> a = b;
     (* Lt is transitive *)
-    lt_trans : forall a b c : A, Alt a b -> Alt b c -> Alt a c;
+    lt_trans : forall a b c : tA, Alt a b -> Alt b c -> Alt a c;
     (* Lt three cases *)
-    lt_cases : forall a b : A, {Alt a b} + {Alt b a} + {a = b};
+    lt_cases : forall a b : tA, {Alt a b} + {Alt b a} + {a = b};
 
     (* Lt and Le are consistent *)
-    lt_le_cong : forall a b : A, Ale a b <-> (Alt a b \/ a = b);
+    lt_le_cong : forall a b : tA, Ale a b <-> (Alt a b \/ a = b);
   }.
 
 (** ** Instances *)
@@ -2379,14 +2379,14 @@ Section eq.
   Context `{HOrder : Order}.
 
   (** eq is decidable *)
-  Lemma Aeq_dec : forall a b : A, {a = b} + {a <> b}.
+  Lemma Aeq_dec : forall a b : tA, {a = b} + {a <> b}.
   Proof.
     intros; destruct (lt_cases a b) as [[H1|H1]|H1]; auto.
     - right; intro; subst. apply lt_irrefl in H1; auto.
     - right; intro; subst. apply lt_irrefl in H1; auto.
   Qed.
   
-  #[export] Instance Aeq_Dec : Dec (@eq A).
+  #[export] Instance Aeq_Dec : Dec (@eq tA).
   Proof. constructor. intros. apply Aeq_dec. Qed.
 End eq.
 
@@ -2410,25 +2410,25 @@ Section lt.
   Proof. constructor. intros. apply Alt_dec. Defined.
 
   (* Lt is connected *)
-  Lemma lt_connected : forall a b : A, Alt a b \/ Alt b a \/ a = b.
+  Lemma lt_connected : forall a b : tA, Alt a b \/ Alt b a \/ a = b.
   Proof. intros. destruct (lt_cases a b) as [[H1|H1]|H1]; auto. Qed.
 
   (** a < b -> a <> b *)
-  Lemma lt_not_eq : forall a b : A, a < b -> a <> b.
+  Lemma lt_not_eq : forall a b : tA, a < b -> a <> b.
   Proof. intros. intro. subst. apply lt_irrefl in H; auto. Qed.
 
   (** a < b -> b < a -> False *)
-  Lemma lt_gt_contr : forall a b : A, a < b -> b < a -> False.
+  Lemma lt_gt_contr : forall a b : tA, a < b -> b < a -> False.
   Proof.
     intros. apply lt_trans with (a:=a) in H0; auto. apply lt_irrefl in H0; auto.
   Qed.
 
   (** a < b -> a <> b *)
-  Lemma lt_imply_neq : forall a b : A, a < b -> a <> b.
+  Lemma lt_imply_neq : forall a b : tA, a < b -> a <> b.
   Proof. intros. intro. subst. apply lt_irrefl in H. auto. Qed.
 
   (** a < b -> ~ (b < a) *)
-  Lemma lt_not_lt : forall a b : A, a < b -> ~ (b < a).
+  Lemma lt_not_lt : forall a b : tA, a < b -> ~ (b < a).
   Proof. intros. intro. apply lt_gt_contr in H; auto. Qed.
 End lt.
 
@@ -2442,33 +2442,33 @@ Section le.
   Infix "<=" := Ale.
   
   (* a < b -> a <= b *)
-  Lemma le_if_lt : forall a b : A, a < b -> a <= b.
+  Lemma le_if_lt : forall a b : tA, a < b -> a <= b.
   Proof. intros. apply lt_le_cong. auto. Qed.
   
   (* a <= b -> a <> b -> a < b *)
-  Lemma lt_if_le_and_neq : forall a b : A, a <= b -> a <> b -> a < b.
+  Lemma lt_if_le_and_neq : forall a b : tA, a <= b -> a <> b -> a < b.
   Proof. intros. apply lt_le_cong in H. destruct H; auto. easy. Qed.
 
   (** a <= a *)
-  Lemma le_refl : forall a : A, a <= a.
+  Lemma le_refl : forall a : tA, a <= a.
   Proof. intros. apply lt_le_cong. right. auto. Qed.
   
   (** a <= b -> b <= a -> a = b *)
-  Lemma le_antisym : forall a b : A, a <= b -> b <= a -> a = b.
+  Lemma le_antisym : forall a b : tA, a <= b -> b <= a -> a = b.
   Proof.
     intros. apply lt_le_cong in H, H0. destruct H, H0; subst; auto.
     apply lt_antisym; auto.
   Qed.
   
   (** a <= b -> b <= c -> a <= c *)
-  Lemma le_trans : forall a b c : A, a <= b -> b <= c -> a <= c.
+  Lemma le_trans : forall a b c : tA, a <= b -> b <= c -> a <= c.
   Proof.
     intros. apply lt_le_cong in H, H0. apply lt_le_cong.
     destruct H, H0; subst; auto. left. apply lt_trans with b; auto.
   Qed.
   
   (** a < b -> b <= c -> a < c *)
-  Lemma lt_trans_lt_le : forall a b c : A, a < b -> b <= c -> a < c.
+  Lemma lt_trans_lt_le : forall a b c : tA, a < b -> b <= c -> a < c.
   Proof.
     intros. pose proof (le_if_lt H). pose proof (le_trans H1 H0).
     apply lt_if_le_and_neq; auto.
@@ -2476,7 +2476,7 @@ Section le.
   Qed.
   
   (** a <= b -> b < c -> a < c *)
-  Lemma lt_trans_le_lt : forall a b c : A, a <= b -> b < c -> a < c.
+  Lemma lt_trans_le_lt : forall a b c : tA, a <= b -> b < c -> a < c.
   Proof.
     intros. pose proof (le_if_lt H0). pose proof (le_trans H H1).
     apply lt_if_le_and_neq; auto.
@@ -2484,42 +2484,42 @@ Section le.
   Qed.
   
   (** a < b -> ~ (b <= a) *)
-  Lemma lt_not_le : forall a b : A, a < b -> ~ (b <= a).
+  Lemma lt_not_le : forall a b : tA, a < b -> ~ (b <= a).
   Proof.
     intros. rewrite lt_le_cong. apply and_not_or. split.
     apply lt_not_lt; auto. symmetry. apply lt_not_eq; auto.
   Qed.
   
   (** ~ (a <= b) -> b < a *)
-  Lemma not_le_lt : forall a b : A, ~ (a <= b) -> b < a.
+  Lemma not_le_lt : forall a b : tA, ~ (a <= b) -> b < a.
   Proof.
     intros. rewrite lt_le_cong in H. apply not_or_and in H. destruct H.
     destruct (lt_cases a b) as [[H1|H1]|H1]; try easy.
   Qed.
   
   (** a <= b -> ~ (b < a) *)
-  Lemma le_not_lt : forall a b : A, a <= b -> ~ (b < a).
+  Lemma le_not_lt : forall a b : tA, a <= b -> ~ (b < a).
   Proof.
     intros. rewrite lt_le_cong in H. destruct H.
     apply lt_not_lt; auto. subst. apply lt_irrefl.
   Qed.
   
   (** ~ (a < b) -> b <= a *)
-  Lemma not_lt_le : forall a b : A, ~ (a < b) -> b <= a.
+  Lemma not_lt_le : forall a b : tA, ~ (a < b) -> b <= a.
   Proof.
     intros. apply lt_le_cong.
     destruct (lt_cases a b) as [[H1|H1]|H1]; auto; try easy.
   Qed.
 
   (** a <= b -> b <= a -> a = b *)
-  Lemma le_ge_eq : forall a b : A, a <= b -> b <= a -> a = b.
+  Lemma le_ge_eq : forall a b : tA, a <= b -> b <= a -> a = b.
   Proof.
     intros. apply le_not_lt in H,H0.
     destruct (lt_cases a b) as [[H1|H1]|H1]; easy.
   Qed.
 
   (** {a <= b} + {~(a <= b)} *)
-  Lemma Ale_dec : forall a b : A, {a <= b} + {~(a <= b)}.
+  Lemma Ale_dec : forall a b : tA, {a <= b} + {~(a <= b)}.
   Proof.
     intros. destruct (Alt_dec b a); auto.
     - right. apply lt_not_le; auto.
@@ -2530,7 +2530,7 @@ Section le.
   Proof. constructor; intros. apply Ale_dec. Qed.
   
   (** a <= b \/ b < a *)
-  Lemma le_connected : forall a b : A, a <= b \/ b < a.
+  Lemma le_connected : forall a b : tA, a <= b \/ b < a.
   Proof. intros. destruct (Ale_dec a b); auto. apply not_le_lt in n. auto. Qed.
 
 End le.
@@ -2569,7 +2569,7 @@ Section test.
   Infix "<" := Alt : A_scope.
   Infix "<=" := Ale : A_scope.
 
-  Variable a b c d e f g : A.
+  Variable a b c d e f g : tA.
 
   Goal {a = b} + {a <> b}. order. Qed.
   Goal {a < b} + {~(a < b)}. order. Qed.
@@ -2584,15 +2584,15 @@ End test.
 (* ######################################################################### *)
 (** * Abelian-ring with total order *)
 
-Class OrderedARing {A} Aadd Azero Aopp Amul Aone Alt Ale := {
+Class OrderedARing {tA} Aadd Azero Aopp Amul Aone Alt Ale := {
     or_Ring :: ARing Aadd Azero Aopp Amul Aone;
     or_Order :: Order Alt Ale;
     
     (* Lt is compatible with addition operation: a < b -> a + c < a + c *)
-    lt_add_compat_r : forall a b c : A,
+    lt_add_compat_r : forall a b c : tA,
       Alt a b -> Alt (Aadd a c) (Aadd b c);
     (* Lt is compatible with multiply operation: a < b -> 0 < c -> a * c < b * c *)
-    lt_mul_compat_r : forall a b c : A,
+    lt_mul_compat_r : forall a b c : tA,
       Alt a b -> Alt Azero c -> Alt (Amul a c) (Amul b c);
   }.
 
@@ -2627,11 +2627,11 @@ Section theories.
   (** **** About "add" *)
 
   (* a < b -> c + a < c + b *)
-  Lemma lt_add_compat_l : forall a b c : A, a < b -> c + a < c + b.
+  Lemma lt_add_compat_l : forall a b c : tA, a < b -> c + a < c + b.
   Proof. intros. rewrite !(commutative c _). apply lt_add_compat_r; auto. Qed.
   
   (* a < b -> c < d -> a + c < b + d *)
-  Lemma lt_add_compat : forall a b c d : A, a < b -> c < d -> a + c < b + d.
+  Lemma lt_add_compat : forall a b c d : tA, a < b -> c < d -> a + c < b + d.
   Proof.
     intros. apply lt_trans with (a + d).
     apply lt_add_compat_l; auto. apply lt_add_compat_r; auto.
@@ -2655,7 +2655,7 @@ Section theories.
   Qed.
   
   (* a < b <-> - b < - a *)
-  Lemma lt_opp_iff : forall a b : A, a < b <-> - b < - a.
+  Lemma lt_opp_iff : forall a b : tA, a < b <-> - b < - a.
   Proof.
     (* a < b <-> -b + a + -a < -b + b + -a <-> -b < -a *)
     intros. split; intros.
@@ -2670,7 +2670,7 @@ Section theories.
   Qed.
 
   (* a < b <-> a - b < 0 *)
-  Lemma lt_sub_iff : forall a b : A, a < b <-> a - b < 0.
+  Lemma lt_sub_iff : forall a b : tA, a < b <-> a - b < 0.
   Proof.
     (* a < b <-> a + (- b) < b + (- b) -> a - b < 0 *)
     intros. split; intros.
@@ -2683,38 +2683,38 @@ Section theories.
   Qed.
 
   (** a < 0 <-> 0 < - a *)
-  Lemma lt0_iff_neg : forall a : A, a < 0 <-> 0 < - a.
+  Lemma lt0_iff_neg : forall a : tA, a < 0 <-> 0 < - a.
   Proof. intros. rewrite lt_opp_iff. rewrite group_opp_0 at 1. easy. Qed.
 
   (** 0 < a <-> - a < 0 *)
-  Lemma gt0_iff_neg : forall a : A, 0 < a <-> - a < 0.
+  Lemma gt0_iff_neg : forall a : tA, 0 < a <-> - a < 0.
   Proof. intros. rewrite lt_opp_iff. rewrite group_opp_0 at 1. easy. Qed.
 
   (** 0 < a -> 0 < b -> 0 < a + b *)
-  Lemma add_gt0_if_gt0_gt0 : forall a b : A, 0 < a -> 0 < b -> 0 < a + b.
+  Lemma add_gt0_if_gt0_gt0 : forall a b : tA, 0 < a -> 0 < b -> 0 < a + b.
   Proof.
     intros. replace 0 with (0 + 0) by ring. apply lt_add_compat; auto.
   Qed.
     
   (** a < 0 -> b < 0 -> a + b < 0 *)
-  Lemma add_lt0_if_lt0_lt0 : forall a b : A, a < 0 -> b < 0 -> a + b < 0.
+  Lemma add_lt0_if_lt0_lt0 : forall a b : tA, a < 0 -> b < 0 -> a + b < 0.
   Proof.
     intros. replace 0 with (0 + 0) by ring. apply lt_add_compat; auto.
   Qed.
   
   (** a < 0 -> 0 < b -> a < b *)
-  Lemma lt_if_lt0_gt0 : forall a b : A, a < 0 -> 0 < b -> a < b.
+  Lemma lt_if_lt0_gt0 : forall a b : tA, a < 0 -> 0 < b -> a < b.
   Proof. intros. apply lt_trans with 0; auto. Qed.
   
   (** a <= 0 -> 0 < b -> a < b *)
-  Lemma lt_if_le0_gt0 : forall a b : A, a <= 0 -> 0 < b -> a < b.
+  Lemma lt_if_le0_gt0 : forall a b : tA, a <= 0 -> 0 < b -> a < b.
   Proof.
     intros. destruct (Aeqdec a 0). subst; auto.
     apply lt_trans with 0; auto. apply lt_le_cong in H. destruct H; easy.
   Qed.
   
   (** a < 0 -> 0 <= b -> a < b *)
-  Lemma lt_if_lt0_ge0 : forall a b : A, a < 0 -> 0 <= b -> a < b.
+  Lemma lt_if_lt0_ge0 : forall a b : tA, a < 0 -> 0 <= b -> a < b.
   Proof.
     intros. destruct (Aeqdec b 0). subst; auto.
     apply lt_trans with 0; auto. apply lt_le_cong in H0. destruct H0; auto.
@@ -2722,58 +2722,58 @@ Section theories.
   Qed.
 
   (** a < 0 -> a < - a *)
-  Lemma lt_neg_r_if_lt0 : forall a : A, a < 0 -> a < - a.
+  Lemma lt_neg_r_if_lt0 : forall a : tA, a < 0 -> a < - a.
   Proof. intros. apply lt_if_lt0_gt0; auto. apply lt0_iff_neg; auto. Qed.
 
   (** 0 < a -> - a < a *)
-  Lemma gt_neg_l_if_gt0 : forall a : A, 0 < a -> - a < a.
+  Lemma gt_neg_l_if_gt0 : forall a : tA, 0 < a -> - a < a.
   Proof. intros. apply lt_if_lt0_gt0; auto. apply gt0_iff_neg; auto. Qed.
 
   
   (** **** About "mul" *)
   
   (* a < b -> 0 < c -> c * a < c * b *)
-  Lemma lt_mul_compat_l : forall a b c : A, a < b -> 0 < c -> c * a < c * b.
+  Lemma lt_mul_compat_l : forall a b c : tA, a < b -> 0 < c -> c * a < c * b.
   Proof. intros. rewrite !(commutative c _). apply lt_mul_compat_r; auto. Qed.
 
   (* a < b -> c < 0 -> c * b < c * a *)
-  Lemma lt_mul_compat_l_neg : forall a b c : A, a < b -> c < 0 -> c * b < c * a.
+  Lemma lt_mul_compat_l_neg : forall a b c : tA, a < b -> c < 0 -> c * b < c * a.
   Proof.
     intros. apply lt_opp_iff in H0. rewrite group_opp_0 in H0.
     apply lt_opp_iff. ring_simplify. apply lt_mul_compat_l; auto.
   Qed.
 
   (* a < b -> c < 0 -> b * c < a * c *)
-  Lemma lt_mul_compat_r_neg : forall a b c : A, a < b -> c < 0 -> b * c < a * c.
+  Lemma lt_mul_compat_r_neg : forall a b c : tA, a < b -> c < 0 -> b * c < a * c.
   Proof. intros. rewrite !(commutative _ c). apply lt_mul_compat_l_neg; auto. Qed.
 
   (** 0 < a -> 0 < b -> 0 < a * b *)
-  Lemma mul_gt0_if_gt0_gt0 : forall a b : A, 0 < a -> 0 < b -> 0 < a * b.
+  Lemma mul_gt0_if_gt0_gt0 : forall a b : tA, 0 < a -> 0 < b -> 0 < a * b.
   Proof.
     intros. replace 0 with (a * 0). apply lt_mul_compat_l; auto. ring.
   Qed.
   
   (** a < 0 -> b < 0 -> 0 < a * b *)
-  Lemma mul_gt0_if_lt0_lt0 : forall a b : A, a < 0 -> b < 0 -> 0 < a * b.
+  Lemma mul_gt0_if_lt0_lt0 : forall a b : tA, a < 0 -> b < 0 -> 0 < a * b.
   Proof.
     intros. replace (a * b) with ((- a) * (- b)) by ring. apply mul_gt0_if_gt0_gt0.
     apply lt0_iff_neg; auto. apply lt0_iff_neg; auto.
   Qed.
   
   (** 0 < a -> b < 0 -> a * b < 0 *)
-  Lemma mul_lt0_if_gt0_lt0 : forall a b : A, 0 < a -> b < 0 -> a * b < 0.
+  Lemma mul_lt0_if_gt0_lt0 : forall a b : tA, 0 < a -> b < 0 -> a * b < 0.
   Proof.
     intros. replace 0 with (a * 0). apply lt_mul_compat_l; auto. ring.
   Qed.
   
   (** a < 0 -> 0 < b -> a * b < 0 *)
-  Lemma mul_lt0_if_lt0_gt0 : forall a b : A, a < 0 -> 0 < b -> a * b < 0.
+  Lemma mul_lt0_if_lt0_gt0 : forall a b : tA, a < 0 -> 0 < b -> a * b < 0.
   Proof.
     intros. replace 0 with (0 * b). apply lt_mul_compat_r; auto. ring.
   Qed.
 
   (** 0 < a * b -> 0 < a -> 0 < b *)
-  Lemma gt0_mul_reg_gt0 : forall a b : A, 0 < a * b -> 0 < a -> 0 < b.
+  Lemma gt0_mul_reg_gt0 : forall a b : tA, 0 < a * b -> 0 < a -> 0 < b.
   Proof.
     intros. destruct (lt_cases 0 b) as [[H1|H1]|H1]; auto.
     - apply lt0_iff_neg in H1.
@@ -2784,7 +2784,7 @@ Section theories.
   Qed.
   
   (** 0 < a * b -> a < 0 -> b < 0 *)
-  Lemma gt0_mul_reg_lt0 : forall a b : A, 0 < a * b -> a < 0 -> b < 0.
+  Lemma gt0_mul_reg_lt0 : forall a b : tA, 0 < a * b -> a < 0 -> b < 0.
   Proof.
     intros. replace (a * b) with ((- a) * (- b)) in H by ring.
     apply lt0_iff_neg. apply lt0_iff_neg in H0.
@@ -2797,18 +2797,18 @@ Section theories.
   (** **** About "add" *)
   
   (* a <= b -> a + c <= a + c *)
-  Lemma le_add_compat_r : forall a b c : A, a <= b -> a + c <= b + c.
+  Lemma le_add_compat_r : forall a b c : tA, a <= b -> a + c <= b + c.
   Proof.
     intros. apply lt_le_cong. apply lt_le_cong in H. destruct H; subst; auto.
     left. apply lt_add_compat_r; auto.
   Qed.
   
   (* a <= b -> c + a <= c + b *)
-  Lemma le_add_compat_l : forall a b c : A, a <= b -> c + a <= c + b.
+  Lemma le_add_compat_l : forall a b c : tA, a <= b -> c + a <= c + b.
   Proof. intros. rewrite !(commutative c _). apply le_add_compat_r; auto. Qed.
   
   (* a <= b -> c <= d -> a + c <= b + d *)
-  Lemma le_add_compat : forall a b c d : A, a <= b -> c <= d -> a + c <= b + d.
+  Lemma le_add_compat : forall a b c d : tA, a <= b -> c <= d -> a + c <= b + d.
   Proof.
     intros. apply le_trans with (a + d).
     apply le_add_compat_l; auto. apply le_add_compat_r; auto.
@@ -2831,19 +2831,19 @@ Section theories.
   Qed.
 
   (** 0 <= a -> 0 <= b -> 0 <= a + b *)
-  Lemma add_ge0_if_ge0_ge0 : forall a b : A, 0 <= a -> 0 <= b -> 0 <= a + b.
+  Lemma add_ge0_if_ge0_ge0 : forall a b : tA, 0 <= a -> 0 <= b -> 0 <= a + b.
   Proof.
     intros. replace 0 with (0 + 0) by ring. apply le_add_compat; auto.
   Qed.
     
   (** a <= 0 -> b <= 0 -> a + b <= 0 *)
-  Lemma add_le0_if_le0_le0 : forall a b : A, a <= 0 -> b <= 0 -> a + b <= 0.
+  Lemma add_le0_if_le0_le0 : forall a b : tA, a <= 0 -> b <= 0 -> a + b <= 0.
   Proof.
     intros. replace 0 with (0 + 0) by ring. apply le_add_compat; auto.
   Qed.
   
   (* a <= b <-> - b <= - a *)
-  Lemma le_opp_iff : forall a b : A, a <= b <-> - b <= - a.
+  Lemma le_opp_iff : forall a b : tA, a <= b <-> - b <= - a.
   Proof.
     intros. rewrite !lt_le_cong. split; intros; destruct H; subst; auto.
     - apply lt_opp_iff in H; auto.
@@ -2852,50 +2852,50 @@ Section theories.
   Qed.
 
   (** a <= 0 <-> 0 <= - a *)
-  Lemma le0_iff_neg : forall a : A, a <= 0 <-> 0 <= - a.
+  Lemma le0_iff_neg : forall a : tA, a <= 0 <-> 0 <= - a.
   Proof. intros. rewrite le_opp_iff. rewrite group_opp_0 at 1. easy. Qed.
 
   (** 0 <= a <-> - a <= 0 *)
-  Lemma ge0_iff_neg : forall a : A, 0 <= a <-> - a <= 0.
+  Lemma ge0_iff_neg : forall a : tA, 0 <= a <-> - a <= 0.
   Proof. intros. rewrite le_opp_iff. rewrite group_opp_0 at 1. easy. Qed.
   
   (** a <= 0 -> 0 <= b -> a <= b *)
-  Lemma le_if_le0_ge0 : forall a b : A, a <= 0 -> 0 <= b -> a <= b.
+  Lemma le_if_le0_ge0 : forall a b : tA, a <= 0 -> 0 <= b -> a <= b.
   Proof. intros. apply le_trans with 0; auto. Qed.
   
   (** a < 0 -> 0 < b -> a <= b *)
-  Lemma le_if_lt0_gt0 : forall a b : A, a < 0 -> 0 < b -> a <= b.
+  Lemma le_if_lt0_gt0 : forall a b : tA, a < 0 -> 0 < b -> a <= b.
   Proof. intros. apply le_if_lt. apply lt_if_lt0_gt0; auto. Qed.
   
   (** a <= 0 -> 0 < b -> a <= b *)
-  Lemma le_if_le0_gt0 : forall a b : A, a <= 0 -> 0 < b -> a <= b.
+  Lemma le_if_le0_gt0 : forall a b : tA, a <= 0 -> 0 < b -> a <= b.
   Proof. intros. apply le_if_lt. apply lt_if_le0_gt0; auto. Qed.
   
   (** a < 0 -> 0 <= b -> a <= b *)
-  Lemma le_if_lt0_ge0 : forall a b : A, a < 0 -> 0 <= b -> a <= b.
+  Lemma le_if_lt0_ge0 : forall a b : tA, a < 0 -> 0 <= b -> a <= b.
   Proof. intros. apply le_if_lt. apply lt_if_lt0_ge0; auto. Qed.
 
   (** a <= 0 -> a <= - a *)
-  Lemma le_neg_r_if_le0 : forall a : A, a <= 0 -> a <= - a.
+  Lemma le_neg_r_if_le0 : forall a : tA, a <= 0 -> a <= - a.
   Proof. intros. apply le_if_le0_ge0; auto. apply le0_iff_neg; auto. Qed.
 
   (** a < 0 -> a <= - a *)
-  Lemma le_neg_r_if_lt0 : forall a : A, a < 0 -> a <= - a.
+  Lemma le_neg_r_if_lt0 : forall a : tA, a < 0 -> a <= - a.
   Proof. intros. apply le_neg_r_if_le0. apply le_if_lt; auto. Qed.
 
   (** 0 <= a -> - a <= a *)
-  Lemma ge_neg_l_if_ge0 : forall a : A, 0 <= a -> - a <= a.
+  Lemma ge_neg_l_if_ge0 : forall a : tA, 0 <= a -> - a <= a.
   Proof. intros. apply le_if_le0_ge0; auto. apply ge0_iff_neg; auto. Qed.
 
   (** 0 < a -> - a <= a *)
-  Lemma ge_neg_l_if_gt0 : forall a : A, 0 < a -> - a <= a.
+  Lemma ge_neg_l_if_gt0 : forall a : tA, 0 < a -> - a <= a.
   Proof. intros. apply ge_neg_l_if_ge0. apply le_if_lt; auto. Qed.
 
   
   (** **** About "mul" *)
   
   (* a <= b -> 0 <= c -> a * c <= b * c *)
-  Lemma le_mul_compat_r : forall a b c : A, a <= b -> 0 <= c -> a * c <= b * c.
+  Lemma le_mul_compat_r : forall a b c : tA, a <= b -> 0 <= c -> a * c <= b * c.
   Proof.
     intros. apply lt_le_cong. apply lt_le_cong in H, H0. destruct H,H0; auto.
     - left. apply lt_mul_compat_r; auto.
@@ -2905,11 +2905,11 @@ Section theories.
   Qed.
 
   (* a <= b -> 0 <= c -> c * a <= c * b *)
-  Lemma le_mul_compat_l : forall a b c : A, a <= b -> 0 <= c -> c * a <= c * b.
+  Lemma le_mul_compat_l : forall a b c : tA, a <= b -> 0 <= c -> c * a <= c * b.
   Proof. intros. rewrite !(commutative c _). apply le_mul_compat_r; auto. Qed.
 
   (* a <= b -> c < 0 -> c * b <= c * a *)
-  Lemma le_mul_compat_l_neg : forall a b c : A, a <= b -> c < 0 -> c * b <= c * a.
+  Lemma le_mul_compat_l_neg : forall a b c : tA, a <= b -> c < 0 -> c * b <= c * a.
   Proof.
     intros. apply lt_le_cong in H. destruct H.
     - apply lt_mul_compat_l_neg with (c:=c) in H; auto. apply le_if_lt; auto.
@@ -2917,17 +2917,17 @@ Section theories.
   Qed.
 
   (* a <= b -> c < 0 -> b * c <= a * c *)
-  Lemma le_mul_compat_r_neg : forall a b c : A, a <= b -> c < 0 -> b * c <= a * c.
+  Lemma le_mul_compat_r_neg : forall a b c : tA, a <= b -> c < 0 -> b * c <= a * c.
   Proof. intros. rewrite !(commutative _ c). apply le_mul_compat_l_neg; auto. Qed.
 
   (** 0 <= a -> 0 <= b -> 0 <= a * b *)
-  Lemma mul_ge0_if_ge0_ge0 : forall a b : A, 0 <= a -> 0 <= b -> 0 <= a * b.
+  Lemma mul_ge0_if_ge0_ge0 : forall a b : tA, 0 <= a -> 0 <= b -> 0 <= a * b.
   Proof.
     intros. replace 0 with (a * 0). apply le_mul_compat_l; auto. ring.
   Qed.
   
   (** a <= 0 -> b <= 0 -> 0 <= a * b *)
-  Lemma mul_ge0_if_le0_le0 : forall a b : A, a <= 0 -> b <= 0 -> 0 <= a * b.
+  Lemma mul_ge0_if_le0_le0 : forall a b : tA, a <= 0 -> b <= 0 -> 0 <= a * b.
   Proof.
     intros.
     intros. replace (a * b) with ((- a) * (- b)) by ring. apply mul_ge0_if_ge0_ge0.
@@ -2935,19 +2935,19 @@ Section theories.
   Qed.
     
   (** 0 <= a -> b <= 0 -> a * b <= 0 *)
-  Lemma mul_le0_if_ge0_le0 : forall a b : A, 0 <= a -> b <= 0 -> a * b <= 0.
+  Lemma mul_le0_if_ge0_le0 : forall a b : tA, 0 <= a -> b <= 0 -> a * b <= 0.
   Proof.
     intros. replace 0 with (a * 0). apply le_mul_compat_l; auto. ring.
   Qed.
 
   (** a <= 0 -> 0 <= b -> a * b <= 0 *)
-  Lemma mul_le0_if_le0_ge0 : forall a b : A, a <= 0 -> 0 <= b -> a * b <= 0.
+  Lemma mul_le0_if_le0_ge0 : forall a b : tA, a <= 0 -> 0 <= b -> a * b <= 0.
   Proof.
     intros. replace 0 with (0 * b). apply le_mul_compat_r; auto. ring.
   Qed.
 
   (** 0 <= a * b -> 0 < a -> 0 <= b *)
-  Lemma ge0_mul_reg_ge0 : forall a b : A, 0 <= a * b -> 0 < a -> 0 <= b.
+  Lemma ge0_mul_reg_ge0 : forall a b : tA, 0 <= a * b -> 0 < a -> 0 <= b.
   Proof.
     intros. destruct (Ale_dec 0 b) as [H1|H1]; auto.
     destruct (Aeqdec b 0) as [H2|H2].
@@ -2958,7 +2958,7 @@ Section theories.
   Qed.
   
   (** 0 <= a * b -> a < 0 -> b <= 0 *)
-  Lemma ge0_mul_reg_le0 : forall a b : A, 0 <= a * b -> a < 0 -> b <= 0.
+  Lemma ge0_mul_reg_le0 : forall a b : tA, 0 <= a * b -> a < 0 -> b <= 0.
   Proof.
     intros. replace (a * b) with ((- a) * (- b)) in H by ring.
     apply lt0_iff_neg in H0. apply ge0_mul_reg_ge0 in H; auto.
@@ -2969,7 +2969,7 @@ Section theories.
   (** **** More properties  *)
   
   (* 0 <= a * a *)
-  Lemma sqr_ge0 : forall a : A, a * a >= 0.
+  Lemma sqr_ge0 : forall a : tA, a * a >= 0.
   Proof.
     intros.
     pose proof (lt_connected 0 a). destruct H as [H|[H|H]].
@@ -2982,7 +2982,7 @@ Section theories.
   Qed.
   
   (* 0 <= a -> 0 <= b -> a + b = 0 -> a = 0 *)
-  Lemma add_eq0_imply_0_l : forall a b : A, 0 <= a -> 0 <= b -> a + b = 0 -> a = 0.
+  Lemma add_eq0_imply_0_l : forall a b : tA, 0 <= a -> 0 <= b -> a + b = 0 -> a = 0.
   Proof.
     intros. apply lt_le_cong in H, H0.
     destruct H as [H|H], H0 as [H0|H0]; auto.
@@ -2993,19 +2993,19 @@ Section theories.
   Qed.
 
   (* 0 <= a -> 0 <= b -> a + b = 0 -> b = 0 *)
-  Lemma add_eq0_imply_0_r : forall a b : A, 0 <= a -> 0 <= b -> a + b = 0 -> b = 0.
+  Lemma add_eq0_imply_0_r : forall a b : tA, 0 <= a -> 0 <= b -> a + b = 0 -> b = 0.
   Proof.
     intros. rewrite commutative in H1. apply add_eq0_imply_0_l in H1; auto.
   Qed.
 
   (** 0 <= a + b -> a >= - b *)
-  Lemma sub_ge0_imply_ge : forall a b : A, 0 <= a - b -> a >= b.
+  Lemma sub_ge0_imply_ge : forall a b : tA, 0 <= a - b -> a >= b.
   Proof.
     intros. apply le_add_compat_r with (c:= b) in H. ring_simplify in H. auto.
   Qed.
 
   (** 2 * a * b <= a² + b² *)
-  Lemma mul_le_add_sqr : forall a b : A, 2 * a * b <= a² + b².
+  Lemma mul_le_add_sqr : forall a b : tA, 2 * a * b <= a² + b².
   Proof.
     intros.
     assert (0 <= (a - b)²). apply sqr_ge0.
@@ -3016,28 +3016,28 @@ Section theories.
   Qed.
 
 
-  (** *** Abs of a term of A type *)
+  (** *** Abs of a term of tA type *)
   
   (* Tips: a good example shows that we can compare two object using 
      "cmp_dec" without "cmpb" (boolean version), thus avoids many proof works.
-     That is, another choice is: provide {Altb Aleb : A -> A -> bool},
+     That is, another choice is: provide {Altb Aleb : tA -> tA -> bool},
      but we need more works *)
-  Definition Aabs (a : A) : A := if Ale_dec 0 a then a else - a.
+  Definition Aabs (a : tA) : tA := if Ale_dec 0 a then a else - a.
   Notation "| a |" := (Aabs a) : A_scope.
 
   (** 0 <= a -> | a | = a *)
-  Lemma Aabs_right : forall a : A, 0 <= a -> | a | = a.
+  Lemma Aabs_right : forall a : tA, 0 <= a -> | a | = a.
   Proof. intros. unfold Aabs. destruct (Ale_dec 0 a); auto. easy. Qed.
     
   (** a < 0 -> | a | = - a *)
-  Lemma Aabs_left : forall a : A, a < 0 -> | a | = - a.
+  Lemma Aabs_left : forall a : tA, a < 0 -> | a | = - a.
   Proof.
     intros. unfold Aabs. destruct (Ale_dec 0 a); auto.
     apply lt_not_le in H. easy.
   Qed.
 
   (** | a * b | = | a | * | b | *)
-  Lemma Aabs_mul : forall a b : A, | a * b | = | a | * | b |.
+  Lemma Aabs_mul : forall a b : tA, | a * b | = | a | * | b |.
   Proof.
     intros. unfold Aabs.
     destruct (Ale_dec 0 (a*b)), (Ale_dec 0 a), (Ale_dec 0 b); try ring.
@@ -3052,7 +3052,7 @@ Section theories.
   Qed.
 
   (** | a + b | <= | a | + | b | *)
-  Lemma Aabs_add_le : forall a b : A, | a + b | <= | a | + | b |.
+  Lemma Aabs_add_le : forall a b : tA, | a + b | <= | a | + | b |.
   Proof.
     intros. unfold Aabs.
     destruct (Ale_dec 0 a), (Ale_dec 0 b), (Ale_dec 0 (a + b));
@@ -3077,8 +3077,8 @@ End theories.
 (* ######################################################################### *)
 (** * Field with total order *)
 
-Class OrderedField {A} Aadd Azero Aopp Amul Aone Ainv Alt Ale := {
-    of_Field :: @Field A Aadd Azero Aopp Amul Aone Ainv;
+Class OrderedField {tA} Aadd Azero Aopp Amul Aone Ainv Alt Ale := {
+    of_Field :: @Field tA Aadd Azero Aopp Amul Aone Ainv;
     of_OrderedRing :: @OrderedARing _ Aadd Azero Aopp Amul Aone Alt Ale;
   }.
 
@@ -3107,7 +3107,7 @@ Section Theory.
   Infix "<=" := Ale.
     
   (** a <> 0 -> 0 < a * a *)
-  Lemma sqr_gt0 : forall a : A, a <> 0 -> 0 < a * a.
+  Lemma sqr_gt0 : forall a : tA, a <> 0 -> 0 < a * a.
   Proof.
     intros. apply lt_if_le_and_neq.
     - apply sqr_ge0.
@@ -3127,7 +3127,7 @@ Section Theory.
   Proof. apply le_if_lt. apply lt_0_1. Qed.
   
   (** 0 < a -> 0 < / a *)
-  Lemma inv_gt0 : forall a : A, 0 < a -> 0 < / a.
+  Lemma inv_gt0 : forall a : tA, 0 < a -> 0 < / a.
   Proof.
     intros.
     assert (0 < a * / a).
@@ -3136,7 +3136,7 @@ Section Theory.
   Qed.
   
   (** a < 0 -> / a < 0 *)
-  Lemma inv_lt0 : forall a : A, a < 0 -> / a < 0.
+  Lemma inv_lt0 : forall a : tA, a < 0 -> / a < 0.
   Proof.
     intros. pose proof (lt_imply_neq H).
     rewrite lt_opp_iff in H. rewrite group_opp_0 in H.
@@ -3144,7 +3144,7 @@ Section Theory.
   Qed.
   
   (** 0 < a -> 0 < b -> a < b -> / b < / a *)
-  Lemma lt_inv : forall a b : A, 0 < a -> 0 < b -> a < b -> / b < / a.
+  Lemma lt_inv : forall a b : tA, 0 < a -> 0 < b -> a < b -> / b < / a.
   Proof.
     (* a < b -> /b * a * /a < /b * b * /a -> /b < /a *)
     intros.
@@ -3175,7 +3175,7 @@ Section Theory.
   Qed.
   
   (** 0 < a -> a < b -> a / b < 1 *)
-  Lemma lt_imply_div_lt_1 : forall a b : A, 0 < a -> a < b -> a / b < 1.
+  Lemma lt_imply_div_lt_1 : forall a b : tA, 0 < a -> a < b -> a / b < 1.
   Proof.
     intros. replace 1 with (b / b).
     apply lt_mul_compat_r; auto. apply inv_gt0. apply lt_trans with a; auto.
@@ -3183,7 +3183,7 @@ Section Theory.
   Qed.
   
   (** 0 < a -> a <= b -> a / b <= 1 *)
-  Lemma le_imply_div_le_1 : forall a b : A, 0 < a -> a <= b -> a / b <= 1.
+  Lemma le_imply_div_le_1 : forall a b : tA, 0 < a -> a <= b -> a / b <= 1.
   Proof.
     intros. apply lt_le_cong in H0. destruct H0.
     - apply le_if_lt. apply lt_imply_div_lt_1; auto.
@@ -3197,19 +3197,19 @@ End Theory.
 (* ######################################################################### *)
 (** * Convert to R type *)
 
-(** Operations {+,0,-x,*,1,/x,==,<,<=} is consistent with "a2r: A -> R" *)
-Class A2R {A} Aadd Azero Aopp Amul Aone Ainv Alt Ale
-  (a2r : A -> R) := {
-    a2r_add : forall a b : A, a2r (Aadd a b) = (a2r a + a2r b)%R;
+(** Operations {+,0,-x,*,1,/x,==,<,<=} is consistent with "a2r: tA -> R" *)
+Class A2R {tA} Aadd Azero Aopp Amul Aone Ainv Alt Ale
+  (a2r : tA -> R) := {
+    a2r_add : forall a b : tA, a2r (Aadd a b) = (a2r a + a2r b)%R;
     a2r_0 : a2r Azero = 0%R;
-    a2r_opp : forall a : A, a2r (Aopp a) = (- (a2r a))%R;
-    a2r_mul : forall a b : A, a2r (Amul a b) = (a2r a * a2r b)%R;
+    a2r_opp : forall a : tA, a2r (Aopp a) = (- (a2r a))%R;
+    a2r_mul : forall a b : tA, a2r (Amul a b) = (a2r a * a2r b)%R;
     a2r_1 : a2r Aone = 1%R;
-    a2r_inv : forall a : A, a <> Azero -> a2r (Ainv a) = (/ (a2r a))%R;
+    a2r_inv : forall a : tA, a <> Azero -> a2r (Ainv a) = (/ (a2r a))%R;
     a2r_Order :: Order Alt Ale;
-    a2r_eq_iff : forall a b : A, a2r a = a2r b <-> a = b;
-    a2r_lt_iff : forall a b : A, (a2r a < a2r b)%R <-> Alt a b;
-    a2r_le_iff : forall a b : A, (a2r a <= a2r b)%R <-> Ale a b
+    a2r_eq_iff : forall a b : tA, a2r a = a2r b <-> a = b;
+    a2r_lt_iff : forall a b : tA, (a2r a < a2r b)%R <-> Alt a b;
+    a2r_le_iff : forall a b : tA, (a2r a <= a2r b)%R <-> Ale a b
   }.
 
 (** ** Instances *)
@@ -3217,34 +3217,34 @@ Class A2R {A} Aadd Azero Aopp Amul Aone Ainv Alt Ale
 (** ** Extra Theories *)
 Section Theory.
   Context `{HA2R : A2R}.
-  Context {AeqDec : Dec (@eq A)}.
+  Context {AeqDec : Dec (@eq tA)}.
   Infix "<" := Alt : A_scope.
   Infix "<=" := Ale : A_scope.
 
   (** a2r a = 0 <-> a = 0 *)
-  Lemma a2r_eq0_iff : forall a : A, (a2r a = 0)%R <-> (a = Azero)%A.
+  Lemma a2r_eq0_iff : forall a : tA, (a2r a = 0)%R <-> (a = Azero)%A.
   Proof. intros. rewrite <- a2r_0. apply a2r_eq_iff. Qed.
 
   (** a2r a = 1 <-> a = 1 *)
-  Lemma a2r_eq1_iff : forall a : A, (a2r a = 1)%R <-> (a = Aone)%A.
+  Lemma a2r_eq1_iff : forall a : tA, (a2r a = 1)%R <-> (a = Aone)%A.
   Proof. intros. rewrite <- a2r_1. apply a2r_eq_iff. Qed.
   
   (** 0 <= a2r a <-> 0 <= a *)
-  Lemma a2r_ge0_iff : forall a : A, (0 <= a2r a)%R <-> (Azero <= a)%A.
+  Lemma a2r_ge0_iff : forall a : tA, (0 <= a2r a)%R <-> (Azero <= a)%A.
   Proof. intros. rewrite <- a2r_0. apply a2r_le_iff. Qed.
 
   (** 0 < a2r a <-> 0 < a *)
-  Lemma a2r_gt0_iff : forall a : A, (0 < a2r a)%R <-> (Azero < a)%A.
+  Lemma a2r_gt0_iff : forall a : tA, (0 < a2r a)%R <-> (Azero < a)%A.
   Proof. intros. rewrite <- a2r_0. apply a2r_lt_iff. Qed.
 
   Section OrderedARing.
     Context `{HOrderedARing :
-        OrderedARing A Aadd Azero Aopp Amul Aone Alt Ale}.
+        OrderedARing tA Aadd Azero Aopp Amul Aone Alt Ale}.
     Notation "| a |" := (Rabs a) : R_scope.
     Notation "| a |" := (Aabs a) : A_scope.
 
     (** a2r | a | = | a2r a | *)
-    Lemma a2r_Aabs : forall a : A, a2r (| a |) = | a2r a|%R.
+    Lemma a2r_Aabs : forall a : tA, a2r (| a |) = | a2r a|%R.
     Proof.
       intros. unfold Aabs. destruct (Ale_dec Azero a).
       - rewrite Rabs_right; auto. rewrite <- a2r_0.
@@ -3261,14 +3261,14 @@ End Theory.
 (* ######################################################################### *)
 (** * Metric space *)
 
-(** Adist:A×A→R(>=0) is a metric over A, if it satisfy three axioms.
-    Then, (A, Adist) is called a metric space, and Adist(a,b) is called the 
+(** Adist : tA × tA → R(>=0) is a metric over A, if it satisfy three axioms.
+    Then, (tA, Adist) is called a metric space, and Adist(a,b) is called the 
     distance between point a and b in (A,dist)     *)
-Class MetricSpace {A} (Adist : A -> A -> R) := {
-    ms_gt0 : forall a b : A, (R0 <= Adist a b)%R;
-    ms_eq0_iff_eq : forall a b : A, Adist a b = R0 <-> a = b;
-    ms_sym : forall a b : A, Adist a b = Adist b a;
-    ms_tri_ineg : forall a b c : A, (Adist a c <= Adist a b + Adist b c)%R
+Class MetricSpace {tA} (Adist : tA -> tA -> R) := {
+    ms_gt0 : forall a b : tA, (R0 <= Adist a b)%R;
+    ms_eq0_iff_eq : forall a b : tA, Adist a b = R0 <-> a = b;
+    ms_sym : forall a b : tA, Adist a b = Adist b a;
+    ms_tri_ineg : forall a b c : tA, (Adist a c <= Adist a b + Adist b c)%R
   }.
 
 (** ** Instances *)

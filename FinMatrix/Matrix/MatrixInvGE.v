@@ -18,13 +18,13 @@ Require Import MyExtrOCamlR.
 Require Export Matrix MatrixGauss MatrixInvBase.
 Require QcExt RExt.
 
-Generalizable Variable A Aadd Azero Aopp Amul Aone Ainv.
+Generalizable Variable tA Aadd Azero Aopp Amul Aone Ainv.
 
 
 (* ############################################################################ *)
 (** * Inverse matrix based on Gauss elimination (Typeclass version) *)
 Section minv.
-  Context `{HField : Field} {AeqDec : Dec (@eq A)}.
+  Context `{HField : Field} {AeqDec : Dec (@eq tA)}.
   Add Field field_thy_inst : (make_field_theory HField).
   Open Scope A_scope.
   Open Scope mat_scope.
@@ -38,7 +38,7 @@ Section minv.
   Notation "/ a" := (Ainv a) : A_scope.
   Notation "a / b" := ((a * /b)%A) : A_scope.
   
-  Notation smat n := (smat A n).
+  Notation smat n := (smat tA n).
   Notation mat1 := (@mat1 _ Azero Aone).
   Notation mcmul := (@mcmul _ Amul).
   Infix "c*" := mcmul : mat_scope.
@@ -268,7 +268,7 @@ Module MinvCoreGE (E : FieldElementType) <: MinvCore E.
   Local Notation "/ a" := (Ainv a) : A_scope.
   Local Notation "a / b" := ((a * /b)%A) : A_scope.
 
-  Local Notation smat n := (smat A n).
+  Local Notation smat n := (smat tA n).
   Local Notation mat1 := (@mat1 _ Azero Aone).
   Local Notation mcmul := (@mcmul _ Amul).
   Local Infix "c*" := mcmul : mat_scope.

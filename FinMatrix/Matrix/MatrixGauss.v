@@ -27,21 +27,21 @@ Require Import Matrix.
 Require Import MyExtrOCamlR.
 Require QcExt RExt.
 
-Generalizable Variable A Aadd Azero Aopp Amul Aone Ainv.
+Generalizable Variable tA Aadd Azero Aopp Amul Aone Ainv.
 
 (** fold_left f (map g l) a = fold_left (fun x y => f x (g y)) l a *)
-Lemma fold_left_map : forall {A B} (l : list B) (f : A -> A -> A) (g : B -> A) a,
+Lemma fold_left_map : forall {tA tB} (l : list tB) (f : tA -> tA -> tA) (g : tB -> tA) a,
     fold_left f (map g l) a = fold_left (fun x y => f x (g y)) l a.
 Proof.
-  intros A B l. induction l; intros; simpl. auto.
+  intros tA tB l. induction l; intros; simpl. auto.
   rewrite IHl. auto.
 Qed.
 
 (** fold_right f a (map g l) = fold_right (fun x y => f (g x) y) a l *)
-Lemma fold_right_map : forall {A B} (l : list B) (f : A -> A -> A) (g : B -> A) a,
+Lemma fold_right_map : forall {tA tB} (l : list tB) (f : tA -> tA -> tA) (g : tB -> tA) a,
     fold_right f a (map g l) = fold_right (fun x y => f (g x) y) a l.
 Proof.
-  intros A B l. induction l; intros; simpl. auto.
+  intros tA tB l. induction l; intros; simpl. auto.
   rewrite IHl. auto.
 Qed.
 
@@ -49,7 +49,7 @@ Qed.
 (* ############################################################################ *)
 (** * Gauss elimination. *)
 Section GaussElim.
-  Context `{HField : Field} `{HAeqDec : Dec _ (@eq A)}.
+  Context `{HField : Field} `{HAeqDec : Dec _ (@eq tA)}.
   Add Field field_inst : (make_field_theory HField).
 
   Notation "0" := Azero : A_scope.
@@ -59,16 +59,16 @@ Section GaussElim.
   Infix "*" := Amul : A_scope.
   Notation "/ a" := (Ainv a) : A_scope.
   Infix "/" := (fun a b => a * / b) : A_scope.
-  Notation Aeqb := (@Acmpb _ (@eq A) _).
+  Notation Aeqb := (@Acmpb _ (@eq tA) _).
   
-  Notation mat r c := (mat A r c).
-  Notation smat n := (smat A n).
+  Notation mat r c := (mat tA r c).
+  Notation smat n := (smat tA n).
   Notation mat1 := (@mat1 _ Azero Aone).
   Notation madd := (@madd _ Aadd).
   Infix "+" := madd : mat_scope.
   Notation mmul := (@mmul _ Aadd Azero Amul).
   Infix "*" := mmul : mat_scope.
-  Notation mrowSwap := (@mrowSwap A).
+  Notation mrowSwap := (@mrowSwap tA).
   Notation mrowScale := (@mrowScale _ Amul).
   Notation mrowAdd := (@mrowAdd _ Aadd Amul).
   Notation mrowSwapM := (@mrowSwapM _ 0 1 _).
@@ -84,8 +84,8 @@ Section GaussElim.
   Inductive RowOp {n} :=
   | ROnop
   | ROswap (i j : 'I_(S n))
-  | ROscale (i : 'I_(S n)) (c : A)
-  | ROadd (i j : 'I_(S n)) (c : A).
+  | ROscale (i : 'I_(S n)) (c : tA)
+  | ROadd (i j : 'I_(S n)) (c : tA).
 
   (** 行变换列表转换为矩阵 *)
   Definition rowOps2mat {n} (l : list (@RowOp n)) : smat (S n) :=
@@ -530,7 +530,7 @@ Section GaussElim.
     | S x' =>
         (* 递归时 x 从大到小，而 fx 是从小到大 *)
         let fx : 'I_(S n) := #(S n - x) in
-        let a : A := M.[fx].[j] in
+        let a : tA := M.[fx].[j] in
         (* 如果 M[S n-x,j] <> 0，则 j 行的 -M[S n-x,j] 倍加到 S n-x 行。要求 M[j,j]=1 *)
         if Aeqdec a 0
         then elimDown M x' j
@@ -708,7 +708,7 @@ Section GaussElim.
                else (ROswap j i, mrowSwap j i M)) in
             (* 使主元是 1 *)
             let (op2, M2) :=
-              (let c : A := M1.[j].[j] in
+              (let c : tA := M1.[j].[j] in
                (ROscale j (/c), mrowScale j (/c) M1)) in
             (* 使主元以下都是 0 *)
             let (l3, M3) := elimDown M2 x' j in
@@ -965,7 +965,7 @@ Section GaussElim.
     | O => ([], M)
     | S x' =>
         let fx : 'I_(S n) := #x' in
-        let a : A := (M.[fx].[j]) in
+        let a : tA := (M.[fx].[j]) in
         (* 如果 M[x',j] <> 0，则 j 行的 -M[x',j] 倍加到 x' 行。要求 M[j,j]=1 *)
         if Aeqdec a 0
         then elimUp M x' j

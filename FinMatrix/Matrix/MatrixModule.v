@@ -48,8 +48,8 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** Definition of the vector type *)
   
   (** vector type *)
-  Notation vec n := (@vec A n).
-  (* Definition vec (n : nat) := @vec A n. *)
+  Notation vec n := (@vec tA n).
+  (* Definition vec (n : nat) := @vec tA n. *)
   
   (* ======================================================================= *)
   (** ** Equalities of the vector *)
@@ -107,14 +107,14 @@ Module BasicMatrixTheory (E : ElementType).
 
   (* ======================================================================= *)
   (** ** Convert between vector and function *)
-  Definition v2f {n} (a : vec n) : nat -> A := v2f 0 a.
-  Definition f2v {n} (f : nat -> A) : vec n := f2v f.
+  Definition v2f {n} (a : vec n) : nat -> tA := v2f 0 a.
+  Definition f2v {n} (f : nat -> tA) : vec n := f2v f.
 
   (** (f2v a).i = a i *)
   Lemma vnth_f2v : forall {n} f i, (@f2v n f).[i] = f i.
   Proof. intros. apply vnth_f2v. Qed.
 
-  Lemma f2v_inj : forall {n} (f g : nat -> A),
+  Lemma f2v_inj : forall {n} (f g : nat -> tA),
       @f2v n f = @f2v n g -> (forall i, i < n -> f i = g i).
   Proof. intros. apply (@f2v_inj _ n); auto. Qed.
 
@@ -131,16 +131,16 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply f2v_v2f. Qed.
 
   (** v2f (f2v a) = a *)
-  Lemma v2f_f2v : forall {n} (a : nat -> A) i, i < n -> v2f (@f2v n a) i = a i.
+  Lemma v2f_f2v : forall {n} (a : nat -> tA) i, i < n -> v2f (@f2v n a) i = a i.
   Proof. intros. apply v2f_f2v; auto. Qed.
 
   (* ======================================================================= *)
   (** ** Convert between vector and list *)
-  Definition v2l {n} (a : vec n) : list A := v2l a.
-  Definition l2v {n} (l : list A) : vec n := l2v 0 l.
+  Definition v2l {n} (a : vec n) : list tA := v2l a.
+  Definition l2v {n} (l : list tA) : vec n := l2v 0 l.
 
   (** (l2v l).i = nth i l *)
-  Lemma vnth_l2v : forall {n} (l : list A) (i : 'I_n), (@l2v n l).[i] = nth i l 0.
+  Lemma vnth_l2v : forall {n} (l : list tA) (i : 'I_n), (@l2v n l).[i] = nth i l 0.
   Proof. intros. apply vnth_l2v. Qed.
     
   (** nth i (v2l v) = v.i *)
@@ -151,7 +151,7 @@ Module BasicMatrixTheory (E : ElementType).
   Lemma v2l_length : forall {n} (a : vec n), length (v2l a) = n.
   Proof. intros. apply v2l_length. Qed.
 
-  Lemma v2l_l2v : forall {n} (l : list A), length l = n -> (v2l (@l2v n l) = l).
+  Lemma v2l_l2v : forall {n} (l : list tA), length l = n -> (v2l (@l2v n l) = l).
   Proof. intros. apply v2l_l2v; auto. Qed.
 
   Lemma l2v_v2l : forall {n} (a : vec n), @l2v n (v2l a) = a.
@@ -162,16 +162,16 @@ Module BasicMatrixTheory (E : ElementType).
   
   (* ======================================================================= *)
   (** ** Make concrete vector *)
-  Definition mkvec1 (a1 : A) : vec 1 := mkvec1 (Azero:=0) a1.
-  Definition mkvec2 (a1 a2 : A) : vec 2 := mkvec2 (Azero:=0) a1 a2.
-  Definition mkvec3 (a1 a2 a3 : A) : vec 3 := mkvec3 (Azero:=0) a1 a2 a3.
-  Definition mkvec4 (a1 a2 a3 a4 : A) : vec 4 := mkvec4 (Azero:=0) a1 a2 a3 a4.
+  Definition mkvec1 (a1 : tA) : vec 1 := mkvec1 (Azero:=0) a1.
+  Definition mkvec2 (a1 a2 : tA) : vec 2 := mkvec2 (Azero:=0) a1 a2.
+  Definition mkvec3 (a1 a2 a3 : tA) : vec 3 := mkvec3 (Azero:=0) a1 a2 a3.
+  Definition mkvec4 (a1 a2 a3 a4 : tA) : vec 4 := mkvec4 (Azero:=0) a1 a2 a3 a4.
   
   (* ======================================================================= *)
   (** ** Mapping of vector *)
   
-  Definition vmap {n} (f : A -> A) (a : vec n) : vec n := vmap f a.
-  Definition vmap2 {n} (f : A -> A -> A) (a b : vec n) : vec n := vmap2 f a b.
+  Definition vmap {n} (f : tA -> tA) (a : vec n) : vec n := vmap f a.
+  Definition vmap2 {n} (f : tA -> tA -> tA) (a b : vec n) : vec n := vmap2 f a b.
   
   (** (vmap f a).i = f (a.i) *)
   Lemma vnth_vmap : forall {n} (a : vec n) f i, (vmap f a).[i] = f (a.[i]).
@@ -190,7 +190,7 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** Constant vector and zero vector *)
 
   (** Vector with same elements *)
-  Definition vrepeat n (a : A) : vec n := vrepeat a.
+  Definition vrepeat n (a : tA) : vec n := vrepeat a.
 
   (** (repeat a).i = a *)
   Lemma vnth_vrepeat : forall {n} a i, (vrepeat n a).[i] = a.
@@ -207,14 +207,14 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** Set element of a vector *)
 
   (** Set i-th element vector `a` with `x` *)
-  Definition vset {n} (a : vec n) (i : 'I_n) (x : A) : vec n := vset a i x.
+  Definition vset {n} (a : vec n) (i : 'I_n) (x : tA) : vec n := vset a i x.
 
   (** (vset a i x).i = x *)
-  Lemma vnth_vset_eq : forall {n} (a : vec n) (i : 'I_n) (x : A), (vset a i x).[i] = x.
+  Lemma vnth_vset_eq : forall {n} (a : vec n) (i : 'I_n) (x : tA), (vset a i x).[i] = x.
   Proof. intros. apply vnth_vset_eq. Qed.
   
   (** (vset a i x).j = a.[j] *)
-  Lemma vnth_vset_neq : forall {n} (a : vec n) (i j : 'I_n) (x : A),
+  Lemma vnth_vset_neq : forall {n} (a : vec n) (i j : 'I_n) (x : tA),
       i <> j -> (vset a i x).[j] = a.[j].
   Proof. intros. apply vnth_vset_neq; auto. Qed.
 
@@ -240,21 +240,21 @@ Module BasicMatrixTheory (E : ElementType).
   (* ======================================================================= *)
   (** ** Insert element to a vector *)
 
-  Definition vinsert {n} (a : vec n) (i : 'I_(S n)) (x : A) : vec (S n) :=
+  Definition vinsert {n} (a : vec n) (i : 'I_(S n)) (x : tA) : vec (S n) :=
     vinsert a i x.
 
   (** j < i -> (v2f (vinsert a i x)) j = (v2f a) i *)
-  Lemma vinsert_spec_lt : forall {n} (a : vec n) (i : 'I_(S n)) (x : A) (j : nat),
+  Lemma vinsert_spec_lt : forall {n} (a : vec n) (i : 'I_(S n)) (x : tA) (j : nat),
       j < i -> v2f (vinsert a i x) j = v2f a j.
   Proof. intros. apply vinsert_spec_lt; auto. Qed.
 
   (** j = i -> (v2f (vinsert a i x)) j = x *)
-  Lemma vinsert_spec_eq : forall {n} (a : vec n) (i : 'I_(S n)) (x : A),
+  Lemma vinsert_spec_eq : forall {n} (a : vec n) (i : 'I_(S n)) (x : tA),
       v2f (vinsert a i x) i = x.
   Proof. intros. apply vinsert_spec_eq; auto. Qed.
   
   (** i < j -> j <= n -> (v2f (vinsert a i x)) j = (v2f a) (S i) *)
-  Lemma vinsert_spec_gt : forall {n} (a : vec n) (i : 'I_(S n)) (x : A) (j : nat),
+  Lemma vinsert_spec_gt : forall {n} (a : vec n) (i : 'I_(S n)) (x : tA) (j : nat),
       i < j -> 0 < j -> j < S n -> v2f (vinsert a i x) j = v2f a (pred j).
   Proof. intros. apply vinsert_spec_gt; auto. Qed.
 
@@ -327,7 +327,7 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply vnth_vremove_ge; auto. Qed.
 
   (** vremove (vinsert a i x) i = a *)
-  Lemma vremove_vinsert : forall {n} (a : vec n) (i : 'I_(S n)) (x : A),
+  Lemma vremove_vinsert : forall {n} (a : vec n) (i : 'I_(S n)) (x : tA),
       vremove (vinsert a i x) i = a.
   Proof. intros. apply (@vremove_vinsert _ 0). Qed.
   
@@ -350,10 +350,10 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** Get head or tail element *)
 
   (** Get head element *)
-  Definition vhead {n} (a : vec (S n)) : A := vhead a.
+  Definition vhead {n} (a : vec (S n)) : tA := vhead a.
   
   (** Get tail element *)
-  Definition vtail {n} (a : vec (S n)) : A := a.[#n].
+  Definition vtail {n} (a : vec (S n)) : tA := a.[#n].
 
   (** vhead a = (v2f a) 0 *)
   Lemma vhead_spec : forall {n} (a : vec (S n)), vhead a = (v2f a) 0.
@@ -425,7 +425,7 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply vremoveH_neq0_if; auto. Qed.
 
   (** vremoveH also hold, if hold for all elements *)
-  Lemma vremoveH_hold : forall {n} (a : vec (S n)) (P : A -> Prop),
+  Lemma vremoveH_hold : forall {n} (a : vec (S n)) (P : tA -> Prop),
       (forall i, P (a.[i])) -> (forall i, P ((vremoveH a).[i])).
   Proof. intros. apply vremoveH_hold; auto. Qed.
 
@@ -445,7 +445,7 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply vremoveT_neq0_if; auto. Qed.
 
   (** vremoveT also hold, if hold for all elements *)
-  Lemma vremoveT_hold : forall {n} (a : vec (S n)) (P : A -> Prop),
+  Lemma vremoveT_hold : forall {n} (a : vec (S n)) (P : tA -> Prop),
       (forall i, P (a.[i])) -> (forall i, P ((vremoveT a).[i])).
   Proof. intros. apply vremoveT_hold; auto. Qed.
 
@@ -492,10 +492,10 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** Construct vector with one element at the head or tail position *)
 
   (** cons at head: [x; a] *)
-  Definition vconsH {n} (x : A) (a : vec n) : vec (S n) := vconsH x a.
+  Definition vconsH {n} (x : tA) (a : vec n) : vec (S n) := vconsH x a.
 
   (** cons at tail: [a; x] *)
-  Definition vconsT {n} (a : vec n) (x : A) : vec (S n) := vconsT a x.
+  Definition vconsT {n} (a : vec n) (x : tA) : vec (S n) := vconsT a x.
 
   (** i = 0 -> (v2f [x; a]) i = a *)
   Lemma vconsH_spec_0 : forall {n} x (a : vec n) (i : nat),
@@ -632,25 +632,25 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** A proposition which all elements of the vector hold *)
 
   (** Every element of `a` satisfy the `P` *)
-  Definition vforall {n} (a : vec n) (P : A -> Prop) : Prop := vforall a P.
+  Definition vforall {n} (a : vec n) (P : tA -> Prop) : Prop := vforall a P.
 
   (* ======================================================================= *)
   (** ** A proposition which at least one element of the vector holds *)
 
   (** There exist element of `v` satisfy the `P` *)
-  Definition vexist {n} (a : vec n) (P : A -> Prop) : Prop := vexist a P.
+  Definition vexist {n} (a : vec n) (P : tA -> Prop) : Prop := vexist a P.
 
   (* ======================================================================= *)
   (** ** An element belongs to the vector *)
 
   (** x ∈ a : Element `x` belongs to the vector `a` *)
-  Definition vmem {n} (a : vec n) (x : A) : Prop := vmem a x.
+  Definition vmem {n} (a : vec n) (x : tA) : Prop := vmem a x.
 
   Lemma vmem_vnth : forall {n} (a : vec n) (i : 'I_n), vmem a (a.[i]).
   Proof. intros. apply vmem_vnth. Qed.
 
   (** {x ∈ a} + {x ∉ a} *)
-  Lemma vmem_dec : forall {n} (a : vec n) (x : A), {vmem a x} + {~vmem a x}.
+  Lemma vmem_dec : forall {n} (a : vec n) (x : tA), {vmem a x} + {~vmem a x}.
   Proof. intros. apply vmem_dec; auto. Qed.
   
   (* ======================================================================= *)
@@ -695,16 +695,16 @@ Module BasicMatrixTheory (E : ElementType).
   (* Context {A B : Type} {Azero : A} {Bzero : B}.  *)
 
   (** ((x + a.1) + a.2) + ... *)
-  Definition vfoldl {B} {n} (a : vec n) (x : B) (f : B -> A -> B) : B :=
+  Definition vfoldl {B} {n} (a : vec n) (x : B) (f : B -> tA -> B) : B :=
     @vfoldl _ _ 0 _ a x f.
   
   (** ... + (v.(n-1) + (v.n + x)) *)
-  Definition vfoldr {B} {n} (a : vec n) (x : B) (f : A -> B -> B) : B :=
+  Definition vfoldr {B} {n} (a : vec n) (x : B) (f : tA -> B -> B) : B :=
     @vfoldr _ _ 0 _ a x f.
 
   (** Convert `vfoldl` to `seqfoldl` *)
   Lemma vfoldl_eq_seqfoldl :
-    forall {B} {n} (a : vec n) (x : B) (f : B -> A -> B) (s : nat -> A),
+    forall {B} {n} (a : vec n) (x : B) (f : B -> tA -> B) (s : nat -> tA),
       (forall i, a.[i] = s i) -> vfoldl a x f = seqfoldl s n x f.
   Proof. intros. apply vfoldl_eq_seqfoldl; auto. Qed.
 
@@ -721,8 +721,8 @@ Module BasicMatrixTheory (E : ElementType).
   (** ** Definition of the matrix type *)
   
   (** matrix type *)
-  Notation mat r c := (@mat A r c).
-  (* Definition mat r c : Type := @mat A r c. *)
+  Notation mat r c := (@mat tA r c).
+  (* Definition mat r c : Type := @mat tA r c. *)
   
   (** square matrix type *)
   Notation smat n := (mat n n).
@@ -797,20 +797,20 @@ Module BasicMatrixTheory (E : ElementType).
   (* ======================================================================= *)
   (** ** Convert between matrix and function *)
 
-  Definition f2m {r c} (f : nat -> nat -> A) : mat r c := f2m f.
-  Definition m2f {r c} (M : mat r c) : nat -> nat -> A := m2f 0 M.
+  Definition f2m {r c} (f : nat -> nat -> tA) : mat r c := f2m f.
+  Definition m2f {r c} (M : mat r c) : nat -> nat -> tA := m2f 0 M.
 
-  Lemma f2m_inj : forall {r c} (f g : nat -> nat -> A),
+  Lemma f2m_inj : forall {r c} (f g : nat -> nat -> tA),
       @f2m r c f = @f2m r c g -> (forall i j, i < r -> j < c -> f i j = g i j).
   Proof. intros. apply (@f2m_inj _ r c); auto. Qed.
 
   (** (f2m f).[i].[j] = f i j *)
-  Lemma mnth_f2m : forall {r c} (f : nat -> nat -> A) i j,
+  Lemma mnth_f2m : forall {r c} (f : nat -> nat -> tA) i j,
       (@f2m r c f) i j = f i j.
   Proof. intros. apply mnth_f2m. Qed.
     
   (** (f2m f).[i] = f2v (f i) *)
-  Lemma vnth_f2m : forall {r c} (f : nat -> nat -> A) i,
+  Lemma vnth_f2m : forall {r c} (f : nat -> nat -> tA) i,
       (@f2m r c f).[i] = f2v (f i).
   Proof. intros. apply vnth_f2m. Qed.
 
@@ -831,18 +831,18 @@ Module BasicMatrixTheory (E : ElementType).
   Lemma f2m_m2f : forall {r c} (M : mat r c), f2m (m2f M) = M.
   Proof. intros. apply f2m_m2f. Qed.
 
-  Lemma m2f_f2m : forall {r c} (f : nat -> nat -> A),
+  Lemma m2f_f2m : forall {r c} (f : nat -> nat -> tA),
     forall i j, i < r -> j < c -> m2f (@f2m r c f) i j = f i j.
   Proof. intros. apply m2f_f2m; auto. Qed.
 
   (* ======================================================================= *)
   (** ** Convert between matrix and list *)
 
-  Definition l2m {r c} (dl : dlist A) : mat r c := l2m 0 dl.
+  Definition l2m {r c} (dl : dlist tA) : mat r c := l2m 0 dl.
 
-  Definition m2l {r c} (M : mat r c) : dlist A := m2l M.
+  Definition m2l {r c} (M : mat r c) : dlist tA := m2l M.
 
-  Lemma l2m_inj : forall {r c} (d1 d2 : dlist A),
+  Lemma l2m_inj : forall {r c} (d1 d2 : dlist tA),
       length d1 = r -> width d1 c -> length d2 = r -> width d2 c ->
       @l2m r c d1 = l2m d2 -> d1 = d2.
   Proof. intros. apply l2m_inj in H3; auto. Qed.
@@ -859,14 +859,14 @@ Module BasicMatrixTheory (E : ElementType).
   Lemma m2l_inj : forall {r c} (m1 m2 : mat r c), m2l m1 = m2l m2 -> m1 = m2.
   Proof. intros. apply m2l_inj; auto. Qed.
   
-  Lemma m2l_surj : forall {r c} (d : dlist A),
+  Lemma m2l_surj : forall {r c} (d : dlist tA),
       length d = r -> width d c -> (exists M : mat r c, m2l M = d).
   Proof. intros. apply (m2l_surj 0); auto. Qed.
 
   Lemma l2m_m2l : forall {r c} (M : mat r c), @l2m r c (m2l M) = M.
   Proof. intros. apply l2m_m2l. Qed.
 
-  Lemma m2l_l2m : forall {r c} (dl : dlist A),
+  Lemma m2l_l2m : forall {r c} (dl : dlist tA),
       length dl = r -> width dl c -> m2l (@l2m r c dl) = dl.
   Proof. intros. apply m2l_l2m; auto. Qed.
 
@@ -1068,7 +1068,7 @@ Module BasicMatrixTheory (E : ElementType).
 
   (** mconscH (vconsT a x) (vconsT M b) = vconsT (mconscH a M) (vconsH x b) *)
   Lemma mconscH_vconsT_vconsT_eq_vconsT_mconscH_vconsH :
-    forall {r c} (a : vec r) (x : A) (M : mat r c) (b : vec c),
+    forall {r c} (a : vec r) (x : tA) (M : mat r c) (b : vec c),
       mconscH (vconsT a x) (Vector.vconsT M b) =
         Vector.vconsT (mconscH a M) (vconsH x b).
   Proof. intros. apply mconscH_vconsT_vconsT_eq_vconsT_mconscH_vconsH. Qed.
@@ -1094,16 +1094,16 @@ Module BasicMatrixTheory (E : ElementType).
   (* ======================================================================= *)
   (** ** Mapping of matrix *)
 
-  Definition mmap {r c} (f : A -> A) (M : mat r c) : mat r c := mmap f M.
-  Definition mmap2 {r c} (f : A -> A -> A) (M N : mat r c) : mat r c := mmap2 f M N.
+  Definition mmap {r c} (f : tA -> tA) (M : mat r c) : mat r c := mmap f M.
+  Definition mmap2 {r c} (f : tA -> tA -> tA) (M N : mat r c) : mat r c := mmap2 f M N.
 
   Lemma mmap2_comm :
-    forall {r c} (f : A -> A -> A) (M N : mat r c) {Comm : Commutative f}, 
+    forall {r c} (f : tA -> tA -> tA) (M N : mat r c) {Comm : Commutative f}, 
       mmap2 f M N = mmap2 f N M.
   Proof. intros. apply mmap2_comm; auto. Qed.
   
   Lemma mmap2_assoc :
-    forall {r c} (f : A -> A -> A) (M N O : mat r c) {Assoc : Associative f}, 
+    forall {r c} (f : tA -> tA -> tA) (M N O : mat r c) {Assoc : Associative f}, 
       mmap2 f (mmap2 f M N) O = mmap2 f M (mmap2 f N O).
   Proof. intros. apply mmap2_assoc; auto. Qed.
 
@@ -1237,7 +1237,7 @@ Module MonoidMatrixTheory (E : MonoidElementType).
   Proof. intros. apply vsum_add; auto. Qed.
   
   (** `vsum` which only one item is nonzero, then got this item. *)
-  Lemma vsum_unique : forall {n} (a : vec n) (x : A) i,
+  Lemma vsum_unique : forall {n} (a : vec n) (x : tA) i,
       a.[i] = x -> (forall j, i <> j -> a.[j] = 0) -> vsum a = x.
   Proof. intros. apply vsum_unique with (i:=i); auto. Qed.
 
@@ -1353,7 +1353,7 @@ Module RingMatrixTheory (E : RingElementType).
   (* ======================================================================= *)
   (** ** natural basis, 自然基（最常见的一种标准正交基) *)
   
-  Definition veyes (n : nat) : @Vector.vec (@Vector.vec A n) n := veyes 0 1 n.
+  Definition veyes (n : nat) : @Vector.vec (@Vector.vec tA n) n := veyes 0 1 n.
 
   (** veyes.ii = 1 *)
   Lemma vnth_veyes_eq : forall {n} i, (veyes n).[i].[i] = 1.
@@ -1422,7 +1422,7 @@ Module RingMatrixTheory (E : RingElementType).
 
   (** ** Vector scalar multiplication *)
 
-  Definition vcmul {n} (x : A) (a : vec n) : vec n := vcmul (Amul:=Amul) x a.
+  Definition vcmul {n} (x : tA) (a : vec n) : vec n := vcmul (Amul:=Amul) x a.
   Infix "c*" := vcmul : vec_scope.
 
   (** (x .* a)[i] = x .* a[i] *)
@@ -1430,17 +1430,17 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. cbv. auto. Qed.
 
   (** x .* (y .* a) = (x * y) .* a *)
-  Lemma vcmul_assoc : forall {n} (x y : A) (a : vec n),
+  Lemma vcmul_assoc : forall {n} (x y : tA) (a : vec n),
       x c* (y c* a) = (x * y)%A c* a.
   Proof. intros. apply vcmul_assoc. Qed.
 
   (** x .* (y .* a) = y .* (x .* a) *)
-  Lemma vcmul_perm : forall {n} (x y : A) (a : vec n),
+  Lemma vcmul_perm : forall {n} (x y : tA) (a : vec n),
       x c* (y c* a) = y c* (x c* a).
   Proof. intros. apply vcmul_perm. Qed.
 
   (** (x + y) .* a = (x .* a) + (y .* a) *)
-  Lemma vcmul_add : forall {n} (x y : A) (a : vec n),
+  Lemma vcmul_add : forall {n} (x y : tA) (a : vec n),
       (x + y)%A c* a = (x c* a) + (y c* a).
   Proof. intros. apply vcmul_add. Qed.
 
@@ -1486,7 +1486,7 @@ Module RingMatrixTheory (E : RingElementType).
   (* ======================================================================= *)
   (** ** Vector dot product *)
 
-  Definition vdot {n : nat} (a b : vec n) : A := @vdot _ Aadd 0 Amul _ a b.
+  Definition vdot {n : nat} (a b : vec n) : tA := @vdot _ Aadd 0 Amul _ a b.
   Notation "< a , b >" := (vdot a b) : vec_scope.
 
   (** <a, b> = <b, a> *)
@@ -1526,11 +1526,11 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply vdot_vsub_r. Qed.
 
   (** <x .* a, b> = x * <a, b> *)
-  Lemma vdot_vcmul_l : forall {n} (a b : vec n) (x : A), <x c* a, b> = x * <a, b>.
+  Lemma vdot_vcmul_l : forall {n} (a b : vec n) (x : tA), <x c* a, b> = x * <a, b>.
   Proof. intros. apply vdot_vcmul_l. Qed.
 
   (** <a, x .* b> = x * <a, b> *)
-  Lemma vdot_vcmul_r : forall {n} (a b : vec n) (x : A), <a, x c* b> = x * <a, b>.
+  Lemma vdot_vcmul_r : forall {n} (a b : vec n) (x : tA), <a, x c* b> = x * <a, b>.
   Proof. intros. apply vdot_vcmul_r. Qed.
 
   (** <a, veye i> = a i *)
@@ -1628,7 +1628,7 @@ Module RingMatrixTheory (E : RingElementType).
 
   (* ======================================================================= *)
   (** ** Matrix trace *)
-  Definition mtrace {n : nat} (M : smat n) : A := @mtrace _ Aadd 0 _ M.
+  Definition mtrace {n : nat} (M : smat n) : tA := @mtrace _ Aadd 0 _ M.
   Notation "'tr' M" := (mtrace M) : mat_scope.
 
   (** tr(M \T) = tr(M) *)
@@ -1733,7 +1733,7 @@ Module RingMatrixTheory (E : RingElementType).
   (** ** Scalar multiplication of matrix *)
 
   (** Scalar multiplication of matrix *)
-  Definition mcmul {r c} (x : A) (M : mat r c) : mat r c := mcmul x M (Amul:=Amul).
+  Definition mcmul {r c} (x : tA) (M : mat r c) : mat r c := mcmul x M (Amul:=Amul).
   Infix "c*" := mcmul : mat_scope.
 
   (** (x .* M)[i,j] = x * M[i,j] *)
@@ -1742,7 +1742,7 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. unfold mcmul. apply mnth_mcmul. Qed.
 
   (** cv2v (x .* M) = x .* (cv2v M) *)
-  Lemma cv2v_mcmul : forall {n} (x : A) (M : cvec n),
+  Lemma cv2v_mcmul : forall {n} (x : tA) (M : cvec n),
       cv2v (x c* M) = (x c* (cv2v M))%V.
   Proof. intros. apply cv2v_mcmul. Qed.
 
@@ -1763,22 +1763,22 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mcmul_1_r. Qed.
 
   (** x .* (y .* M) = (x * y) .* M *)
-  Lemma mcmul_assoc : forall {r c} (x y : A) (M : mat r c),
+  Lemma mcmul_assoc : forall {r c} (x y : tA) (M : mat r c),
       x c* (y c* M) = (x * y) c* M.
   Proof. intros. apply mcmul_assoc. Qed.
 
   (** x .* (y .* M) = y .* (x .* M) *)
-  Lemma mcmul_perm : forall {r c} (x y : A) (M : mat r c),
+  Lemma mcmul_perm : forall {r c} (x y : tA) (M : mat r c),
       x c* (y c* M) = y c* (x c* M).
   Proof. intros. apply mcmul_perm. Qed.
 
   (** (x + y) .* M = (x .* M) + (y .* M) *)
-  Lemma mcmul_add_distr : forall {r c} (x y : A) (M : mat r c), 
+  Lemma mcmul_add_distr : forall {r c} (x y : tA) (M : mat r c), 
       (x + y)%A c* M = (x c* M) + (y c* M).
   Proof. intros. apply mcmul_add_distr. Qed.
 
   (** x c* (M + N) = (x c* M) + (x c* N) *)
-  Lemma mcmul_madd_distr : forall {r c} (x : A) (M N : mat r c), 
+  Lemma mcmul_madd_distr : forall {r c} (x : tA) (M N : mat r c), 
       x c* (M + N) = (x c* M) + (x c* N).
   Proof. intros. apply mcmul_madd_distr. Qed.
   
@@ -1796,11 +1796,11 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mcmul_msub. Qed.
 
   (** (x c* M) \T = x c* (M \T) *)
-  Lemma mtrans_mcmul : forall {r c} (x : A) (M : mat r c), (x c* M) \T = x c* (M \T).
+  Lemma mtrans_mcmul : forall {r c} (x : tA) (M : mat r c), (x c* M) \T = x c* (M \T).
   Proof. intros. apply mtrans_mcmul. Qed.
 
   (** tr (x c* M) = a * tr (m) *)
-  Lemma mtrace_mcmul : forall {n} (x : A) (M : smat n), tr (x c* M) = (x * tr M)%A.
+  Lemma mtrace_mcmul : forall {n} (x : tA) (M : smat n), tr (x c* M) = (x * tr M)%A.
   Proof. intros. apply mtrace_mcmul. Qed.
 
   (** M <> 0 -> N <> 0 -> x .* M = N -> x <> 0 *)
@@ -1905,12 +1905,12 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mmul_1_r. Qed.
 
   (** x c* (M * N) = (x c* M) * N. *)
-  Lemma mmul_mcmul_l : forall {r c s} (x : A) (M : mat r c) (N : mat c s), 
+  Lemma mmul_mcmul_l : forall {r c s} (x : tA) (M : mat r c) (N : mat c s), 
       (x c* M) * N = x c* (M * N).
   Proof. intros. apply mmul_mcmul_l. Qed.
   
   (** x c* (M * N) = M * (x c* N) *)
-  Lemma mmul_mcmul_r : forall {r c s} (x : A) (M : mat r c) (N : mat c s), 
+  Lemma mmul_mcmul_r : forall {r c s} (x : tA) (M : mat r c) (N : mat c s), 
       M * (x c* N) = x c* (M * N).
   Proof. intros. apply mmul_mcmul_r. Qed.
   
@@ -1983,12 +1983,12 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mmulv_1_l. Qed.
 
   (** (x .* M) *v a = x .* (M *v a) *)
-  Lemma mmulv_mcmul : forall {r c} (x : A) (M : mat r c) (a : vec c), 
+  Lemma mmulv_mcmul : forall {r c} (x : tA) (M : mat r c) (a : vec c), 
       (x c* M) *v a = (x c* (M *v a))%V.
   Proof. intros. apply mmulv_mcmul. Qed.
   
   (** M *v (x .* a) = x .* (M *v a) *)
-  Lemma mmulv_vcmul : forall {r c} (x : A) (M : mat r c) (a : vec c), 
+  Lemma mmulv_vcmul : forall {r c} (x : tA) (M : mat r c) (a : vec c), 
       M *v (x c* a)%V = (x c* (M *v a))%V.
   Proof. intros. apply mmulv_vcmul. Qed.
 
@@ -2066,12 +2066,12 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mvmul_1_r. Qed.
 
   (** a v* (x .* M) = x .* (a v* M) *)
-  Lemma mvmul_mcmul : forall {r c} (a : vec r) (x : A) (M : mat r c), 
+  Lemma mvmul_mcmul : forall {r c} (a : vec r) (x : tA) (M : mat r c), 
       a v* (x c* M) = (x c* (a v* M))%V.
   Proof. intros. apply mvmul_mcmul. Qed.
   
   (** (x .* a) v* M  = x .* (a v* M) *)
-  Lemma mvmul_vcmul : forall {r c} (a : vec r) (x : A) (M : mat r c), 
+  Lemma mvmul_vcmul : forall {r c} (a : vec r) (x : tA) (M : mat r c), 
       (x c* a)%V v* M = (x c* (a v* M))%V.
   Proof. intros. apply mvmul_vcmul. Qed.
 
@@ -2137,7 +2137,7 @@ Module RingMatrixTheory (E : RingElementType).
   (** ** Determinant of a matrix over a ring *)
 
   (** Determinant of a square matrix *)
-  Definition mdet {n} (M : smat n) : A := @mdet _ Aadd 0 Aopp Amul 1 _ M.
+  Definition mdet {n} (M : smat n) : tA := @mdet _ Aadd 0 Aopp Amul 1 _ M.
   Notation "| M |" := (mdet M) : mat_scope.
 
   (** |M \T| = |M| *)
@@ -2153,7 +2153,7 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mdet_mat1. Qed.
 
   (** Determinant by cofactor expansion along the 0-th row *)
-  Definition mdetEx {n} (M : smat n) : A := @mdetEx _ Aadd 0 Aopp Amul Aone _ M.
+  Definition mdetEx {n} (M : smat n) : tA := @mdetEx _ Aadd 0 Aopp Amul Aone _ M.
   
   (** mdetEx is equal to mdet *)
   Lemma mdetEx_eq_mdet : forall {n} (M : smat n), mdetEx M = mdet M.
@@ -2298,47 +2298,47 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply vcmul_eq0_imply_x0_or_v0; auto. Qed.
 
   (** x .* a = 0 -> a <> 0 -> x = 0 *)
-  Lemma vcmul_eq0_imply_x0 : forall {n} (x : A) (a : vec n),
+  Lemma vcmul_eq0_imply_x0 : forall {n} (x : tA) (a : vec n),
       x c* a = vzero -> a <> vzero -> x = 0.
   Proof. intros. apply (vcmul_eq0_imply_x0 x a); auto. Qed.
 
   (** x .* a = 0 -> x <> 0 -> a = 0 *)
-  Lemma vcmul_eq0_imply_v0 : forall {n} (x : A) (a : vec n),
+  Lemma vcmul_eq0_imply_v0 : forall {n} (x : tA) (a : vec n),
       x c* a = vzero -> x <> 0 -> a = vzero.
   Proof. intros. apply (vcmul_eq0_imply_v0 x a); auto. Qed.
   
   (** x .* a = a -> x = 1 \/ a = 0 *)
-  Lemma vcmul_same_imply_x1_or_v0 : forall {n} (x : A) (a : vec n),
+  Lemma vcmul_same_imply_x1_or_v0 : forall {n} (x : tA) (a : vec n),
       x c* a = a -> (x = 1 \/ a = vzero).
   Proof. intros. apply vcmul_same_imply_x1_or_v0; auto. Qed.
   
   (** x = 1 \/ a = 0 -> x .* a = a *)
-  Lemma vcmul_same_if_x1_or_v0 : forall {n} (x : A) (a : vec n),
+  Lemma vcmul_same_if_x1_or_v0 : forall {n} (x : tA) (a : vec n),
       (x = 1 \/ a = vzero) -> x c* a = a.
   Proof. intros. apply vcmul_same_if_x1_or_v0; auto. Qed.
   
   (** x .* a = a -> a <> 0 -> x = 1 *)
-  Lemma vcmul_same_imply_x1 : forall {n} (x : A) (a : vec n),
+  Lemma vcmul_same_imply_x1 : forall {n} (x : tA) (a : vec n),
       x c* a = a -> a <> vzero -> x = 1.
   Proof. intros. apply (vcmul_same_imply_x1 x a); auto. Qed.
   
   (** x .* a = a -> x <> 1 -> a = 0 *)
-  Lemma vcmul_same_imply_v0 : forall {n} (x : A) (a : vec n),
+  Lemma vcmul_same_imply_v0 : forall {n} (x : tA) (a : vec n),
       x c* a = a -> x <> 1 -> a = vzero.
   Proof. intros. apply (vcmul_same_imply_v0 x a); auto. Qed.
 
   (** x .* a = y .* a -> (x = y \/ a = 0) *)
-  Lemma vcmul_sameV_imply_eqX_or_v0 : forall {n} (x y : A) (a : vec n), 
+  Lemma vcmul_sameV_imply_eqX_or_v0 : forall {n} (x y : tA) (a : vec n), 
       x c* a = y c* a -> (x = y \/ a = vzero).
   Proof. intros. apply vcmul_sameV_imply_eqX_or_v0; auto. Qed.
 
   (** x .* a = y .* a -> a <> 0 -> x = y *)
-  Lemma vcmul_sameV_imply_eqX : forall {n} (x y : A) (a : vec n), 
+  Lemma vcmul_sameV_imply_eqX : forall {n} (x y : tA) (a : vec n), 
       x c* a = y c* a -> a <> vzero -> x = y.
   Proof. intros. apply vcmul_sameV_imply_eqX in H; auto. Qed.
 
   (** x .* a = y .* a -> x <> y -> a = 0 *)
-  Lemma vcmul_sameV_imply_v0 : forall {n} (x y : A) (a : vec n), 
+  Lemma vcmul_sameV_imply_v0 : forall {n} (x y : tA) (a : vec n), 
       x c* a = y c* a -> x <> y -> a = vzero.
   Proof. intros. apply vcmul_sameV_imply_v0 in H; auto. Qed.
 
@@ -2433,25 +2433,25 @@ Module FieldMatrixTheory (E : FieldElementType).
   (* ======================================================================= *)
   (** ** Cramer rule *)
   
-  (** Cramer rule, which can solve the equation with the form of C*x=b.
-      Note, the result is valid only when |C| is not zero *)
-  Definition cramerRule {n} (C : smat n) (b : vec n) : vec n :=
-    @cramerRule _ Aadd 0 Aopp Amul 1 Ainv n C b.
+  (** Cramer rule, which can solve the equation with the form of A*x=b.
+      Note, the result is valid only when |A| is not zero *)
+  Definition cramerRule {n} (A : smat n) (b : vec n) : vec n :=
+    @cramerRule _ Aadd 0 Aopp Amul 1 Ainv n A b.
 
-  (** C *v (cramerRule C b) = b *)
-  Lemma cramerRule_spec : forall {n} (C : smat n) (b : vec n),
-  |C| <> 0 -> C *v (cramerRule C b) = b.
+  (** A *v (cramerRule A b) = b *)
+  Lemma cramerRule_spec : forall {n} (A : smat n) (b : vec n),
+  |A| <> 0 -> A *v (cramerRule A b) = b.
   Proof. intros. apply cramerRule_spec; auto. Qed.
 
   (** Cramer rule over list *)
-  Definition cramerRuleList (n : nat) (lC : dlist A) (lb : list A) : list A :=
-    @cramerRuleList _ Aadd 0 Aopp Amul 1 Ainv n lC lb.
+  Definition cramerRuleList (n : nat) (lA : dlist tA) (lb : list tA) : list tA :=
+    @cramerRuleList _ Aadd 0 Aopp Amul 1 Ainv n lA lb.
 
-  (** {cramerRuleList lC lb} = cramerRule {lC} {lb} *)
-  Lemma cramerRuleList_spec : forall n (lC : dlist A) (lb : list A),
-      let C : smat n := l2m lC in
+  (** {cramerRuleList lA lb} = cramerRule {lA} {lb} *)
+  Lemma cramerRuleList_spec : forall n (lA : dlist tA) (lb : list tA),
+      let A : smat n := l2m lA in
       let b : vec n := l2v lb in
-      l2v (cramerRuleList n lC lb) = cramerRule C b.
+      l2v (cramerRuleList n lA lb) = cramerRule A b.
   Proof. intros. apply cramerRuleList_spec. Qed.
   
   (* ======================================================================= *)
@@ -2568,30 +2568,30 @@ Module FieldMatrixTheory (E : FieldElementType).
   Import GE.
 
   (** 行变换列表转换为矩阵 *)
-  Definition rowOps2mat {n} (l : list (@RowOp A n)) : smat (S n) :=
+  Definition rowOps2mat {n} (l : list (@RowOp tA n)) : smat (S n) :=
     rowOps2mat l.
 
   (** rowOps2mat (l1 ++ l2) = rowOps2mat l1 * rowOps2mat l2 *)
-  Lemma rowOps2mat_app : forall {n} (l1 l2 : list (@RowOp A n)),
+  Lemma rowOps2mat_app : forall {n} (l1 l2 : list (@RowOp tA n)),
       rowOps2mat (l1 ++ l2) = rowOps2mat l1 * rowOps2mat l2.
   Proof. intros. apply rowOps2mat_app. Qed.
   
   (** 行变换列表转换为反作用的矩阵。即，rowOps2mat的逆矩阵 *)
-  Definition rowOps2matInv {n} (l : list (@RowOp A n)) : smat (S n) :=
+  Definition rowOps2matInv {n} (l : list (@RowOp tA n)) : smat (S n) :=
     rowOps2matInv l.
 
   (** rowOps2matInv (l1 ++ l2) = rowOps2matInv l2 * rowOps2matInv l1 *)
-  Lemma rowOps2matInv_app : forall {n} (l1 l2 : list (@RowOp A n)),
+  Lemma rowOps2matInv_app : forall {n} (l1 l2 : list (@RowOp tA n)),
       rowOps2matInv (l1 ++ l2) = rowOps2matInv l2 * rowOps2matInv l1.
   Proof. intros. apply rowOps2matInv_app. Qed.
 
   (** rowOps2matInv l * rowOps2mat l = mat1 *)
-  Lemma mmul_rowOps2matInv_rowOps2mat_eq1 : forall {n} (l : list (@RowOp A n)),
+  Lemma mmul_rowOps2matInv_rowOps2mat_eq1 : forall {n} (l : list (@RowOp tA n)),
       Forall (@roValid _ 0 _) l -> rowOps2matInv l * rowOps2mat l = mat1.
   Proof. intros. apply mmul_rowOps2matInv_rowOps2mat_eq1; auto. Qed.
 
   (** rowOps2mat l * rowOps2matInv l = mat1 *)
-  Lemma mmul_rowOps2mat_rowOps2matInv_eq1 : forall {n} (l : list (@RowOp A n)),
+  Lemma mmul_rowOps2mat_rowOps2matInv_eq1 : forall {n} (l : list (@RowOp tA n)),
       Forall (@roValid _ 0 _) l -> rowOps2mat l * rowOps2matInv l = mat1.
   Proof. intros. apply mmul_rowOps2mat_rowOps2matInv_eq1; auto. Qed.
 
@@ -2716,43 +2716,43 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply mdet_minv; auto. Qed.
   
   (** Check matrix invertibility with lists as input *)
-  Definition minvtblebListGE (n : nat) (dl : dlist A) : bool :=
+  Definition minvtblebListGE (n : nat) (dl : dlist tA) : bool :=
     minvtblebList n dl.
 
   (** Inverse matrix with lists for input and output *)
-  Definition minvListGE (n : nat) (dl : dlist A) : dlist A :=
+  Definition minvListGE (n : nat) (dl : dlist tA) : dlist tA :=
     minvList n dl.
 
   (** `minvtblebListGE` is equal to `minvtblebGE`, by definition *)
-  Lemma minvtblebListGE_spec : forall (n : nat) (dl : dlist A),
+  Lemma minvtblebListGE_spec : forall (n : nat) (dl : dlist tA),
       minvtblebListGE n dl = @minvtblebGE n (l2m dl).
   Proof. intros. apply minvtblebList_spec. Qed.
 
   (** The matrix of [minvListGE dl] is the inverse of the matrix of [dl] *)
-  Lemma minvListGE_spec : forall (n : nat) (dl : dlist A),
+  Lemma minvListGE_spec : forall (n : nat) (dl : dlist tA),
       let M : smat n := l2m dl in
       let M' : smat n := l2m (minvListGE n dl) in
       minvtblebListGE n dl = true ->
       M' * M = mat1.
   Proof. intros. apply minvList_spec; auto. Qed.
 
-  (** Solve the equation with the form of C*x=b. *)
-  Definition solveEqGE {n} (C : smat n) (b : vec n) : vec n := solveEq C b.
+  (** Solve the equation with the form of A*x=b. *)
+  Definition solveEqGE {n} (A : smat n) (b : vec n) : vec n := solveEq A b.
 
-  (** C *v (solveEqGE C b) = b *)
-  Lemma solveEqGE_spec : forall {n} (C : smat n) (b : vec n),
-      minvtble C -> C *v (solveEqGE C b) = b.
+  (** A *v (solveEqGE A b) = b *)
+  Lemma solveEqGE_spec : forall {n} (A : smat n) (b : vec n),
+      minvtble A -> A *v (solveEqGE A b) = b.
   Proof. intros. apply solveEq_spec; auto. Qed.
 
-  (** Solve the equation with the form of C*x=b over list *)
-  Definition solveEqListGE (n : nat) (lC : dlist A) (lb : list A) : list A :=
-    solveEqList n lC lb.
+  (** Solve the equation with the form of A*x=b over list *)
+  Definition solveEqListGE (n : nat) (lA : dlist tA) (lb : list tA) : list tA :=
+    solveEqList n lA lb.
 
-  (** {solveEqListGE lC lb} = solveEq {lC} {lb} *)
-  Lemma solveEqListGE_spec : forall n (lC : dlist A) (lb : list A),
-      let C : smat n := l2m lC in
+  (** {solveEqListGE lA lb} = solveEq {lA} {lb} *)
+  Lemma solveEqListGE_spec : forall n (lA : dlist tA) (lb : list tA),
+      let A : smat n := l2m lA in
       let b : vec n := l2v lb in
-      l2v (solveEqList n lC lb) = solveEqGE C b.
+      l2v (solveEqList n lA lb) = solveEqGE A b.
   Proof. intros. apply solveEqList_spec. Qed.
 
   (* ======================================================================= *)
@@ -2896,43 +2896,43 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply mdet_minv; auto. Qed.
   
   (** Check matrix invertibility with lists as input *)
-  Definition minvtblebListAM (n : nat) (dl : dlist A) : bool :=
+  Definition minvtblebListAM (n : nat) (dl : dlist tA) : bool :=
     minvtblebList n dl.
 
   (** Inverse matrix with lists for input and output *)
-  Definition minvListAM (n : nat) (dl : dlist A) : dlist A :=
+  Definition minvListAM (n : nat) (dl : dlist tA) : dlist tA :=
     minvList n dl.
 
   (** `minvtblebListAM` is equal to `minvtblebAM`, by definition *)
-  Lemma minvtblebListAM_spec : forall (n : nat) (dl : dlist A),
+  Lemma minvtblebListAM_spec : forall (n : nat) (dl : dlist tA),
       minvtblebListAM n dl = @minvtblebAM n (l2m dl).
   Proof. intros. apply minvtblebList_spec. Qed.
 
   (** The matrix of [minvListAM dl] is the inverse of the matrix of [dl] *)
-  Lemma minvListAM_spec : forall (n : nat) (dl : dlist A),
+  Lemma minvListAM_spec : forall (n : nat) (dl : dlist tA),
       let M : smat n := l2m dl in
       let M' : smat n := l2m (minvListAM n dl) in
       minvtblebListAM n dl = true ->
       M' * M = mat1.
   Proof. intros. apply minvList_spec; auto. Qed.
 
-  (** Solve the equation with the form of C*x=b. *)
-  Definition solveEqAM {n} (C : smat n) (b : vec n) : vec n := solveEq C b.
+  (** Solve the equation with the form of A*x=b. *)
+  Definition solveEqAM {n} (A : smat n) (b : vec n) : vec n := solveEq A b.
 
-  (** C *v (solveEqAM C b) = b *)
-  Lemma solveEqAM_spec : forall {n} (C : smat n) (b : vec n),
-      minvtble C -> C *v (solveEqAM C b) = b.
+  (** A *v (solveEqAM A b) = b *)
+  Lemma solveEqAM_spec : forall {n} (A : smat n) (b : vec n),
+      minvtble A -> A *v (solveEqAM A b) = b.
   Proof. intros. apply solveEq_spec; auto. Qed.
 
-  (** Solve the equation with the form of C*x=b over list *)
-  Definition solveEqListAM (n : nat) (lC : dlist A) (lb : list A) : list A :=
-    solveEqList n lC lb.
+  (** Solve the equation with the form of A*x=b over list *)
+  Definition solveEqListAM (n : nat) (lA : dlist tA) (lb : list tA) : list tA :=
+    solveEqList n lA lb.
 
-  (** {solveEqListAM lC lb} = solveEq {lC} {lb} *)
-  Lemma solveEqListAM_spec : forall n (lC : dlist A) (lb : list A),
-      let C : smat n := l2m lC in
+  (** {solveEqListAM lA lb} = solveEq {lA} {lb} *)
+  Lemma solveEqListAM_spec : forall n (lA : dlist tA) (lb : list tA),
+      let A : smat n := l2m lA in
       let b : vec n := l2v lb in
-      l2v (solveEqList n lC lb) = solveEqAM C b.
+      l2v (solveEqList n lA lb) = solveEqAM A b.
   Proof. intros. apply solveEqList_spec. Qed.
 
   
@@ -2944,24 +2944,24 @@ Module FieldMatrixTheory (E : FieldElementType).
       minvtble M -> minvNoCheckAM M = M\-1.
   Proof. intros. apply minvNoCheck_spec; auto. Qed.
 
-  (** Solve the equation with the form of C*x=b, but without check the inversibility. *)
-  Definition solveEqNoCheckAM {n} (C : smat n) (b : vec n) : vec n :=
-    (minvNoCheckAM C) *v b.
+  (** Solve the equation with the form of A*x=b, but without check the inversibility. *)
+  Definition solveEqNoCheckAM {n} (A : smat n) (b : vec n) : vec n :=
+    (minvNoCheckAM A) *v b.
 
-  (** minvtble C -> solveEqNoCheckAM C b = solveEqAM C b *)
-  Theorem solveEqNoCheckAM_spec : forall {n} (C : smat n) (b : vec n),
-      minvtble C -> solveEqNoCheckAM C b = solveEqAM C b.
+  (** minvtble A -> solveEqNoCheckAM A b = solveEqAM A b *)
+  Theorem solveEqNoCheckAM_spec : forall {n} (A : smat n) (b : vec n),
+      minvtble A -> solveEqNoCheckAM A b = solveEqAM A b.
   Proof. intros. apply solveEqNoCheck_spec; auto. Qed.
 
-  (** Solve the equation with the form of C*x=b over list, but without check the 
+  (** Solve the equation with the form of A*x=b over list, but without check the 
       inversibility *)
-  Definition solveEqListNoCheckAM (n : nat) (lC : dlist A) (lb : list A) : list A :=
-    solveEqListNoCheck n lC lb.
+  Definition solveEqListNoCheckAM (n : nat) (lA : dlist tA) (lb : list tA) : list tA :=
+    solveEqListNoCheck n lA lb.
 
-  (** minvtble {lC} -> {solveEqListNoCheckAM lC lb} = solveEqListAM {lC} {lb} *)
-  Theorem solveEqListNoCheckAM_spec : forall n (lC : dlist A) (lb : list A),
-      let C : smat n := l2m lC in
-      minvtble C -> solveEqListNoCheckAM n lC lb = solveEqListAM n lC lb.
+  (** minvtble {lA} -> {solveEqListNoCheckAM lA lb} = solveEqListAM {lA} {lb} *)
+  Theorem solveEqListNoCheckAM_spec : forall n (lA : dlist tA) (lb : list tA),
+      let A : smat n := l2m lA in
+      minvtble A -> solveEqListNoCheckAM n lA lb = solveEqListAM n lA lb.
   Proof. intros. apply solveEqListNoCheck_spec; auto. Qed.
   
 
@@ -3350,7 +3350,7 @@ Module OrderedFieldMatrixTheory (E : OrderedFieldElementType).
   Proof. intros. apply vperp_vadd; auto. Qed.
 
   (** vperp (x .* a) b = x .* (vperp a b) *)
-  Lemma vperp_vcmul : forall {n} (x : A) (a b : vec n),
+  Lemma vperp_vcmul : forall {n} (x : tA) (a b : vec n),
       b <> vzero -> vperp (x c* a) b = x c* (vperp a b).
   Proof. intros. apply vperp_vcmul; auto. Qed.
 
@@ -3586,9 +3586,9 @@ Module NormedOrderedFieldMatrixTheory (E : NormedOrderedFieldElementType).
   Lemma vlen_eq1_imply_vunit : forall {n} (a : vec n), ||a|| = 1%R -> vunit a.
   Proof. intros. apply vunit_spec; auto. Qed.
 
-  (* Context `{HOrderedField : OrderedField A Aadd Azero Aopp Amul Aone Ainv}. *)
+  (* Context `{HOrderedField : OrderedField tA Aadd Azero Aopp Amul Aone Ainv}. *)
   (* Context `{HConvertToR *)
-  (*     : ConvertToR A Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb a2r}. *)
+  (*     : ConvertToR tA Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb a2r}. *)
   (* Notation vlen := (@vlen _ Aadd Azero Amul a2r). *)
   (* Notation "|| a ||" := (vlen a) : vec_scope. *)
 

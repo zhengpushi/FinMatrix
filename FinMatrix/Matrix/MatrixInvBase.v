@@ -43,7 +43,7 @@ Require Export ElementType Matrix MatrixDet.
 (** * Matrix is invertible  *)
 
 Section minvtble.
-  Context `{HARing : ARing} `{HAeqDec : Dec _ (@eq A)}.
+  Context `{HARing : ARing} `{HAeqDec : Dec _ (@eq tA)}.
   Add Ring ring_inst : (make_ring_theory HARing).
 
   Notation "0" := Azero : A_scope.
@@ -53,8 +53,8 @@ Section minvtble.
   Notation vdot := (@vdot _ Aadd 0 Amul).
   Notation "< a , b >" := (vdot a b) : vec_scope.
 
-  Notation mat r c := (mat A r c).
-  Notation smat n := (smat A n).
+  Notation mat r c := (mat tA r c).
+  Notation smat n := (smat tA n).
   Notation mmul := (@mmul _ Aadd 0 Amul).
   Infix "*" := mmul : mat_scope.
   Notation mat1 := (@mat1 _ Azero Aone).
@@ -93,7 +93,7 @@ Section minvtble.
   Proof. intros. hnf in *. destruct H as [M' [H H0]]. exists M'; auto. Qed.
 
 
-  Context `{HField : Field A Aadd 0 Aopp Amul 1}.
+  Context `{HField : Field tA Aadd 0 Aopp Amul 1}.
   Add Field field_thy_inst : (make_field_theory HField).
   Notation "/ a" := (Ainv a) : A_scope.
   Notation "a / b" := ((a * /b)%A) : A_scope.
@@ -308,8 +308,8 @@ Module Type MinvCore (E : FieldElementType).
   Notation vdot := (@vdot _ Aadd 0 Amul).
   Notation "< a , b >" := (vdot a b) : vec_scope.
 
-  Notation mat r c := (mat A r c).
-  Notation smat n := (smat A n).
+  Notation mat r c := (mat tA r c).
+  Notation smat n := (smat tA n).
   Notation mmul := (@mmul _ Aadd 0 Amul).
   Infix "*" := mmul : mat_scope.
   Notation mat1 := (@mat1 _ Azero Aone).
@@ -485,20 +485,20 @@ Module Minv (F : FieldElementType) (M : MinvCore F).
   (** ** Inverse matrix with lists for input and output *)
   
   (** Check matrix invertibility with lists as input *)
-  Definition minvtblebList (n : nat) (dl : dlist A) : bool :=
+  Definition minvtblebList (n : nat) (dl : dlist tA) : bool :=
     @minvtbleb n (l2m 0 dl).
 
   (** Inverse matrix with lists for input and output *)
-  Definition minvList (n : nat) (dl : dlist A) : dlist A :=
+  Definition minvList (n : nat) (dl : dlist tA) : dlist tA :=
     m2l (@minv n (l2m 0 dl)).
 
   (** `minvtbleb_list` is equal to `minvtbleb`, by definition *)
-  Lemma minvtblebList_spec : forall (n : nat) (dl : dlist A),
+  Lemma minvtblebList_spec : forall (n : nat) (dl : dlist tA),
       minvtblebList n dl = @minvtbleb n (l2m 0 dl).
   Proof. intros. auto. Qed.
 
   (** The matrix of [minv_list dl] is the inverse of the matrix of [dl] *)
-  Theorem minvList_spec : forall (n : nat) (dl : dlist A),
+  Theorem minvList_spec : forall (n : nat) (dl : dlist tA),
       let M : smat n := l2m 0 dl in
       let M' : smat n := l2m 0 (minvList n dl) in
       minvtblebList n dl = true ->
@@ -513,29 +513,29 @@ Module Minv (F : FieldElementType) (M : MinvCore F).
   (* ======================================================================= *)
   (** ** Solve equation by inverse matrix *)
 
-  (** Solve the equation with the form of C*x=b. *)
-  Definition solveEq {n} (C : smat n) (b : vec n) : vec n := (C\-1) *v b.
+  (** Solve the equation with the form of A*x=b. *)
+  Definition solveEq {n} (A : smat n) (b : vec n) : vec n := (A\-1) *v b.
 
-  (** C *v (solveEqAM C b) = b *)
-  Theorem solveEq_spec : forall {n} (C : smat n) (b : @vec A n),
-      minvtble C -> C *v (solveEq C b) = b.
+  (** A *v (solveEqAM A b) = b *)
+  Theorem solveEq_spec : forall {n} (A : smat n) (b : @vec tA n),
+      minvtble A -> A *v (solveEq A b) = b.
   Proof.
     intros. unfold solveEq.
     rewrite <- mmulv_assoc. rewrite mmul_minv_r; auto. rewrite mmulv_1_l. auto.
   Qed.
 
-  (** Solve the equation with the form of C*x=b over list *)
-  Definition solveEqList (n : nat) (lC : dlist A) (lb : list A) : list A :=
-    let C : smat n := l2m 0 lC in
+  (** Solve the equation with the form of A*x=b over list *)
+  Definition solveEqList (n : nat) (lA : dlist tA) (lb : list tA) : list tA :=
+    let A : smat n := l2m 0 lA in
     let b : vec n := l2v 0 lb in
-    let x := solveEq C b in
+    let x := solveEq A b in
     v2l x.
 
-  (** {solveEqList lC lb} = solveEq {lC} {lb} *)
-  Theorem solveEqList_spec : forall n (lC : dlist A) (lb : list A),
-      let C : smat n := l2m 0 lC in
+  (** {solveEqList lA lb} = solveEq {lA} {lb} *)
+  Theorem solveEqList_spec : forall n (lA : dlist tA) (lb : list tA),
+      let A : smat n := l2m 0 lA in
       let b : vec n := l2v 0 lb in
-      l2v 0 (solveEqList n lC lb) = solveEq C b.
+      l2v 0 (solveEqList n lA lb) = solveEq A b.
   Proof. intros. unfold solveEqList. rewrite l2v_v2l. auto. Qed.
   
 End Minv.

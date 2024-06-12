@@ -41,10 +41,10 @@ Open Scope mat_scope.
 (** * Usage demo *)
 
 Section test.
-  Let f00 : A := fun t => 1%R.
-  Let f01 : A := fun t => 2.
-  Let f10 : A := fun t => 3.
-  Let f11 : A := fun t => 4.
+  Let f00 : tA := fun t => 1%R.
+  Let f01 : tA := fun t => 2.
+  Let f10 : tA := fun t => 3.
+  Let f11 : tA := fun t => 4.
   Let l1 := [[f00;f01];[f10;f11]].
   Let m1 := @l2m 2 2 l1.
   (* Compute m2l m1. *)
@@ -58,13 +58,13 @@ Section Example4CoordinateSystem.
   Notation "1" := Aone : Rfun_scope.
   Notation "0" := Azero : Rfun_scope.
   
-  Variable ψ θ ϕ : A.
-  Let cθ : A := fun t => cos (θ t).
-  Let sθ : A := fun t => sin (θ t).
-  Let cψ : A := fun t => cos (ψ t).
-  Let sψ : A := fun t => sin (ψ t).
-  Let cϕ : A := fun t => cos (ϕ t).
-  Let sϕ : A := fun t => sin (ϕ t).
+  Variable ψ θ ϕ : tA.
+  Let cθ : tA := fun t => cos (θ t).
+  Let sθ : tA := fun t => sin (θ t).
+  Let cψ : tA := fun t => cos (ψ t).
+  Let sψ : tA := fun t => sin (ψ t).
+  Let cϕ : tA := fun t => cos (ϕ t).
+  Let sϕ : tA := fun t => sin (ϕ t).
   
   Let Rx := mkmat_3_3 1 0 0 0 cϕ sϕ 0 (-sϕ) cϕ.
   Let Ry := mkmat_3_3 cθ 0 (-sθ) 0 1 0 sθ 0 cθ.

@@ -144,7 +144,7 @@ Require Import Hierarchy.
 Require Import Matrix.
 Require Import MatrixInvAM.
 
-Generalizable Variable A Aadd Aopp Amul Ainv Alt Ale Altb Aleb a2r.
+Generalizable Variable tA Aadd Aopp Amul Ainv Alt Ale Altb Aleb a2r.
 
 
 (* ######################################################################### *)
@@ -163,7 +163,7 @@ Module MatrixOrth (F : FieldElementType).
   Local Notation "1" := Aone : A_scope.
   Local Notation "- a" := (Aopp a) : A_scope.
   
-  Local Notation vec n := (@vec A n).
+  Local Notation vec n := (@vec tA n).
   Local Notation vzero := (@vzero _ 0).
   Local Notation vdot := (@vdot _ Aadd 0 Amul).
   Local Notation "< u , v >" := (vdot u v) : vec_scope.
@@ -171,9 +171,9 @@ Module MatrixOrth (F : FieldElementType).
   Local Notation vorth := (@vorth _ Aadd 0 Amul).
   Local Infix "_|_" := vorth : vec_scope.
 
-  Local Notation mat r c := (mat A r c).
-  Local Notation smat n := (smat A n).
-  Local Notation "M \T" := (@mtrans A _ _ M) : mat_scope.
+  Local Notation mat r c := (mat tA r c).
+  Local Notation smat n := (smat tA n).
+  Local Notation "M \T" := (@mtrans tA _ _ M) : mat_scope.
   Local Notation mat1 := (@mat1 _ Azero Aone).
   Local Notation mmul := (@mmul _ Aadd Azero Amul).
   Local Infix "*" := mmul : mat_scope.
@@ -408,8 +408,8 @@ Module MatrixOrth (F : FieldElementType).
       rewrite morth_iff_mul_trans_l in H. rewrite H. rewrite mmul_1_l. auto.
     Qed.
     
-    Context `{HOrderedField : OrderedField A Aadd 0 Aopp Amul 1 Ainv}.
-    Context `{HA2R : A2R A Aadd 0 Aopp Amul 1 Ainv Alt Ale a2r}.
+    Context `{HOrderedField : OrderedField tA Aadd 0 Aopp Amul 1 Ainv}.
+    Context `{HA2R : A2R tA Aadd 0 Aopp Amul 1 Ainv Alt Ale a2r}.
     Notation vlen := (@vlen _ Aadd 0 Amul a2r).
     Notation "|| v ||" := (vlen v) : vec_scope.
 

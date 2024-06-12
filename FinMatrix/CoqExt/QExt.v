@@ -52,11 +52,11 @@ Defined.
 (** * Instances for ElementType *)
 
 Module ElementTypeQ <: ElementType.
-  Definition A : Type := Q.
-  Definition Azero : A := 0.
-  Hint Unfold A Azero : A.
+  Definition tA : Type := Q.
+  Definition Azero : tA := 0.
+  Hint Unfold tA Azero : tA.
 
-  Lemma AeqDec : Dec (@eq A).
+  Lemma AeqDec : Dec (@eq tA).
   Proof. apply Q_eq_Dec. Defined.
 End ElementTypeQ.
 
@@ -65,11 +65,11 @@ End ElementTypeQ.
 
 (*   Definition Alt := Qlt. *)
 (*   Definition Ale := Qle. *)
-(*   Hint Unfold Ale Alt : A. *)
+(*   Hint Unfold Ale Alt : tA. *)
 
 (*   #[export] Instance Order : Order Alt Ale. *)
 (*   Proof. *)
-(*     constructor; intros; autounfold with A in *; try lia. *)
+(*     constructor; intros; autounfold with tA in *; try lia. *)
 (*   Abort. *)
 (* End OrderedElementTypeQ. *)
 

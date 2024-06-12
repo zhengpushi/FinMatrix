@@ -82,9 +82,9 @@ Qed.
 (** ** 去掉 a2r 以及 Aabs 的一些引理 *)
 
 (** Aabs a = Rabs a *)
-Lemma Aabs_eq_Rabs : forall a : A, | a |%A = | a |%R.
+Lemma Aabs_eq_Rabs : forall a : tA, | a |%A = | a |%R.
 Proof.
-  intros. unfold Aabs. destruct (Ale_dec Azero a); autounfold with A in *; ra.
+  intros. unfold Aabs. destruct (Ale_dec Azero a); autounfold with tA in *; ra.
   rewrite Rabs_left; ra.
 Qed.
 
@@ -108,7 +108,7 @@ Definition vnorm {n} (a : vec n) : vec n := (1 / ||a||) c* a.
 Lemma vnth_vnorm : forall {n} (a : vec n) i, a <> vzero -> (vnorm a).[i] = a.[i] / ||a||.
 Proof.
   intros. unfold vnorm. rewrite vnth_vcmul; auto.
-  autounfold with A. field. apply vlen_neq0_iff_neq0; auto.
+  autounfold with tA. field. apply vlen_neq0_iff_neq0; auto.
 Qed.
 
 (** Unit vector is fixpoint of vnorm operation *)
@@ -146,7 +146,7 @@ Proof.
   - exists (||a||). split.
     + apply vlen_gt0; auto.
     + unfold vnorm. rewrite vcmul_assoc. apply vcmul_same_if_x1_or_v0.
-      left. autounfold with A. field. apply vlen_neq0_iff_neq0; auto.
+      left. autounfold with tA. field. apply vlen_neq0_iff_neq0; auto.
 Qed.
 
 Lemma vnorm_spec : forall {n} (a : vec n),
@@ -162,7 +162,7 @@ Lemma vnorm_vcmul : forall {n} x (a : vec n),
     x <> 0 -> a <> vzero -> vnorm (x c* a) = sign x c* (vnorm a).
 Proof.
   intros. unfold vnorm. rewrite vlen_vcmul. rewrite !vcmul_assoc.
-  f_equal. unfold sign. autounfold with A. apply vlen_neq0_iff_neq0 in H0.
+  f_equal. unfold sign. autounfold with tA. apply vlen_neq0_iff_neq0 in H0.
   unfold a2r,id. rewrite Aabs_eq_Rabs.
   bdestruct (0 <? x).
   - rewrite Rabs_right; ra.
@@ -201,7 +201,7 @@ Lemma vnth_div_vlen_bound : forall {n} (a : vec n) i,
     a <> vzero -> -1 <= a i / (|| a ||) <= 1.
 Proof.
   intros. pose proof (vnth_vnorm_bound a i H). unfold vnorm in H0.
-  rewrite vnth_vcmul in H0. autounfold with A in *. ra.
+  rewrite vnth_vcmul in H0. autounfold with tA in *. ra.
 Qed.
 
 (** <vnorm a, vnorm b> = <a, b> / (||a|| * ||b||) *)
@@ -210,7 +210,7 @@ Lemma vdot_vnorm : forall {n} (a b : vec n),
     <vnorm a, vnorm b> = <a, b> / (||a|| * ||b||).
 Proof.
   intros. unfold vnorm. rewrite vdot_vcmul_l, vdot_vcmul_r.
-  autounfold with A. field. split; apply vlen_neq0_iff_neq0; auto.
+  autounfold with tA. field. split; apply vlen_neq0_iff_neq0; auto.
 Qed.
 
 (** <vnorm a, vnorm b>² = <a, b>² / (<a, a> * <b, b>) *)
@@ -228,7 +228,7 @@ Lemma sqrt_1_minus_sqr_vdot : forall {n} (a b : vec n),
     sqrt (1 - <vnorm a, vnorm b>²) =
       sqrt (((<a, a> * <b, b>) - <a, b>²) / (||a|| * ||b||)²).
 Proof.
-  intros. unfold vnorm. rewrite vdot_vcmul_l, vdot_vcmul_r. autounfold with A.
+  intros. unfold vnorm. rewrite vdot_vcmul_l, vdot_vcmul_r. autounfold with tA.
   replace (1 - (1 / (||a||) * (1 / (||b||) * (<a, b>)))²)%R
     with (((<a, a> * <b, b>) - <a, b>²) / (||a|| * ||b||)²); auto.
   rewrite !Rsqr_mult, !Rsqr_div'. rewrite <- !vdot_sameR. field_simplify_eq.
@@ -239,7 +239,7 @@ Qed.
 (** vnorm a _|_ b <-> a _|_ b *)
 Lemma vorth_vnorm_l : forall {n} (a b : vec n), a <> vzero -> (vnorm a _|_ b <-> a _|_ b).
 Proof.
-  intros. unfold vorth, vnorm in *. rewrite vdot_vcmul_l. autounfold with A.
+  intros. unfold vorth, vnorm in *. rewrite vdot_vcmul_l. autounfold with tA.
   assert (1 * / (||a||) <> 0)%R; ra.
   apply vlen_neq0_iff_neq0 in H; ra.
 Qed.
@@ -306,7 +306,7 @@ Proof.
     + subst. rewrite vdot_0_r, vlen_vzero. rewrite Rmult_0_l,Rmult_0_r. auto.
     + unfold vangle. rewrite cos_acos.
       * unfold vnorm. rewrite <- vdot_vcmul_r. rewrite <- vdot_vcmul_l.
-        rewrite !vcmul_assoc. autounfold with A.
+        rewrite !vcmul_assoc. autounfold with tA.
         replace ((||a||) * (1 / ||a||))%R with 1;
           [|field; apply vlen_neq0_iff_neq0; auto].
         replace ((||b||) * (1 / ||b||))%R with 1;
@@ -604,7 +604,7 @@ Lemma v2cross_ge0_eq : forall (a b : vec 2),
 Proof.
   intros. apply Rsqr_inj. ra. ra. rewrite !Rsqr_sqrt.
   - cbv. rewrite <- !nth_v2f. field.
-  - pose proof (vdot_sqr_le a b). autounfold with A in *. ra.
+  - pose proof (vdot_sqr_le a b). autounfold with tA in *. ra.
 Qed.
 
 (** a × b < 0 -> a × b = - √((a⋅a)(b⋅b) - (a⋅b)²) *)
@@ -624,7 +624,7 @@ Lemma v2cross_eq0_iff_vdot_sqr_eq : forall (a b : vec 2),
 Proof.
   intros. bdestruct (0 <=? a \x b).
   - pose proof (vdot_sqr_le a b).
-    pose proof (v2cross_ge0_eq a b H H0 H1). autounfold with A in *.
+    pose proof (v2cross_ge0_eq a b H H0 H1). autounfold with tA in *.
     rewrite H3. split; intros.
     + apply sqrt_eq_0 in H4; ra.
     + rewrite H4. autorewrite with R. auto.
@@ -690,7 +690,7 @@ Proof.
   pose proof (vlen_gt0 _ H1). pose proof (vlen_gt0 _ H2).
   pose proof (vdot_gt0 _ H1). pose proof (vdot_gt0 _ H2).
   pose proof (vdot_sqr_le a b). pose proof (vdot_sqr_le_form2 a b H1 H2).
-  autounfold with A in *.
+  autounfold with tA in *.
   rewrite acos_atan; [|ra]. f_equal. apply Rsqr_inj. ra. ra.
   rewrite !Rsqr_div', !Rsqr_mult, <- !vdot_sameR. field_simplify_eq; [|ra].
   rewrite Rsqr_sqrt; [|ra]. rewrite Rsqr_sqrt; [|ra].
@@ -712,7 +712,7 @@ Proof.
   pose proof (vlen_gt0 _ H1). pose proof (vlen_gt0 _ H2).
   pose proof (vdot_gt0 _ H1). pose proof (vdot_gt0 _ H2).
   pose proof (vdot_sqr_le a b). pose proof (vdot_sqr_le_form2 a b H1 H2).
-  autounfold with A in *.
+  autounfold with tA in *.
   rewrite acos_atan_neg; [|ra]. f_equal. f_equal. apply Rsqr_inj_neg. ra. ra.
   rewrite !Rsqr_div', !Rsqr_mult, <- !vdot_same. field_simplify_eq; [|ra].
   unfold a2r, id.
@@ -849,7 +849,7 @@ Proof.
   rewrite !vdot_vcmul_l,!vdot_vcmul_r.
   pose proof (vlen_gt0 a H). pose proof (vlen_gt0 b H0).
   pose proof (vdot_gt0 a H). pose proof (vdot_gt0 b H0).
-  autounfold with A.
+  autounfold with tA.
   replace (1 / (||a||) * (1 / (||b||) * (<a, b>)))%R with ((<a, b>)/ (||a|| * ||b||)).
   2:{ field. split; apply vlen_neq0_iff_neq0; auto. }
   bdestruct (<a, b> =? 0).
@@ -1130,7 +1130,7 @@ Proof.
   assert (x = 1).
   { rewrite <- H4 in H0. rewrite vlen_vcmul in H0. unfold a2r,id in H0.
     symmetry in H0. apply Rmult_eq_r_reg in H0; auto.
-    autounfold with A in *. unfold Aabs in H0. destruct (Ale_dec 0 x); lra.
+    autounfold with tA in *. unfold Aabs in H0. destruct (Ale_dec 0 x); lra.
     apply vlen_neq0_iff_neq0; auto. }
   rewrite H in H4. rewrite vcmul_1_l in H4; auto.
 Qed.
@@ -1144,7 +1144,7 @@ Proof.
   assert (x = - (1))%R.
   { rewrite <- H4 in H0. rewrite vlen_vcmul in H0. unfold a2r,id in H0.
     symmetry in H0. apply Rmult_eq_r_reg in H0; auto.
-    autounfold with A in *. unfold Aabs in H0. destruct (Ale_dec 0 x); lra.
+    autounfold with tA in *. unfold Aabs in H0. destruct (Ale_dec 0 x); lra.
     apply vlen_neq0_iff_neq0; auto. }
   rewrite H in H4. rewrite vcmul_neg1_l in H4. rewrite <- H4, vopp_vopp. auto.
 Qed.
@@ -1349,7 +1349,7 @@ Proof.
   rewrite vcmul_assoc.
   match goal with |- context [?x c* _] => replace x with 1 end.
   rewrite vcmul_1_l; easy.
-  autounfold with A. field. repeat split.
+  autounfold with tA. field. repeat split.
   - pose proof (sin_vangle_gt0 a b H H0). ra.
   - apply vlen_neq0_iff_neq0; auto.
   - apply vlen_neq0_iff_neq0; auto.
@@ -1482,7 +1482,7 @@ Lemma v3norm_eq : forall (a : vec 3),
     let v' := vnorm a in
     a <> vzero -> (v'.1 = a.1 / ||a||) /\ (v'.2 = a.2 / ||a||) /\ (v'.3 = a.3 / ||a||).
 Proof.
-  intros. unfold v', vnorm. rewrite !vnth_vcmul. autounfold with A.
+  intros. unfold v', vnorm. rewrite !vnth_vcmul. autounfold with tA.
   repeat split; ra.
 Qed.
 
@@ -1691,7 +1691,7 @@ Proof.
   intros. unfold vunit,Vector.vunit. cbn.
   erewrite !nth_v2f, !Vector.vnth_vmap2; cbn.
   pose proof (v3norm_sqr_eq1 a H).
-  autounfold with A in *; autorewrite with R in *; lra.
+  autounfold with tA in *; autorewrite with R in *; lra.
   Unshelve. all: lia.
 Qed.
 
@@ -1772,10 +1772,10 @@ Definition v4l : vec 4 := mkvec4 0 0 0 1.
 Open Scope mat_scope.
 
 (** norm space *)
-Class Norm `{Ring} (f : A -> R) (cmul : R -> A -> A) := {
-    Norm_pos : forall a : A, 0 <= f a;
-    Norm_eq0_iff : forall a : A, f a = 0 <-> a = Azero;
-    Norm_cmul_compat : forall (c : R) (a : A), f (cmul c a) = ((Rabs c) * f a)%A
+Class Norm `{Ring} (f : tA -> R) (cmul : R -> tA -> tA) := {
+    Norm_pos : forall a : tA, 0 <= f a;
+    Norm_eq0_iff : forall a : tA, f a = 0 <-> a = Azero;
+    Norm_cmul_compat : forall (c : R) (a : tA), f (cmul c a) = ((Rabs c) * f a)%A
   }.
 
 (* Equivalent form of matrix norm *)
@@ -1964,7 +1964,7 @@ Section SO3_keep_v3cross.
     rewrite !v3mixed_eq_det_cols.
     replace (@cvl2m 3 3 [M *v a; M *v b; M *v c])
       with (M * @cvl2m 3 3 [a; b; c])%M by meq.
-    rewrite mdet_mmul. rewrite H0. autounfold with A. ring.
+    rewrite mdet_mmul. rewrite H0. autounfold with tA. ring.
   Qed.
 
   (** morth(M) -> det(M) = -1 -> [Mu Mv Mw] = -<Mu, M(v×w)> *)
@@ -1977,7 +1977,7 @@ Section SO3_keep_v3cross.
     rewrite !v3mixed_eq_det_cols.
     replace (@cvl2m 3 3 [M *v a; M *v b; M *v c])
       with (M * @cvl2m 3 3 [a; b; c])%M by meq.
-    rewrite mdet_mmul. rewrite H0. autounfold with A. ring.
+    rewrite mdet_mmul. rewrite H0. autounfold with tA. ring.
   Qed.
     
   (* orthogonal matrix keep v3cross *)
@@ -2167,7 +2167,7 @@ End Example4CoordinateSystem.
 (** Test for symbol matrix *)
 Section Symbol_matrix.
   
-  Variable a11 a12 a13 a21 a22 a23 a31 a32 a33 : A.
+  Variable a11 a12 a13 a21 a22 a23 a31 a32 a33 : tA.
   (* Compute m2l (minvAM1 (l2m [[a11]])). *)
   (* Compute m2l (minvAM2 (l2m [[a11;a12];[a21;a22]])). *)
   (* Compute m2l (minvAM3 (l2m [[a11;a12;a13];[a21;a22;a23];[a31;a32;a33]])). *)
@@ -2184,7 +2184,7 @@ Section Symbol_matrix.
   Let M : smat 3 := l2m [[1;0;-sθ];[0;cϕ;cθ*sϕ];[0;-sϕ;cθ*cϕ]]%R.
 
   (* A unknown inverse matrix *)
-  Variable a11 a12 a13 a21 a22 a23 a31 a32 a33 : A.
+  Variable a11 a12 a13 a21 a22 a23 a31 a32 a33 : tA.
   Let M' : smat 3 := l2m [[a11;a12;a13];[a21;a22;a23];[a31;a32;a33]].
   
   (* Find inverse matrix *)
@@ -2246,7 +2246,7 @@ Module Exercise_Ch1_Symbol.
        mdet m1 = (a^3 + b^3) * mdet m2)%R.
   Proof. intros; cbv; lra. Qed.
   
-  Example ex6_3 : forall a b e d : A,
+  Example ex6_3 : forall a b e d : R,
       (let m := mkmat_4_4
                  (a*a) ((a+1)^2) ((a+2)^2) ((a+3)^2)
                  (b*b) ((b+1)^2) ((b+2)^2) ((b+3)^2)
@@ -2255,7 +2255,7 @@ Module Exercise_Ch1_Symbol.
       mdet m = 0)%R.
   Proof. intros. cbv. lra. Qed.
   
-  Example ex6_4 : forall a b e d : A,
+  Example ex6_4 : forall a b e d : R,
       let m := mkmat_4_4
                  1 1 1 1
                  a b e d

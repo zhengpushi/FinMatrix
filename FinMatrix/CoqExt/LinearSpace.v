@@ -79,7 +79,7 @@ End vsum.
 
 (* elements of V called vectors, and elements of K called scalars  *)
 Class VectorSpace `{F : Field} {V : Type} (Vadd : V -> V -> V) (Vzero : V)
-  (Vopp : V -> V) (Vcmul : A -> V -> V) := {
+  (Vopp : V -> V) (Vcmul : tA -> V -> V) := {
     vs_vaddC :: Commutative Vadd;
     vs_vaddA :: Associative Vadd;
     vs_vaddIdR :: IdentityRight Vadd Vzero;
@@ -209,7 +209,7 @@ Section props.
   Qed.
 
   (** a .* 0 = 0 *)
-  Theorem vs_vcmul_0_r : forall a : A, a c* 0 = 0.
+  Theorem vs_vcmul_0_r : forall a : tA, a c* 0 = 0.
   Proof.
     (* a*0 = a*0 + 0, a*0 = a*(0 + 0) = a*0 + a*0,
        Thus, a*0 + 0 = a*0 + a*0. By the cancellation law, then ... *)
@@ -253,7 +253,7 @@ Section props.
   Proof. intros. pose proof vs_vadd_AGroup as HAGroup_vadd. agroup. Qed.
 
   Section AeqDec.
-    Context {AeqDec : Dec (@eq A)}.
+    Context {AeqDec : Dec (@eq tA)}.
     
     (** a .* v = 0 -> a = 0 \/ v = 0 *)
     Theorem vs_vcmul_eq0_imply_k0_or_v0 : forall a v, a c* v = 0 -> a = 0%A \/ v = 0.
@@ -288,7 +288,7 @@ End props.
 Class SubSpaceStruct `{HVectorSpace : VectorSpace} (P : V -> Prop) := {
     ss_zero_keep : P Vzero;
     ss_add_closed : forall {u v : sig P}, P (Vadd u.val v.val);
-    ss_cmul_closed : forall {a : A} {v : sig P}, P (Vcmul a v.val);
+    ss_cmul_closed : forall {a : tA} {v : sig P}, P (Vcmul a v.val);
   }.
 
 (* Is an element belong to H *)
@@ -307,7 +307,7 @@ Section makeSubSpace.
     refine (exist _ (Vopp v.val) _). rewrite <- vs_vcmul_opp1.
     apply ss_cmul_closed.
   Defined.
-  Definition Hcmul (a : A) (v : H) : H := exist _ (Vcmul a v.val) ss_cmul_closed.
+  Definition Hcmul (a : tA) (v : H) : H := exist _ (Vcmul a v.val) ss_cmul_closed.
 
   Lemma makeSubSpace : VectorSpace Hadd Hzero Hopp Hcmul.
   Proof.

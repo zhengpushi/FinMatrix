@@ -9,7 +9,7 @@
   
   remark    :
   0. Naming style
-     A,B,C  --- type
+     tA,tB,tC  --- type
      M,N,O  --- matrix
      u,v,w  --- vector
      a,b,c,k  -- scalar
@@ -291,10 +291,10 @@ Ltac simp :=
      auto).
 
 Section example.
-  Context {A : Type}.
+  Context {tA : Type}.
   
   (* a = b = c = d = e *)
-  Goal forall a b c d e f g : A, a = b -> c = b -> d = c -> e = d -> a = e.
+  Goal forall a b c d e f g : tA, a = b -> c = b -> d = c -> e = d -> a = e.
   Proof.
     simp. rw.
   Qed.
@@ -336,7 +336,7 @@ Qed.
 (** * Extension for option type *)
 
 (** Convert option type to base type  *)
-Definition option_get {A} (o : option A) (def : A) : A :=
+Definition option_get {tA} (o : option tA) (def : tA) : tA :=
   match o with
   | Some a => a
   | _ => def
@@ -351,7 +351,7 @@ Notation "x '.val'" := (proj1_sig x) (at level 1, format "x '.val'").
 Notation "x '.prf'" := (proj2_sig x) (at level 1, format "x '.prf'").
 
 (** {a | P a} = {b | P b} <-> a = b *)
-Lemma sig_eq_iff : forall {A} {P : A -> Prop} a b (Ha : P a) (Hb : P b),
+Lemma sig_eq_iff : forall {tA} {P : tA -> Prop} a b (Ha : P a) (Hb : P b),
     (exist _ a Ha = exist _ b Hb) <-> a = b.
 Proof.
   intros. split; intros.
@@ -360,11 +360,11 @@ Proof.
 Qed.
 
 (** {a | P a}.val = a *)
-Lemma sig_val : forall {A} {P : A -> Prop} a (Ha : P a), (exist _ a Ha).val = a.
+Lemma sig_val : forall {tA} {P : tA -> Prop} a (Ha : P a), (exist _ a Ha).val = a.
 Proof. intros. simpl. auto. Qed.
 
 (** {a.val | P (a.val)} = a *)
-Lemma val_sig_eq : forall {A} {P : A -> Prop} (a : {x | P x}) (H : P (a.val)),
+Lemma val_sig_eq : forall {tA} {P : tA -> Prop} (a : {x | P x}) (H : P (a.val)),
     exist _ (a.val) H = a.
 Proof. intros. destruct a. simpl. apply sig_eq_iff; auto. Qed.
 

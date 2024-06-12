@@ -32,8 +32,8 @@ Require Export RExt.
 Require Export Fin Sequence.
 Require Import Extraction.
 
-Generalizable Variable A Aadd Azero Aopp Amul Aone Ainv Ale Alt Altb Aleb a2r.
-Generalizable Variable B Badd Bzero.
+Generalizable Variable tA Aadd Azero Aopp Amul Aone Ainv Ale Alt Altb Aleb a2r.
+Generalizable Variable tB Badd Bzero.
 
 (** Control the scope *)
 Open Scope R_scope.
@@ -47,21 +47,21 @@ Open Scope vec_scope.
 (* ======================================================================= *)
 (** ** Definition of vector type [vec] *)
 
-(** A n-dimensional vector over A type *)
-Definition vec {A : Type} (n : nat) := 'I_n -> A.
+(** A n-dimensional vector over tA type *)
+Definition vec {tA : Type} (n : nat) := 'I_n -> tA.
 
 (* ======================================================================= *)
 (** ** Get element of a vector *)
 
 (** v.i *)
-(* Definition vnth {A n} (a : @vec A n) (i : 'I_n) : A := a i. *)
+(* Definition vnth {tA n} (a : @vec tA n) (i : 'I_n) : tA := a i. *)
 (* Notation "a .[ i ]" := (vnth a i) : vec_scope. *)
 
-Notation vnth A n a i := ((a:@vec A n) (i : 'I_n)).
+Notation vnth tA n a i := ((a : @vec tA n) (i : 'I_n)).
 Notation "a .[ i ]" := (vnth _ _ a i) : vec_scope.
 
 (** i = j -> a.[nat2fin i] = a.[nat2fin j] *)
-Lemma vnth_eq : forall {A n} (a : @vec A n) i j (Hi: i < n) (Hj: j < n),
+Lemma vnth_eq : forall {tA n} (a : @vec tA n) i j (Hi: i < n) (Hj: j < n),
     i = j -> a.[nat2fin i Hi] = a.[nat2fin j Hj].
 Proof. intros. subst. f_equal. apply fin_eq_iff; auto. Qed.
 
@@ -81,7 +81,7 @@ Notation "a .4" := (a.[#3]) : vec_scope.
 (** ** Equality of vector *)
 
 (** a = b <-> forall i, a.[i] = b.[i] *)
-Lemma veq_iff_vnth : forall {A} {n} (a b : @vec A n),
+Lemma veq_iff_vnth : forall {tA} {n} (a b : @vec tA n),
     a = b <-> forall (i : 'I_n), a.[i] = b.[i].
 Proof.
   intros. split; intros; subst; auto.
@@ -97,7 +97,7 @@ Check @veq_iff_vnth:
 
 
 (** a[(i,H1)] = b[(i,H2)] -> a[(i,H3)] = b[(i,H4)] *)
-Lemma vnth_sameIdx_imply : forall {A n} {a b : @vec A n} {i} {H1 H2 H3 H4 : i < n},
+Lemma vnth_sameIdx_imply : forall {tA n} {a b : @vec tA n} {i} {H1 H2 H3 H4 : i < n},
     a (nat2fin i H1) = b (nat2fin i H2) ->
     a (nat2fin i H3) = b (nat2fin i H4).
 Proof.
@@ -108,8 +108,8 @@ Proof.
 Qed.
 
 (** {u = v} + {u <> v} *)
-#[export] Instance veq_dec : forall {A n} {AeqDec : Dec (@eq A)},
-    Dec (@eq (@vec A n)).
+#[export] Instance veq_dec : forall {tA n} {AeqDec : Dec (@eq tA)},
+    Dec (@eq (@vec tA n)).
 Proof.
   intros. constructor. induction n; intros.
   - left. extensionality i. fin.
@@ -129,14 +129,14 @@ Proof.
 Qed.
 
 (** The equality of 0-D vector *)
-Lemma v0eq : forall {A} (a b : @vec A 0), a = b.
+Lemma v0eq : forall {tA} (a b : @vec tA 0), a = b.
 Proof. intros. apply veq_iff_vnth. intros. exfalso. apply fin0_False; auto. Qed.
 
-Lemma v0neq : forall {A} (a b : @vec A 0), a <> b -> False.
+Lemma v0neq : forall {tA} (a b : @vec tA 0), a <> b -> False.
 Proof. intros. destruct H. apply v0eq. Qed.
 
 (** The equality of 1-D vector *)
-Lemma v1eq_iff : forall {A} (a b : @vec A 1), a = b <-> a.1 = b.1.
+Lemma v1eq_iff : forall {tA} (a b : @vec tA 1), a = b <-> a.1 = b.1.
 Proof.
   intros. split; intros; subst; auto. unfold nat2finS in H; simpl in H.
   repeat destruct nat_ltb_reflect; try lia.
@@ -145,11 +145,11 @@ Proof.
   lia.
 Qed.
 
-Lemma v1neq_iff : forall {A} (a b : @vec A 1), a <> b <-> a.1 <> b.1.
+Lemma v1neq_iff : forall {tA} (a b : @vec tA 1), a <> b <-> a.1 <> b.1.
 Proof. intros. rewrite v1eq_iff. tauto. Qed.
 
 (** The equality of 2-D vector *)
-Lemma v2eq_iff : forall {A} (a b : @vec A 2), a = b <-> a.1 = b.1 /\ a.2 = b.2.
+Lemma v2eq_iff : forall {tA} (a b : @vec tA 2), a = b <-> a.1 = b.1 /\ a.2 = b.2.
 Proof.
   intros. split; intros; subst; auto. unfold nat2finS in H; simpl in H.
   destruct H as [H1 H2]. repeat destruct nat_ltb_reflect; try lia.
@@ -159,11 +159,11 @@ Proof.
   lia.
 Qed.
 
-Lemma v2neq_iff : forall {A} (a b : @vec A 2), a <> b <-> (a.1 <> b.1 \/ a.2 <> b.2).
+Lemma v2neq_iff : forall {tA} (a b : @vec tA 2), a <> b <-> (a.1 <> b.1 \/ a.2 <> b.2).
 Proof. intros. rewrite v2eq_iff. tauto. Qed.
 
 (** The equality of 3-D vector *)
-Lemma v3eq_iff : forall {A} (a b : @vec A 3),
+Lemma v3eq_iff : forall {tA} (a b : @vec tA 3),
     a = b <-> a.1 = b.1 /\ a.2 = b.2 /\ a.3 = b.3.
 Proof.
   intros. split; intros; subst; auto. unfold nat2finS in H; simpl in H.
@@ -175,12 +175,12 @@ Proof.
   lia.
 Qed.
 
-Lemma v3neq_iff : forall {A} (a b : @vec A 3),
+Lemma v3neq_iff : forall {tA} (a b : @vec tA 3),
     a <> b <-> (a.1 <> b.1 \/ a.2 <> b.2 \/ a.3 <> b.3).
 Proof. intros. rewrite v3eq_iff. tauto. Qed.
 
 (** The equality of 4-D vector *)
-Lemma v4eq_iff : forall {A} (a b : @vec A 4),
+Lemma v4eq_iff : forall {tA} (a b : @vec tA 4),
     a = b <-> a.1 = b.1 /\ a.2 = b.2 /\ a.3 = b.3 /\ a.4 = b.4.
 Proof.
   intros. split; intros; subst; auto. unfold nat2finS in H; simpl in H.
@@ -193,12 +193,12 @@ Proof.
   lia.
 Qed.
 
-Lemma v4neq_iff : forall {A} (a b : @vec A 4),
+Lemma v4neq_iff : forall {tA} (a b : @vec tA 4),
     a <> b <-> (a.1 <> b.1 \/ a.2 <> b.2 \/ a.3 <> b.3 \/ a.4 <> b.4).
 Proof. intros. rewrite v4eq_iff. tauto. Qed.
 
 (** a <> b <-> ∃ i, a.[i] <> b.[i] *)
-Lemma vneq_iff_exist_vnth_neq : forall {A n} (a b : @vec A n),
+Lemma vneq_iff_exist_vnth_neq : forall {tA n} (a b : @vec tA n),
     a <> b <-> exists i, a.[i] <> b.[i].
 Proof.
   intros. rewrite veq_iff_vnth. split; intros.
@@ -210,10 +210,10 @@ Qed.
 (** ** Cast between two [vec] type with actual equal range *)
 
 (** Cast from [vec n] type to [vec m] type if [n = m] *)
-(* Definition cast_vec : forall {A} n m, n = m -> @vec A n = @vec A m. *)
+(* Definition cast_vec : forall {tA} n m, n = m -> @vec tA n = @vec tA m. *)
 (* Proof. intros. subst. auto. Qed. *)
 
-Definition cast_vec {A} n m (a : @vec A n) (H : n = m) : @vec A m :=
+Definition cast_vec {tA} n m (a : @vec tA n) (H : n = m) : @vec tA m :=
   eq_rect_r (fun n0 => vec n0 -> vec m) (fun a0 : vec m => a0) H a.
 
 
@@ -223,9 +223,9 @@ Definition cast_vec {A} n m (a : @vec A n) (H : n = m) : @vec A m :=
 (* ======================================================================= *)
 (** ** Vector with same elements *)
 Section vrepeat.
-  Context {A} {Azero : A} {n : nat}.
+  Context {tA} {Azero : tA} {n : nat}.
   
-  Definition vrepeat (a : A) : @vec A n := fun _ => a.
+  Definition vrepeat (a : tA) : @vec tA n := fun _ => a.
 
   (** (repeat a).i = a *)
   Lemma vnth_vrepeat : forall a i, (vrepeat a).[i] = a.
@@ -236,9 +236,9 @@ End vrepeat.
 (* ======================================================================= *)
 (** ** Zero vector *)
 Section vzero.
-  Context {A} (Azero : A) {n : nat}.
+  Context {tA} (Azero : tA) {n : nat}.
   
-  Definition vzero : @vec A n := vrepeat Azero.
+  Definition vzero : @vec tA n := vrepeat Azero.
 
   (** vzero.i = 0 *)
   Lemma vnth_vzero : forall i, vzero.[i] = Azero.
@@ -249,38 +249,38 @@ End vzero.
 (* ======================================================================= *)
 (** ** Convert between function and vector *)
 Section f2v_v2f.
-  Context {A} (Azero : A).
+  Context {tA} (Azero : tA).
 
-  Definition f2v {n} (f : nat -> A) : @vec A n := fun (i : 'I_n) => f i.
+  Definition f2v {n} (f : nat -> tA) : @vec tA n := fun (i : 'I_n) => f i.
 
   (** (f2v a).i = a i *)
-  Lemma vnth_f2v : forall {n} (f : nat -> A) (i : 'I_n), (@f2v n f).[i] = f i.
+  Lemma vnth_f2v : forall {n} (f : nat -> tA) (i : 'I_n), (@f2v n f).[i] = f i.
   Proof. auto. Qed.
 
-  Lemma f2v_inj : forall {n} (f g : nat -> A),
+  Lemma f2v_inj : forall {n} (f g : nat -> tA),
       @f2v n f = @f2v n g -> (forall i, i < n -> f i = g i).
   Proof. intros. unfold f2v in *. apply (equal_f H (nat2fin i H0)). Qed.
 
-  Definition v2f {n} (a : @vec A n) : (nat -> A) :=
+  Definition v2f {n} (a : @vec tA n) : (nat -> tA) :=
     fun i => match i ??< n with
            | left E => a (nat2fin i E)
            | _ => Azero
            end.
   
   (** (v2f a) i = a.[nat2fin i] *)
-  Lemma nth_v2f : forall {n} (a : @vec A n) (i : nat) (H : i < n),
+  Lemma nth_v2f : forall {n} (a : @vec tA n) (i : nat) (H : i < n),
       (v2f a) i = a.[nat2fin i H].
   Proof. intros. unfold v2f. fin. Qed.
   
   (** (v2f a) i = a[#i] *)
-  Lemma nth_v2f_nat2finS : forall {n} (a : @vec A (S n)) i,
+  Lemma nth_v2f_nat2finS : forall {n} (a : @vec tA (S n)) i,
       i < S n -> (v2f a) i = a.[#i].
   Proof.
     intros. rewrite nth_v2f with (H:=H).
     rewrite nat2finS_eq with (E:=H). auto.
   Qed.
   
-  Lemma v2f_inj : forall {n} (a b : @vec A n),
+  Lemma v2f_inj : forall {n} (a b : @vec tA n),
       (forall i, i < n -> (v2f a) i = (v2f b) i) -> a = b.
   Proof.
     intros. apply veq_iff_vnth; intros.
@@ -296,7 +296,7 @@ Section f2v_v2f.
   Qed.
 
   (** v2f (f2v a) = a *)
-  Lemma v2f_f2v : forall {n} (a : nat -> A) i, i < n -> v2f (@f2v n a) i = a i.
+  Lemma v2f_f2v : forall {n} (a : nat -> tA) i, i < n -> v2f (@f2v n a) i = a i.
   Proof. intros. rewrite nth_v2f with (H:=H). rewrite vnth_f2v. auto. Qed.
 
 End f2v_v2f.
@@ -304,16 +304,16 @@ End f2v_v2f.
 (* ======================================================================= *)
 (** ** Convert between list and vector *)
 Section l2v_v2l.
-  Context {A} (Azero : A).
+  Context {tA} (Azero : tA).
 
-  Definition l2v {n : nat} (l : list A) : vec n := fun (i : 'I_n) => nth i l Azero.
+  Definition l2v {n : nat} (l : list tA) : vec n := fun (i : 'I_n) => nth i l Azero.
 
   (** (l2v l).i = nth i l *)
-  Lemma vnth_l2v : forall {n} (l : list A) (i : 'I_n), (@l2v n l).[i] = nth i l Azero.
+  Lemma vnth_l2v : forall {n} (l : list tA) (i : 'I_n), (@l2v n l).[i] = nth i l Azero.
   Proof. auto. Qed.
 
   (** l2v l1 = l2v l2 -> l1 = l2 *)
-  Lemma l2v_inj : forall {n} (l1 l2 : list A),
+  Lemma l2v_inj : forall {n} (l1 l2 : list tA),
       length l1 = n -> length l2 = n -> @l2v n l1 = @l2v n l2 -> l1 = l2.
   Proof.
     intros. unfold l2v in *.
@@ -321,7 +321,7 @@ Section l2v_v2l.
     pose proof (equal_f H1). specialize (H3 (nat2fin i H2)); simpl in H3. auto.
   Qed.
 
-  Definition v2l {n} (a : vec n) : list A := map a (finseq n).
+  Definition v2l {n} (a : vec n) : list tA := map a (finseq n).
 
   (** nth i (v2l a) = a.i *)
   Lemma nth_v2l : forall {n} (a : vec n) (i : nat) (E : i < n),
@@ -348,7 +348,7 @@ Section l2v_v2l.
   Qed.
 
   (** v2l (l2v l) = l *)
-  Lemma v2l_l2v : forall {n} (l : list A), length l = n -> v2l (@l2v n l) = l.
+  Lemma v2l_l2v : forall {n} (l : list tA), length l = n -> v2l (@l2v n l) = l.
   Proof.
     intros. apply list_eq_ext with (Azero:=Azero)(n:=n); intros; auto.
     - rewrite nth_v2l with (E:=H0). rewrite vnth_l2v.
@@ -361,7 +361,7 @@ Section l2v_v2l.
   Proof. intros. exists (v2l a). apply l2v_v2l. Qed.
 
   (** ∀ l, (∃ v, v2l v = l) *)
-  Lemma v2l_surj : forall {n} (l : list A), length l = n -> (exists a : vec n, v2l a = l).
+  Lemma v2l_surj : forall {n} (l : list tA), length l = n -> (exists a : vec n, v2l a = l).
   Proof. intros. exists (l2v l). apply v2l_l2v; auto. Qed.
 
 End l2v_v2l.
@@ -396,15 +396,15 @@ End test.
 (** Convert vector to its elements *)
 
 Section veq_exist.
-  Context {A : Type}.
+  Context {tA : Type}.
 
-  Lemma veq_exist_2 : forall (a : @vec A 2), exists a1 a2 : A, a = l2v a1 [a1;a2].
+  Lemma veq_exist_2 : forall (a : @vec tA 2), exists a1 a2 : tA, a = l2v a1 [a1;a2].
   Proof. intros. exists (a.1),(a.2). apply v2l_inj; cbv; list_eq. Qed.
 
-  Lemma veq_exist_3 : forall (a : @vec A 3), exists a1 a2 a3 : A, a = l2v a1 [a1;a2;a3].
+  Lemma veq_exist_3 : forall (a : @vec tA 3), exists a1 a2 a3 : tA, a = l2v a1 [a1;a2;a3].
   Proof. intros. exists (a.1),(a.2),(a.3). apply v2l_inj; cbv; list_eq. Qed.
 
-  Lemma veq_exist_4 : forall (a : @vec A 4), exists a1 a2 a3 a4 : A, a = l2v a2 [a1;a2;a3;a4].
+  Lemma veq_exist_4 : forall (a : @vec tA 4), exists a1 a2 a3 a4 : tA, a = l2v a2 [a1;a2;a3;a4].
   Proof. intros. exists (a.1),(a.2),(a.3),(a.4). apply v2l_inj; cbv; list_eq. Qed.
   
 End veq_exist.
@@ -451,10 +451,10 @@ Ltac v2e1 a :=
   end.
 
 Section test.
-  Goal forall A (v : @vec A 3), v = v.
+  Goal forall tA (v : @vec tA 3), v = v.
   Proof. intros. v2e v. auto. Qed.
   
-  Goal forall A (v : @vec (@vec A 2) 3), v = v.
+  Goal forall tA (v : @vec (@vec tA 2) 3), v = v.
   Proof. intros. v2e v. auto. Qed.
 End test.
 
@@ -462,22 +462,22 @@ End test.
 (* ======================================================================= *)
 (** ** vector with specific size *)
 Section vec_specific.
-  Context {A} {Azero : A}.
-  Variable a1 a2 a3 a4 : A.
+  Context {tA} {Azero : tA}.
+  Variable a1 a2 a3 a4 : tA.
   
-  Definition mkvec0 : @vec A 0 := fun _ => Azero. (* anything is ok *)
-  Definition mkvec1 : @vec A 1 := l2v Azero [a1].
-  Definition mkvec2 : @vec A 2 := l2v Azero [a1;a2].
-  Definition mkvec3 : @vec A 3 := l2v Azero [a1;a2;a3].
-  Definition mkvec4 : @vec A 4 := l2v Azero [a1;a2;a3;a4].
+  Definition mkvec0 : @vec tA 0 := fun _ => Azero. (* anything is ok *)
+  Definition mkvec1 : @vec tA 1 := l2v Azero [a1].
+  Definition mkvec2 : @vec tA 2 := l2v Azero [a1;a2].
+  Definition mkvec3 : @vec tA 3 := l2v Azero [a1;a2;a3].
+  Definition mkvec4 : @vec tA 4 := l2v Azero [a1;a2;a3;a4].
 End vec_specific.
 
 (* ======================================================================= *)
 (** ** Vector by mapping one vector *)
 Section vmap.
-  Context {A B : Type} (f : A -> B).
+  Context {tA tB : Type} (f : tA -> tB).
   
-  Definition vmap {n} (a : @vec A n) : @vec B n := fun i => f (a i).
+  Definition vmap {n} (a : @vec tA n) : @vec tB n := fun i => f (a i).
 
   (** (vmap f a).i = f (a.i) *)
   Lemma vnth_vmap : forall {n} (a : vec n) i, (vmap a).[i] = f (a.[i]).
@@ -488,9 +488,9 @@ End vmap.
 (* ======================================================================= *)
 (** ** Vector by mapping two vectors *)
 Section vmap2.
-  Context {A B C : Type} (f : A -> B -> C).
+  Context {tA tB tC : Type} (f : tA -> tB -> tC).
   
-  Definition vmap2 {n} (a : @vec A n) (b : @vec B n) : @vec C n :=
+  Definition vmap2 {n} (a : @vec tA n) (b : @vec tB n) : @vec tC n :=
     fun i => f a.[i] b.[i].
 
   (** (vmap2 f a b).i = f (a.i) (b.i) *)
@@ -522,13 +522,13 @@ End vmap2_sametype.
 (* ======================================================================= *)
 (** ** Vector with only one element is 1 *)
 Section veye.
-  Context {A} (Azero Aone : A).
+  Context {tA} (Azero Aone : tA).
   Notation "0" := Azero : A_scope.
   Notation "1" := Aone : A_scope.
   Notation vzero := (vzero 0).
   Context {one_neq_zero : 1 <> 0}.
 
-  Definition veye {n} (i : 'I_n) : @vec A n :=
+  Definition veye {n} (i : 'I_n) : @vec tA n :=
     fun j => if i ??= j then 1 else 0.
   
   (** (veye i).i = 1 *)
@@ -551,13 +551,13 @@ End veye.
 (* ======================================================================= *)
 (** ** natural basis, 自然基（最常见的一种标准正交基) *)
 Section veyes.
-  Context {A} (Azero Aone : A).
+  Context {tA} (Azero Aone : tA).
   Notation "0" := Azero : A_scope.
   Notation "1" := Aone : A_scope.
   Notation vzero := (vzero 0).
   Context {one_neq_zero : 1 <> 0}.
 
-  Definition veyes (n : nat) : @vec (@vec A n) n := fun i => veye Azero Aone i.
+  Definition veyes (n : nat) : @vec (@vec tA n) n := fun i => veye Azero Aone i.
 
   (** veyes.ii = 1 *)
   Lemma vnth_veyes_eq : forall {n} i, (veyes n).[i].[i] = 1.
@@ -577,48 +577,48 @@ End veyes.
 (** ** Get head or tail element *)
 
 Section vhead_vtail.
-  Context {A} {Azero : A}.
+  Context {tA} {Azero : tA}.
 
   (** Get head element *)
-  Definition vhead {n} (a : @vec A (S n)) : A := a.[fin0].
+  Definition vhead {n} (a : @vec tA (S n)) : tA := a.[fin0].
 
   (** vhead a is = a.0 *)
-  Lemma vhead_spec : forall {n} (a : @vec A (S n)), vhead a = (v2f Azero a) 0.
+  Lemma vhead_spec : forall {n} (a : @vec tA (S n)), vhead a = (v2f Azero a) 0.
   Proof.
     intros. unfold vhead. erewrite nth_v2f. f_equal.
     apply fin_eq_iff; auto. Unshelve. lia.
   Qed.
 
   (** vhead a = a $ 0 *)
-  Lemma vhead_eq : forall {n} (a : @vec A (S n)), vhead a = a.[fin0].
+  Lemma vhead_eq : forall {n} (a : @vec tA (S n)), vhead a = a.[fin0].
   Proof. auto. Qed.
 
   (** Get tail element *)
-  Definition vtail {n} (a : @vec A (S n)) : A := a.[#n].
+  Definition vtail {n} (a : @vec tA (S n)) : tA := a.[#n].
 
   (** vtail a = a.(n - 1) *)
-  Lemma vtail_spec : forall {n} (a : @vec A (S n)), vtail a = (v2f Azero a) n.
+  Lemma vtail_spec : forall {n} (a : @vec tA (S n)), vtail a = (v2f Azero a) n.
   Proof.
     intros. unfold vtail. erewrite nth_v2f. erewrite nat2finS_eq. f_equal.
     Unshelve. lia.
   Qed.
 
   (** vtail a = a $ (n - 1) *)
-  Lemma vtail_eq : forall {n} (a : @vec A (S n)), vtail a = a.[#n].
+  Lemma vtail_eq : forall {n} (a : @vec tA (S n)), vtail a = a.[#n].
   Proof. auto. Qed.
 End vhead_vtail.
 
 (* ======================================================================= *)
 (** ** Get head or tail elements *)
 Section vheadN_vtailN.
-  Context {A} {Azero : A}.
+  Context {tA} {Azero : tA}.
 
   (** Get head elements *)
-  Definition vheadN {m n} (a : @vec A (m + n)) : @vec A m :=
+  Definition vheadN {m n} (a : @vec tA (m + n)) : @vec tA m :=
     fun i => a.[fin2AddRangeR i].
 
   (** i < m -> (vheadN a).i = (v2f a).i *)
-  Lemma vheadN_spec : forall {m n} (a : @vec A (m + n)) i,
+  Lemma vheadN_spec : forall {m n} (a : @vec tA (m + n)) i,
       i < m -> v2f Azero (vheadN a) i = (v2f Azero a) i.
   Proof.
     intros. unfold vheadN. erewrite !nth_v2f. f_equal.
@@ -626,16 +626,16 @@ Section vheadN_vtailN.
   Qed.
 
   (** (vheadN a).i = a.i *)
-  Lemma vnth_vheadN : forall {m n} (a : @vec A (m + n)) i,
+  Lemma vnth_vheadN : forall {m n} (a : @vec tA (m + n)) i,
       (vheadN a).[i] = a.[fin2AddRangeR i].
   Proof. auto. Qed.
 
   (** Get tail elements *)
-  Definition vtailN {m n} (a : @vec A (m + n)) : @vec A n :=
+  Definition vtailN {m n} (a : @vec tA (m + n)) : @vec tA n :=
     fun i => a.[fin2AddRangeAddL i].
 
   (** i < n -> (vtailN a).i = (v2f a).(m + i) *)
-  Lemma vtailN_spec : forall {m n} (a : @vec A (m + n)) i,
+  Lemma vtailN_spec : forall {m n} (a : @vec tA (m + n)) i,
       i < n -> v2f Azero (vtailN a) i = (v2f Azero a) (m + i).
   Proof.
     intros. unfold vtailN. erewrite !nth_v2f. f_equal.
@@ -643,7 +643,7 @@ Section vheadN_vtailN.
   Qed.
 
   (** (vtailN a).i = a.(n + i) *)
-  Lemma vnth_vtailN : forall {m n} (a : @vec A (m + n)) i,
+  Lemma vnth_vtailN : forall {m n} (a : @vec tA (m + n)) i,
       (vtailN a).[i] = a.[fin2AddRangeAddL i].
   Proof. auto. Qed.
 End vheadN_vtailN.
@@ -651,7 +651,7 @@ End vheadN_vtailN.
 (* ======================================================================= *)
 (** ** Get slice of a vector *)
 Section vslice.
-  Context {A} {Azero : A}.
+  Context {tA} {Azero : tA}.
 
   (** {i<n}, {j<n}, {k:=S j-i} -> {i+k < n} *)
   Definition vslice_idx {n} (i j : 'I_n) (k : 'I_(S j - i)) : 'I_n.
@@ -664,10 +664,10 @@ Section vslice.
   (** Get a slice from vector `v` which contain elements from v$i to v$j.
       1. Include the i-th and j-th element
       2. If i > i, then the result is `vec 0` *)
-  Definition vslice {n} (a : @vec A n) (i j : 'I_n) : @vec A (S j - i) :=
+  Definition vslice {n} (a : @vec tA n) (i j : 'I_n) : @vec tA (S j - i) :=
     fun k => a.[vslice_idx i j k].
 
-  Lemma vnth_vslice : forall {n} (a : @vec A n) (i j : 'I_n) k,
+  Lemma vnth_vslice : forall {n} (a : @vec tA n) (i j : 'I_n) k,
       (vslice a i j).[k] = a.[vslice_idx i j k].
   Proof. intros. auto. Qed.
 End vslice.
@@ -685,19 +685,19 @@ End test.
 (* ======================================================================= *)
 (** ** Set element of a vector *)
 Section vset.
-  Context {A} {Azero : A}.
+  Context {tA} {Azero : tA}.
 
   (** Set i-th element vector `a` with `x` *)
-  Definition vset {n} (a : @vec A n) (i : 'I_n) (x : A) : @vec A n :=
+  Definition vset {n} (a : @vec tA n) (i : 'I_n) (x : tA) : @vec tA n :=
     fun j => if j ??= i then x else a.[j].
 
   (** (vset a i x).i = x *)
-  Lemma vnth_vset_eq : forall {n} (a : @vec A n) (i : 'I_n) (x : A),
+  Lemma vnth_vset_eq : forall {n} (a : @vec tA n) (i : 'I_n) (x : tA),
       (vset a i x).[i] = x.
   Proof. intros. unfold vset. fin. Qed.
   
   (** (vset a i x).j = a.[j] *)
-  Lemma vnth_vset_neq : forall {n} (a : @vec A n) (i j : 'I_n) (x : A),
+  Lemma vnth_vset_neq : forall {n} (a : @vec tA n) (i j : 'I_n) (x : tA),
       i <> j -> (vset a i x).[j] = a.[j].
   Proof. intros. unfold vset. fin. Qed.
   
@@ -706,27 +706,27 @@ End vset.
 (* ======================================================================= *)
 (** ** Swap two elements of a vector *)
 Section vswap.
-  Context {A : Type}.
+  Context {tA : Type}.
   
   (* Swap the i-th and j-th element of vector `a` *)
-  Definition vswap {n} (a : @vec A n) (i j : 'I_n) : @vec A n :=
+  Definition vswap {n} (a : @vec tA n) (i j : 'I_n) : @vec tA n :=
     fun k => if k ??= i
            then a.[j]
            else (if k ??= j then a.[i] else a.[k]).
 
-  Lemma vnth_vswap_i : forall {n} (a : @vec A n) (i j : 'I_n),
+  Lemma vnth_vswap_i : forall {n} (a : @vec tA n) (i j : 'I_n),
       (vswap a i j).[i] = a.[j].
   Proof. intros. unfold vswap. fin. Qed.
 
-  Lemma vnth_vswap_j : forall {n} (a : @vec A n) (i j : 'I_n),
+  Lemma vnth_vswap_j : forall {n} (a : @vec tA n) (i j : 'I_n),
       (vswap a i j).[j] = a.[i].
   Proof. intros. unfold vswap. fin. Qed.
 
-  Lemma vnth_vswap_other : forall {n} (a : @vec A n) (i j k : 'I_n),
+  Lemma vnth_vswap_other : forall {n} (a : @vec tA n) (i j k : 'I_n),
       i <> k -> j <> k -> (vswap a i j).[k] = a.[k].
   Proof. intros. unfold vswap. fin. Qed.
 
-  Lemma vswap_vswap : forall {n} (a : @vec A n) (i j : 'I_n),
+  Lemma vswap_vswap : forall {n} (a : @vec tA n) (i j : 'I_n),
       vswap (vswap a i j) j i = a.
   Proof. intros. apply veq_iff_vnth; intros. unfold vswap. fin. Qed.
 
@@ -735,11 +735,11 @@ End vswap.
 (* ======================================================================= *)
 (** ** Insert element to a vector *)
 Section vinsert.
-  Context {A} {Azero : A}.
+  Context {tA} {Azero : tA}.
   Notation v2f := (v2f Azero).
   Notation vzero := (vzero Azero).
 
-  Definition vinsert {n} (a : @vec A n) (i : 'I_(S n)) (x : A) : @vec A (S n).
+  Definition vinsert {n} (a : @vec tA n) (i : 'I_(S n)) (x : tA) : @vec tA (S n).
     intros j. destruct (j ??< i) as [E|E].
     - refine (a.[fPredRange j _]).
       apply Nat.lt_le_trans with i; auto.
@@ -754,7 +754,7 @@ Section vinsert.
   Defined.
   
   (** Another definition, which have simpler logic, but need `Azero`. *)
-  Definition vinsert' {n} (v : @vec A n) (i : 'I_(S n)) (x : A) : @vec A (S n) :=
+  Definition vinsert' {n} (v : @vec tA n) (i : 'I_(S n)) (x : tA) : @vec tA (S n) :=
     f2v (fun j => if j ??< i
                 then (v2f v) j
                 else (if j ??= i
@@ -762,7 +762,7 @@ Section vinsert.
                       else (v2f v) (pred j))).
 
   (* These two definitions are equivalent *)
-  Lemma vinsert_eq_vinsert' : forall {n} (a : @vec A n) (i : 'I_(S n)) (x : A),
+  Lemma vinsert_eq_vinsert' : forall {n} (a : @vec tA n) (i : 'I_(S n)) (x : tA),
       vinsert a i x = vinsert' a i x.
   Proof.
     intros. apply veq_iff_vnth; intros j.
@@ -771,7 +771,7 @@ Section vinsert.
   Qed.
 
   (** j < i -> (v2f (vinsert a i x)) j = (v2f a) i *)
-  Lemma vinsert_spec_lt : forall {n} (a : @vec A n) (i : 'I_(S n)) (x : A) (j : nat),
+  Lemma vinsert_spec_lt : forall {n} (a : @vec tA n) (i : 'I_(S n)) (x : tA) (j : nat),
       j < i -> v2f (vinsert a i x) j = v2f a j.
   Proof.
     intros. rewrite vinsert_eq_vinsert'. pose proof (fin2nat_lt i).
@@ -779,7 +779,7 @@ Section vinsert.
   Qed.
 
   (** (v2f (vinsert a i x)) i = x *)
-  Lemma vinsert_spec_eq : forall {n} (a : @vec A n) (i : 'I_(S n)) (x : A),
+  Lemma vinsert_spec_eq : forall {n} (a : @vec tA n) (i : 'I_(S n)) (x : tA),
       v2f (vinsert a i x) i = x.
   Proof.
     intros. rewrite vinsert_eq_vinsert'.
@@ -787,7 +787,7 @@ Section vinsert.
   Qed.
   
   (** i < j -> 0 < j -> j < S n -> (v2f (vinsert a i x)) j = (v2f a) (pred i) *)
-  Lemma vinsert_spec_gt : forall {n} (a : @vec A n) (i : 'I_(S n)) (x : A) (j : nat),
+  Lemma vinsert_spec_gt : forall {n} (a : @vec tA n) (i : 'I_(S n)) (x : tA) (j : nat),
       i < j -> 0 < j -> j < S n -> v2f (vinsert a i x) j = v2f a (pred j).
   Proof.
     intros. rewrite vinsert_eq_vinsert'. pose proof (fin2nat_lt i).
@@ -796,7 +796,7 @@ Section vinsert.
   
   (** j < i -> (vinsert a i x).[j] = a.[j] *)
   Lemma vnth_vinsert_lt :
-    forall {n} (a : @vec A n) (i j : 'I_(S n)) x (H : j < i),
+    forall {n} (a : @vec tA n) (i j : 'I_(S n)) x (H : j < i),
       (vinsert a i x).[j] =
         a.[fPredRange j (nat_lt_ltS_lt _ _ _ H (fin2nat_lt _))].
   Proof.
@@ -806,7 +806,7 @@ Section vinsert.
   Qed.
 
   (** (vinsert a i x).[i] = a *)
-  Lemma vnth_vinsert_eq : forall {n} (a : @vec A n) (i : 'I_(S n)) x,
+  Lemma vnth_vinsert_eq : forall {n} (a : @vec tA n) (i : 'I_(S n)) x,
       (vinsert a i x).[i] = x.
   Proof.
     intros. pose proof (vinsert_spec_eq a i x).
@@ -815,7 +815,7 @@ Section vinsert.
 
   (** 0 < j -> (vinsert a i x).[j] = a.(pred j) *)
   Lemma vnth_vinsert_gt :
-    forall {n} (a : @vec A n) (i j : 'I_(S n)) x (H : 0 < j),
+    forall {n} (a : @vec tA n) (i j : 'I_(S n)) x (H : 0 < j),
       i < j -> (vinsert a i x).[j] = a.[fPredRangeP j H].
   Proof.
     intros.
@@ -833,7 +833,7 @@ Section vinsert.
   Qed.
 
   (** If insert x into vector a get vzero, then x is 0 *)
-  Lemma vinsert_eq0_imply_x0 {AeqDec : Dec (@eq A)} : forall {n} (a : @vec A n) i x,
+  Lemma vinsert_eq0_imply_x0 {AeqDec : Dec (@eq tA)} : forall {n} (a : @vec tA n) i x,
       vinsert a i x = vzero -> x = Azero.
   Proof.
     intros. rewrite veq_iff_vnth in *. specialize (H i).
@@ -842,7 +842,7 @@ Section vinsert.
   Qed.
 
   (** If insert x into vector _a_ get vzero, then _a_ is vzero *)
-  Lemma vinsert_eq0_imply_v0 {AeqDec : Dec (@eq A)} : forall {n} (a : @vec A n) i x,
+  Lemma vinsert_eq0_imply_v0 {AeqDec : Dec (@eq tA)} : forall {n} (a : @vec tA n) i x,
       vinsert a i x = vzero -> a = vzero.
   Proof.
     intros.
@@ -855,7 +855,7 @@ Section vinsert.
   Qed.
 
   (** Insert x into vector _a_ get vzero, iff _a_ is vzero and _x_ is 0 *)
-  Lemma vinsert_eq0_iff {AeqDec : Dec (@eq A)} : forall {n} (a : @vec A n) i x,
+  Lemma vinsert_eq0_iff {AeqDec : Dec (@eq tA)} : forall {n} (a : @vec tA n) i x,
       vinsert a i x = vzero <-> (a = vzero /\ x = Azero).
   Proof.
     simp.
@@ -865,7 +865,7 @@ Section vinsert.
   Qed.
 
   (** Insert x into vector _a_ is not vzero, iff _a_ is not vzero or _x_ is 0 *)
-  Lemma vinsert_neq0_iff {AeqDec : Dec (@eq A)} : forall {n} (a : @vec A n) i x,
+  Lemma vinsert_neq0_iff {AeqDec : Dec (@eq tA)} : forall {n} (a : @vec tA n) i x,
       vinsert a i x <> vzero <-> (a <> vzero \/ x <> Azero).
   Proof. intros. rewrite vinsert_eq0_iff. tauto. Qed.
 
@@ -881,21 +881,21 @@ End test.
 (* ======================================================================= *)
 (** ** Remove one element at given position *)
 Section vremove.
-  Context {A} {Azero : A}.
+  Context {tA} {Azero : tA}.
   Notation v2f := (v2f Azero).
 
   (** Removes i-th element from vector `a` *)
-  Definition vremove {n} (a : @vec A (S n)) (i : 'I_(S n)) : @vec A n :=
+  Definition vremove {n} (a : @vec tA (S n)) (i : 'I_(S n)) : @vec tA n :=
     fun j => if j ??< i
            then a (fSuccRange j)
            else a (fSuccRangeS j). 
 
   (* Another definition, which have simpler logic, but need `Azero`. *)
-  Definition vremove' {n} (a : @vec A (S n)) (i : 'I_(S n)) : @vec A n :=
+  Definition vremove' {n} (a : @vec tA (S n)) (i : 'I_(S n)) : @vec tA n :=
     f2v (fun j => if j ??< i then v2f a j else v2f a (S j)).
   
   (* These two definitions are equivalent *)
-  Lemma vremove_eq_vremove' : forall {n} (a : @vec A (S n)) (i : 'I_(S n)),
+  Lemma vremove_eq_vremove' : forall {n} (a : @vec tA (S n)) (i : 'I_(S n)),
       vremove a i = vremove' a i.
   Proof.
     intros. apply veq_iff_vnth; intros j.
@@ -906,7 +906,7 @@ Section vremove.
   Qed.
 
   (** j < i -> (vremove a i).j = v.j *)
-  Lemma vremove_spec_lt : forall {n} (a : @vec A (S n)) (i : 'I_(S n)) (j : nat),
+  Lemma vremove_spec_lt : forall {n} (a : @vec tA (S n)) (i : 'I_(S n)) (j : nat),
       j < i -> v2f (vremove a i) j = v2f a j.
   Proof.
     intros. rewrite vremove_eq_vremove'. unfold v2f,vremove',f2v.
@@ -914,7 +914,7 @@ Section vremove.
   Qed.
   
   (** i <= j -> j < n -> (vremove a i).j = v.(S j) *)
-  Lemma vremove_spec_ge : forall {n} (a : @vec A (S n)) (i : 'I_(S n)) (j : nat),
+  Lemma vremove_spec_ge : forall {n} (a : @vec tA (S n)) (i : 'I_(S n)) (j : nat),
       i <= j -> j < n -> v2f (vremove a i) j = v2f a (S j).
   Proof.
     intros. rewrite vremove_eq_vremove'. unfold vremove',f2v,v2f.
@@ -922,7 +922,7 @@ Section vremove.
   Qed.
 
   (** j < i -> (vremove a i).j = a.j *)
-  Lemma vnth_vremove_lt : forall {n} (a : @vec A (S n)) (i : 'I_(S n)) (j : 'I_n),
+  Lemma vnth_vremove_lt : forall {n} (a : @vec tA (S n)) (i : 'I_(S n)) (j : 'I_n),
       j < i -> (vremove a i).[j] = v2f a j.
   Proof.
     intros. rewrite vremove_eq_vremove'. unfold vremove',f2v,v2f.
@@ -930,7 +930,7 @@ Section vremove.
   Qed.
   
   (** i <= j -> j < n -> (vremove a i).j = a.(S j) *)
-  Lemma vnth_vremove_ge : forall {n} (a : @vec A (S n)) (i : 'I_(S n)) (j : 'I_n),
+  Lemma vnth_vremove_ge : forall {n} (a : @vec tA (S n)) (i : 'I_(S n)) (j : 'I_n),
       i <= j -> j < n -> (vremove a i).[j] = v2f a (S j).
   Proof.
     intros. rewrite vremove_eq_vremove'. unfold vremove',f2v,v2f.
@@ -938,7 +938,7 @@ Section vremove.
   Qed.
 
   (** vremove (vinsert a i x) i = a *)
-  Lemma vremove_vinsert : forall {n} (a : @vec A n) (i : 'I_(S n)) (x : A),
+  Lemma vremove_vinsert : forall {n} (a : @vec tA n) (i : 'I_(S n)) (x : tA),
       vremove (vinsert a i x) i = a.
   Proof.
     intros. rewrite vremove_eq_vremove', (vinsert_eq_vinsert' (Azero:=Azero)).
@@ -948,7 +948,7 @@ Section vremove.
   Qed.
   
   (** vinsert (vremove a i) (a.[i]) = a *)
-  Lemma vinsert_vremove : forall {n} (a : @vec A (S n)) (i : 'I_(S n)),
+  Lemma vinsert_vremove : forall {n} (a : @vec tA (S n)) (i : 'I_(S n)),
       vinsert (vremove a i) i (a.[i]) = a.
   Proof.
     intros. rewrite vremove_eq_vremove', (vinsert_eq_vinsert' (Azero:=Azero)).
@@ -960,12 +960,12 @@ Section vremove.
 End vremove.
 
 Section vmap_vinsert_vremove.
-  Context {A B C : Type} {Azero : A} {Bzero : B} {Czero : C}.
-  Context (f1 : A -> B).
-  Context (f2 : A -> B -> C).
+  Context {tA tB tC : Type} {Azero : tA} {Bzero : tB} {Czero : tC}.
+  Context (f1 : tA -> tB).
+  Context (f2 : tA -> tB -> tC).
 
   (** vmap f (vremove a i) = vremove (vmap f v) i *)
-  Lemma vmap_vremove : forall {n} (a : @vec A (S n)) i,
+  Lemma vmap_vremove : forall {n} (a : @vec tA (S n)) i,
       vmap f1 (vremove a i) = vremove (vmap f1 a) i.
   Proof.
     intros. apply veq_iff_vnth; intros j. rewrite vnth_vmap.
@@ -981,7 +981,7 @@ Section vmap_vinsert_vremove.
   Qed.
 
   (** vmap2 f (vremove a i) (vremove b i) = vremove (vmap2 a b) i *)
-  Lemma vmap2_vremove_vremove : forall {n} (a : @vec A (S n)) (b : @vec B (S n)) i,
+  Lemma vmap2_vremove_vremove : forall {n} (a : @vec tA (S n)) (b : @vec tB (S n)) i,
       vmap2 f2 (vremove a i) (vremove b i) = vremove (vmap2 f2 a b) i.
   Proof.
     intros. apply veq_iff_vnth; intros j. rewrite vnth_vmap2.
@@ -999,7 +999,7 @@ Section vmap_vinsert_vremove.
   Qed.
 
   (** vmap2 (vinsert a i x) b = vinsert (vmap2 a (vremove b i)) i (f x b.i) *)
-  Lemma vmap2_vinsert_l : forall {n} (a : @vec A n) (b : @vec B (S n)) i (x : A),
+  Lemma vmap2_vinsert_l : forall {n} (a : @vec tA n) (b : @vec tB (S n)) i (x : tA),
       vmap2 f2 (vinsert a i x) b =
         vinsert (vmap2 f2 a (vremove b i)) i (f2 x (b.[i])).
   Proof.
@@ -1027,7 +1027,7 @@ Section vmap_vinsert_vremove.
   Qed.
   
   (** vmap2 a (vinsert b i x) = vinsert (vmap2 (vremove a i) b) i (f a.i x) *)
-  Lemma vmap2_vinsert_r : forall {n} (a : @vec A (S n)) (b : @vec B n) i (x : B),
+  Lemma vmap2_vinsert_r : forall {n} (a : @vec tA (S n)) (b : @vec tB n) i (x : tB),
       vmap2 f2 a (vinsert b i x) =
         vinsert (vmap2 f2 (vremove a i) b) i (f2 (a.[i]) x).
   Proof.
@@ -1060,30 +1060,30 @@ End vmap_vinsert_vremove.
 (* ======================================================================= *)
 (** ** Remove element at head or tail *)
 Section vremoveH_vremoveT.
-  Context {A} {Azero : A}.
+  Context {tA} {Azero : tA}.
   Notation v2f := (v2f Azero).
   Notation vzero := (vzero Azero).
 
   (** *** vremoveH *)
   
   (** Remove head element *)
-  Definition vremoveH {n} (a : @vec A (S n)) : @vec A n :=
+  Definition vremoveH {n} (a : @vec tA (S n)) : @vec tA n :=
     fun i => a.[fSuccRangeS i].
 
   (** i < n -> (vremoveH a).i = v.(S i) *)
-  Lemma vremoveH_spec : forall {n} (a : @vec A (S n)) (i : nat),
+  Lemma vremoveH_spec : forall {n} (a : @vec tA (S n)) (i : nat),
       i < n -> v2f (vremoveH a) i = v2f a (S i).
   Proof.
     intros. unfold vremoveH,v2f. fin.
   Qed.
   
   (** (vremoveH a).i = a.(S i) *)
-  Lemma vnth_vremoveH : forall {n} (a : @vec A (S n)) (i : 'I_n),
+  Lemma vnth_vremoveH : forall {n} (a : @vec tA (S n)) (i : 'I_n),
       (vremoveH a).[i] = a.[fSuccRangeS i].
   Proof. intros. unfold vremoveH. auto. Qed.
   
   (** a <> 0 -> vhead a = 0 -> vremoveH a <> 0 *)
-  Lemma vremoveH_neq0_if : forall {n} (a : @vec A (S n)),
+  Lemma vremoveH_neq0_if : forall {n} (a : @vec tA (S n)),
       a <> vzero -> vhead a = Azero -> vremoveH a <> vzero.
   Proof.
     intros. intro. destruct H. apply veq_iff_vnth; intros.
@@ -1097,7 +1097,7 @@ Section vremoveH_vremoveT.
   Qed.
 
   (** vremoveH also hold, if hold for all elements *)
-  Lemma vremoveH_hold : forall {n} (a : @vec A (S n)) (P : A -> Prop),
+  Lemma vremoveH_hold : forall {n} (a : @vec tA (S n)) (P : tA -> Prop),
       (forall i, P (a.[i])) -> (forall i, P ((vremoveH a).[i])).
   Proof. intros. unfold vremoveH. auto. Qed.
 
@@ -1105,11 +1105,11 @@ Section vremoveH_vremoveT.
   (** *** vremoveT *)
 
   (** Remove tail element *)
-  Definition vremoveT {n} (a : @vec A (S n)) : @vec A n :=
+  Definition vremoveT {n} (a : @vec tA (S n)) : @vec tA n :=
     fun i => a.[fSuccRange i].
 
   (** i < n -> (vremoveT a).i = a.i *)
-  Lemma vremoveT_spec : forall {n} (a : @vec A (S n)) (i : nat),
+  Lemma vremoveT_spec : forall {n} (a : @vec tA (S n)) (i : nat),
       i < n -> v2f (vremoveT a) i = v2f a i.
   Proof.
     intros. unfold vremoveT,v2f. fin.
@@ -1118,12 +1118,12 @@ Section vremoveH_vremoveT.
   Qed.
   
   (** (vremoveT a).i = a.i *)
-  Lemma vnth_vremoveT : forall {n} (a : @vec A (S n)) (i : 'I_n),
+  Lemma vnth_vremoveT : forall {n} (a : @vec tA (S n)) (i : 'I_n),
       (vremoveT a).[i] = a.[fSuccRange i].
   Proof. intros. unfold vremoveT. auto. Qed.
   
   (** v <> 0 -> vtail v = 0 -> vremoveT v <> 0 *)
-  Lemma vremoveT_neq0_if : forall {n} (a : @vec A (S n)),
+  Lemma vremoveT_neq0_if : forall {n} (a : @vec tA (S n)),
       a <> vzero -> vtail a = Azero -> vremoveT a <> vzero.
   Proof.
     intros. intro. destruct H. apply veq_iff_vnth; intros.
@@ -1139,7 +1139,7 @@ Section vremoveH_vremoveT.
   Qed.
 
   (** vremoveT also hold, if hold for all elements *)
-  Lemma vremoveT_hold : forall {n} (a : @vec A (S n)) (P : A -> Prop),
+  Lemma vremoveT_hold : forall {n} (a : @vec tA (S n)) (P : tA -> Prop),
       (forall i, P (a.[i])) -> (forall i, P ((vremoveT a).[i])).
   Proof. intros. unfold vremoveT. auto. Qed.
 
@@ -1148,18 +1148,18 @@ End vremoveH_vremoveT.
 (* ======================================================================= *)
 (** ** Remove elements at head or tail *)
 Section vremoveHN_vremoveTN.
-  Context {A} {Azero : A}.
+  Context {tA} {Azero : tA}.
   Notation v2f := (v2f Azero).
   Notation vzero := (vzero Azero).
 
   (** *** vremoveHN *)
   
   (** Remove head elements *)
-  Definition vremoveHN {m n} (a : @vec A (m + n)) : @vec A n :=
+  Definition vremoveHN {m n} (a : @vec tA (m + n)) : @vec tA n :=
     fun i => a.[fin2AddRangeAddL i].
 
   (** i < n -> (vremoveHN a).i = a.(m + i) *)
-  Lemma vremoveHN_spec : forall {m n} (a : @vec A (m + n)) (i : nat),
+  Lemma vremoveHN_spec : forall {m n} (a : @vec tA (m + n)) (i : nat),
       i < n -> v2f (vremoveHN a) i = v2f a (m + i).
   Proof.
     intros. unfold vremoveHN. erewrite !nth_v2f. f_equal.
@@ -1168,12 +1168,12 @@ Section vremoveHN_vremoveTN.
   Qed.
   
   (** (vremoveHN a).i = a.(m + i) *)
-  Lemma vnth_vremoveHN : forall {m n} (a : @vec A (m + n)) (i : 'I_n),
+  Lemma vnth_vremoveHN : forall {m n} (a : @vec tA (m + n)) (i : 'I_n),
       (vremoveHN a).[i] = a.[fin2AddRangeAddL i].
   Proof. auto. Qed.
   
   (** a <> 0 -> vheadN v = 0 -> vremoveHN a <> 0 *)
-  Lemma vremoveHN_neq0_if : forall {m n} (a : @vec A (m + n)),
+  Lemma vremoveHN_neq0_if : forall {m n} (a : @vec tA (m + n)),
       a <> vzero -> vheadN a = vzero -> vremoveHN a <> vzero.
   Proof.
     intros. intro.
@@ -1192,23 +1192,23 @@ Section vremoveHN_vremoveTN.
   (** *** vremoveTN *)
 
   (** Remove tail elements *)
-  Definition vremoveTN {m n} (a : @vec A (m + n)) : @vec A m :=
+  Definition vremoveTN {m n} (a : @vec tA (m + n)) : @vec tA m :=
     fun i => a.[fin2AddRangeR i].
 
   (** i < n -> (vremoveTN a).i = a.i *)
-  Lemma vremoveTN_spec : forall {m n} (a : @vec A (m + n)) (i : nat),
+  Lemma vremoveTN_spec : forall {m n} (a : @vec tA (m + n)) (i : nat),
       i < m -> v2f (vremoveTN a) i = v2f a i.
   Proof.
     intros. unfold vremoveTN,v2f. fin.
   Qed.
   
   (** (vremoveTN a).i = a.i *)
-  Lemma vnth_vremoveTN : forall {m n} (a : @vec A (m + n)) (i : 'I_m),
+  Lemma vnth_vremoveTN : forall {m n} (a : @vec tA (m + n)) (i : 'I_m),
       (vremoveTN a).[i] = a.[fin2AddRangeR i].
   Proof. intros. auto. Qed.
   
   (** a <> 0 -> vtailN v = 0 -> vremoveTN a <> 0 *)
-  Lemma vremoveTN_neq0_if : forall {m n} (a : @vec A (m + n)),
+  Lemma vremoveTN_neq0_if : forall {m n} (a : @vec tA (m + n)),
       a <> vzero -> vtailN a = vzero -> vremoveTN a <> vzero.
   Proof.
     intros. intro.
@@ -1228,47 +1228,47 @@ End vremoveHN_vremoveTN.
 (* ======================================================================= *)
 (** ** Construct vector with a vector an an element at the head or tail *)
 Section vconsH_vconsT.
-  Context {A} {Azero : A}.
+  Context {tA} {Azero : tA}.
   Notation v2f := (v2f Azero).
   Notation vzero := (vzero Azero).
 
   (** *** vconsH *)
 
   (** cons at head: [x; a] *)
-  Definition vconsH {n} (x : A) (a : @vec A n) : @vec A (S n).
+  Definition vconsH {n} (x : tA) (a : @vec tA n) : @vec tA (S n).
     intros i. destruct (i ??= 0). exact x.
     assert (0 < i). apply neq_0_lt_stt; auto.
     apply (a.[fPredRangeP i H]).
   Defined.
 
   (** i = 0 -> (v2f [x; a]) i = a *)
-  Lemma vconsH_spec_0 : forall {n} x (a : @vec A n) (i : nat),
+  Lemma vconsH_spec_0 : forall {n} x (a : @vec tA n) (i : nat),
       i = 0 -> v2f (vconsH x a) i = x.
   Proof.
     intros. subst. unfold vconsH,v2f; simpl. auto.
   Qed.
 
   (** 0 < i -> i < n -> [x; a].i = a.(pred i) *)
-  Lemma vconsH_spec_gt0 : forall {n} x (a : @vec A n) (i : nat),
+  Lemma vconsH_spec_gt0 : forall {n} x (a : @vec tA n) (i : nat),
       0 < i -> i < n -> v2f (vconsH x a) i = v2f a (pred i).
   Proof.
     intros. unfold vconsH,v2f; simpl. fin.
   Qed.
 
   (** i = 0 -> [x; a].i = a *)
-  Lemma vnth_vconsH_0 : forall {n} x (a : @vec A n) i,
+  Lemma vnth_vconsH_0 : forall {n} x (a : @vec tA n) i,
       i = fin0 -> (vconsH x a).[i] = x.
   Proof. intros. subst. unfold vconsH. simpl. auto. Qed.
   
   (** 0 < i -> [x; a].i = a.(pred i)  *)
-  Lemma vnth_vconsH_gt0 : forall {n} x (a : @vec A n) (i : 'I_(S n)) (H: 0 < i),
+  Lemma vnth_vconsH_gt0 : forall {n} x (a : @vec tA n) (i : 'I_(S n)) (H: 0 < i),
       (vconsH x a).[i] = a.[fPredRangeP i H].
   Proof.
     intros. unfold vconsH. fin.
   Qed.
 
   (** [x; a] = 0 <-> x = 0 /\ v = 0 *)
-  Lemma vconsH_eq0_iff : forall {n} x (a : @vec A n),
+  Lemma vconsH_eq0_iff : forall {n} x (a : @vec tA n),
       vconsH x a = vzero <-> x = Azero /\ a = vzero.
   Proof.
     intros. rewrite !veq_iff_vnth. split; intros.
@@ -1284,12 +1284,12 @@ Section vconsH_vconsT.
   Qed.
   
   (** [x; a] <> 0 <-> x <> 0 \/ a <> 0 *)
-  Lemma vconsH_neq0_iff : forall {n} x (a : @vec A n),
+  Lemma vconsH_neq0_iff : forall {n} x (a : @vec tA n),
       vconsH x a <> vzero <-> x <> Azero \/ a <> vzero.
   Proof. intros. rewrite vconsH_eq0_iff. tauto. Qed.
 
   (** vconsH (vhead a) (vremoveH a) = a *)
-  Lemma vconsH_vhead_vremoveH : forall {n} (a : @vec A (S n)),
+  Lemma vconsH_vhead_vremoveH : forall {n} (a : @vec tA (S n)),
       vconsH (vhead a) (vremoveH a) = a.
   Proof.
     intros. apply veq_iff_vnth; intros. destruct (i ??= 0).
@@ -1302,7 +1302,7 @@ Section vconsH_vconsT.
   Qed.
 
   (** vremoveH (vconsH a x) = a *)
-  Lemma vremoveH_vconsH : forall {n} x (a : @vec A n), vremoveH (vconsH x a) = a.
+  Lemma vremoveH_vconsH : forall {n} x (a : @vec tA n), vremoveH (vconsH x a) = a.
   Proof.
     intros. apply veq_iff_vnth; intros i. rewrite vnth_vremoveH.
     erewrite vnth_vconsH_gt0. f_equal. apply fPredRangeP_fSuccRangeS.
@@ -1310,7 +1310,7 @@ Section vconsH_vconsT.
   Qed.
   
   (** vhead (vconsH a x) = x *)
-  Lemma vhead_vconsH : forall {n} (a : @vec A n) x, vhead (vconsH x a) = x.
+  Lemma vhead_vconsH : forall {n} (a : @vec tA n) x, vhead (vconsH x a) = x.
   Proof. intros. unfold vhead. rewrite vnth_vconsH_0; auto. Qed.
 
   (** [0; vzero] = vzero *)
@@ -1321,34 +1321,34 @@ Section vconsH_vconsT.
   (** *** vconsT *)
 
   (** cons at tail: [a; x] *)
-  Definition vconsT {n} (a : @vec A n) (x : A) : @vec A (S n).
+  Definition vconsT {n} (a : @vec tA n) (x : tA) : @vec tA (S n).
     intros i. destruct (i ??< n) as [E|E].
     - apply (a.[fPredRange i E]).
     - apply x.
   Defined.
   
   (** i = n -> (v2f [a; x]) i = a *)
-  Lemma vconsT_spec_n : forall {n} x (a : @vec A n) (i : nat),
+  Lemma vconsT_spec_n : forall {n} x (a : @vec tA n) (i : nat),
       i = n -> v2f (vconsT a x) i = x.
   Proof. intros. subst. unfold vconsT,v2f; simpl. fin. Qed.
 
   (** i < n -> (v2f [a; x]) i = a.(pred i) *)
-  Lemma vconsT_spec_lt : forall {n} x (a : @vec A n) (i : nat),
+  Lemma vconsT_spec_lt : forall {n} x (a : @vec tA n) (i : nat),
       i < n -> v2f (vconsT a x) i = v2f a i.
   Proof. intros. unfold vconsT,v2f; simpl. fin. Qed.
 
   (** i = n -> [a; x].i = a *)
-  Lemma vnth_vconsT_n : forall {n} x (a : @vec A n) (i : 'I_(S n)),
+  Lemma vnth_vconsT_n : forall {n} x (a : @vec tA n) (i : 'I_(S n)),
       fin2nat i = n -> (vconsT a x).[i] = x.
   Proof. intros. unfold vconsT. fin. Qed.
 
   (** i < n -> [a; x].i = a.(pred i) *)
-  Lemma vnth_vconsT_lt : forall {n} x (a : @vec A n) (i : 'I_(S n)) (H: i < n),
+  Lemma vnth_vconsT_lt : forall {n} x (a : @vec tA n) (i : 'I_(S n)) (H: i < n),
       (vconsT a x).[i] = a (fPredRange i H).
   Proof. intros. unfold vconsT. fin. Qed.
 
   (** [a; x] = 0 <-> a = 0 /\ x = 0*)
-  Lemma vconsT_eq0_iff : forall {n} (a : @vec A n) x,
+  Lemma vconsT_eq0_iff : forall {n} (a : @vec tA n) x,
       vconsT a x = vzero <-> a = vzero /\ x = Azero.
   Proof.
     intros. rewrite !veq_iff_vnth. split; intros.
@@ -1366,7 +1366,7 @@ Section vconsH_vconsT.
   Qed.
   
   (** [a; x] <> 0 <-> a <> 0 \/ x <> 0*)
-  Lemma vconsT_neq0_iff : forall {n} (a : @vec A n) x,
+  Lemma vconsT_neq0_iff : forall {n} (a : @vec tA n) x,
       vconsT a x <> vzero <-> a <> vzero \/ x <> Azero.
   Proof.
     intros. rewrite vconsT_eq0_iff. split; intros.
@@ -1374,7 +1374,7 @@ Section vconsH_vconsT.
   Qed.
 
   (** vconsT (vremoveT a) (vtail a) = a *)
-  Lemma vconsT_vremoveT_vtail : forall {n} (a : @vec A (S n)),
+  Lemma vconsT_vremoveT_vtail : forall {n} (a : @vec tA (S n)),
       vconsT (vremoveT a) (vtail a) = a.
   Proof.
     intros. apply veq_iff_vnth; intros. destruct (i ??= n).
@@ -1386,7 +1386,7 @@ Section vconsH_vconsT.
   Qed.
 
   (** vremoveT (vconsT a x) = a *)
-  Lemma vremoveT_vconsT : forall {n} (a : @vec A n) x, vremoveT (vconsT a x) = a.
+  Lemma vremoveT_vconsT : forall {n} (a : @vec tA n) x, vremoveT (vconsT a x) = a.
   Proof.
     intros. apply veq_iff_vnth; intros i. rewrite vnth_vremoveT.
     erewrite vnth_vconsT_lt. f_equal. apply fPredRange_fSuccRange.
@@ -1394,7 +1394,7 @@ Section vconsH_vconsT.
   Qed.
   
   (** vtail (vconsT a x) = x *)
-  Lemma vtail_vconsT : forall {n} (a : @vec A n) x, vtail (vconsT a x) = x.
+  Lemma vtail_vconsT : forall {n} (a : @vec tA n) x, vtail (vconsT a x) = x.
   Proof.
     intros. unfold vtail. rewrite vnth_vconsT_n; auto.
     rewrite fin2nat_nat2finS; auto.
@@ -1407,7 +1407,7 @@ Section vconsH_vconsT.
   Qed.
 
   (** vmap2 f (vconsT a x) (vconsT b y) = vconsT (vmap2 f a b) (f x y) *)
-  Lemma vmap2_vconsT_vconsT : forall {n} (a b : @vec A n) (x y : A) (f : A -> A -> A),
+  Lemma vmap2_vconsT_vconsT : forall {n} (a b : @vec tA n) (x y : tA) (f : tA -> tA -> tA),
       vmap2 f (vconsT a x) (vconsT b y) = vconsT (vmap2 f a b) (f x y).
   Proof.
     intros. apply veq_iff_vnth; intros. rewrite vnth_vmap2.
@@ -1419,8 +1419,8 @@ End vconsH_vconsT.
 (* ======================================================================= *)
 (** ** Construct vector by append two vectors *)
 Section vapp.
-  Context {A} {Azero : A}.
-  Notation vec := (@vec A).
+  Context {tA} {Azero : tA}.
+  Notation vec := (@vec tA).
   Notation vzero := (vzero Azero).
 
   (** Append two vectors, denoted with a ++ b *)
@@ -1497,12 +1497,12 @@ End vapp.
 Infix "++" := vapp : vec_scope.
 
 Section vapp_extra.
-  Context {A B C : Type}.
+  Context {tA tB tC : Type}.
 
   (* map2 (a++b) (c++d) = (map2 a c) ++ (map2 b d) *)
   Lemma vmap2_vapp_vapp :
-    forall {n m} (f : A -> B -> C)
-           (a : @vec A n) (b : @vec A m) (c : @vec B n) (d : @vec B m),
+    forall {n m} (f : tA -> tB -> tC)
+           (a : @vec tA n) (b : @vec tA m) (c : @vec tB n) (d : @vec tB m),
       vmap2 f (a ++ b) (c ++ d) = (vmap2 f a c) ++ (vmap2 f b d).
   Proof.
     intros. unfold vmap2. apply veq_iff_vnth. intros.
@@ -1521,38 +1521,38 @@ End vapp_extra.
 (* ======================================================================= *)
 (** ** All elements of the vector hold *)
 Section vforall.
-  Context {A : Type}.
+  Context {tA : Type}.
 
   (** Every element of `a` satisfy the `P` *)
-  Definition vforall {n} (a : @vec A n) (P : A -> Prop) : Prop := forall i, P (a.[i]).
+  Definition vforall {n} (a : @vec tA n) (P : tA -> Prop) : Prop := forall i, P (a.[i]).
 End vforall.
 
 (* ======================================================================= *)
 (** ** At least one element of the vector holds *)
 Section vexist.
-  Context {A : Type}.
+  Context {tA : Type}.
 
   (** There exist element of `v` satisfy the `P` *)
-  Definition vexist {n} (a : @vec A n) (P : A -> Prop) : Prop := exists i, P (a.[i]).
+  Definition vexist {n} (a : @vec tA n) (P : tA -> Prop) : Prop := exists i, P (a.[i]).
 End vexist.
 
 (* ======================================================================= *)
 (** ** An element belongs to the vector *)
 Section vmem.
-  Context {A : Type}.
+  Context {tA : Type}.
 
   (** Element `x` belongs to the vector `a` *)
-  Definition vmem {n} (a : @vec A n) (x : A) : Prop := vexist a (fun x0 => x0 = x).
+  Definition vmem {n} (a : @vec tA n) (x : tA) : Prop := vexist a (fun x0 => x0 = x).
 
-  Lemma vmem_vnth : forall {n} (a : @vec A n) (i : 'I_n), vmem a (a.[i]).
+  Lemma vmem_vnth : forall {n} (a : @vec tA n) (i : 'I_n), vmem a (a.[i]).
   Proof. intros. hnf. exists i; auto. Qed.
 
   (* If we have AeqDec *)
   Section AeqDec.
-    Context {AeqDec : Dec (@eq A)}.
+    Context {AeqDec : Dec (@eq tA)}.
     
     (** {x ∈ a} + {x ∉ a} *)
-    Lemma vmem_dec : forall {n} (a : @vec A n) (x : A), {vmem a x} + {~vmem a x}.
+    Lemma vmem_dec : forall {n} (a : @vec tA n) (x : tA), {vmem a x} + {~vmem a x}.
     Proof.
       intros. unfold vmem, vexist. induction n.
       - right. intro. destruct H. apply fin0_False; auto.
@@ -1579,16 +1579,16 @@ End vmem.
 (* ======================================================================= *)
 (** ** An vector belongs to another vector *)
 Section vmems.
-  Context {A : Type}.
+  Context {tA : Type}.
 
   (** Every element of vector `a` belongs to vector `b` *)
-  Definition vmems {r s} (a : @vec A r) (b : @vec A s) : Prop :=
+  Definition vmems {r s} (a : @vec tA r) (b : @vec tA s) : Prop :=
     vforall a (fun x => vmem b x).
 
-  Lemma vmems_refl : forall {n} (a : @vec A n), vmems a a.
+  Lemma vmems_refl : forall {n} (a : @vec tA n), vmems a a.
   Proof. intros. unfold vmems, vforall. apply vmem_vnth. Qed.
 
-  Lemma vmems_trans : forall {r s t} (a : @vec A r) (b : @vec A s) (c : @vec A t),
+  Lemma vmems_trans : forall {r s t} (a : @vec tA r) (b : @vec tA s) (c : @vec tA t),
       vmems a b -> vmems b c -> vmems a c.
   Proof.
     intros. unfold vmems, vforall in *. intros.
@@ -1597,10 +1597,10 @@ Section vmems.
 
   (* If we have AeqDec *)
   Section AeqDec.
-    Context {AeqDec : Dec (@eq A)}.
+    Context {AeqDec : Dec (@eq tA)}.
 
     (** {a ⊆ b} + {~(a ⊆ b)} *)
-    Lemma vmems_dec : forall {r s} (a : @vec A r) (b : @vec A s),
+    Lemma vmems_dec : forall {r s} (a : @vec tA r) (b : @vec tA s),
         {vmems a b} + {~vmems a b}.
     Proof.
       intros. unfold vmems, vforall. induction r.
@@ -1628,19 +1628,19 @@ End vmems.
 (* ======================================================================= *)
 (** ** Two vectors are equivalent (i.e., contain each other) *)
 Section vequiv.
-  Context {A : Type}.
+  Context {tA : Type}.
 
   (** Two vectors are equivalent (i.e., contain each other) *)
-  Definition vequiv {r s} (a : @vec A r) (b : @vec A s) : Prop :=
+  Definition vequiv {r s} (a : @vec tA r) (b : @vec tA s) : Prop :=
     vmems a b /\ vmems b a.
 
-  Lemma vequiv_refl : forall {n} (a : @vec A n), vequiv a a.
+  Lemma vequiv_refl : forall {n} (a : @vec tA n), vequiv a a.
   Proof. intros. unfold vequiv. split; apply vmems_refl. Qed.
   
-  Lemma vequiv_syms : forall {r s} (a : @vec A r) (b : @vec A s), vequiv a b -> vequiv b a.
+  Lemma vequiv_syms : forall {r s} (a : @vec tA r) (b : @vec tA s), vequiv a b -> vequiv b a.
   Proof. intros. unfold vequiv in *. tauto. Qed.
   
-  Lemma vequiv_trans : forall {r s t} (a : @vec A r) (b : @vec A s) (c : @vec A t),
+  Lemma vequiv_trans : forall {r s t} (a : @vec tA r) (b : @vec tA s) (c : @vec tA t),
       vequiv a b -> vequiv b c -> vequiv a c.
   Proof.
     intros. unfold vequiv in *. destruct H as [H1 H2], H0 as [H3 H4]. split.
@@ -1650,10 +1650,10 @@ Section vequiv.
 
   (* If we have AeqDec *)
   Section AeqDec.
-    Context {AeqDec : Dec (@eq A)}.
+    Context {AeqDec : Dec (@eq tA)}.
 
     (** {a ∼ b} + {~(a ∼ b)} *)
-    Lemma vequiv_dec : forall {r s} (a : @vec A r) (b : @vec A s),
+    Lemma vequiv_dec : forall {r s} (a : @vec tA r) (b : @vec tA s),
         {vequiv a b} + {~ vequiv a b}.
     Proof.
       intros. unfold vequiv. destruct (vmems_dec a b), (vmems_dec b a); try tauto.
@@ -1682,10 +1682,10 @@ End test.
 (* (* ======================================================================= *) *)
 (* (** ** An vector belongs to one but not belong to another *) *)
 (* Section vdiff. *)
-(*   Context {A : Type}. *)
+(*   Context {tA : Type}. *)
 
 (*   (** Elements belong to vector `u` but not belongs to vector `v` *) *)
-(*   Definition vdiff {r s} (a : @vec A r) (b : @vec A s) : Prop. *)
+(*   Definition vdiff {r s} (a : @vec tA r) (b : @vec tA s) : Prop. *)
 (*     Check fun i => vmem  *)
 (*     vforall a (fun x => vmem b x). *)
 
@@ -1698,19 +1698,19 @@ End test.
 (* ======================================================================= *)
 (** ** Folding of a vector *)
 Section vfold.
-  Context {A B : Type} {Azero : A} {Bzero : B}. 
+  Context {tA tB : Type} {Azero : tA} {Bzero : tB}. 
 
   (** ((x + a.1) + a.2) + ... *)
-  Definition vfoldl {n} (a : @vec A n) (x : B) (f : B -> A -> B) : B :=
+  Definition vfoldl {n} (a : @vec tA n) (x : tB) (f : tB -> tA -> tB) : tB :=
     seqfoldl (v2f Azero a) n x f.
   
   (** ... + (v.(n-1) + (v.n + x)) *)
-  Definition vfoldr {n} (a : @vec A n) (x : B) (f : A -> B -> B) : B :=
+  Definition vfoldr {n} (a : @vec tA n) (x : tB) (f : tA -> tB -> tB) : tB :=
     seqfoldr (v2f Azero a) n x f.
 
   (** Convert `vfoldl` to `seqfoldl` *)
   Lemma vfoldl_eq_seqfoldl :
-    forall {n} (a : @vec A n) (x : B) (f : B -> A -> B) (s : nat -> A),
+    forall {n} (a : @vec tA n) (x : tB) (f : tB -> tA -> tB) (s : nat -> tA),
       (forall i, a.[i] = s (i)) -> vfoldl a x f = seqfoldl s n x f.
   Proof.
     intros. unfold vfoldl. apply seqfoldl_eq; auto.
@@ -1733,25 +1733,25 @@ Section vsum.
   Notation seqsum := (@seqsum _ Aadd 0).
 
   (** ∑a = a.0 + a.1 + ... + a.(n-1) *)
-  Definition vsum {n} (a : @vec A n) := seqsum n (v2f 0 a).
+  Definition vsum {n} (a : @vec tA n) := seqsum n (v2f 0 a).
   Notation "\sum a" := (vsum a) : vec_scope.
 
   (** (∀ i, a.i = b.i) -> Σa = Σb *)
-  Lemma vsum_eq : forall {n} (a b : @vec A n), (forall i, a.[i] = b.[i]) -> \sum a = \sum b.
+  Lemma vsum_eq : forall {n} (a b : @vec tA n), (forall i, a.[i] = b.[i]) -> \sum a = \sum b.
   Proof.
     intros. unfold vsum. apply seqsum_eq; intros.
     rewrite !nth_v2f with (H:=H0). apply H.
   Qed.
 
   (** (∀ i, a.i = 0) -> Σa = 0 *)
-  Lemma vsum_eq0 : forall {n} (a : @vec A n), (forall i, a.[i] = 0) -> \sum a = 0.
+  Lemma vsum_eq0 : forall {n} (a : @vec tA n), (forall i, a.[i] = 0) -> \sum a = 0.
   Proof.
     intros. unfold vsum. apply seqsum_eq0; intros.
     rewrite !nth_v2f with (H:=H0). apply H.
   Qed.
   
   (** `vsum` of (S n) elements, equal to addition of Sum and tail *)
-  Lemma vsumS_tail : forall {n} (a : @vec A (S n)),
+  Lemma vsumS_tail : forall {n} (a : @vec tA (S n)),
       \sum a = \sum (fun i => a.[fSuccRange i]) + a.[nat2finS n].
   Proof.
     intros. unfold vsum. rewrite seqsumS_tail. f_equal.
@@ -1762,7 +1762,7 @@ Section vsum.
   Qed.
 
   (** `vsum` of (S n) elements, equal to addition of head and Sum *)
-  Lemma vsumS_head : forall {n} (a : @vec A (S n)),
+  Lemma vsumS_head : forall {n} (a : @vec tA (S n)),
       \sum a = a.[nat2finS 0] + \sum (fun i => a.[fSuccRangeS i]).
   Proof.
     intros. unfold vsum. rewrite seqsumS_head; auto. f_equal.
@@ -1772,7 +1772,7 @@ Section vsum.
   Qed.
 
   (** Σa + Σb = Σ(fun i => a.[i] + b.[i]) *)
-  Lemma vsum_add : forall {n} (a b : @vec A n),
+  Lemma vsum_add : forall {n} (a b : @vec tA n),
       \sum a + \sum b = \sum (fun i => a.[i] + b.[i]).
   Proof.
     intros. unfold vsum. rewrite seqsum_add. apply seqsum_eq; intros.
@@ -1780,7 +1780,7 @@ Section vsum.
   Qed.
   
   (** `vsum` which only one item is nonzero, then got this item. *)
-  Lemma vsum_unique : forall {n} (a : @vec A n) (x : A) i,
+  Lemma vsum_unique : forall {n} (a : @vec tA n) (x : tA) i,
       a.[i] = x -> (forall j, i <> j -> a.[j] = Azero) -> \sum a = x.
   Proof.
     intros. unfold vsum. apply seqsum_unique with (i:=i); auto; fin.
@@ -1792,7 +1792,7 @@ Section vsum.
 
   (** `vsum` of the m+n elements equal to plus of two parts.
       Σ[0,(m+n)] a = Σ[0,m](fun i=>a[i]) + Σ[m,m+n] (fun i=>a[m+i]) *)
-  Lemma vsum_plusIdx : forall m n (a : @vec A (m + n)),
+  Lemma vsum_plusIdx : forall m n (a : @vec tA (m + n)),
       \sum a = \sum (fun i => a.[fin2AddRangeR i]) +
                  \sum (fun i => a.[fin2AddRangeAddL i]).
   Proof.
@@ -1806,7 +1806,7 @@ Section vsum.
       (i < m -> a.i = b.i) ->
       (i < n -> a.(m+i) = c.i) ->
       Σ[0,(m+n)] a = Σ[0,m] b + Σ[m,m+n] c. *)
-  Lemma vsum_plusIdx_ext : forall m n (a : @vec A (m + n)) (b : @vec A m) (c : @vec A n),
+  Lemma vsum_plusIdx_ext : forall m n (a : @vec tA (m + n)) (b : @vec tA m) (c : @vec tA n),
       (forall i : 'I_m, a.[fin2AddRangeR i] = b.[i]) ->
       (forall i : 'I_n, a.[fin2AddRangeAddL i] = c.[i]) ->
       \sum a = \sum b + \sum c.
@@ -1826,7 +1826,7 @@ Section vsum.
       ...
       ar0 + ar1 + ... + arc = 
       ∑[j,0,c](∑[i,0,r] a.ij) *)
-  Lemma vsum_vsum : forall r c (a : @vec (@vec A c) r),
+  Lemma vsum_vsum : forall r c (a : @vec (@vec tA c) r),
       \sum (fun i => \sum (fun j => a.[i].[j])) =
         \sum (fun j => \sum (fun i => a.[i].[j])).
   Proof.
@@ -1850,7 +1850,7 @@ Section vsum.
   Qed.
 
   (* ∑ (a ++ b) = ∑a + ∑b *)
-  Lemma vsum_vapp : forall {m n} (a : @vec A m) (b : @vec A n),
+  Lemma vsum_vapp : forall {m n} (a : @vec tA m) (b : @vec tA n),
       \sum (a ++ b) = \sum a + \sum b.
   Proof.
     intros. apply vsum_plusIdx_ext; intros.
@@ -1862,7 +1862,7 @@ Section vsum.
   Qed.
 
   (** ∑ (vconsT a x) = ∑ a + x *)
-  Lemma vsum_vconsT : forall {n} (a : @vec A n) (x : A),
+  Lemma vsum_vconsT : forall {n} (a : @vec tA n) (x : tA),
       \sum (vconsT a x) = \sum a + x.
   Proof.
     intros. rewrite vsumS_tail. f_equal.
@@ -1873,11 +1873,11 @@ Section vsum.
   
   (* If equip a `AGroup` *)
   Section AGroup.
-    Context `{HAGroup : AGroup A Aadd Azero Aopp}.
+    Context `{HAGroup : AGroup tA Aadd Azero Aopp}.
     Notation "- a" := (Aopp a) : A_scope.
     
     (** - Σa = Σ(fun i => -a.[i]) *)
-    Lemma vsum_opp : forall {n} (a : @vec A n),
+    Lemma vsum_opp : forall {n} (a : @vec tA n),
         - \sum a = \sum (fun i => - a.[i]).
     Proof.
       intros. unfold vsum. rewrite seqsum_opp; auto. apply seqsum_eq; intros.
@@ -1887,11 +1887,11 @@ Section vsum.
 
   (* If equip a `ARing` *)
   Section ARing.
-    Context `{HARing:ARing A Aadd Azero Aopp Amul Aone}.
+    Context `{HARing:ARing tA Aadd Azero Aopp Amul Aone}.
     Infix "*" := (Amul) : A_scope.
 
     (** x * Σa = Σ(fun i -> x * a.[i]) *)
-    Lemma vsum_cmul_l : forall {n} (a : @vec A n) x,
+    Lemma vsum_cmul_l : forall {n} (a : @vec tA n) x,
         x * \sum a = \sum (fun i => x * a.[i]).
     Proof.
       intros. unfold vsum. rewrite seqsum_cmul_l. apply seqsum_eq; intros.
@@ -1899,7 +1899,7 @@ Section vsum.
     Qed.
     
     (** Σa * x = Σ(fun i -> a.[i] * x) *)
-    Lemma vsum_cmul_r : forall {n} (a : @vec A n) x,
+    Lemma vsum_cmul_r : forall {n} (a : @vec tA n) x,
         \sum a * x = \sum (fun i => a.[i] * x).
     Proof.
       intros. unfold vsum. rewrite seqsum_cmul_r. apply seqsum_eq; intros.
@@ -1910,14 +1910,14 @@ Section vsum.
   (* if equip a `OrderedARing` *)
   Section OrderedARing.
     Context `{HOrderedARing
-        : OrderedARing A Aadd Azero Aopp Amul Aone Alt Ale}.
+        : OrderedARing tA Aadd Azero Aopp Amul Aone Alt Ale}.
     (* Check HOrderedARing : Order Alt Ale Altb Aleb. *)
     Infix "*" := (Amul) : A_scope.
     Infix "<" := Alt.
     Infix "<=" := Ale.
 
     (** (∀ i, 0 <= a.i) -> a.i <= ∑a *)
-    Lemma vsum_ge_any : forall {n} (a : @vec A n) i,
+    Lemma vsum_ge_any : forall {n} (a : @vec tA n) i,
         (forall i, Azero <= a.[i]) -> a.[i] <= \sum a.
     Proof.
       intros. unfold vsum.
@@ -1928,7 +1928,7 @@ Section vsum.
     Qed.
 
     (** (∀ i, 0 <= a.i) -> 0 <= ∑a *)
-    Lemma vsum_ge0 : forall {n} (a : @vec A n), (forall i, Azero <= a.[i]) -> Azero <= \sum a.
+    Lemma vsum_ge0 : forall {n} (a : @vec tA n), (forall i, Azero <= a.[i]) -> Azero <= \sum a.
     Proof.
       intros. pose proof (vsum_ge_any a). destruct n.
       - cbv. apply le_refl.
@@ -1936,7 +1936,7 @@ Section vsum.
     Qed.
     
     (** (∀ i, 0 <= a.i) -> (∃ i, a.i <> 0) -> 0 < ∑a *)
-    Lemma vsum_gt0 : forall {n} (a : @vec A n),
+    Lemma vsum_gt0 : forall {n} (a : @vec tA n),
         (forall i, Azero <= a.[i]) -> (exists i, a.[i] <> Azero) -> Azero < \sum a.
     Proof.
       intros. destruct H0 as [i H0].
@@ -1946,7 +1946,7 @@ Section vsum.
     Qed.
     
     (** (∀i, a.i >= 0) -> ∑a = 0 -> (∀i, a.i = 0) *)
-    Lemma vsum_eq0_rev : forall {n} (a : @vec A n),
+    Lemma vsum_eq0_rev : forall {n} (a : @vec tA n),
         (forall i, 0 <= a.[i]) -> \sum a = 0 -> (forall i, a.[i] = 0).
     Proof.
       intros. destruct (Aeqdec (a.[i]) 0); auto. exfalso.
@@ -1959,7 +1959,7 @@ Section vsum.
 
 End vsum.
 
-Arguments vsum {A} Aadd Azero {n}.
+Arguments vsum {tA} Aadd Azero {n}.
 
 
 (** vsum with vinsert and vremove  *)
@@ -1975,7 +1975,7 @@ Section vsum_vinsert_vremove.
   Notation seqsum_plusIdx := (@seqsum_plusIdx _ Aadd Azero).
 
   (** ∑(insert a i x) = ∑a + x *)
-  Lemma vsum_vinsert : forall {n} (a : @vec A n) (x : A) (i : 'I_(S n)),
+  Lemma vsum_vinsert : forall {n} (a : @vec tA n) (x : tA) (i : 'I_(S n)),
       vsum (vinsert a i x) = vsum a + x.
   Proof.
     intros. pose proof (fin2nat_lt i).
@@ -1993,7 +1993,7 @@ Section vsum_vinsert_vremove.
   Qed.
 
   (** ∑(remove a i) = ∑a - a.i *)
-  Lemma vsum_vremove : forall {n} (a : @vec A (S n)) (i : 'I_(S n)),
+  Lemma vsum_vremove : forall {n} (a : @vec tA (S n)) (i : 'I_(S n)),
       vsum (vremove a i) = vsum a - a.[i].
   Proof.
     intros. pose proof (fin2nat_lt i).
@@ -2017,8 +2017,8 @@ End vsum_vinsert_vremove.
 Section vsum_ext.
   
   Context `{HAMonoidA : AMonoid}.
-  Context `{HAMonoidB : AMonoid B Badd Bzero}.
-  Context (cmul : A -> B -> B).
+  Context `{HAMonoidB : AMonoid tB Badd Bzero}.
+  Context (cmul : tA -> tB -> tB).
   Infix "+A" := Aadd (at level 50).
   Infix "+B" := Badd (at level 50).
   Infix "*" := cmul.
@@ -2027,10 +2027,10 @@ Section vsum_ext.
   
   (** ∑(x*ai) = x * a1 + ... + x * ai = x * (a1 + ... + ai) = x * ∑(ai) *)
   Section form1.
-    Context (cmul_zero_keep : forall x : A, x * Bzero = Bzero).
-    Context (cmul_badd : forall (x : A) (y1 y2 : B), x * (y1 +B y2) = (x * y1) +B (x * y2)).
+    Context (cmul_zero_keep : forall x : tA, x * Bzero = Bzero).
+    Context (cmul_badd : forall (x : tA) (y1 y2 : tB), x * (y1 +B y2) = (x * y1) +B (x * y2)).
     
-    Lemma vsum_cmul_l_ext : forall {n} (x : A) (a : @vec B n),
+    Lemma vsum_cmul_l_ext : forall {n} (x : tA) (a : @vec tB n),
         x * vsumB a = vsumB (fun i => x * a.[i]).
     Proof.
       intros. unfold vsumB. rewrite seqsum_cmul_l_ext; auto.
@@ -2040,10 +2040,10 @@ Section vsum_ext.
   
   (** ∑(ai*x) = a1 * x + ... + ai * x = (a1 + ... + ai) * b = ∑(ai) * x *)
   Section form2.
-    Context (cmul_zero_keep : forall x : B, Azero * x = Bzero).
-    Context (cmul_aadd : forall (x1 x2 : A) (y : B), (x1 +A x2) * y = (x1 * y) +B (x2 * y)).
+    Context (cmul_zero_keep : forall x : tB, Azero * x = Bzero).
+    Context (cmul_aadd : forall (x1 x2 : tA) (y : tB), (x1 +A x2) * y = (x1 * y) +B (x2 * y)).
 
-    Lemma vsum_cmul_r_ext : forall {n} (x : B) (a : @vec A n),
+    Lemma vsum_cmul_r_ext : forall {n} (x : tB) (a : @vec tA n),
         vsumA a * x = vsumB (fun i => a.[i] * x).
     Proof.
       intros. unfold vsumB. rewrite seqsum_cmul_r_ext; auto.
@@ -2064,25 +2064,25 @@ Section vprod.
   Notation seqprod := (@seqprod _ Amul 1).
 
   (** Πa = a.0 * a.1 * ... * a.(n-1) *)
-  Definition vprod {n} (a : @vec A n) := seqprod n (v2f 0 a).
+  Definition vprod {n} (a : @vec tA n) := seqprod n (v2f 0 a).
   Notation "\prod a" := (vprod a) : vec_scope.
 
   (** (∀ i, a.i = b.i) -> Πa = Πb *)
-  Lemma vprod_eq : forall {n} (a b : @vec A n), (forall i, a.[i] = b.[i]) -> vprod a = vprod b.
+  Lemma vprod_eq : forall {n} (a b : @vec tA n), (forall i, a.[i] = b.[i]) -> vprod a = vprod b.
   Proof.
     intros. unfold vprod. apply seqprod_eq; intros.
     rewrite !nth_v2f with (H:=H0). apply H.
   Qed.
 
   (** (∀ i, a.i = 1) -> Πa = 1 *)
-  Lemma vprod_eq1: forall {n} (a : @vec A n), (forall i, a.[i] = 1) -> vprod a = 1.
+  Lemma vprod_eq1: forall {n} (a : @vec tA n), (forall i, a.[i] = 1) -> vprod a = 1.
   Proof.
     intros. unfold vprod. apply seqprod_eq1; intros.
     rewrite !nth_v2f with (H:=H0). apply H.
   Qed.
   
   (** `vprod` of (S n) elements, equal to multiplication of Prod and tail *)
-  Lemma vprodS_tail : forall {n} (a : @vec A (S n)),
+  Lemma vprodS_tail : forall {n} (a : @vec tA (S n)),
       vprod a = vprod (fun i => a.[fSuccRange i]) * a.[nat2finS n].
   Proof.
     intros. unfold vprod. rewrite seqprodS_tail. f_equal.
@@ -2093,7 +2093,7 @@ Section vprod.
   Qed.
 
   (** `vprod` of (S n) elements, equal to multiplication of head and Prod *)
-  Lemma vprodS_head : forall {n} (a : @vec A (S n)),
+  Lemma vprodS_head : forall {n} (a : @vec tA (S n)),
       vprod a = a.[nat2finS 0] * vprod (fun i => a.[fSuccRangeS i]).
   Proof.
     intros. unfold vprod. rewrite seqprodS_head; auto. f_equal.
@@ -2103,7 +2103,7 @@ Section vprod.
   Qed.
 
   (** `vprod` which only one item is non-one, then got this item. *)
-  Lemma vprod_unique : forall {n} (a : @vec A n) (x : A) i,
+  Lemma vprod_unique : forall {n} (a : @vec tA n) (x : tA) i,
       a.[i] = x -> (forall j, i <> j -> a.[j] = 1) -> vprod a = x.
   Proof.
     intros. unfold vprod. apply seqprod_unique with (i:=i); auto; fin.
@@ -2115,7 +2115,7 @@ Section vprod.
 
   (** `vprod` of the m+n elements equal to multiplication of two parts.
       Π[0,(m+n)] a = Π[0,m](fun i=>a[i]) * Π[m,m+n] (fun i=>a[m+i]) *)
-  Lemma vprod_plusIdx : forall m n (a : @vec A (m + n)),
+  Lemma vprod_plusIdx : forall m n (a : @vec tA (m + n)),
       vprod a = vprod (fun i => a.[fin2AddRangeR i]) *
                  vprod (fun i => a.[fin2AddRangeAddL i]).
   Proof.
@@ -2129,7 +2129,7 @@ Section vprod.
       (i < m -> a.i = b.i) ->
       (i < n -> a.(m+i) = c.i) ->
       Π[0,(m+n)] a = Π[0,m] b * Π[m,m+n] c. *)
-  Lemma vprod_plusIdx_ext : forall m n (a : @vec A (m + n)) (b : @vec A m) (c : @vec A n),
+  Lemma vprod_plusIdx_ext : forall m n (a : @vec tA (m + n)) (b : @vec tA m) (c : @vec tA n),
       (forall i : 'I_m, a.[fin2AddRangeR i] = b.[i]) ->
       (forall i : 'I_n, a.[fin2AddRangeAddL i] = c.[i]) ->
       vprod a = vprod b * vprod c.
@@ -2144,7 +2144,7 @@ Section vprod.
 
 End vprod.
 
-Arguments vprod {A} Azero Amul Aone {n}.
+Arguments vprod {tA} Azero Amul Aone {n}.
 
 
 (* ======================================================================= *)
@@ -2153,7 +2153,7 @@ Section vadd.
   Context `{AMonoid}.
   Infix "+" := Aadd : A_scope.
   
-  Notation vec := (@vec A).
+  Notation vec := (@vec tA).
   Notation vzero := (vzero Azero).
 
   Definition vadd {n} (a b : vec n) : vec n := vmap2 Aadd a b.
@@ -2203,7 +2203,7 @@ Section vadd_extra.
 
   (* 所有向量相加后取第j个分量 = 取出向量的第j个分量后再相加 *)
   (** (∑a).j = ∑(a.j), which a is a vector of vector *)
-  Lemma vnth_vsum : forall {r c} (a : @vec (@vec A c) r) j,
+  Lemma vnth_vsum : forall {r c} (a : @vec (@vec tA c) r) j,
       (@vsum _ (@vadd _ Aadd _) (vzero Azero) _ a).[j] =
         @vsum _ Aadd Azero _ (fun i => a.[i].[j]).
   Proof.
@@ -2217,7 +2217,7 @@ End vadd_extra.
 Section vopp.
   
   (* Let's have an Abelian-Group *)
-  Context `{AGroup A Aadd Azero}.
+  Context `{AGroup tA Aadd Azero}.
   Notation "- a" := (Aopp a) : A_scope.
   
   Notation vzero := (vzero Azero).
@@ -2280,7 +2280,7 @@ End vopp.
 (** ** Vector subtraction *)
 Section vsub.
   (* Let's have an Abelian-Group *)
-  Context `{AGroup A Aadd Azero}.
+  Context `{AGroup tA Aadd Azero}.
   Infix "+" := Aadd : A_scope.
   Notation "- a" := (Aopp a) : A_scope.
   Notation Asub a b := (a + (- b))%A.
@@ -2342,7 +2342,7 @@ End vsub.
 (** ** Vector scalar multiplication *)
 Section vcmul.
   (* Let's have an Abelian-ring *)
-  Context `{HARing : ARing A Aadd Azero Aopp Amul Aone}.
+  Context `{HARing : ARing tA Aadd Azero Aopp Amul Aone}.
   Add Ring ring_inst : (make_ring_theory HARing).
   
   Infix "+" := Aadd : A_scope.
@@ -2358,7 +2358,7 @@ Section vcmul.
   Notation "- a" := (vopp a) : vec_scope.
   Notation "a - b" := ((a + (-b))%V) : vec_scope.
   
-  Definition vcmul {n : nat} (x : A) (a : vec n) : vec n := vmap (fun y => Amul x y) a.
+  Definition vcmul {n : nat} (x : tA) (a : vec n) : vec n := vmap (fun y => Amul x y) a.
   Infix "c*" := vcmul : vec_scope.
 
   (** (x .* a).i = x * a.i *)
@@ -2422,7 +2422,7 @@ Section vcmul.
   
   (* If equip a `Dec` *)
   Section AeqDec.
-    Context {AeqDec : Dec (@eq A)}.
+    Context {AeqDec : Dec (@eq tA)}.
 
     (** a <> 0 -> b <> 0 -> x .* a = b -> x <> 0 *)
     Lemma vcmul_eq_imply_x_neq0 : forall {n} x (a b : vec n),
@@ -2435,8 +2435,8 @@ Section vcmul.
 
   (* If equip a `Dec` and a `Field` *)
   Section Dec_Field.
-    Context {AeqDec : Dec (@eq A)}.
-    Context `{HField : Field A Aadd Azero Aopp Amul Aone Ainv}.
+    Context {AeqDec : Dec (@eq tA)}.
+    Context `{HField : Field tA Aadd Azero Aopp Amul Aone Ainv}.
     
     (** x .* a = 0 -> (x = 0) \/ (a = 0) *)
     Lemma vcmul_eq0_imply_x0_or_v0 : forall {n} x (a : vec n),
@@ -2513,7 +2513,7 @@ End vcmul.
 (** ** Dot product *)
 Section vdot.
   (* Let's have an Abelian-ring *)
-  Context `{HARing : ARing A Aadd Azero Aopp Amul Aone}.
+  Context `{HARing : ARing tA Aadd Azero Aopp Amul Aone}.
   Add Ring ring_inst : (make_ring_theory HARing).
   
   Infix "+" := Aadd : A_scope.
@@ -2536,7 +2536,7 @@ Section vdot.
   Notation "a - b" := ((a + -b)%V) : vec_scope.
   Infix "c*" := vcmul : vec_scope.
   
-  Definition vdot {n : nat} (a b : vec n) : A := vsum (vmap2 Amul a b).
+  Definition vdot {n : nat} (a b : vec n) : tA := vsum (vmap2 Amul a b).
   Notation "< a , b >" := (vdot a b) : vec_scope.
 
   (** <a, b> = <b, a> *)
@@ -2613,7 +2613,7 @@ Section vdot.
   Proof. intros. rewrite vdot_comm. apply vdot_veye_r. Qed.
 
   (** <vconsT a x, vconsT b y> = <a, b> + x * y *)
-  Lemma vdot_vconsT_vconsT : forall {n} (a b : vec n) (x y : A),
+  Lemma vdot_vconsT_vconsT : forall {n} (a b : vec n) (x y : tA),
       <vconsT a x, vconsT b y> = (<a, b> + x * y)%A.
   Proof.
     intros. unfold vdot.
@@ -2621,9 +2621,9 @@ Section vdot.
     rewrite vsum_vconsT. auto.
   Qed.
     
-  (* If (@eq A) is decidable *)
+  (* If (@eq tA) is decidable *)
   Section AeqDec.
-    Context {AeqDec : Dec (@eq A)}.
+    Context {AeqDec : Dec (@eq tA)}.
 
     (** <a, b> <> 0 -> a <> 0 *)
     Lemma vdot_neq0_imply_neq0_l : forall {n} (a b : vec n), <a, b> <> 0 -> a <> vzero.
@@ -2658,7 +2658,7 @@ Section vdot.
 
   (* If equip an ordered-abelian-ring *)
   Section OrderedARing.
-    Context `{HOrderedARing : OrderedARing A Aadd Azero Aopp Amul Aone}.
+    Context `{HOrderedARing : OrderedARing tA Aadd Azero Aopp Amul Aone}.
     Infix "<" := Alt.
     Infix "<=" := Ale.
     
@@ -2702,8 +2702,8 @@ Section vdot.
   
   (* If equip an ordered-field and `Dec` *)
   Section OrderedField_Dec.
-    Context {AeqDec : Dec (@eq A)}.
-    Context `{HOrderedField : OrderedField A Aadd Azero Aopp Amul Aone}.
+    Context {AeqDec : Dec (@eq tA)}.
+    Context `{HOrderedField : OrderedField tA Aadd Azero Aopp Amul Aone}.
     Notation "/ a" := (Ainv a).
     Notation Adiv x y := (x * / y).
     Infix "/" := Adiv.
@@ -2773,7 +2773,7 @@ Section vdot_extra.
      a*(D*b) = a1 <row(D,1),b> + a2 <row(D,2),b> + a3 <row(D,3),b>
              = a1(D11b1+D12b2)+a2(D21b1+D22b2)+a3(D31b1+D32b2) *)
   Lemma vdot_assoc :
-    forall {r c} (a : @vec A c) (D : @vec (@vec A r) c) (b : @vec A r),
+    forall {r c} (a : @vec tA c) (D : @vec (@vec tA r) c) (b : @vec tA r),
       vdot (fun j => vdot a (fun i => D i j)) b = vdot a (fun i => vdot (D i) b).
   Proof.
     intros. unfold vdot. unfold vmap2.
@@ -2796,10 +2796,10 @@ End vdot_extra.
 Section vlen.
   (* Euclidean norm == Euclidean length (distance) = L2 norm == L2 distance *)
   
-  Context `{HARing : ARing A Aadd Azero Aopp Amul Aone}.
+  Context `{HARing : ARing tA Aadd Azero Aopp Amul Aone}.
   Add Ring ring_inst : (make_ring_theory HARing).
   Context `{HA2R
-      : A2R A Aadd Azero Aopp Amul Aone Ainv Alt Ale a2r}.
+      : A2R tA Aadd Azero Aopp Amul Aone Ainv Alt Ale a2r}.
 
   Infix "+" := Aadd : A_scope.
   Notation "0" := Azero : A_scope.
@@ -2830,7 +2830,7 @@ Section vlen.
   
   Section OrderedARing.
     Context `{HOrderedARing
-        : OrderedARing A Aadd Azero Aopp Amul Aone Alt Ale}.
+        : OrderedARing tA Aadd Azero Aopp Amul Aone Alt Ale}.
     Infix "<" := Alt : A_scope.
     Infix "<=" := Ale : A_scope.
     
@@ -2969,8 +2969,8 @@ Section vlen.
 
   Section OrderedField_Dec.
     Context `{HOrderedField
-        : OrderedField A Aadd Azero Aopp Amul Aone Ainv Alt Ale}.
-    Context {AeqDec : Dec (@eq A)}.
+        : OrderedField tA Aadd Azero Aopp Amul Aone Ainv Alt Ale}.
+    Context {AeqDec : Dec (@eq tA)}.
     Infix "<=" := Ale : A_scope.
     
     (** ||a|| = 0 <-> v = 0 *)
@@ -3029,7 +3029,7 @@ Section vunit.
   Qed.
 
   Section Field.
-    Context `{HField : Field A Aadd Azero Aopp Amul Aone Ainv}.
+    Context `{HField : Field tA Aadd Azero Aopp Amul Aone Ainv}.
     
     (** The unit vector cannot be zero vector *)
     Lemma vunit_neq0 : forall {n} (a : vec n), vunit a -> a <> vzero.
@@ -3041,7 +3041,7 @@ Section vunit.
   End Field.
 
   Section A2R.
-    Context `{HA2R : A2R A Aadd Azero Aopp Amul Aone Ainv Alt Ale}.
+    Context `{HA2R : A2R tA Aadd Azero Aopp Amul Aone Ainv Alt Ale}.
 
     Notation vlen := (@vlen _ Aadd Azero Amul a2r).
     Notation "|| a ||" := (vlen a) : vec_scope.
@@ -3059,7 +3059,7 @@ Section vunit.
     Proof. intros. apply vunit_spec; auto. Qed.
     
     Section OrderedARing.
-      Context `{HOrderedARing : OrderedARing A Aadd Azero Aopp Amul Aone Alt Ale}.
+      Context `{HOrderedARing : OrderedARing tA Aadd Azero Aopp Amul Aone Alt Ale}.
 
       (** vunit a -> <a, a> = 1 *)
       Lemma vunit_vdot : forall {n} (a : vec n), vunit a -> a2r (<a, a>) = 1%R.
@@ -3092,7 +3092,7 @@ Section vorth.
      perpendicular) if their inner-product is zero. It can be denoted as `u ⟂ v` *)
   
   (* Let's have an Abelian-ring *)
-  Context `{HARing : ARing A Aadd Azero Aopp Amul Aone}.
+  Context `{HARing : ARing tA Aadd Azero Aopp Amul Aone}.
   Add Ring ring_inst : (make_ring_theory HARing).
   
   Infix "+" := Aadd : A_scope.
@@ -3121,8 +3121,8 @@ Section vorth.
 
   (* If equip a `Dec` and a `Field` *)
   Section Dec_Field.
-    Context {AeqDec : Dec (@eq A)}.
-    Context `{HField : Field A Aadd Azero Aopp Amul Aone Ainv}.
+    Context {AeqDec : Dec (@eq tA)}.
+    Context `{HField : Field tA Aadd Azero Aopp Amul Aone Ainv}.
     
     (** (x .* a) _|_ b <-> a _|_ b *)
     Lemma vorth_vcmul_l : forall {n} x (a b : vec n),
@@ -3148,7 +3148,7 @@ End vorth.
 (** ** Projection component of a vector onto another *)
 Section vproj.
   (* Let's have an field *)
-  Context `{F:Field A Aadd Azero Aopp Amul Aone Ainv}.
+  Context `{F:Field tA Aadd Azero Aopp Amul Aone Ainv}.
   Add Field field_inst : (make_field_theory F).
   
   Infix "+" := Aadd : A_scope.
@@ -3191,7 +3191,7 @@ Section vproj.
 
   (* If equip a `Field` *)
   Section OrderedField.
-    Context `{HOrderedField : OrderedField A Aadd Azero Aopp Amul Aone Ainv}.
+    Context `{HOrderedField : OrderedField tA Aadd Azero Aopp Amul Aone Ainv}.
     
     (** vproj (a + b) c = vproj a c + vproj b c *)
     Lemma vproj_vadd : forall {n} (a b c : vec n),
@@ -3222,7 +3222,7 @@ End vproj.
 (** ** Perpendicular component of a vector respect to another *)
 Section vperp.
   (* Let's have an field *)
-  Context `{F:Field A Aadd Azero Aopp Amul Aone Ainv}.
+  Context `{F:Field tA Aadd Azero Aopp Amul Aone Ainv}.
   Add Field field_inst : (make_field_theory F).
   
   Infix "+" := Aadd : A_scope.
@@ -3258,25 +3258,25 @@ Section vperp.
   (** vproj a b = a - vperp a b *)
   Lemma vproj_eq_minus_vperp : forall {n} (a b : vec n), vproj a b = a - vperp a b.
   Proof.
-    intros. unfold vperp. pose proof (vadd_AGroup (A:=A) n). agroup.
+    intros. unfold vperp. pose proof (vadd_AGroup (tA := tA) n). agroup.
   Qed.
 
   (** (vproj a b) + (vperp a b) = a *)
   Lemma vproj_plus_vperp : forall {n} (a b : vec n), vproj a b + vperp a b = a.
   Proof.
-    intros. unfold vperp. pose proof (vadd_AGroup (A:=A) n). agroup.
+    intros. unfold vperp. pose proof (vadd_AGroup (tA := tA) n). agroup.
   Qed.
   
   (** a _|_ b -> vperp a b = a *)
   Lemma vorth_imply_vperp_eq_l : forall {n} (a b : vec n), a _|_ b -> vperp a b = a.
   Proof.
-    intros. unfold vperp. pose proof (vadd_AGroup (A:=A) n). agroup.
+    intros. unfold vperp. pose proof (vadd_AGroup (tA := tA) n). agroup.
     rewrite vorth_imply_vproj_eq0; auto.
   Qed.
   
   (* If equip a `OrderedField` *)
   Section OrderedField.
-    Context `{HOrderedField : OrderedField A Aadd Azero Aopp Amul Aone Ainv}.
+    Context `{HOrderedField : OrderedField tA Aadd Azero Aopp Amul Aone Ainv}.
 
     (** (vproj a b) _|_ (vperp a b) *)
     Lemma vorth_vproj_vperp : forall {n} (a b : vec n),
@@ -3292,12 +3292,12 @@ Section vperp.
     Lemma vperp_vadd : forall {n} (a b c : vec n),
         c <> vzero -> (vperp (a + b) c = vperp a c + vperp b c)%V.
     Proof.
-      intros. unfold vperp. pose proof (vadd_AGroup (A:=A) n). agroup.
+      intros. unfold vperp. pose proof (vadd_AGroup (tA := tA) n). agroup.
       rewrite vproj_vadd; auto. agroup.
     Qed.
 
     (** vperp (x .* a) b = x .* (vperp a b) *)
-    Lemma vperp_vcmul : forall {n} (x : A) (a b : vec n),
+    Lemma vperp_vcmul : forall {n} (x : tA) (a b : vec n),
         b <> vzero -> (vperp (x c* a) b = x c* (vperp a b))%V.
     Proof.
       intros. unfold vperp. rewrite vproj_vcmul; auto. rewrite vcmul_vsub. auto.
@@ -3360,7 +3360,7 @@ Section vcoll_vpara_vantipara.
         x, such as use 1 to prove 1 <> 0, thus need a field.
    *)
   Context `{HOrderedField
-      : OrderedField A Aadd Azero Aopp Amul Aone Ainv Alt Ale}.
+      : OrderedField tA Aadd Azero Aopp Amul Aone Ainv Alt Ale}.
   Add Field field_inst : (make_field_theory HOrderedField).
   Notation "0" := Azero : A_scope.
   Notation "1" := Aone : A_scope.
@@ -3391,7 +3391,7 @@ Section vcoll_vpara_vantipara.
     (** Two non-zero vectors are collinear, if the components are proportional *)
     (* Note, x <> 0 could be removed, but it need a prove *)
     Definition vcoll {n} (a b : vec n) : Prop :=
-      a <> vzero /\ b <> vzero /\ exists x : A, x <> 0 /\ x c* a = b.
+      a <> vzero /\ b <> vzero /\ exists x : tA, x <> 0 /\ x c* a = b.
     Infix "//" := vcoll : vec_scope.
     
     (** a // a *)
@@ -3458,7 +3458,7 @@ Section vcoll_vpara_vantipara.
     
     (** Two non-zero vectors are parallel, if positive proportional *)
     Definition vpara {n} (a b : vec n) : Prop :=
-      a <> vzero /\ b <> vzero /\ exists x : A, 0 < x /\ x c* a = b.
+      a <> vzero /\ b <> vzero /\ exists x : tA, 0 < x /\ x c* a = b.
     Infix "//+" := vpara : vec_scope.
     
     (** a //+ a *)
@@ -3524,7 +3524,7 @@ Section vcoll_vpara_vantipara.
     
     (** Two non-zero vectors are antiparallel, if negative proportional *)
     Definition vantipara {n} (a b : vec n) : Prop :=
-      a <> vzero /\ b <> vzero /\ exists x : A, x < 0 /\ x c* a = b.
+      a <> vzero /\ b <> vzero /\ exists x : tA, x < 0 /\ x c* a = b.
     Infix "//-" := vantipara : vec_scope.
     
     (** a //- a *)

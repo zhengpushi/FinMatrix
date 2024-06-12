@@ -168,11 +168,11 @@ Infix "??<=" := (@dec _ _ nat_le_Dec) : nat_scope.
 (** * Instances for ElementType *)
 
 Module ElementTypeNat <: ElementType.
-  Definition A : Type := nat.
-  Definition Azero : A := 0.
-  Hint Unfold A Azero : A.
+  Definition tA : Type := nat.
+  Definition Azero : tA := 0.
+  Hint Unfold tA Azero : tA.
 
-  Lemma AeqDec : Dec (@eq A).
+  Lemma AeqDec : Dec (@eq tA).
   Proof. apply nat_eq_Dec. Defined.
 End ElementTypeNat.
 
@@ -181,7 +181,7 @@ Module OrderedElementTypeNat <: OrderedElementType.
 
   Definition Alt := Nat.lt.
   Definition Ale := Nat.le.
-  Hint Unfold Ale Alt : A.
+  Hint Unfold Ale Alt : tA.
 
   #[export] Instance Order : Order Alt Ale.
   Proof. apply nat_Order. Qed.
@@ -191,12 +191,12 @@ Module MonoidElementTypeNat <: MonoidElementType.
   Include ElementTypeNat.
 
   Definition Aadd := Nat.add.
-  Hint Unfold Aadd : A.
+  Hint Unfold Aadd : tA.
 
   Infix "+" := Aadd : A_scope.
 
   #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
-  Proof. intros. repeat constructor; intros; autounfold with A; ring. Qed.
+  Proof. intros. repeat constructor; intros; autounfold with tA; ring. Qed.
 End MonoidElementTypeNat.
 
 
@@ -224,7 +224,7 @@ Proof.
 Qed.
 
 (** Connect induction principle between nat and list *)
-Lemma ind_nat_list {A} : forall (P : list A -> Prop) ,
+Lemma ind_nat_list {tA} : forall (P : list tA -> Prop) ,
     (forall n l, length l = n -> P l) -> (forall l, P l).
 Proof.
   intros. apply (H (length l)). auto.

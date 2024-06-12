@@ -13,8 +13,8 @@ Require Export NatExt.
 Require Export ListExt.
 Require Export Hierarchy.
 
-Generalizable Variables A Aadd Azero Aopp Amul Aone Ainv Ale Alt.
-Generalizable Variables B Badd Bzero.
+Generalizable Variables tA Aadd Azero Aopp Amul Aone Ainv Ale Alt.
+Generalizable Variables tB Badd Bzero.
 
 Open Scope nat_scope.
 Open Scope A_scope.
@@ -39,10 +39,10 @@ Qed.
 (* ======================================================================= *)
 (** ** Equality of sequence *)
 Section seqeq.
-  Context {A : Type}.
+  Context {tA : Type}.
   
   (** Equality of two sequence which have one index *)
-  Definition seqeq n (f g : nat -> A) := forall i, i < n -> f i = g i.
+  Definition seqeq n (f g : nat -> tA) := forall i, i < n -> f i = g i.
 
   (** seqeq is an equivalence relation *)
   #[export] Instance seqeq_equiv : forall n, Equivalence (seqeq n).
@@ -52,7 +52,7 @@ Section seqeq.
   Qed.
 
   (** seqeq of S has a equivalent form. *)
-  Lemma seqeq_S : forall n (f g : nat -> A),
+  Lemma seqeq_S : forall n (f g : nat -> tA),
       seqeq (S n) f g <-> (seqeq n f g) /\ (f n = g n).
   Proof.
     intros. unfold seqeq. split; intros. split; auto.
@@ -61,7 +61,7 @@ Section seqeq.
 
   (** seqeq is decidable  *)
   Lemma seqeq_dec : forall n f g,
-      (forall a b : A, {a = b} + {a <> b}) -> {seqeq n f g} + {~seqeq n f g}.
+      (forall a b : tA, {a = b} + {a <> b}) -> {seqeq n f g} + {~seqeq n f g}.
   Proof.
     intros n f g H. unfold seqeq. induction n.
     - left. easy.
@@ -77,14 +77,14 @@ End seqeq.
 (* ======================================================================= *)
 (** ** Equality of sequence with two indexes *)
 Section seq2eq.
-  Context {A : Type}.
+  Context {tA : Type}.
 
   (** Equality of two sequence which have two indexes *)
-  Definition seq2eq r c (f g : nat -> nat -> A) := 
+  Definition seq2eq r c (f g : nat -> nat -> tA) := 
     forall ri ci, ri < r -> ci < c -> f ri ci = g ri ci.
   
   (** seq2eq of Sr has a equivalent form. *)
-  Lemma seq2eq_Sr : forall r c (f g : nat -> nat -> A), 
+  Lemma seq2eq_Sr : forall r c (f g : nat -> nat -> tA), 
       seq2eq (S r) c f g <-> (seq2eq r c f g) /\ (seqeq c (f r) (g r)).
   Proof.
     intros. unfold seq2eq, seqeq. split; intros. split; auto.
@@ -92,7 +92,7 @@ Section seq2eq.
   Qed.
 
   (** seq2eq of Sc has a equivalent form. *)
-  Lemma seq2eq_Sc : forall r c (f g : nat -> nat -> A), 
+  Lemma seq2eq_Sc : forall r c (f g : nat -> nat -> tA), 
       seq2eq r (S c) f g <-> (seq2eq r c f g) /\ (seqeq r (fun i => f i c) (fun i => g i c)).
   Proof.
     intros. unfold seq2eq, seqeq. split; intros. split; auto.
@@ -107,7 +107,7 @@ Section seq2eq.
 
   (** seq2eq is decidable  *)
   Lemma seq2eq_dec : forall r c f g,
-      (forall a b : A, {a = b} + {a <> b}) -> {seq2eq r c f g} + {~seq2eq r c f g}.
+      (forall a b : tA, {a = b} + {a <> b}) -> {seq2eq r c f g} + {~seq2eq r c f g}.
   Proof.
     intros r c f g H. unfold seq2eq. revert c. induction r; intros.
     - left. easy.
@@ -126,32 +126,32 @@ End seq2eq.
 (* ######################################################################### *)
 (** * Folding of a sequence *)
 Section seqfold.
-  Context {A B : Type}.
+  Context {tA tB : Type}.
 
   (** ((a + v.1) + v.2) + ... *)
-  Fixpoint seqfoldl (s : nat -> A) (n : nat) (b : B) (f : B -> A -> B) : B :=
+  Fixpoint seqfoldl (s : nat -> tA) (n : nat) (b : tB) (f : tB -> tA -> tB) : tB :=
     match n with
     | O => b
     | S n' => seqfoldl s n' (f b (s n')) f
     end.
     
   (** ... + (v.(n-1) + (v.n + a)) *)
-  Fixpoint seqfoldr (s : nat -> A) (n : nat) (b : B) (g : A -> B -> B) : B :=
+  Fixpoint seqfoldr (s : nat -> tA) (n : nat) (b : tB) (g : tA -> tB -> tB) : tB :=
     match n with
     | O => b
     | S n' => seqfoldr s n' (g (s n') b) g
     end.
 
   Lemma seqfoldl_eq_seqfoldr :
-    forall (s : nat -> A) (n : nat) (b : B)
-      (f : B -> A -> B) (g : A -> B -> B) (f_eq_b : forall a b, f b a = g a b),
+    forall (s : nat -> tA) (n : nat) (b : tB)
+      (f : tB -> tA -> tB) (g : tA -> tB -> tB) (f_eq_b : forall a b, f b a = g a b),
       seqfoldl s n b f = seqfoldr s n b g.
   Proof.
     intros. revert s n b. induction n; intros; simpl; auto.
     rewrite IHn. f_equal. auto.
   Qed.
 
-  Lemma seqfoldl_eq : forall (s1 s2 : nat -> A) (n : nat) (b1 b2 : B) (f : B -> A -> B),
+  Lemma seqfoldl_eq : forall (s1 s2 : nat -> tA) (n : nat) (b1 b2 : tB) (f : tB -> tA -> tB),
       (forall i, i < n -> s1 i = s2 i) -> b1 = b2 ->
       seqfoldl s1 n b1 f = seqfoldl s2 n b2 f.
   Proof.
@@ -159,7 +159,7 @@ Section seqfold.
     simpl. apply IHn; auto. subst. f_equal. auto.
   Qed.
 
-  Lemma seqfoldr_eq : forall (s1 s2 : nat -> A) (n : nat) (b1 b2 : B) (f : A -> B -> B),
+  Lemma seqfoldr_eq : forall (s1 s2 : nat -> tA) (n : nat) (b1 b2 : tB) (f : tA -> tB -> tB),
       (forall i, i < n -> s1 i = s2 i) -> b1 = b2 ->
       seqfoldr s1 n b1 f = seqfoldr s2 n b2 f.
   Proof.
@@ -184,12 +184,12 @@ Section seqsum_seqprod.
   
   (** Sum of a sequence.
       ∑(n,f) = f[0] + (... (f[n-2] + (f[n-1] + 0)) ...)  *)
-  Fixpoint seqsumAux (n : nat) (f : nat -> A) (acc : A) : A :=
+  Fixpoint seqsumAux (n : nat) (f : nat -> tA) (acc : tA) : tA :=
     match n with
     | O => acc
     | S n' => seqsumAux n' f (f n' + acc)
     end.
-  Definition seqsum (n : nat) (f : nat -> A) : A := seqsumAux n f 0.
+  Definition seqsum (n : nat) (f : nat -> tA) : tA := seqsumAux n f 0.
 
   (** Replace the inital value of seqsumAux *)
   Lemma seqsumAux_rebase : forall n f a, seqsumAux n f a = seqsumAux n f 0 + a.
@@ -216,7 +216,7 @@ Section seqsum_seqprod.
   Qed.
 
   (** Sum of a sequence which every element is zero get zero. *)
-  Lemma seqsum_eq0 : forall (n : nat) (f : nat -> A), 
+  Lemma seqsum_eq0 : forall (n : nat) (f : nat -> tA), 
       (forall i, i < n -> f i = 0) -> seqsum n f = 0.
   Proof.
     unfold seqsum. induction n; simpl; intros. auto.
@@ -224,7 +224,7 @@ Section seqsum_seqprod.
   Qed.
 
   (** Two sequences are equal, imply the sum are equal. *)
-  Lemma seqsum_eq : forall (n : nat) (f g : nat -> A),
+  Lemma seqsum_eq : forall (n : nat) (f g : nat -> tA),
       (forall i, i < n -> f i = g i) -> seqsum n f = seqsum n g.
   Proof.
     induction n; intros; simpl. rewrite !seqsum_len0. auto.
@@ -232,7 +232,7 @@ Section seqsum_seqprod.
   Qed.
 
   (** Sum a sequence which only one item is nonzero, then got this item. *)
-  Lemma seqsum_unique : forall (n : nat) (f : nat -> A) (a : A) (i : nat), 
+  Lemma seqsum_unique : forall (n : nat) (f : nat -> tA) (a : tA) (i : nat), 
       i < n -> f i = a -> (forall j, j < n -> j <> i -> f j = 0) -> seqsum n f = a.
   Proof.
     induction n; intros. lia.
@@ -280,10 +280,10 @@ Section seqsum_seqprod.
   Qed.
 
   (* Let's have an abelian monoid *)
-  Context `{HAMonoid : AMonoid A Aadd 0}.
+  Context `{HAMonoid : AMonoid tA Aadd 0}.
   
   (** Sum with plus of two sequence equal to plus with two sum. *)
-  Lemma seqsum_add : forall (n : nat) (f g : nat -> A),
+  Lemma seqsum_add : forall (n : nat) (f g : nat -> tA),
       seqsum n f + seqsum n g = seqsum n (fun i => f i + g i).
   Proof.
     induction n; intros; simpl. rewrite !seqsum_len0. amonoid.
@@ -309,11 +309,11 @@ Section seqsum_seqprod.
 
   
   (** Let's have an abelian group structure *)
-  Context `{HAGroup : AGroup A Aadd Azero Aopp}.
+  Context `{HAGroup : AGroup tA Aadd Azero Aopp}.
   Notation "- a" := (Aopp a) : A_scope.
   
   (** Opposition of the sum of a sequence. *)
-  Lemma seqsum_opp : forall (n : nat) (f : nat -> A),
+  Lemma seqsum_opp : forall (n : nat) (f : nat -> tA),
       - (seqsum n f) = seqsum n (fun i => - f i).
   Proof.
     induction n; intros; simpl.
@@ -323,13 +323,13 @@ Section seqsum_seqprod.
 
   
   (** Let's have an abelian ring structure *)
-  Context `{HARing : ARing A Aadd Azero Aopp Amul Aone}.
+  Context `{HARing : ARing tA Aadd Azero Aopp Amul Aone}.
   Add Ring ring_inst : (make_ring_theory HARing).
   Notation "1" := Aone : A_scope.
   Infix "*" := Amul : A_scope.
   
   (** Scalar multiplication of the sum of a sequence (simple form). *)
-  Lemma seqsum_cmul_l : forall (n : nat) (f : nat -> A) (k : A),
+  Lemma seqsum_cmul_l : forall (n : nat) (f : nat -> tA) (k : tA),
       k * seqsum n f = seqsum n (fun i => k * f i).
   Proof.
     induction n; intros; simpl.
@@ -338,7 +338,7 @@ Section seqsum_seqprod.
   Qed.
 
   (** Scalar multiplication of the sum of a sequence (simple form). *)
-  Lemma seqsum_cmul_r : forall (n : nat) (f : nat -> A) (k : A),
+  Lemma seqsum_cmul_r : forall (n : nat) (f : nat -> tA) (k : tA),
       seqsum n f * k = seqsum n (fun i => f i * k).
   Proof.
     intros. rewrite commutative. rewrite seqsum_cmul_l.
@@ -369,12 +369,12 @@ Section seqsum_seqprod.
 
   (** Product of a sequence.
       ∏(n,f) = f[0] * (... (f[n-2] * (f[n-1] * 1)) ...)  *)
-  Fixpoint seqprodAux (n : nat) (f : nat -> A) (acc : A) : A :=
+  Fixpoint seqprodAux (n : nat) (f : nat -> tA) (acc : tA) : tA :=
     match n with
     | O => acc
     | S n' => seqprodAux n' f (f n' * acc)
     end.
-  Definition seqprod (n : nat) (f : nat -> A) : A := seqprodAux n f 1.
+  Definition seqprod (n : nat) (f : nat -> tA) : tA := seqprodAux n f 1.
 
   (** Replace the inital value of seqprodAux *)
   Lemma seqprodAux_rebase : forall n f a, seqprodAux n f a = seqprodAux n f 1 * a.
@@ -402,7 +402,7 @@ Section seqsum_seqprod.
   Qed.
 
   (** Product of a sequence which every element is one get one. *)
-  Lemma seqprod_eq1 : forall (n : nat) (f : nat -> A), 
+  Lemma seqprod_eq1 : forall (n : nat) (f : nat -> tA), 
       (forall i, i < n -> f i = 1) -> seqprod n f = 1.
   Proof.
     unfold seqprod. induction n; simpl; intros. auto.
@@ -410,7 +410,7 @@ Section seqsum_seqprod.
   Qed.
 
   (** Two sequences are equal, imply the prod are equal. *)
-  Lemma seqprod_eq : forall (n : nat) (f g : nat -> A),
+  Lemma seqprod_eq : forall (n : nat) (f g : nat -> tA),
       (forall i, i < n -> f i = g i) -> seqprod n f = seqprod n g.
   Proof.
     induction n; intros; simpl. rewrite !seqprod_len0. auto.
@@ -418,7 +418,7 @@ Section seqsum_seqprod.
   Qed.
 
   (** Prod a sequence which only one item is non-one, then got this item. *)
-  Lemma seqprod_unique : forall (n : nat) (f : nat -> A) (a : A) (i : nat), 
+  Lemma seqprod_unique : forall (n : nat) (f : nat -> tA) (a : tA) (i : nat), 
       i < n -> f i = a -> (forall j, j < n -> j <> i -> f j = 1) -> seqprod n f = a.
   Proof.
     induction n; intros. lia.
@@ -451,7 +451,7 @@ Section seqsum_seqprod.
   Qed.
   
   (** Scalar multiplication of the prod of a sequence (simple form). *)
-  Lemma seqprod_cmul_l : forall (n : nat) (f : nat -> A) (k : A) (j : nat),
+  Lemma seqprod_cmul_l : forall (n : nat) (f : nat -> tA) (k : tA) (j : nat),
       j < n ->
       k * seqprod n f =
         seqprod n (fun i => if i =? j then (k * f i) else f i).
@@ -468,7 +468,7 @@ Section seqsum_seqprod.
   Qed.
 
   (** Scalar multiplication of the prod of a sequence (simple form). *)
-  Lemma seqprod_cmul_r : forall (n : nat) (f : nat -> A) (k : A) (j : nat),
+  Lemma seqprod_cmul_r : forall (n : nat) (f : nat -> tA) (k : tA) (j : nat),
       j < n ->
       seqprod n f * k =
         seqprod n (fun i => if i =? j then (f i * k) else f i).
@@ -483,16 +483,16 @@ End seqsum_seqprod.
 Section seqsum_ext.
 
   Context `{HAMonoidA : AMonoid}.
-  Context `{HAMonoidB : AMonoid B Badd Bzero}.
-  Context (cmul : A -> B -> B).
+  Context `{HAMonoidB : AMonoid tB Badd Bzero}.
+  Context (cmul : tA -> tB -> tB).
   Infix "*" := cmul.
 
   (** a * ∑(bi) = a*(b1+b2+...) = a*b1+a*b2+... = ∑(a*bi) *)
   Section form1.
-    Context (cmul_zero_keep : forall a : A, cmul a Bzero = Bzero).
-    Context (cmul_badd : forall (a : A) (b1 b2 : B),
+    Context (cmul_zero_keep : forall a : tA, cmul a Bzero = Bzero).
+    Context (cmul_badd : forall (a : tA) (b1 b2 : tB),
                 a * (Badd b1 b2) = Badd (a * b1) (a * b2)).
-    Lemma seqsum_cmul_l_ext : forall {n} (a : A) (f : nat -> B),
+    Lemma seqsum_cmul_l_ext : forall {n} (a : tA) (f : nat -> tB),
         a * (@seqsum _ Badd Bzero n f) = @seqsum _ Badd Bzero n (fun i => a * f i).
     Proof.
       induction n; intros; simpl; auto. unfold seqsum in *.
@@ -503,10 +503,10 @@ Section seqsum_ext.
   
   (** ∑(ai) * b = (a1+a2+a3)*b = a1*b+a2*b+a3*b = ∑(ai*b) *)
   Section form2.
-    Context (cmul_zero_keep : forall b : B, cmul Azero b = Bzero).
-    Context (cmul_aadd : forall (a1 a2 : A) (b : B),
+    Context (cmul_zero_keep : forall b : tB, cmul Azero b = Bzero).
+    Context (cmul_aadd : forall (a1 a2 : tA) (b : tB),
                 (Aadd a1 a2) * b = Badd (a1 * b) (a2 * b)).
-    Lemma seqsum_cmul_r_ext : forall {n} (b : B) (f : nat -> A),
+    Lemma seqsum_cmul_r_ext : forall {n} (b : tB) (f : nat -> tA),
         (@seqsum _ Aadd Azero n f) * b = @seqsum _ Badd Bzero n (fun i => f i * b).
     Proof.
       induction n; intros; simpl; auto. unfold seqsum in *.
@@ -537,7 +537,7 @@ Section seqsum_more.
   Infix "<=" := Ale : A_scope.
 
   (** If all elements of a sequence are >= 0, then the sum is >= 0 *)
-  Lemma seqsum_ge0 : forall n (f : nat -> A), (forall i, (i < n)%nat -> 0 <= f i) -> 0 <= seqsum n f.
+  Lemma seqsum_ge0 : forall n (f : nat -> tA), (forall i, (i < n)%nat -> 0 <= f i) -> 0 <= seqsum n f.
   Proof.
     induction n; intros.
     - simpl. apply le_refl.
@@ -549,7 +549,7 @@ Section seqsum_more.
   
   (** If all elements of a sequence are >= 0, and the sum of top (n+1) elements of
       the sequence is = 0, then the sum of top n elements are 0 *)
-  Lemma seqsum_eq0_less : forall n (f : nat -> A),
+  Lemma seqsum_eq0_less : forall n (f : nat -> tA),
       (forall i, (i < S n)%nat -> 0 <= f i) ->
       seqsum (S n) f = 0 -> seqsum n f = 0.
   Proof.
@@ -561,7 +561,7 @@ Section seqsum_more.
 
   (** If all elements of a sequence are >= 0, and the sum of the sequence is = 0,
       then all elements of the sequence are 0. *)
-  Lemma seqsum_eq0_imply_seq0 : forall (f : nat -> A) (n : nat), 
+  Lemma seqsum_eq0_imply_seq0 : forall (f : nat -> tA) (n : nat), 
       (forall i, (i < n)%nat -> 0 <= f i) -> seqsum n f = 0 -> (forall i, (i < n)%nat -> f i = 0).
   Proof.
     intros f n. induction n. intros H1 H2 i H3; try easy. intros.
@@ -575,7 +575,7 @@ Section seqsum_more.
   Qed.
   
   (** If all elements of a sequence are >= 0, then every element is <= the sum *)
-  Lemma seqsum_ge_any : forall (f : nat -> A) (k n : nat),
+  Lemma seqsum_ge_any : forall (f : nat -> tA) (k n : nat),
       (forall i, (i < n)%nat -> 0 <= f i) -> (k < n)%nat -> f k <= seqsum n f.
   Proof.
     intros f k n. induction n; intros. lia.
@@ -591,7 +591,7 @@ Section seqsum_more.
   Qed.
   
   (** 2 * ∑(f*g) <= ∑(f)² + ∑(g)² *)
-  Lemma seqsum_Mul2_le_PlusSqr : forall (f g : nat -> A) n,
+  Lemma seqsum_Mul2_le_PlusSqr : forall (f g : nat -> tA) n,
       2 * seqsum n (fun i : nat => f i * g i) <=
         seqsum n (fun i : nat => (f i)²) + seqsum n (fun i : nat => (g i)²).
   Proof.
@@ -606,7 +606,7 @@ Section seqsum_more.
   Qed.
 
   (** (∑(f*g))² <= ∑(f)² * ∑(g)² *)
-  Lemma seqsum_SqrMul_le_MulSqr : forall (f g : nat -> A) n,
+  Lemma seqsum_SqrMul_le_MulSqr : forall (f g : nat -> tA) n,
       (seqsum n (fun i : nat => f i * g i))² <=
         seqsum n (fun i : nat => (f i)²) * seqsum n (fun i : nat => (g i)²).
   Proof.
@@ -655,14 +655,14 @@ Section seqsumb.
 
   (** Sum of a sequence with lower bounds and length *)
   (* ∑(f,lo,n) = 0 + f lo + f (lo+1) + ... + f (lo+n-1) *)
-  Fixpoint seqsumb (f : nat -> A) (lo n : nat) : A := 
+  Fixpoint seqsumb (f : nat -> tA) (lo n : nat) : tA := 
     match n with
     | O => Azero
     | S n' => seqsumb f lo n' + f (lo + n')%nat
     end.
 
   (** Sum of a sequence with bounds equal to sum of a sequence *)
-  Lemma seqsumb_eq_seqsum : forall (n : nat) (f : nat -> A),
+  Lemma seqsumb_eq_seqsum : forall (n : nat) (f : nat -> tA),
       seqsumb f 0 n = seqsum n f.
   Proof.
     induction n; intros; simpl; auto. unfold seqsum in *.
@@ -670,14 +670,14 @@ Section seqsumb.
   Qed.
 
   (** Sum of a sequence which every element is zero get zero. *)
-  Lemma seqsumb_eq0 : forall (f : nat -> A) (lo n : nat), 
+  Lemma seqsumb_eq0 : forall (f : nat -> tA) (lo n : nat), 
       (forall i, i < n -> f (lo+i)%nat = Azero) -> seqsumb f lo n = Azero.
   Proof.
     intros. induction n; simpl; auto. rewrite H,IHn; auto; try lia. amonoid.
   Qed.
 
   (** Two sequences are equal, imply the sum are equal. *)
-  Lemma seqsumb_eq : forall (f g : nat -> A) (lo n : nat),
+  Lemma seqsumb_eq : forall (f g : nat -> tA) (lo n : nat),
       (forall i, i < n -> f (lo+i) = g (lo+i))%nat ->
       seqsumb f lo n = seqsumb g lo n.
   Proof. intros. induction n; simpl; auto. rewrite H,IHn; auto. Qed.
@@ -696,7 +696,7 @@ Section seqsumb.
   Qed.
 
   (** Sum of a sequence given by `l2f l` equal to folding of sublist of `l` *)
-  Lemma seqsumb_l2f : forall (l : list A) lo n,
+  Lemma seqsumb_l2f : forall (l : list tA) lo n,
       length l = n ->
       seqsumb (@l2f _ Azero n l) lo n = fold_right Aadd Azero (sublist l lo n).
   Proof.
@@ -711,7 +711,7 @@ Section seqsumb.
   Qed.
   
   (** Sum with plus of two sequence equal to plus with two sum. *)
-  Lemma seqsumb_add : forall (f g h : nat -> A) (lo n : nat),
+  Lemma seqsumb_add : forall (f g h : nat -> tA) (lo n : nat),
       (forall i, i < n -> h (lo+i)%nat = f (lo+i)%nat + g (lo+i)%nat) ->
       seqsumb h lo n = seqsumb f lo n + seqsumb g lo n.
   Proof.
@@ -720,12 +720,12 @@ Section seqsumb.
 
   
   (** Let's have a group structure *)
-  Context `{G : Group A Aadd Azero Aopp}.
+  Context `{G : Group tA Aadd Azero Aopp}.
   Notation "- a" := (Aopp a) : A_scope.
 
   
   (** Opposition of the sum of a sequence. *)
-  Lemma seqsumb_opp : forall (f g : nat -> A) (lo n : nat),
+  Lemma seqsumb_opp : forall (f g : nat -> tA) (lo n : nat),
       (forall i, i < n -> f (lo+i)%nat = - g (lo+i)%nat) ->
       (seqsumb f lo n) = - (seqsumb g lo n).
   Proof.
@@ -734,7 +734,7 @@ Section seqsumb.
   Qed.
 
   (** Sum a sequence which only one item is nonzero, then got this item. *)
-  Lemma seqsumb_unique : forall (f : nat -> A) (k : A) (lo n i : nat), 
+  Lemma seqsumb_unique : forall (f : nat -> tA) (k : tA) (lo n i : nat), 
       i < n -> f (lo+i)%nat = k ->
       (forall j, j < n -> i <> j -> f (lo+j)%nat = Azero) -> seqsumb f lo n = k.
   Proof.
@@ -800,13 +800,13 @@ Section seqsumb.
 
 
   (** Let's have an ring structure *)
-  Context `{HARing : ARing A Aadd Azero Aopp Amul Aone}.
+  Context `{HARing : ARing tA Aadd Azero Aopp Amul Aone}.
   Infix "*" := Amul : A_scope.
   Add Ring ring_inst : (make_ring_theory HARing).
   
   
   (** Scalar multiplication of the sum of a sequence. *)
-  Lemma seqsumb_cmul : forall k (f g : nat -> A) (lo n : nat),
+  Lemma seqsumb_cmul : forall k (f g : nat -> tA) (lo n : nat),
        (forall i, i < n -> f (lo+i)%nat = k * g (lo+i)%nat) ->
       seqsumb f lo n = k * seqsumb g lo n.
   Proof.

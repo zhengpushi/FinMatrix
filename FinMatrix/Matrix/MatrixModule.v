@@ -989,25 +989,6 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply vnth_mtailc; auto. Qed.
 
   (* ======================================================================= *)
-  (** ** Remove exact one column at head or tail *)
-
-  (** Remove head column *)
-  Definition mremovecH {r c} (M : mat r (S c)) : mat r c := mremovecH M.
-  
-  (** Remove tail column *)
-  Definition mremovecT {r c} (M : mat r (S c)) : mat r c := mremovecT M.
-  
-  (** (mremovecH M).i.j = M.i.(S j) *)
-  Lemma mnth_mremovecH : forall {r c} (M : mat r (S c)) i j,
-      (mremovecH M).[i].[j] = M.[i].[fSuccRangeS j].
-  Proof. intros. apply mnth_mremovecH; auto. Qed.
-  
-  (** (mremovecT M).i.j = M.i.j *)
-  Lemma mnth_mremovecT : forall {r c} (M : mat r (S c)) i j,
-      (mremovecT M).[i].[j] = M.[i].[fSuccRange j].
-  Proof. intros. apply mnth_mremovecT; auto. Qed.
-
-  (* ======================================================================= *)
   (** ** Construct matrix from vector and matrix *)
 
   (** Construct a matrix with a row vector and a matrix *)
@@ -1060,18 +1041,6 @@ Module BasicMatrixTheory (E : ElementType).
     forall {r c} (M : mat r c) (a : vec r) i j (E : 0 < fin2nat j),
       (mconscH a M).[i].[j] = M.[i].[fPredRangeP j E].
   Proof. intros. apply mnth_mconscH_gt0; auto. Qed.
-
-  (** mconscH (mheadc M) (mremovecH M) = M *)
-  Lemma mconscH_mheadc_mremovecH : forall {r c} (M : mat r (S c)),
-      mconscH (mheadc M) (mremovecH M) = M.
-  Proof. intros. apply mconscH_mheadc_mremovecH; auto. Qed.
-
-  (** mconscH (vconsT a x) (vconsT M b) = vconsT (mconscH a M) (vconsH x b) *)
-  Lemma mconscH_vconsT_vconsT_eq_vconsT_mconscH_vconsH :
-    forall {r c} (a : vec r) (x : tA) (M : mat r c) (b : vec c),
-      mconscH (vconsT a x) (Vector.vconsT M b) =
-        Vector.vconsT (mconscH a M) (vconsH x b).
-  Proof. intros. apply mconscH_vconsT_vconsT_eq_vconsT_mconscH_vconsH. Qed.
   
   Lemma mnth_mconscT_n : forall {r c} (M : mat r c) (a : vec r) i j,
       j = nat2finS c -> (mconscT M a).[i].[j] = a.[i].
@@ -1086,10 +1055,98 @@ Module BasicMatrixTheory (E : ElementType).
       (mconscT M a).[i] = vconsT M.[i] a.[i].
   Proof. intros. apply vnth_mconscT; auto. Qed.
 
+  (* ======================================================================= *)
+  (** ** Remove exact one row or column at head or tail *)
+
+  (** Remove head row *)
+  Definition mremoverH {r c} (M : mat (S r) c) : mat r c := mremoverH M.
+  
+  (** Remove tail row *)
+  Definition mremoverT {r c} (M : mat (S r) c) : mat r c := mremoverT M.
+
+  (** Remove head column *)
+  Definition mremovecH {r c} (M : mat r (S c)) : mat r c := mremovecH M.
+  
+  (** Remove tail column *)
+  Definition mremovecT {r c} (M : mat r (S c)) : mat r c := mremovecT M.
+
+
+  (** (mremoverH M).i.j = M.(S i).j *)
+  Lemma mnth_mremoverH : forall {r c} (M : mat (S r) c) i j,
+      (mremoverH M).[i].[j] = M.[fSuccRangeS i].[j].
+  Proof. intros. apply mnth_mremoverH. Qed.
+
+  (** (mremoverT M).i.j = M.i.j *)
+  Lemma mnth_mremoverT : forall {r c} (M : mat (S r) c) i j,
+      (mremoverT M).[i].[j] = M.[fSuccRange i].[j].
+  Proof. intros. apply mnth_mremoverT. Qed.
+  
+  (** (mremovecH M).i.j = M.i.(S j) *)
+  Lemma mnth_mremovecH : forall {r c} (M : mat r (S c)) i j,
+      (mremovecH M).[i].[j] = M.[i].[fSuccRangeS j].
+  Proof. intros. apply mnth_mremovecH; auto. Qed.
+  
+  (** (mremovecT M).i.j = M.i.j *)
+  Lemma mnth_mremovecT : forall {r c} (M : mat r (S c)) i j,
+      (mremovecT M).[i].[j] = M.[i].[fSuccRange j].
+  Proof. intros. apply mnth_mremovecT; auto. Qed.
+
+
+  (** mremoverH (mconsrH v A) = A *)
+  Lemma mremoverH_mconsrH : forall r c (A : mat r c) (v : vec c),
+      mremoverH (mconsrH v A) = A.
+  Proof. intros. apply mremoverH_mconsrH; auto. Qed.
+  
+  (** mremoverT (mconsrT v A) = A *)
+  Lemma mremoverT_mconsrT : forall r c (A : mat r c) (v : vec c),
+      mremoverT (mconsrT A v) = A.
+  Proof. intros. apply mremoverT_mconsrT; auto. Qed.
+
+  (** mremovecH (mconscH v A) = A *)
+  Lemma mremovecH_mconscH : forall r c (A : mat r c) (v : vec r),
+      mremovecH (mconscH v A) = A.
+  Proof. intros. apply mremovecH_mconscH; auto. Qed.
+
+  (** mremovecT (mconscT v A) = A *)
+  Lemma mremovecT_mconscT : forall r c (A : mat r c) (v : vec r),
+      mremovecT (mconscT A v) = A.
+  Proof. intros. apply mremovecT_mconscT; auto. Qed.
+
+  
+  (** mconsrH (mheadr M) (mremoverH M) = M *)
+  Lemma mconsrH_mheadr_mremoverH : forall {r c} (M : mat (S r) c),
+      mconsrH (mheadr M) (mremoverH M) = M.
+  Proof. intros. apply mconsrH_mheadr_mremoverH. Qed.
+
+  (** mconsrT (mremoverT M) (mtailr M) = M *)
+  Lemma mconsrT_mremoverT_mtailr : forall {r c} (M : mat (S r) c),
+      mconsrT (mremoverT M) (mtailr M) = M.
+  Proof. intros. apply mconsrT_mremoverT_mtailr. Qed.
+
+  (** mconscH (mheadc M) (mremovecH M) = M *)
+  Lemma mconscH_mheadc_mremovecH : forall {r c} (M : mat r (S c)),
+      mconscH (mheadc M) (mremovecH M) = M.
+  Proof. intros. apply mconscH_mheadc_mremovecH; auto. Qed.
+
   (** mconscT (mremovecT M) (mtailc M) = M *)
   Lemma mconscT_mremovecT_mtailc : forall {r c} (M : mat r (S c)),
       mconscT (mremovecT M) (mtailc M) = M.
   Proof. intros. apply mconscT_mremovecT_mtailc; auto. Qed.
+
+
+  (** mconscT (mconsrT M a) (vconsT b x) = mconsrT (mconscT M b) (vconsT a x) *)
+  Lemma mconscT_mconsrT_vconsT :
+    forall {r c} (M : mat r c) (a : vec c) (b : vec r) (x : tA),
+      mconscT (mconsrT M a) (vconsT b x) = mconsrT (mconscT M b) (vconsT a x).
+  Proof. intros. apply mconscT_mconsrT_vconsT. Qed.
+
+  (** mconscH (vconsT a x) (vconsT M b) = vconsT (mconscH a M) (vconsH x b) *)
+  Lemma mconscH_vconsT_vconsT_eq_vconsT_mconscH_vconsH :
+    forall {r c} (a : vec r) (x : tA) (M : mat r c) (b : vec c),
+      mconscH (vconsT a x) (Vector.vconsT M b) =
+        Vector.vconsT (mconscH a M) (vconsH x b).
+  Proof. intros. apply mconscH_vconsT_vconsT_eq_vconsT_mconscH_vconsH. Qed.
+
   
   (* ======================================================================= *)
   (** ** Mapping of matrix *)

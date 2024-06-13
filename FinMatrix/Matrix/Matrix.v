@@ -725,68 +725,6 @@ Section mset.
 End mset.
 
 (* ======================================================================= *)
-(** ** Remove one row at head or tail *)
-Section mremoverH_mremoverT.
-  Context {tA} {Azero : tA}.
-  Notation v2f := (v2f Azero).
-  Notation vzero := (vzero Azero).
-
-  (** *** mremoverH *)
-  
-  (** Remove head row *)
-  Definition mremoverH {r c} (M : @mat tA (S r) c) : @mat tA r c := vremoveH M.
-  
-  (** (mremoverH M).i.j = M.(S i).j *)
-  Lemma mnth_mremoverH : forall {r c} (M : @mat tA (S r) c) i j,
-      (mremoverH M).[i].[j] = M.[fSuccRangeS i].[j].
-  Proof. auto. Qed.
-
-  
-  (** *** mremoverT *)
-
-  (** Remove tail row *)
-  Definition mremoverT {r c} (M : @mat tA (S r) c) : @mat tA r c := vremoveT M.
-  
-  (** (mremoverT M).i.j = M.i.j *)
-  Lemma mnth_mremoverT : forall {r c} (M : @mat tA (S r) c) i j,
-      (mremoverT M).[i].[j] = M.[fSuccRange i].[j].
-  Proof. auto. Qed.
-
-End mremoverH_mremoverT.
-
-(* ======================================================================= *)
-(** ** Remove one column at head or tail *)
-Section mremovecH_mremovecT.
-  Context {tA} {Azero : tA}.
-  Notation v2f := (v2f Azero).
-  Notation vzero := (vzero Azero).
-
-  (** *** mremovecH *)
-  
-  (** Remove head column *)
-  Definition mremovecH {r c} (M : @mat tA r (S c)) : @mat tA r c :=
-    fun i => vremoveH (M.[i]).
-  
-  (** (mremovecH M).i.j = M.i.(S j) *)
-  Lemma mnth_mremovecH : forall {r c} (M : @mat tA r (S c)) i j,
-      (mremovecH M).[i].[j] = M.[i].[fSuccRangeS j].
-  Proof. auto. Qed.
-
-  
-  (** *** mremovecT *)
-
-  (** Remove tail column *)
-  Definition mremovecT {r c} (M : @mat tA r (S c)) : @mat tA r c :=
-    fun i => vremoveT (M.[i]).
-  
-  (** (mremovecT M).i.j = M.i.j *)
-  Lemma mnth_mremovecT : forall {r c} (M : @mat tA r (S c)) i j,
-      (mremovecT M).[i].[j] = M.[i].[fSuccRange j].
-  Proof. auto. Qed.
-
-End mremovecH_mremovecT.
-
-(* ======================================================================= *)
 (** ** Construct matrix from vector and matrix *)
 Section mcons.
   Context {tA} (Azero : tA).
@@ -832,18 +770,6 @@ Section mcons.
     apply fin_eq_iff; auto. simpl. lia.
   Qed.
 
-  (** mconsrH (mheadr M) (mremoverH M) = M *)
-  Lemma mconsrH_mremoverH_mtailr : forall {r c} (M : @mat tA (S r) c),
-      mconsrH (mheadr M) (mremoverH M) = M.
-  Proof.
-    intros. apply meq_iff_mnth; intros i j. destruct (fin2nat i ??= 0)%nat as [E|E].
-    - assert (i = fin0). destruct i; fin. rewrite H.
-      rewrite mnth_mconsrH_0; auto.
-    - assert (0 < fin2nat i) by lia.
-      rewrite mnth_mconsrH_gt0 with (H:=H); auto.
-      rewrite mnth_mremoverH. fin.
-  Qed.
-
   
   (** Construct a matrix with a matrix and a row vector *)
   Definition mconsrT {r c} (M : mat tA r c) (a : @vec tA c) : mat tA (S r) c :=
@@ -883,19 +809,6 @@ Section mcons.
       (mconsrT M a).[i] = M.[fPredRange i H].
   Proof. intros. unfold mconsrT. rewrite vnth_vconsT_lt with (H:=H). auto. Qed.
 
-  (** mconsrT (mremoverT M) (mtailr M) = M *)
-  Lemma mconsrT_mremoverT_mtailr : forall {r c} (M : @mat tA (S r) c),
-      mconsrT (mremoverT M) (mtailr M) = M.
-  Proof.
-    intros. apply meq_iff_mnth; intros i j. destruct (fin2nat i ??= r)%nat as [E|E].
-    - rewrite mnth_mconsrT_n; auto.
-      + rewrite vnth_mtailr. f_equal.
-        destruct i. erewrite nat2finS_eq. fin.
-      + destruct i. erewrite nat2finS_eq. fin.
-    - erewrite mnth_mconsrT_lt. rewrite mnth_mremoverT. fin.
-      Unshelve. all: fin. pose proof (fin2nat_lt i). lia.
-  Qed.
-
   
   (** Construct a matrix with a column vector and a matrix *)
   Definition mconscH {r c} (a : @vec tA r) (M : mat tA r c) : mat tA r (S c) :=
@@ -916,42 +829,6 @@ Section mcons.
       (mconscH a M).[i].[j] = M.[i].[fPredRangeP j E].
   Proof.
     intros. unfold mconscH. rewrite vnth_vmap2. erewrite vnth_vconsH_gt0. f_equal.
-  Qed.
-
-  (** mconscH (mheadc M) (mremovecH M) = M *)
-  Lemma mconscH_mheadc_mremovecH : forall {r c} (M : @mat tA r (S c)),
-      mconscH (mheadc M) (mremovecH M) = M.
-  Proof.
-    intros. apply meq_iff_mnth; intros i j. destruct (fin2nat j ??= 0)%nat as [E|E].
-    - assert (j = fin0). destruct j; apply fin_eq_iff; auto. rewrite H.
-      rewrite mnth_mconscH_0; auto.
-    - assert (0 < fin2nat j) by lia.
-      rewrite mnth_mconscH_gt0 with (E:=H); auto.
-      rewrite mnth_mremovecH. f_equal. apply fSuccRangeS_fPredRangeP.
-  Qed.
-
-  (** mconscH (vconsT a x) (vconsT M b) = vconsT (mconscH a M) (vconsH x b) *)
-  Lemma mconscH_vconsT_vconsT_eq_vconsT_mconscH_vconsH :
-    forall {r c} (a : vec r) (x : tA) (M : mat tA r c) (b : vec c),
-      mconscH (vconsT a x) (vconsT M b) = vconsT (mconscH a M) (vconsH x b).
-  Proof with try apply fin2nat_nat2finS; auto.
-    intros. apply meq_iff_mnth; intros.
-    destruct (fin2nat j ??= 0)%nat as [E|E].
-    - assert (j = fin0). destruct j; apply fin_eq_iff; auto. rewrite H.
-      rewrite mnth_mconscH_0; auto.
-      destruct (fin2nat i ??= r)%nat as [E1|E1].
-      + rewrite !vnth_vconsT_n; auto.
-      + assert (fin2nat i < r). pose proof (fin2nat_lt i). lia.
-        rewrite !vnth_vconsT_lt with (H:=H0); auto.
-    - assert (0 < fin2nat j) by lia. rewrite mnth_mconscH_gt0 with (E:=H).
-      destruct (fin2nat i ??= r)%nat.
-      + rewrite !vnth_vconsT_n; auto.
-        assert (0 < fin2nat j) by lia.
-        rewrite vnth_vconsH_gt0 with (H:=H0). f_equal. apply fin_eq_iff; auto.
-      + assert (fin2nat i < r). pose proof (fin2nat_lt i). lia.
-        rewrite !vnth_vconsT_lt with (H:=H0); auto.
-        assert (0 < fin2nat j) by lia. rewrite mnth_mconscH_gt0 with (E:=H1).
-        f_equal. apply fin_eq_iff; auto.
   Qed.
   
   
@@ -996,6 +873,147 @@ Section mcons.
     erewrite mnth_mconscT_lt; auto.
   Qed.
 
+End mcons.
+
+Section test.
+
+  Let a : @vec nat 2 := l2v 9 [1;2].
+  Let M : @mat nat 2 2 := l2m 9 [[3;4];[5;6]].
+  (* Compute m2l (mconsrH a M). *)
+  (* Compute m2l (mconsrT M a). *)
+  (* Compute m2l (mconscH a M). *)
+  (* Compute m2l (mconscT M a). *)
+
+End test.
+
+
+(* ======================================================================= *)
+(** ** Remove one row at head or tail *)
+Section mremoverH_mremoverT.
+  Context {tA} {Azero : tA}.
+  Notation v2f := (v2f Azero).
+  Notation vzero := (vzero Azero).
+
+  (** *** mremoverH *)
+  
+  (** Remove head row *)
+  Definition mremoverH {r c} (M : @mat tA (S r) c) : @mat tA r c := vremoveH M.
+  
+  (** (mremoverH M).i.j = M.(S i).j *)
+  Lemma mnth_mremoverH : forall {r c} (M : @mat tA (S r) c) i j,
+      (mremoverH M).[i].[j] = M.[fSuccRangeS i].[j].
+  Proof. auto. Qed.
+
+  (** mremoverH (mconsrH v A) = A *)
+  Lemma mremoverH_mconsrH : forall r c (A : mat tA r c) (v : @vec tA c),
+      mremoverH (mconsrH v A) = A.
+  Proof.
+    intros. apply meq_iff_mnth; intros. rewrite mnth_mremoverH.
+    erewrite mnth_mconsrH_gt0; fin. Unshelve. fin.
+  Qed.
+
+  (** mconsrH (mheadr M) (mremoverH M) = M *)
+  Lemma mconsrH_mheadr_mremoverH : forall {r c} (M : @mat tA (S r) c),
+      mconsrH (mheadr M) (mremoverH M) = M.
+  Proof.
+    intros. apply meq_iff_mnth; intros i j. destruct (fin2nat i ??= 0)%nat as [E|E].
+    - replace i with (@fin0 r); auto. destruct i; fin.
+    - erewrite mnth_mconsrH_gt0. rewrite mnth_mremoverH. fin.
+      Unshelve. fin.
+  Qed.
+
+  
+  (** *** mremoverT *)
+
+  (** Remove tail row *)
+  Definition mremoverT {r c} (M : @mat tA (S r) c) : @mat tA r c := vremoveT M.
+  
+  (** (mremoverT M).i.j = M.i.j *)
+  Lemma mnth_mremoverT : forall {r c} (M : @mat tA (S r) c) i j,
+      (mremoverT M).[i].[j] = M.[fSuccRange i].[j].
+  Proof. auto. Qed.
+
+  (** mremoverT (mconsrT v A) = A *)
+  Lemma mremoverT_mconsrT : forall r c (A : mat tA r c) (v : @vec tA c),
+      mremoverT (mconsrT A v) = A.
+  Proof.
+    intros. apply meq_iff_mnth; intros. rewrite mnth_mremoverT.
+    erewrite mnth_mconsrT_lt. fin. Unshelve. fin.
+  Qed.
+
+  (** mconsrT (mremoverT M) (mtailr M) = M *)
+  Lemma mconsrT_mremoverT_mtailr : forall {r c} (M : @mat tA (S r) c),
+      mconsrT (mremoverT M) (mtailr M) = M.
+  Proof.
+    intros. apply meq_iff_mnth; intros i j. destruct (fin2nat i ??= r)%nat as [E|E].
+    - rewrite mnth_mconsrT_n; auto.
+      + rewrite vnth_mtailr. f_equal.
+        destruct i. erewrite nat2finS_eq. fin.
+      + destruct i. erewrite nat2finS_eq. fin.
+    - erewrite mnth_mconsrT_lt. rewrite mnth_mremoverT. fin.
+      Unshelve. all: fin. pose proof (fin2nat_lt i). lia.
+  Qed.
+
+End mremoverH_mremoverT.
+
+(* ======================================================================= *)
+(** ** Remove one column at head or tail *)
+Section mremovecH_mremovecT.
+  Context {tA} {Azero : tA}.
+  Notation v2f := (v2f Azero).
+  Notation vzero := (vzero Azero).
+
+  (** *** mremovecH *)
+  
+  (** Remove head column *)
+  Definition mremovecH {r c} (M : @mat tA r (S c)) : @mat tA r c :=
+    fun i => vremoveH (M.[i]).
+  
+  (** (mremovecH M).i.j = M.i.(S j) *)
+  Lemma mnth_mremovecH : forall {r c} (M : @mat tA r (S c)) i j,
+      (mremovecH M).[i].[j] = M.[i].[fSuccRangeS j].
+  Proof. auto. Qed.
+
+  (** mremovecH (mconscH v A) = A *)
+  Lemma mremovecH_mconscH : forall r c (A : mat tA r c) (v : @vec tA r),
+      mremovecH (mconscH v A) = A.
+  Proof.
+    intros. apply meq_iff_mnth; intros. rewrite mnth_mremovecH.
+    erewrite mnth_mconscH_gt0. fin. Unshelve. fin.
+  Qed.
+
+  (** mconscH (mheadc M) (mremovecH M) = M *)
+  Lemma mconscH_mheadc_mremovecH : forall {r c} (M : @mat tA r (S c)),
+      mconscH (mheadc M) (mremovecH M) = M.
+  Proof.
+    intros. apply meq_iff_mnth; intros i j. destruct (fin2nat j ??= 0)%nat as [E|E].
+    - assert (j = fin0). destruct j; apply fin_eq_iff; auto. rewrite H.
+      rewrite mnth_mconscH_0; auto.
+    - assert (0 < fin2nat j) by lia.
+      rewrite mnth_mconscH_gt0 with (E:=H); auto.
+      rewrite mnth_mremovecH. f_equal. apply fSuccRangeS_fPredRangeP.
+  Qed.
+
+  
+  (** *** mremovecT *)
+
+  (** Remove tail column *)
+  Definition mremovecT {r c} (M : @mat tA r (S c)) : @mat tA r c :=
+    fun i => vremoveT (M.[i]).
+  
+  (** (mremovecT M).i.j = M.i.j *)
+  Lemma mnth_mremovecT : forall {r c} (M : @mat tA r (S c)) i j,
+      (mremovecT M).[i].[j] = M.[i].[fSuccRange j].
+  Proof. auto. Qed.
+
+  (** mremovecT (mconscT v A) = A *)
+  Lemma mremovecT_mconscT : forall r c (A : mat tA r c) (v : @vec tA r),
+      mremovecT (mconscT A v) = A.
+  Proof.
+    intros. apply meq_iff_mnth; intros. rewrite mnth_mremovecT.
+    erewrite mnth_mconscT_lt. fin. Unshelve. fin.
+  Qed.
+
   (** mconscT (mremovecT M) (mtailc M) = M *)
   Lemma mconscT_mremovecT_mtailc : forall {r c} (M : @mat tA r (S c)),
       mconscT (mremovecT M) (mtailc M) = M.
@@ -1022,18 +1040,31 @@ Section mcons.
       rewrite vnth_mcol. rewrite mnth_mconscT_n; auto.
   Qed.
 
-End mcons.
+  (** mconscH (vconsT a x) (vconsT M b) = vconsT (mconscH a M) (vconsH x b) *)
+  Lemma mconscH_vconsT_vconsT_eq_vconsT_mconscH_vconsH :
+    forall {r c} (a : vec r) (x : tA) (M : mat tA r c) (b : vec c),
+      mconscH (vconsT a x) (vconsT M b) = vconsT (mconscH a M) (vconsH x b).
+  Proof with try apply fin2nat_nat2finS; auto.
+    intros. apply meq_iff_mnth; intros.
+    destruct (fin2nat j ??= 0)%nat as [E|E].
+    - assert (j = fin0). destruct j; apply fin_eq_iff; auto. rewrite H.
+      rewrite mnth_mconscH_0; auto.
+      destruct (fin2nat i ??= r)%nat as [E1|E1].
+      + rewrite !vnth_vconsT_n; auto.
+      + assert (fin2nat i < r). pose proof (fin2nat_lt i). lia.
+        rewrite !vnth_vconsT_lt with (H:=H0); auto.
+    - assert (0 < fin2nat j) by lia. rewrite mnth_mconscH_gt0 with (E:=H).
+      destruct (fin2nat i ??= r)%nat.
+      + rewrite !vnth_vconsT_n; auto.
+        assert (0 < fin2nat j) by lia.
+        rewrite vnth_vconsH_gt0 with (H:=H0). f_equal. apply fin_eq_iff; auto.
+      + assert (fin2nat i < r). pose proof (fin2nat_lt i). lia.
+        rewrite !vnth_vconsT_lt with (H:=H0); auto.
+        assert (0 < fin2nat j) by lia. rewrite mnth_mconscH_gt0 with (E:=H1).
+        f_equal. apply fin_eq_iff; auto.
+  Qed.
 
-Section test.
-
-  Let a : @vec nat 2 := l2v 9 [1;2].
-  Let M : @mat nat 2 2 := l2m 9 [[3;4];[5;6]].
-  (* Compute m2l (mconsrH a M). *)
-  (* Compute m2l (mconsrT M a). *)
-  (* Compute m2l (mconscH a M). *)
-  (* Compute m2l (mconscT M a). *)
-
-End test.
+End mremovecH_mremovecT.
 
 
 (* ======================================================================= *)

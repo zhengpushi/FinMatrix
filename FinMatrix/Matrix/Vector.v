@@ -368,7 +368,14 @@ End l2v_v2l.
 
 
 (* ======================================================================= *)
-(** ** Automation for vector equality proofs *)
+(** ** Automation for vector operations *)
+
+(** Automation for vector operations *)
+Ltac simp_vec :=
+  auto with vec;
+  autorewrite with vec; auto with vec;
+  autounfold with vec; auto with vec.
+
 
 (** Convert equality of two vectors to point-wise element equalities *)
 Ltac veq :=
@@ -487,22 +494,26 @@ End vmap.
 
 (* ======================================================================= *)
 (** ** Vector by mapping two vectors *)
-Section vmap2.
-  Context {tA tB tC : Type} (f : tA -> tB -> tC).
-  
-  Definition vmap2 {n} (a : @vec tA n) (b : @vec tB n) : @vec tC n :=
-    fun i => f a.[i] b.[i].
+
+Definition vmap2 {tA tB tC n} (f : tA -> tB -> tC) (a : @vec tA n) (b : @vec tB n)
+  : @vec tC n := fun i => f a.[i] b.[i].
+
+Section props.
+  Context (tA tB tC : Type) (f : tA -> tB -> tC).
 
   (** (vmap2 f a b).i = f (a.i) (b.i) *)
-  Lemma vnth_vmap2 : forall {n} (a b : vec n) i, (vmap2 a b).[i] = f a.[i] b.[i].
+  Lemma vnth_vmap2 : forall {n} (a b : vec n) i, (vmap2 f a b).[i] = f a.[i] b.[i].
   Proof. intros. unfold vmap2; auto. Qed.
 
   (* vmap2 f a b = vmap id (fun i => f u.i v.i) *)
   Lemma vmap2_eq_vmap : forall {n} (a b : vec n),
-      vmap2 a b = vmap (fun a => a) (fun i => f a.[i] b.[i]).
+      vmap2 f a b = vmap (fun a => a) (fun i => f a.[i] b.[i]).
   Proof. intros. auto. Qed.
   
-End vmap2.
+End props.
+
+#[export] Hint Rewrite vnth_vmap2 : vec.
+
 
 (** vmap2 on same type *)
 Section vmap2_sametype.
@@ -2558,7 +2569,8 @@ Section vdot.
   Lemma vdot_vadd_l : forall {n} (a b c : vec n), <a + b, c> = (<a, c> + <b, c>)%A.
   Proof.
     intros. unfold vdot. rewrite vsum_add; intros.
-    apply vsum_eq; intros. rewrite !vnth_vmap2. ring.
+    apply vsum_eq; intros. rewrite !vnth_vmap2.
+    rewrite vnth_vadd. ring.
   Qed.
 
   (** <a, b + c> = <a, b> + <a, c> *)

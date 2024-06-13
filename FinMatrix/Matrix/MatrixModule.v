@@ -1003,53 +1003,9 @@ Module BasicMatrixTheory (E : ElementType).
   (** Construct a matrix with a matrix and a column vector *)
   Definition mconscT {r c} (M : mat r c) (a : vec r) : mat r (S c) := mconscT M a.
 
-  Lemma mnth_mconsrH_0 : forall {r c} (a : vec c) (M : mat r c) j,
-      (mconsrH a M).[fin0].[j] = a.[j].
-  Proof. intros. apply mnth_mconsrH_0; auto. Qed.
-
-  Lemma mnth_mconsrH_gt0 :
-    forall {r c} (a : vec c) (M : mat r c) (i : 'I_(S r)) (j : 'I_c) (H : 0 < i),
-      (mconsrH a M).[i].[j] = M.[fPredRangeP i H].[j].
-  Proof. intros. apply mnth_mconsrH_gt0; auto. Qed.
-
-  Lemma mconsrH_spec : forall {r c} (a : vec c) (M : mat r c),
-      let fa := v2f a in
-      let fM := m2f M in
-      let faM := m2f (mconsrH a M) in
-      (forall j, j < c -> faM O j = fa j) /\
-        (forall i j, 0 < i < r -> j < c -> faM i j = fM (i - 1) j).
-  Proof. intros. apply mconsrH_spec. Qed.
-
-  Lemma mnth_mconsrT_n : forall {r c} (M : mat r c) (a : vec c) i j,
-      i = #r -> (mconsrT M a).[i].[j] = a.[j].
-  Proof. intros. apply mnth_mconsrT_n; auto. Qed.
-
-  Lemma mnth_mconsrT_lt :
-    forall {r c} (M : mat r c) (a : vec c) i j (E : fin2nat i < r),
-      (mconsrT M a).[i].[j] = M.[fPredRange i E].[j].
-  Proof. intros. apply mnth_mconsrT_lt; auto. Qed.
-
   Lemma vnth_mconscH : forall {r c} (M : mat (S r) c) (a : vec (S r)) (i : 'I_(S r)),
       (mconscH a M).[i] = vconsH (a.[i]) (M.[i]).
   Proof. intros; apply vnth_mconscH; auto. Qed.
-  
-  Lemma mnth_mconscH_0 : forall {r c} (a : vec r) (M : mat r c) i,
-      (mconscH a M).[i].[fin0] = a.[i].
-  Proof. intros. apply mnth_mconscH_0; auto. Qed.
-
-  Lemma mnth_mconscH_gt0 :
-    forall {r c} (M : mat r c) (a : vec r) i j (E : 0 < fin2nat j),
-      (mconscH a M).[i].[j] = M.[i].[fPredRangeP j E].
-  Proof. intros. apply mnth_mconscH_gt0; auto. Qed.
-  
-  Lemma mnth_mconscT_n : forall {r c} (M : mat r c) (a : vec r) i j,
-      j = nat2finS c -> (mconscT M a).[i].[j] = a.[i].
-  Proof. intros. apply mnth_mconscT_n; auto. fin. Qed.
-
-  Lemma mnth_mconscT_lt :
-    forall {r c} (M : mat r c) (a : vec r) i j (H : fin2nat j < c),
-      (mconscT M a).[i].[j] = M.[i].[fPredRange j H].
-  Proof. intros. apply mnth_mconscT_lt; auto. Qed.
 
   Lemma vnth_mconscT : forall {r c} (M : mat r c) (a : vec r) i,
       (mconscT M a).[i] = vconsT M.[i] a.[i].
@@ -1071,81 +1027,72 @@ Module BasicMatrixTheory (E : ElementType).
   Definition mremovecT {r c} (M : mat r (S c)) : mat r c := mremovecT M.
 
 
-  (** (mremoverH M).i.j = M.(S i).j *)
-  Lemma mnth_mremoverH : forall {r c} (M : mat (S r) c) i j,
-      (mremoverH M).[i].[j] = M.[fSuccRangeS i].[j].
-  Proof. intros. apply mnth_mremoverH. Qed.
+  (**     [a11 a12 a13]
+      A = ------------
+          [a21 a22 a23]
+          [a31 a32 a33] *)
+  Lemma meq_mconsrH_mheadr_mremoverH : forall {r c} (A : mat (S r) c),
+      A = mconsrH (mheadr A) (mremoverH A).
+  Proof. intros. apply meq_mconsrH_mheadr_mremoverH. Qed.
 
-  (** (mremoverT M).i.j = M.i.j *)
-  Lemma mnth_mremoverT : forall {r c} (M : mat (S r) c) i j,
-      (mremoverT M).[i].[j] = M.[fSuccRange i].[j].
-  Proof. intros. apply mnth_mremoverT. Qed.
+  (**     [a11 a12 a13]
+      A = [a21 a22 a23]
+          ------------
+          [a31 a32 a33] *)
+  Lemma meq_mconsrT_mremoverT_mtailr : forall {r c} (A : mat (S r) c),
+      A = mconsrT (mremoverT A) (mtailr A).
+  Proof. intros. apply meq_mconsrT_mremoverT_mtailr. Qed.
+
+  (**     [a11 | a12 a13]
+      A = [a21 | a22 a23]
+          [a31 | a32 a33] *)
+  Lemma meq_mconscH_mheadc_mremovecH : forall {r c} (A : mat r (S c)),
+      A = mconscH (mheadc A) (mremovecH A).
+  Proof. intros. apply meq_mconscH_mheadc_mremovecH. Qed.
+
+  (**     [a11 a12 | a13]
+      A = [a21 a22 | a23]
+          [a31 a32 | a33] *)
+  Lemma meq_mconscT_mremovecT_mtailc : forall {r c} (A : mat r (S c)),
+      A = mconscT (mremovecT A) (mtailc A).
+  Proof. intros. apply meq_mconscT_mremovecT_mtailc. Qed.
   
-  (** (mremovecH M).i.j = M.i.(S j) *)
-  Lemma mnth_mremovecH : forall {r c} (M : mat r (S c)) i j,
-      (mremovecH M).[i].[j] = M.[i].[fSuccRangeS j].
-  Proof. intros. apply mnth_mremovecH; auto. Qed.
+
+  (** [A11 A12 | u1]   [A11 A12 | u1]
+      [A21 A22 | u2] = [A21 A22 | u2]
+      [------- | --]   [------------]
+      [ v1  v2 |  x]   [ v1  v2 |  x] *)
+  Lemma mconscT_mconsrT_vconsT_eq_mconsrT_mconscT_vconsT :
+    forall {r c} (A : mat r c) (u : vec r) (v : vec c) (x : tA),
+      mconscT (mconsrT A v) (vconsT u x) = mconsrT (mconscT A u) (vconsT v x).
+  Proof. intros. apply mconscT_mconsrT_vconsT_eq_mconsrT_mconscT_vconsT. Qed.
+
+  (** [u1 | A11 A12]   [u1 | A11 A12]
+      [u2 | A21 A22] = [u2 | A21 A22]
+      [-- | -------]   [------------]
+      [ x |  v1  v2]   [ x |  v1  v2] *)
+  Lemma mconscH_vconsT_mconsrT_eq_mconsrT_mconscH_vconsH :
+    forall {r c} (A : mat r c) (u : vec r) (v : vec c) (x : tA),
+      mconscH (vconsT u x) (mconsrT A v) = mconsrT (mconscH u A) (vconsH x v).
+  Proof. intros. apply mconscH_vconsT_mconsrT_eq_mconsrT_mconscH_vconsH. Qed.
+
+  (** [ v1  v2 |  x]   [ v1  v2 |  x] 
+      [------- | --] = [------------]
+      [A11 A12 | u1]   [A11 A12 | u1]
+      [A21 A22 | u2]   [A21 A22 | u2] *)
+  Lemma mconscT_mconsrH_vconsH_eq_mconsrH_vconsT_mconscT :
+    forall {r c} (A : mat r c) (u : vec r) (v : vec c) (x : tA),
+      mconscT (mconsrH v A) (vconsH x u) = mconsrH (vconsT v x) (mconscT A u).
+  Proof. intros. apply mconscT_mconsrH_vconsH_eq_mconsrH_vconsT_mconscT. Qed.
   
-  (** (mremovecT M).i.j = M.i.j *)
-  Lemma mnth_mremovecT : forall {r c} (M : mat r (S c)) i j,
-      (mremovecT M).[i].[j] = M.[i].[fSuccRange j].
-  Proof. intros. apply mnth_mremovecT; auto. Qed.
-
-
-  (** mremoverH (mconsrH v A) = A *)
-  Lemma mremoverH_mconsrH : forall r c (A : mat r c) (v : vec c),
-      mremoverH (mconsrH v A) = A.
-  Proof. intros. apply mremoverH_mconsrH; auto. Qed.
-  
-  (** mremoverT (mconsrT v A) = A *)
-  Lemma mremoverT_mconsrT : forall r c (A : mat r c) (v : vec c),
-      mremoverT (mconsrT A v) = A.
-  Proof. intros. apply mremoverT_mconsrT; auto. Qed.
-
-  (** mremovecH (mconscH v A) = A *)
-  Lemma mremovecH_mconscH : forall r c (A : mat r c) (v : vec r),
-      mremovecH (mconscH v A) = A.
-  Proof. intros. apply mremovecH_mconscH; auto. Qed.
-
-  (** mremovecT (mconscT v A) = A *)
-  Lemma mremovecT_mconscT : forall r c (A : mat r c) (v : vec r),
-      mremovecT (mconscT A v) = A.
-  Proof. intros. apply mremovecT_mconscT; auto. Qed.
-
-  
-  (** mconsrH (mheadr M) (mremoverH M) = M *)
-  Lemma mconsrH_mheadr_mremoverH : forall {r c} (M : mat (S r) c),
-      mconsrH (mheadr M) (mremoverH M) = M.
-  Proof. intros. apply mconsrH_mheadr_mremoverH. Qed.
-
-  (** mconsrT (mremoverT M) (mtailr M) = M *)
-  Lemma mconsrT_mremoverT_mtailr : forall {r c} (M : mat (S r) c),
-      mconsrT (mremoverT M) (mtailr M) = M.
-  Proof. intros. apply mconsrT_mremoverT_mtailr. Qed.
-
-  (** mconscH (mheadc M) (mremovecH M) = M *)
-  Lemma mconscH_mheadc_mremovecH : forall {r c} (M : mat r (S c)),
-      mconscH (mheadc M) (mremovecH M) = M.
-  Proof. intros. apply mconscH_mheadc_mremovecH; auto. Qed.
-
-  (** mconscT (mremovecT M) (mtailc M) = M *)
-  Lemma mconscT_mremovecT_mtailc : forall {r c} (M : mat r (S c)),
-      mconscT (mremovecT M) (mtailc M) = M.
-  Proof. intros. apply mconscT_mremovecT_mtailc; auto. Qed.
-
-
-  (** mconscT (mconsrT M a) (vconsT b x) = mconsrT (mconscT M b) (vconsT a x) *)
-  Lemma mconscT_mconsrT_vconsT :
-    forall {r c} (M : mat r c) (a : vec c) (b : vec r) (x : tA),
-      mconscT (mconsrT M a) (vconsT b x) = mconsrT (mconscT M b) (vconsT a x).
-  Proof. intros. apply mconscT_mconsrT_vconsT. Qed.
-
-  (** mconscH (vconsT a x) (vconsT M b) = vconsT (mconscH a M) (vconsH x b) *)
-  Lemma mconscH_vconsT_vconsT_eq_vconsT_mconscH_vconsH :
-    forall {r c} (a : vec r) (x : tA) (M : mat r c) (b : vec c),
-      mconscH (vconsT a x) (Vector.vconsT M b) =
-        Vector.vconsT (mconscH a M) (vconsH x b).
-  Proof. intros. apply mconscH_vconsT_vconsT_eq_vconsT_mconscH_vconsH. Qed.
+  (** [ x |  v1  v2]   [ x |  v1  v2]
+      [-- | -------] = [------------]
+      [u1 | A11 A12]   [u1 | A11 A12]
+      [u2 | A21 A22]   [u2 | A21 A22] *)
+  Lemma mconscH_vconsH_mconsrH_eq_mconsrH_vconsH_mconscH :
+    forall {r c} (A : mat r c) (u : vec r) (v : vec c) (x : tA),
+      mconscH (vconsH x u) (mconsrH v A) = mconsrH (vconsH x v) (mconscH u A).
+  Proof. intros. apply mconscH_vconsH_mconsrH_eq_mconsrH_vconsH_mconscH. Qed.
 
   
   (* ======================================================================= *)

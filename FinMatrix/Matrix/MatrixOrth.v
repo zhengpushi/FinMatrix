@@ -196,7 +196,7 @@ Module MatrixOrth (F : FieldElementType).
       forall i1 i2, i1 <> i2 -> M.[i1] _|_ M.[i2].
 
     Lemma mtrans_mcolsOrth : forall {r c} (M : mat r c), mrowsOrth M -> mcolsOrth (M\T).
-    Proof. intros. hnf in *. intros. rewrite mcol_eq_mtrans. auto. Qed.
+    Proof. intros. hnf in *. intros. simp_mat. Qed.
 
     Lemma mtrans_mrowsOrth : forall {r c} (M : mat r c), mcolsOrth M -> mrowsOrth (M\T).
     Proof. intros. hnf in *. intros. auto. Qed.
@@ -233,14 +233,11 @@ Module MatrixOrth (F : FieldElementType).
 
     Lemma mtrans_mcolsUnit : forall {r c} (M : mat r c),
         mrowsUnit M -> mcolsUnit (M\T).
-    Proof.
-      intros. hnf in *. intros. rewrite mcol_eq_mtrans.
-      rewrite mtrans_mtrans. auto.
-    Qed.
+    Proof. intros. hnf in *. intros. simp_mat. Qed.
 
     Lemma mtrans_mrowsUnit : forall {r c} (M : mat r c),
         mcolsUnit M -> mrowsUnit (M\T).
-    Proof. intros. hnf in *. intros. rewrite <- mcol_eq_mtrans. auto. Qed.
+    Proof. intros. hnf in *. intros. simp_mat. Qed.
 
     (*
   (** bool version *)

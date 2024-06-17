@@ -30,7 +30,6 @@ Require Export Hierarchy.
 Require Export ListExt.
 Require Export Vector.
 Require Reals.
-Require Import Extraction.
 
 Generalizable Variable tA Aadd Azero Aopp Amul Aone Ainv.
 
@@ -47,6 +46,8 @@ Open Scope mat_scope.
 
 (* ======================================================================= *)
 (** ** Definition of matrix type *)
+
+(* Note: we use notation to enabling the automation by vector automatically *)
 
 (** An r*c matrix over tA type  *)
 Notation mat tA r c := (@vec (@vec tA c) r).
@@ -107,18 +108,111 @@ Proof.
     apply ex_not_not_all; auto. exists j. auto.
 Qed.
 
+(* ======================================================================= *)
+(** ** Convert between [dlist] and [mat] *)
+Section l2m_m2l.
+  Context {tA} (Azero : tA).
+
+  (** matrix to dlist *)
+  Definition m2l {r c} (M : mat tA r c) : dlist tA := map v2l (v2l M).
+  (** dlist to matrix *)
+  Definition l2m {r c} (d : dlist tA) : mat tA r c :=
+    l2v (vzero Azero) (map (l2v Azero) d).
+
+  Lemma m2l_length : forall {r c} (M : mat tA r c), length (m2l M) = r.
+  Proof. intros. unfold m2l. rewrite map_length. rewrite v2l_length; auto. Qed.
+
+  Lemma m2l_width : forall {r c} (M : mat tA r c), width (m2l M) c.
+  Proof.
+    intros. unfold width,m2l. apply Forall_map_forall.
+    intros. apply v2l_length.
+  Qed.
+
+  Lemma nth_m2l_length : forall {r c} (M : mat tA r c) i,
+      i < r -> length (nth i (m2l M) []) = c.
+  Proof.
+    intros. unfold m2l.
+    rewrite nth_map with (n:=r)(Azero:=vzero Azero); auto; rewrite v2l_length; auto.
+  Qed.
+
+  Lemma m2l_inj : forall {r c} (M N : mat tA r c), m2l M = m2l N -> M = N.
+  Proof.
+    intros. unfold m2l in H.  apply map_inj in H; auto. apply v2l_inj; auto.
+    intros. apply v2l_inj; auto.
+  Qed.
+
+  Lemma nth_m2l : forall {r c} (M : @mat tA r c) i j (Hi : i < r) (Hj : j < c),
+      nth j (nth i (m2l M) []) Azero = M.[nat2fin i Hi].[nat2fin j Hj].
+  Proof.
+    intros. unfold m2l. erewrite nth_map with (n:=r)(Azero:=vzero Azero); auto.
+    - rewrite nth_v2l with (E:=Hi). rewrite nth_v2l with (E:=Hj). auto.
+    - apply v2l_length.
+  Qed.
+
+  Lemma mnth_l2m : forall {r c} (d : dlist tA) i j,
+      length d = r -> width d c ->
+      (@l2m r c d).[i].[j] = nth j (nth i d []) Azero.
+  Proof.
+    intros. unfold l2m. rewrite vnth_l2v.
+    rewrite nth_map with (n:=r)(Azero:=[]); auto; fin.
+  Qed.
+
+  Lemma l2m_inj : forall {r c} (d1 d2 : dlist tA),
+      length d1 = r -> width d1 c ->
+      length d2 = r -> width d2 c ->
+      @l2m r c d1 = @l2m r c d2 -> d1 = d2.
+  Proof.
+    intros. unfold l2m in H3. apply l2v_inj in H3; try rewrite map_length; auto.
+    apply map_inj in H3; auto.
+    intros. apply l2v_inj in H6; auto.
+    apply (width_imply_in_length a d1); auto.
+    apply (width_imply_in_length b d2); auto.
+  Qed.
+
+  Lemma l2m_m2l : forall {r c} (M : mat tA r c), (@l2m r c (m2l M)) = M.
+  Proof.
+    intros. unfold l2m,m2l.
+    apply veq_iff_vnth; intros i.
+    apply veq_iff_vnth; intros j.
+    rewrite !vnth_l2v.
+    rewrite nth_map with (n:=r)(Azero:=[]); fin.
+    - rewrite nth_map with (n:=r)(Azero:=vzero Azero); fin.
+      + rewrite l2v_v2l.
+        rewrite nth_v2l with (E:=fin2nat_lt _); fin.
+      + apply v2l_length.
+    - rewrite map_length. apply v2l_length.
+  Qed.
+
+  Lemma m2l_l2m : forall {r c} (d : dlist tA),
+      length d = r -> width d c -> m2l (@l2m r c d) = d.
+  Proof.
+    intros. unfold l2m,m2l; simpl. rewrite v2l_l2v.
+    - rewrite map_map. apply map_id_In; intros. apply v2l_l2v.
+      apply (width_imply_in_length a d); auto.
+    - rewrite map_length; auto.
+  Qed.
+  
+  Lemma l2m_surj : forall {r c} (M : mat tA r c), (exists d, @l2m r c d = M).
+  Proof. intros. exists (m2l M). apply l2m_m2l. Qed.
+
+  Lemma m2l_surj : forall {r c} (d : dlist tA),
+      length d = r -> width d c -> (exists M : mat tA r c, m2l M = d).
+  Proof. intros. exists (@l2m r c d). apply m2l_l2m; auto. Qed.
+
+End l2m_m2l.
+
+
 
 (* ======================================================================= *)
 (** ** Automation for matrix operations *)
 
-(** Automation for matrix operations *)
-Ltac simp_mat :=
-  auto with mat;
-  autorewrite with mat;
-  auto with mat;
-  autounfold with mat;
-  auto with mat;
-  simp_vec.
+(** Proof matrix equality with point-wise element equalities over list *)
+Ltac meq :=
+  (* convert matrix equality to list equality *)
+  apply m2l_inj; cbv;
+  (* convert list equality to point-wise element equalities *)
+  list_eq.
+
 
 
 (* ======================================================================= *)
@@ -130,14 +224,17 @@ Notation "M \T" := (mtrans M) : mat_scope.
 (** Transpose twice return back *)
 Lemma mtrans_mtrans : forall tA r c (M : mat tA r c), (M\T)\T = M.
 Proof. intros. auto. Qed.
+#[export] Hint Rewrite mtrans_mtrans : vec.
 
 (** (M\T)[i,j] = M[j,i] *)
 Lemma mnth_mtrans : forall tA r c (M : mat tA r c) i j, (M\T).[i].[j] = M.[j].[i].
 Proof. intros. auto. Qed.
+#[export] Hint Rewrite mnth_mtrans : vec.
 
 (** (M\T)[i,*] = M[*,i] *)
 Lemma vnth_mtrans : forall tA r c (M : mat tA r c) i, (M\T).[i] = fun j => M.[j].[i].
 Proof. intros. auto. Qed.
+#[export] Hint Rewrite vnth_mtrans : vec.
 
 (** matrix transpose is injective *)
 Lemma mtrans_inj : forall tA r c (M1 M2 : mat tA r c), mtrans M1 = mtrans M2 -> M1 = M2.
@@ -146,31 +243,30 @@ Proof.
   specialize (H j i). auto.
 Qed.
 
-#[export] Hint Rewrite
-  mtrans_mtrans
-  mnth_mtrans
-  vnth_mtrans
-  : mat.
-
 
 (* ======================================================================= *)
 (** ** Get row and column of a matrix *)
 
 Definition mrow {tA r c} (M : mat tA r c) (i : 'I_r) : @vec tA c := M i.
+#[export] Hint Unfold mrow : vec.
 
 Definition mcol {tA r c} (M : mat tA r c) (j : 'I_c) : @vec tA r := fun i => M i j.
+#[export] Hint Unfold mcol : vec.
 Notation "M &[ i ]" := (mcol M i) : mat_scope.
+Notation "M &1" := (mcol M #0) : mat_scope.
+Notation "M &2" := (mcol M #1) : mat_scope.
+Notation "M &3" := (mcol M #2) : mat_scope.
+Notation "M &4" := (mcol M #3) : mat_scope.
 
 Lemma vnth_mrow : forall tA r c (M : mat tA r c) (i : 'I_r) (j : 'I_c),
     (mrow M i).[j] = M.[i].[j].
 Proof. intros. auto. Qed.
+#[export] Hint Rewrite vnth_mrow : vec.
 
 Lemma vnth_mcol : forall tA r c (M : mat tA r c) (i : 'I_r) (j : 'I_c),
     M&[j].[i] = M.[i].[j].
 Proof. intros. auto. Qed.
-
-#[export] Hint Unfold mrow mcol : mat.
-#[export] Hint Rewrite vnth_mrow vnth_mcol : mat.
+#[export] Hint Rewrite vnth_mcol : vec.
 
 
 (* ======================================================================= *)
@@ -178,11 +274,11 @@ Proof. intros. auto. Qed.
 
 (** Get head row *)
 Definition mheadr {tA r c} (M : mat tA (S r) c) : vec c := vhead M.
+#[export] Hint Unfold mheadr : vec.
 
 (** Get tail row *)
 Definition mtailr {tA r c} (M : mat tA (S r) c) : vec c := vtail M.
-
-#[export] Hint Unfold mheadr mtailr : mat.
+#[export] Hint Unfold mtailr : vec.
 
 
 (* ======================================================================= *)
@@ -190,20 +286,21 @@ Definition mtailr {tA r c} (M : mat tA (S r) c) : vec c := vtail M.
 
 (** Get head column *)
 Definition mheadc {tA r c} (M : @mat tA r (S c)) : @vec tA r := fun i => vhead (M.[i]).
+#[export] Hint Unfold mheadc : vec.
 
 (** Get tail column *)
 Definition mtailc {tA r c} (M : @mat tA r (S c)) : @vec tA r := fun i => vtail (M.[i]).
+#[export] Hint Unfold mtailc : vec.
 
 (** (mheadc M).i = M.i.0 *)
 Lemma vnth_mheadc : forall tA r c (M : @mat tA r (S c)) i, (mheadc M).[i] = M.[i].[fin0].
 Proof. auto. Qed.
+#[export] Hint Rewrite vnth_mheadc : vec.
 
 (** (mtailc M).i = M.i.(n-1) *)
 Lemma vnth_mtailc : forall tA r c (M : @mat tA r (S c)) i, (mtailc M).[i] = M.[i].[#c].
 Proof. auto. Qed.
-
-#[export] Hint Unfold mheadc mtailc : mat.
-#[export] Hint Rewrite vnth_mheadc vnth_mtailc : mat.
+#[export] Hint Rewrite vnth_mtailc : vec.
 
 
 (* ######################################################################### *)
@@ -451,100 +548,6 @@ Section f2m_m2f.
   Qed.
 End f2m_m2f.
 
-(* ======================================================================= *)
-(** ** Convert between [dlist] and [mat] *)
-Section l2m_m2l.
-  Context {tA} (Azero : tA).
-
-  (** mat to dlist *)
-  Definition m2l {r c} (M : mat tA r c) : dlist tA := map v2l (v2l M).
-
-  Lemma m2l_length : forall {r c} (M : mat tA r c), length (m2l M) = r.
-  Proof. intros. unfold m2l. rewrite map_length. rewrite v2l_length; auto. Qed.
-
-  Lemma m2l_width : forall {r c} (M : mat tA r c), width (m2l M) c.
-  Proof.
-    intros. unfold width,m2l. apply Forall_map_forall.
-    intros. apply v2l_length.
-  Qed.
-
-  Lemma nth_m2l_length : forall {r c} (M : mat tA r c) i,
-      i < r -> length (nth i (m2l M) []) = c.
-  Proof.
-    intros. unfold m2l.
-    rewrite nth_map with (n:=r)(Azero:=vzero Azero); auto; rewrite v2l_length; auto.
-  Qed.
-
-  Lemma m2l_inj : forall {r c} (M N : mat tA r c), m2l M = m2l N -> M = N.
-  Proof.
-    intros. unfold m2l in H.  apply map_inj in H; auto. apply v2l_inj; auto.
-    intros. apply v2l_inj; auto.
-  Qed.
-
-  Lemma nth_m2l : forall {r c} (M : @mat tA r c) i j (Hi : i < r) (Hj : j < c),
-      nth j (nth i (m2l M) []) Azero = M.[nat2fin i Hi].[nat2fin j Hj].
-  Proof.
-    intros. unfold m2l. erewrite nth_map with (n:=r)(Azero:=vzero Azero); auto.
-    - rewrite nth_v2l with (E:=Hi). rewrite nth_v2l with (E:=Hj). auto.
-    - apply v2l_length.
-  Qed.
-
-
-  Definition l2m {r c} (d : dlist tA) : mat tA r c :=
-    l2v (vzero Azero) (map (l2v Azero) d).
-
-  Lemma mnth_l2m : forall {r c} (d : dlist tA) i j,
-      length d = r -> width d c ->
-      (@l2m r c d).[i].[j] = nth j (nth i d []) Azero.
-  Proof.
-    intros. unfold l2m. rewrite vnth_l2v.
-    rewrite nth_map with (n:=r)(Azero:=[]); auto; fin.
-  Qed.
-
-  Lemma l2m_inj : forall {r c} (d1 d2 : dlist tA),
-      length d1 = r -> width d1 c ->
-      length d2 = r -> width d2 c ->
-      @l2m r c d1 = @l2m r c d2 -> d1 = d2.
-  Proof.
-    intros. unfold l2m in H3. apply l2v_inj in H3; try rewrite map_length; auto.
-    apply map_inj in H3; auto.
-    intros. apply l2v_inj in H6; auto.
-    apply (width_imply_in_length a d1); auto.
-    apply (width_imply_in_length b d2); auto.
-  Qed.
-
-
-  Lemma l2m_m2l : forall {r c} (M : mat tA r c), (@l2m r c (m2l M)) = M.
-  Proof.
-    intros. unfold l2m,m2l.
-    apply veq_iff_vnth; intros i.
-    apply veq_iff_vnth; intros j.
-    rewrite !vnth_l2v.
-    rewrite nth_map with (n:=r)(Azero:=[]); fin.
-    - rewrite nth_map with (n:=r)(Azero:=vzero Azero); fin.
-      + rewrite l2v_v2l.
-        rewrite nth_v2l with (E:=fin2nat_lt _); fin.
-      + apply v2l_length.
-    - rewrite map_length. apply v2l_length.
-  Qed.
-
-  Lemma m2l_l2m : forall {r c} (d : dlist tA),
-      length d = r -> width d c -> m2l (@l2m r c d) = d.
-  Proof.
-    intros. unfold l2m,m2l; simpl. rewrite v2l_l2v.
-    - rewrite map_map. apply map_id_In; intros. apply v2l_l2v.
-      apply (width_imply_in_length a d); auto.
-    - rewrite map_length; auto.
-  Qed.
-  
-  Lemma l2m_surj : forall {r c} (M : mat tA r c), (exists d, @l2m r c d = M).
-  Proof. intros. exists (m2l M). apply l2m_m2l. Qed.
-
-  Lemma m2l_surj : forall {r c} (d : dlist tA),
-      length d = r -> width d c -> (exists M : mat tA r c, m2l M = d).
-  Proof. intros. exists (@l2m r c d). apply m2l_l2m; auto. Qed.
-
-End l2m_m2l.
   
 (* ======================================================================= *)
 (** ** Construct matrix with two matrices *)
@@ -720,30 +723,32 @@ End mset.
 (** Construct matrix by row with a vector and a matrix *)
 Definition mconsrH {tA r c} (a : @vec tA c) (A : mat tA r c) : mat tA (S r) c :=
   vconsH a A.
+#[export] Hint Unfold mconsrH : vec.
 
 (** Construct matrix by row with a matrix and a vector *)
 Definition mconsrT {tA r c} (A : mat tA r c) (a : @vec tA c) : mat tA (S r) c :=
   vconsT A a.
+#[export] Hint Unfold mconsrT : vec.
 
 (** Construct a matrix by column with a vector and a matrix *)
 Definition mconscH {tA r c} (a : @vec tA r) (M : mat tA r c) : mat tA r (S c) :=
   @vmap2 tA (vec c) (vec (S c)) r vconsH a M.
+#[export] Hint Unfold mconscH : vec.
 
 (** Construct a matrix by column with a matrix and a vector *)
-(** Construct a matrix with a matrix and a column vector *)
 Definition mconscT {tA r c} (M : mat tA r c) (a : @vec tA r) : mat tA r (S c) :=
   @vmap2 (vec c) tA (vec (S c)) r vconsT M a.
+#[export] Hint Unfold mconscT : vec.
 
 Lemma vnth_mconscH : forall tA r c (M : mat tA (S r) c) (a : vec (S r)) (i : 'I_(S r)),
     (mconscH a M).[i] = vconsH (a.[i]) (M.[i]).
 Proof. auto. Qed.
+#[export] Hint Rewrite vnth_mconscH : vec.
 
 Lemma vnth_mconscT : forall tA r c (M : mat tA r c) (a : @vec tA r) i,
     (mconscT M a).[i] = vconsT M.[i] a.[i].
 Proof. auto. Qed.
-
-#[export] Hint Unfold mconsrH mconsrT mconscH mconscT : mat.
-#[export] Hint Rewrite vnth_mconscH vnth_mconscT : mat.
+#[export] Hint Rewrite vnth_mconscT : vec.
 
 Section test.
   Let a : @vec nat 2 := l2v 9 [1;2].
@@ -757,21 +762,14 @@ End test.
 
 (* ======================================================================= *)
 (** ** Remove one row at head or tail *)
-Section mremoverH_mremoverT.
-  Context {tA : Type}.
 
-  (** *** Remove head row or tail row *)
+(** Remove head row *)
+Definition mremoverH {tA r c} (M : @mat tA (S r) c) : @mat tA r c := vremoveH M.
+#[export] Hint Unfold mremoverH : vec.
 
-  (** mremoverH is vremoveH, thus we won't provide basic properties for it *)
-  Definition mremoverH {r c} (M : @mat tA (S r) c) : @mat tA r c := vremoveH M.
-
-  (** mremoverT is vremoveT, thus we won't provide basic properties for it *)
-  Definition mremoverT {r c} (M : @mat tA (S r) c) : @mat tA r c := vremoveT M.
-
-End mremoverH_mremoverT.
-
-#[export] Hint Unfold mremoverH : mat.
-#[export] Hint Unfold mremoverT : mat.
+(** Remove tail row *)
+Definition mremoverT {tA r c} (M : @mat tA (S r) c) : @mat tA r c := vremoveT M.
+#[export] Hint Unfold mremoverT : vec.
 
 
 (* ======================================================================= *)
@@ -780,13 +778,12 @@ End mremoverH_mremoverT.
 (** Remove head column *)
 Definition mremovecH {tA r c} (M : @mat tA r (S c)) : @mat tA r c :=
   fun i => vremoveH (M.[i]).
+#[export] Hint Unfold mremovecH : vec.
 
 (** Remove tail column *)
 Definition mremovecT {tA r c} (M : @mat tA r (S c)) : @mat tA r c :=
   fun i => vremoveT (M.[i]).
-
-#[export] Hint Unfold mremovecH : mat.
-#[export] Hint Unfold mremovecT : mat.
+#[export] Hint Unfold mremovecT : vec.
 
 
 (* ======================================================================= *)
@@ -804,7 +801,7 @@ Section equality_mcons_vcons.
   Proof.
     intros. apply meq_iff_mnth; intros i j. destruct (fin2nat i ??= 0).
     - replace i with (@fin0 r); auto. destruct i; fin.
-    - simp_mat. erewrite vnth_vconsH_gt0. rewrite vnth_vremoveH. fin.
+    - auto_vec. erewrite vnth_vconsH_gt0. rewrite vnth_vremoveH. fin.
       Unshelve. fin.
   Qed.
 
@@ -815,7 +812,7 @@ Section equality_mcons_vcons.
   Lemma meq_mconsrT_mremoverT_mtailr : forall {r c} (A : mat (S r) c),
       A = mconsrT (mremoverT A) (mtailr A).
   Proof.
-    intros. apply meq_iff_mnth; intros i j. simp_mat. destruct (fin2nat i ??= r).
+    intros. apply meq_iff_mnth; intros i j. auto_vec. destruct (fin2nat i ??= r).
     - rewrite vnth_vconsT_n; auto. unfold vtail. f_equal. fin.
     - erewrite vnth_vconsT_lt; auto. rewrite vnth_vremoveT. fin.
       Unshelve. pose proof (fin2nat_lt i). fin.
@@ -827,7 +824,8 @@ Section equality_mcons_vcons.
   Lemma meq_mconscH_mheadc_mremovecH : forall {r c} (A : mat r (S c)),
       A = mconscH (mheadc A) (mremovecH A).
   Proof.
-    intros. apply meq_iff_mnth; intros i j. simp_mat. destruct (fin2nat j ??= 0).
+    intros. apply meq_iff_mnth; intros i j.
+    auto_vec. destruct (fin2nat j ??= 0).
     - rewrite vnth_vconsH_0; fin. unfold vhead. f_equal. all: destruct j; fin.
     - erewrite vnth_vconsH_gt0. rewrite vnth_vremoveH. fin.
       Unshelve. fin.
@@ -839,7 +837,7 @@ Section equality_mcons_vcons.
   Lemma meq_mconscT_mremovecT_mtailc : forall {r c} (A : mat r (S c)),
       A = mconscT (mremovecT A) (mtailc A).
   Proof.
-    intros. apply meq_iff_mnth; intros i j. simp_mat. destruct (fin2nat j ??= c).
+    intros. apply meq_iff_mnth; intros i j. auto_vec. destruct (fin2nat j ??= c).
     - rewrite vnth_vconsT_n; auto. f_equal. fin.
     - erewrite vnth_vconsT_lt. rewrite vnth_vremoveT. fin.
       Unshelve. pose proof (fin2nat_lt j). fin.
@@ -854,8 +852,8 @@ Section equality_mcons_vcons.
     forall {r c} (A : mat r c) (u : vec r) (v : vec c) (x : tA),
       mconscT (mconsrT A v) (vconsT u x) = mconsrT (mconscT A u) (vconsT v x).
   Proof.
-    intros. simp_mat.
-    apply meq_iff_mnth; intros. simp_mat.
+    intros. auto_vec.
+    apply meq_iff_mnth; intros. auto_vec.
     pose proof (fin2nat_lt i). pose proof (fin2nat_lt j).
     destruct (fin2nat i ??= r), (fin2nat j ??= c).
     - rewrite !vnth_vconsT_n; auto.
@@ -877,8 +875,7 @@ Section equality_mcons_vcons.
     forall {r c} (A : mat r c) (u : vec r) (v : vec c) (x : tA),
       mconscH (vconsT u x) (mconsrT A v) = mconsrT (mconscH u A) (vconsH x v).
   Proof.
-    intros. autounfold with mat.
-    apply meq_iff_mnth; intros. rewrite vnth_vmap2.
+    intros. apply meq_iff_mnth; intros. auto_vec.
     pose proof (fin2nat_lt i). pose proof (fin2nat_lt j).
     destruct (fin2nat i ??= r), (fin2nat j ??= 0).
     - rewrite !vnth_vconsH_0. rewrite !vnth_vconsT_n; auto.
@@ -900,8 +897,7 @@ Section equality_mcons_vcons.
     forall {r c} (A : mat r c) (u : vec r) (v : vec c) (x : tA),
       mconscT (mconsrH v A) (vconsH x u) = mconsrH (vconsT v x) (mconscT A u).
   Proof.
-    intros. autounfold with mat.
-    apply meq_iff_mnth; intros. rewrite vnth_vmap2.
+    intros. apply meq_iff_mnth; intros. auto_vec.
     pose proof (fin2nat_lt i). pose proof (fin2nat_lt j).
     destruct (fin2nat i ??= 0), (fin2nat j ??= c).
     - rewrite !vnth_vconsH_0. rewrite !vnth_vconsT_n; auto.
@@ -925,8 +921,7 @@ Section equality_mcons_vcons.
     forall {r c} (A : mat r c) (u : vec r) (v : vec c) (x : tA),
       mconscH (vconsH x u) (mconsrH v A) = mconsrH (vconsH x v) (mconscH u A).
   Proof.
-    intros. autounfold with mat.
-    apply meq_iff_mnth; intros. rewrite vnth_vmap2.
+    intros. apply meq_iff_mnth; intros. auto_vec.
     pose proof (fin2nat_lt i). pose proof (fin2nat_lt j).
     destruct (fin2nat i ??= 0), (fin2nat j ??= 0).
     - rewrite !vnth_vconsH_0; auto. all: try destruct i,j; fin.
@@ -1307,8 +1302,7 @@ Section malg.
     Lemma mat1_eq_mconscT_mconsrT_vconsT : forall {n},
         @mat1 (S n) = mconscT (mconsrT mat1 vzero) (vconsT vzero 1).
     Proof.
-      intros. autounfold with mat.
-      apply meq_iff_mnth; intros. rewrite vnth_vmap2.
+      intros. apply meq_iff_mnth; intros. auto_vec.
       unfold vconsT. fin; try rewrite vnth_vzero.
       - rewrite mnth_mat1_diff; auto.
         assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
@@ -1327,7 +1321,7 @@ Section malg.
     Lemma mat1_eq_mconsrT_mconscT_vconsT : forall {n},
         @mat1 (S n) = mconsrT (mconscT mat1 vzero) (vconsT vzero 1).
     Proof.
-      intros. autounfold with mat. apply meq_iff_mnth; intros.
+      intros. apply meq_iff_mnth; intros. auto_vec.
       unfold vconsT. unfold vmap2. fin; try rewrite vnth_vzero.
       - rewrite mnth_mat1_diff; auto.
         assert (fin2nat i <> fin2nat j) by lia. apply fin2nat_neq_iff in H; auto.
@@ -1948,21 +1942,21 @@ Section malg.
         mconsrT M1 v1 * mconscT M2 v2 =
           mconscT (mconsrT (M1 * M2) (v1 v* M2)) (vconsT (M1 *v v2) (<v1,v2>)).
     Proof.
-      intros. simp_mat. apply meq_iff_mnth; intros.
-      rewrite mnth_mmul. simp_mat.
+      intros. auto_vec. apply meq_iff_mnth; intros.
+      rewrite mnth_mmul. auto_vec.
       pose proof (fin2nat_lt i); pose proof (fin2nat_lt j).
       destruct (fin2nat i ??= r), (fin2nat j ??= s).
       - rewrite !vnth_vconsT_n; auto. f_equal. apply veq_iff_vnth; intros.
-        simp_mat. rewrite vnth_vconsT_n; auto.
+        auto_vec. rewrite vnth_vconsT_n; auto.
       - rewrite !(vnth_vconsT_n _ _ i); try erewrite !(vnth_vconsT_lt _ _ j); auto.
         rewrite vnth_mvmul. f_equal. apply veq_iff_vnth; intros.
-        simp_mat. erewrite vnth_vconsT_lt; auto.
+        auto_vec. erewrite vnth_vconsT_lt; auto.
       - rewrite !(vnth_vconsT_n _ _ j); try erewrite !(vnth_vconsT_lt _ _ i); auto.
         rewrite vnth_mmulv. f_equal. apply veq_iff_vnth; intros.
-        simp_mat. rewrite vnth_vconsT_n; auto.
+        auto_vec. rewrite vnth_vconsT_n; auto.
       - erewrite !(vnth_vconsT_lt); auto.
         rewrite mnth_mmul. f_equal. apply veq_iff_vnth; intros.
-        simp_mat. erewrite vnth_vconsT_lt; auto.
+        auto_vec. erewrite vnth_vconsT_lt; auto.
         Unshelve. all: fin.
     Qed.
 

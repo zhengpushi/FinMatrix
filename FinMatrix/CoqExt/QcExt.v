@@ -9,8 +9,10 @@
 *)
 
 
-Require Export QExt Qcanon.
-Require Export Hierarchy ElementType.
+Require Export Qcanon.
+Require Export QExt.
+Require Import ListExt.
+
 Open Scope Qc.
 
 
@@ -38,7 +40,8 @@ Qed.
 Lemma Qcplus_reg_l : forall a b c : Qc, c + a = c + b -> a = b.
 Proof.
   intros.
-  assert (-c + c + a = -c + c + b). { rewrite !associative. rewrite H. auto. }
+  assert (-c + c + a = -c + c + b).
+  { rewrite <- Qcplus_assoc. rewrite H. rewrite Qcplus_assoc. auto. }
   rewrite Qcplus_opp_l in H0. rewrite !Qcplus_0_l in H0. auto.
 Qed.
 
@@ -47,7 +50,7 @@ Lemma Qcplus_reg_r : forall a b c : Qc, a + c = b + c -> a = b.
 Proof.
   intros.
   assert (a + c + -c = b + c + -c). { rewrite H. auto. }
-  rewrite !associative in H0. rewrite Qcplus_opp_r in H0.
+  rewrite <- !Qcplus_assoc in H0. rewrite Qcplus_opp_r in H0.
   rewrite !Qcplus_0_r in H0. auto.
 Qed.
 
@@ -62,7 +65,7 @@ Proof.
     specialize (H0 H2 H3).
     apply Qcle_lt_or_eq in H0. destruct H0; auto.
     assert (-a + (a + b) = -a + (a + c)). rewrite H0; auto.
-    rewrite <- !associative in H4. rewrite !Qcplus_opp_l,!Qcplus_0_l in H4. easy.
+    rewrite !Qcplus_assoc in H4. rewrite !Qcplus_opp_l,!Qcplus_0_l in H4. easy.
 Qed.
 
 (** a < b -> a + c < b + c *)
@@ -71,7 +74,7 @@ Proof. intros. rewrite !(Qcplus_comm _ c). apply Qcplus_lt_compat_l; auto. Qed.
 
 (** a < b -> 0 < c -> c * a < c * b *)
 Lemma Qcmult_lt_compat_l : forall a b c : Qc, a < b -> 0 < c -> c * a < c * b.
-Proof. intros. rewrite !(commutative c _). apply Qcmult_lt_compat_r; auto. Qed.
+Proof. intros. rewrite !(Qcmult_comm c). apply Qcmult_lt_compat_r; auto. Qed.
 
   
 (* ######################################################################### *)
@@ -484,31 +487,6 @@ End eq.
 (* ######################################################################### *)
 (** ** Convertion between Qc and other types *)
 
-(** Qc to Q *)
-Definition Qc2Q (x : Qc) : Q := this x.
-
-(** Z to Qc *)
-Definition Z2Qc (x : Z) : Qc := Q2Qc (Z2Q x).
-
-(** nat to Qc *)
-Definition nat2Qc (x : nat) : Qc := Q2Qc (nat2Q x).
-
-(** Qc to Z *)
-Definition Qc2Z_ceiling (q : Qc) : Z := Q2Z_ceiling (Qc2Q q).
-Definition Qc2Z_floor (q : Qc) : Z := Q2Z_floor (Qc2Q q).
-
-(** list Q to list Qc *)
-Definition Q2Qc_list l := map Q2Qc l.
-
-(** dlist Q to dlist Qc *)
-Definition Q2Qc_dlist dl := map Q2Qc_list dl.
-
-(** list Qc to list Q, for better printing *)
-Definition Qc2Q_list l := map Qc2Q l.
-
-(** dlist Qc to dlist Q *)
-Definition Qc2Q_dlist dl := map Qc2Q_list dl.
-
 (** If two Q type value are equal, then its canonical form are equal *)
 Lemma Qcmake_inversion : forall (q1 q2 : Q) (H1 : Qred q1 = q1) (H2 : Qred q2 = q2),
     q1 = q2 -> Qcmake q1 H1 = Qcmake q2 H2.
@@ -519,6 +497,20 @@ Proof.
   f_equal. apply proof_irrelevance.
 Qed.
 
+(** Q2Qc q1 = Q2Qc q2 -> q1 == q2 *)
+Lemma Q2Qc_inj : forall (q1 q2 : Qc), Q2Qc q1 = Q2Qc q2 -> q1 == q2.
+Proof. intros. apply Q2Qc_eq_iff in H. auto. Qed.
+
+
+(** Qc to Q *)
+Definition Qc2Q (x : Qc) : Q := this x.
+
+(** Qc2Q qc1 = Qc2Q qc2 -> qc1 = qc2 *)
+Lemma Qc2Q_inj : forall (qc1 qc2 : Qc), Qc2Q qc1 = Qc2Q qc2 -> qc1 = qc2.
+Proof.
+  intros. destruct qc1,qc2. simpl in *. subst. f_equal. apply proof_irrelevance.
+Qed.
+
 (** Q2Qc (Qc2Q qc) = qc *)
 Lemma Q2Qc_Qc2Q : forall (qc : Qc), Q2Qc (Qc2Q qc) = qc.
 Proof.
@@ -526,6 +518,45 @@ Proof.
   f_equal.  (* Tips, f_equal has no effect on recrods of dependent types  *)
   apply Qcmake_inversion. auto.
 Qed.
+
+(** list Q to list Qc *)
+Definition listQ2Qc l := map Q2Qc l.
+
+(** list Qc to list Q, for better printing *)
+Definition listQc2Q l := map Qc2Q l.
+
+(** listQ2Qc (listQc2Q l) = l *)
+Lemma listQ2Qc_listQc2Q : forall (l : list Qc), listQ2Qc (listQc2Q l) = l.
+Proof.
+  intros. unfold listQ2Qc, listQc2Q. rewrite map_map.
+  rewrite map_ext with (g:=fun x => x). apply map_id; auto.
+  intros. rewrite Q2Qc_Qc2Q. auto.
+Qed.
+
+(** dlist Q to dlist Qc *)
+Definition dlistQ2Qc dl := map listQ2Qc dl.
+
+(** dlist Qc to dlist Q *)
+Definition dlistQc2Q dl := map listQc2Q dl.
+
+(** dlistQ2Qc (dlistQc2Q dl) = dl *)
+Lemma dlistQ2Qc_dlistQc2Q : forall (dl : list (list Qc)), dlistQ2Qc (dlistQc2Q dl) = dl.
+Proof.
+  intros. unfold dlistQ2Qc, dlistQc2Q. rewrite map_map.
+  rewrite map_ext with (g:=fun x => x). apply map_id; auto.
+  intros. rewrite listQ2Qc_listQc2Q. auto.
+Qed.
+
+
+(** Z to Qc *)
+Definition Z2Qc (x : Z) : Qc := Q2Qc (Z2Q x).
+
+(** nat to Qc *)
+Definition nat2Qc (x : nat) : Qc := Q2Qc (nat2Q x).
+
+(** Qc to Z *)
+Definition Qc2Z_ceiling (q : Qc) : Z := Q2Z_ceiling (Qc2Q q).
+Definition Qc2Z_floor (q : Qc) : Z := Q2Z_floor (Qc2Q q).
 
 
 (* ######################################################################### *)

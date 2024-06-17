@@ -370,16 +370,24 @@ End l2v_v2l.
 (* ======================================================================= *)
 (** ** Automation for vector operations *)
 
-(** Automation for vector operations *)
-Ltac simp_vec :=
+(** Simplify vectorAutomation for vector operations *)
+Ltac auto_vec :=
+  intros;
+  (* solve simple goals *)
   auto with vec;
+  (* auto rewrite obvious goals, and then solve again *)
   autorewrite with vec; auto with vec;
-  autounfold with vec; auto with vec.
+  (* auto unfold obvious definitions, and then rewrite and solve again *)
+  try autounfold with vec; autorewrite with vec; auto with vec;
+  (* auto unfold low-level element abstraction, and then solve again *)
+  try autounfold with tA; auto with vec.
 
-
-(** Convert equality of two vectors to point-wise element equalities *)
+(** Proof vector equality with point-wise element equalities over list *)
 Ltac veq :=
-  apply v2l_inj; cbv; list_eq.
+  (* convert vector equality to list equality *)
+  apply v2l_inj; cbv;
+  (* convert list equality to point-wise element equalities *)
+  list_eq.
 
 
 Section test.
@@ -405,6 +413,9 @@ End test.
 Section veq_exist.
   Context {tA : Type}.
 
+  Lemma veq_exist_1 : forall (a : @vec tA 1), exists a1 : tA, a = l2v a1 [a1].
+  Proof. intros. exists (a.1). apply v2l_inj; cbv; list_eq. Qed.
+
   Lemma veq_exist_2 : forall (a : @vec tA 2), exists a1 a2 : tA, a = l2v a1 [a1;a2].
   Proof. intros. exists (a.1),(a.2). apply v2l_inj; cbv; list_eq. Qed.
 
@@ -415,7 +426,7 @@ Section veq_exist.
   Proof. intros. exists (a.1),(a.2),(a.3),(a.4). apply v2l_inj; cbv; list_eq. Qed.
   
 End veq_exist.
-
+  
 (** destruct a vector to its elements *)
 Ltac v2e a :=
   let a1 := fresh "a1" in
@@ -424,45 +435,53 @@ Ltac v2e a :=
   let a4 := fresh "a4" in
   let Ha := fresh "Ha" in
   match type of a with
+  | vec 1 =>
+      destruct (veq_exist_1 a) as (a1,Ha); rewrite Ha in *;
+      try clear a Ha
   | vec 2 =>
-      (* idtac "#vec 2"; *)
-      destruct (veq_exist_2 a) as (a1,(a2,Ha)); rewrite Ha; try clear a Ha;
-      try (v2e a1; v2e a2)
+      destruct (veq_exist_2 a) as (a1,(a2,Ha)); rewrite Ha in *;
+      try clear a Ha
   | vec 3 =>
-      (* idtac "#vec 3"; *)
-      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); rewrite Ha; try clear a Ha;
-      try (v2e a1; v2e a2; v2e a3)
+      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); rewrite Ha in *;
+      try clear a Ha
   | vec 4 =>
-      (* idtac "#vec 4"; *)
-      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha; try clear a Ha;
-      try (v2e a1; v2e a2; v2e a3; v2e a4)
+      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha in *;
+      try clear a Ha
   end.
 
-(* Only unfold 1 level *)
-Ltac v2e1 a :=
+(** destruct a vector to its elements, and recursively destruct the result items *)
+Ltac v2eALL a :=
   let a1 := fresh "a1" in
   let a2 := fresh "a2" in
   let a3 := fresh "a3" in
   let a4 := fresh "a4" in
   let Ha := fresh "Ha" in
   match type of a with
+  | vec 1 =>
+      destruct (veq_exist_1 a) as (a1,Ha); rewrite Ha in *;
+      try clear a Ha;
+      try (v2e a1)
   | vec 2 =>
-      (* idtac "#vec 2"; *)
-      destruct (veq_exist_2 a) as (a1,(a2,Ha)); rewrite Ha; try clear a Ha
+      destruct (veq_exist_2 a) as (a1,(a2,Ha)); rewrite Ha in *;
+      try clear a Ha;
+      try (v2e a1; v2e a2)
   | vec 3 =>
-      (* idtac "#vec 3"; *)
-      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); rewrite Ha; try clear a Ha
+      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); rewrite Ha in *;
+      try clear a Ha;
+      try (v2e a1; v2e a2; v2e a3)
   | vec 4 =>
-      (* idtac "#vec 4"; *)
-      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha; try clear a Ha
+      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha in *;
+      try clear a Ha;
+      try (v2e a1; v2e a2; v2e a3; v2e a4)
   end.
+
 
 Section test.
   Goal forall tA (v : @vec tA 3), v = v.
   Proof. intros. v2e v. auto. Qed.
   
   Goal forall tA (v : @vec (@vec tA 2) 3), v = v.
-  Proof. intros. v2e v. auto. Qed.
+  Proof. intros. v2eALL v. auto. Qed.
 End test.
 
 
@@ -481,16 +500,19 @@ End vec_specific.
 
 (* ======================================================================= *)
 (** ** Vector by mapping one vector *)
-Section vmap.
-  Context {tA tB : Type} (f : tA -> tB).
   
-  Definition vmap {n} (a : @vec tA n) : @vec tB n := fun i => f (a i).
+Definition vmap {tA tB n} (f: tA -> tB) (a : @vec tA n) : @vec tB n := fun i => f (a i).
+
+Section props.
+  Context (tA tB : Type) (f : tA -> tB).
 
   (** (vmap f a).i = f (a.i) *)
-  Lemma vnth_vmap : forall {n} (a : vec n) i, (vmap a).[i] = f (a.[i]).
+  Lemma vnth_vmap : forall n (a : vec n) i, (vmap f a).[i] = f (a.[i]).
   Proof. intros. unfold vmap; auto. Qed.
+End props.
 
-End vmap.
+#[export] Hint Rewrite vnth_vmap : vec.
+
 
 (* ======================================================================= *)
 (** ** Vector by mapping two vectors *)
@@ -502,14 +524,13 @@ Section props.
   Context (tA tB tC : Type) (f : tA -> tB -> tC).
 
   (** (vmap2 f a b).i = f (a.i) (b.i) *)
-  Lemma vnth_vmap2 : forall {n} (a b : vec n) i, (vmap2 f a b).[i] = f a.[i] b.[i].
+  Lemma vnth_vmap2 : forall n (a b : vec n) i, (vmap2 f a b).[i] = f a.[i] b.[i].
   Proof. intros. unfold vmap2; auto. Qed.
 
   (* vmap2 f a b = vmap id (fun i => f u.i v.i) *)
   Lemma vmap2_eq_vmap : forall {n} (a b : vec n),
       vmap2 f a b = vmap (fun a => a) (fun i => f a.[i] b.[i]).
   Proof. intros. auto. Qed.
-  
 End props.
 
 #[export] Hint Rewrite vnth_vmap2 : vec.
@@ -2373,7 +2394,7 @@ Section vcmul.
   Infix "c*" := vcmul : vec_scope.
 
   (** (x .* a).i = x * a.i *)
-  Lemma vnth_vcmul : forall {n} (a : vec n) x i, (x c* a).[i] = x * (a.[i]).
+  Lemma vnth_vcmul : forall n (a : vec n) x i, (x c* a).[i] = x * (a.[i]).
   Proof. intros. cbv. auto. Qed.
 
   (** x .* (y .* a) = (x * y) .* a *)

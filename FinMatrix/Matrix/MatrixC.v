@@ -54,9 +54,6 @@ Section test.
   (* test_monoid. *)
   Example mat_C_ex3 : forall r c (m1 m2 : mat r c),
       (mat0 + m1) - (mat0 - m2) = m2 + (m1 - mat0).
-  Proof.
-    intros.
-    pose proof (madd_AGroup r c). agroup.
-  Qed.
+  Proof. intros. pose proof (madd_AGroup r c). agroup. Qed.
 
 End test.

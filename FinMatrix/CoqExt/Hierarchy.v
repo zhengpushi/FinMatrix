@@ -99,14 +99,12 @@
        make_field_theory (H:Field)     make a field_theory, to use `field` tactic.
  *)
 
-Require Export Coq.Classes.RelationClasses. (* binary_relation *)
 Require Import Coq.Logic.Description. (* constructive_definite_description *)
-Require Export Basic.   (* reserved notation *)
-Require Export BoolExt.
-Require Export List. Import ListNotations.
-Require Export Lia Lra.
 Require Export Ring Field.
-Require Import Arith ZArith QArith Qcanon Reals.
+Require Export Reals.
+Require Export Basic.
+Require Export BoolExt.
+Import ListNotations.
 
 Open Scope nat_scope.
 Open Scope A_scope.
@@ -271,13 +269,10 @@ End Dec_theory.
 (*   }. *)
 
 (** ** Instances *)
-Hint Resolve
-  Nat.add_wd Nat.mul_wd  (* nat *)
-  : wd.
 
-(* (** ** Extra Theories *) *)
+(** ** Extra Theories *)
 
-(* (** ** Examples *) *)
+(** ** Examples *)
 
 
 
@@ -494,13 +489,6 @@ Class Subset (tC tP : Type) := {
 
 (** ** Instances *)
 Section Instances.
-
-  Instance nat_Z_Subset : Subset nat Z.
-  Proof.
-    refine (@Build_Subset _ _ Z.of_nat _).
-    rewrite injective_eq_injective_form2. hnf. apply Nat2Z.inj.
-  Qed.
-    
 End Instances.
 
 (** ** Extra Theories *)
@@ -656,13 +644,6 @@ Class SGroup {tA} (Aadd : tA -> tA -> tA) := {
 
 (** ** Instances *)
 Section Instances.
-  
-  #[export] Instance nat_add_SGroup : SGroup Nat.add.
-  repeat constructor; auto with wd; try apply eq_equivalence; intros; ring. Qed.
-
-  #[export] Instance nat_mul_SGroup : SGroup Nat.mul.
-  repeat constructor; auto with wd; try apply eq_equivalence; intros; ring. Qed.
-  
 End Instances.
 
 (** ** Extra Theories *)
@@ -746,13 +727,6 @@ Class ASGroup {tA} (Aadd : tA -> tA -> tA) := {
 
 (** ** Instances *)
 Section Instances.
-  
-  #[export] Instance nat_add_ASGroup : ASGroup Nat.add.
-  repeat constructor; auto with wd; try apply eq_equivalence; intros; ring. Qed.
-
-  #[export] Instance nat_mul_ASGroup : SGroup Nat.mul.
-  repeat constructor; auto with wd; try apply eq_equivalence; intros; ring. Qed.
-  
 End Instances.
 
 (** ** Extra Theories *)
@@ -1058,33 +1032,6 @@ Class Monoid {tA} (Aadd : tA -> tA -> tA) (Azero : tA) := {
 
 (** ** Instances *)
 Section Instances.
-
-  Import Arith ZArith Qcanon Reals.
-  
-  #[export] Instance Monoid_NatAdd : Monoid Nat.add 0%nat.
-  repeat constructor; intros; ring. Qed.
-
-  #[export] Instance Monoid_NatMul : Monoid Nat.mul 1%nat.
-  repeat constructor; intros; ring. Qed.
-
-  #[export] Instance Monoid_ZAdd : Monoid Z.add 0%Z.
-  repeat constructor; intros; ring. Qed.
-
-  #[export] Instance Monoid_ZMul : Monoid Z.mul 1%Z.
-  repeat constructor; intros; ring. Qed.
-
-  #[export] Instance Monoid_QcAdd : Monoid Qcplus 0.
-  repeat constructor; intros; ring. Qed.
-
-  #[export] Instance Monoid_QcMul : Monoid Qcmult 1.
-  repeat constructor; intros; ring. Qed.
-
-  #[export] Instance Monoid_RAdd : Monoid Rplus 0%R.
-  repeat constructor; intros; ring. Qed.
-
-  #[export] Instance Monoid_RMul : Monoid Rmult 1%R.
-  repeat constructor; intros; ring. Qed.
-
 End Instances.
 
 (** ** Extra Theories *)
@@ -1144,21 +1091,6 @@ Class AMonoid {tA} Aadd Azero := {
 
 (** ** Instances *)
 Section Instances.
-
-  Import Qcanon Reals.
-  
-  #[export] Instance AMonoid_QcAdd : AMonoid Qcplus 0.
-  split_intro; subst; ring. Defined.
-
-  #[export] Instance AMonoid_QcMul : AMonoid Qcmult 1.
-  split_intro; subst; ring. Defined.
-
-  #[export] Instance AMonoid_RAdd : AMonoid Rplus 0%R.
-  split_intro; subst; ring. Defined.
-
-  #[export] Instance AMonoid_RMul : AMonoid Rmult 1%R.
-  split_intro; subst; ring. Defined.
-
 End Instances.
 
   
@@ -1205,15 +1137,6 @@ Class Group {tA} Aadd Azero (Aopp : tA -> tA) := {
 
 (** ** Instances *)
 Section Instances.
-
-  Import Qcanon Reals.
-  
-  #[export] Instance Qc_add_Group : Group Qcplus 0 Qcopp.
-  split_intro; subst; ring. Defined.
-
-  #[export] Instance R_add_Group : Group Rplus 0%R Ropp.
-  split_intro; subst; ring. Defined.
-
 End Instances.
 
 
@@ -1693,15 +1616,6 @@ Class AGroup {tA} Aadd (Azero : tA) Aopp := {
                                                          
 (** ** Instances *)
 Section Instances.
-
-  Import Qcanon Reals.
-  
-  #[export] Instance Qc_add_AGroup : AGroup Qcplus 0 Qcopp.
-  split_intro; subst; ring. Defined.
-
-  #[export] Instance R_add_AGroup : AGroup Rplus 0%R Ropp.
-  split_intro; subst; ring. Defined.
-
 End Instances.
 
 (** ** Extra Theories *)
@@ -1810,21 +1724,6 @@ Class SRing {tA} Aadd (Azero : tA) Amul Aone := {
 
 (** ** Instances *)
 Section Instances.
-
-  Import Nat ZArith Qcanon Reals.
-
-  #[export] Instance nat_SRing : SRing Nat.add 0%nat Nat.mul 1%nat.
-  repeat constructor; intros; ring. Qed.
-  
-  #[export] Instance Z_SRing : SRing Z.add 0%Z Z.mul 1%Z.
-  repeat constructor; intros; ring. Qed.
-  
-  #[export] Instance Qc_SRing : SRing Qcplus 0 Qcmult 1.
-  repeat constructor; intros; ring. Qed.
-
-  #[export] Instance R_SRing : SRing Rplus R0 Rmult R1.
-  split_intro; subst; ring. Defined.
-
 End Instances.
 
 (** ** Extra Theories *)
@@ -1862,18 +1761,6 @@ Class Ring {tA} Aadd (Azero : tA) Aopp Amul Aone := {
 
 (** ** Instances *)
 Section Instances.
-
-  Import ZArith Qcanon Reals.
-
-  #[export] Instance Z_Ring : Ring Z.add 0%Z Z.opp Z.mul 1%Z.
-  repeat constructor; intros; ring. Qed.
-  
-  #[export] Instance Qc_Ring : Ring Qcplus 0 Qcopp Qcmult 1.
-  repeat constructor; intros; ring. Qed.
-
-  #[export] Instance R_Ring : Ring Rplus R0 Ropp Rmult R1.
-  repeat constructor; intros; ring. Qed.
-
 End Instances.
 
 (** ** Extra Theories *)
@@ -1894,15 +1781,6 @@ Section Theory.
 End Theory.
 
 (** ** Examples *)
-
-Section Examples.
-
-  Import Reals.
-  
-  Goal forall a b c : R, (a * (b + c) = a * b + a * c)%R.
-  Proof. apply distrLeft. Qed.
-
-End Examples.
   
 
 (* ######################################################################### *)
@@ -1919,15 +1797,6 @@ Class ARing {tA} Aadd Azero Aopp Amul Aone := {
 
 (** ** Instances *)
 Section Instances.
-
-  Import ZArith Qcanon Reals.
-
-  #[export] Instance Z_ARing : ARing Z.add 0%Z Z.opp Z.mul 1%Z.
-  repeat constructor; intros; ring. Qed.
-  
-  #[export] Instance Ac_ARing : ARing Qcplus 0 Qcopp Qcmult 1.
-  repeat constructor; intros; ring. Qed.
-
 End Instances.
 
 (** ** Extra Theories *)
@@ -2095,19 +1964,6 @@ Class Field {tA} Aadd (Azero : tA) Aopp Amul Aone Ainv := {
 
 (** ** Instances *)
 Section Instances.
-
-  Import Qcanon Reals.
-  
-  #[export] Instance Field_Qc : Field Qcplus 0 Qcopp Qcmult 1 Qcinv.
-  split_intro; subst; (try (field; reflexivity)); try easy.
-  field. auto.
-  Defined.
-
-  #[export] Instance Field_R : Field Rplus R0 Ropp Rmult R1 Rinv.
-  split_intro; subst; try (field; reflexivity); auto.
-  field; auto. auto with real.
-  Defined.
-
 End Instances.
 
 
@@ -2330,12 +2186,6 @@ End Theory.
 
 (** ** Examples *)
 Section Examples.
-
-  Import Reals.
-  
-  Goal forall a b : R, (a <> 0 -> /a * a = 1)%R.
-    intros. apply field_mulInvL. auto. Qed.
-
 End Examples.
 
 

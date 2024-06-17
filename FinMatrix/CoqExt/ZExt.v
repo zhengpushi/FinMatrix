@@ -8,8 +8,9 @@
   date      : 2022.04
 *)
 
-Require Export Hierarchy ElementType.
 Require Export ZArith.
+Require Export PositiveExt.
+
 Open Scope Z.
 
 
@@ -26,6 +27,14 @@ Hint Resolve
   Z.sub_wd
   Z.mul_wd
   : Z.
+
+(** Subset *)
+
+Instance nat_Z_Subset : Subset nat Z.
+Proof.
+  refine (@Build_Subset _ _ Z.of_nat _).
+  rewrite injective_eq_injective_form2. hnf. apply Nat2Z.inj.
+Qed.
 
 
 (** Decidable *)

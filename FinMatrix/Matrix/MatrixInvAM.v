@@ -3,31 +3,26 @@
   This file is part of FinMatrix. It is distributed under the MIT
   "expat license". You should have recieved a LICENSE file with it.
 
-  purpose   : Inverse matrix by Adjoint Matrix
+  purpose   : Matrix Inversion based on Adjoint Matrix
   author    : ZhengPu Shi
   date      : 2023.06
   
   remark    :
-  * we use `AM` to denote `Adjoint Matrix method`
-  * there are two equivalent methods to get determinant, `mdet` and `mdetEx':
-    `mdet` is full expansion which have better consistency, and will be used 
-    in proposition for proof; 
-    `mdetEx` is one-row expansion which have better performance, and will be
-    used in definition for computation.
+  1. we use `AM` to denote `Adjoint Matrix method`
  *)
 
 Require Import Extraction.
 Require Import NatExt.
-Require Export Matrix MatrixDet MatrixInvBase.
+Require Export Matrix MatrixDet MatrixInvertible.
 Require ZArith Reals.
 
 Generalizable Variable tA Aadd Azero Aopp Amul Aone Ainv.
 
 
 (* ############################################################################ *)
-(** * Matrix Inversion by Adjoint Matrix (Typeclass version) *)
+(** * Matrix Inversion based on Adjoint Matrix *)
 
-Section minv.
+Section minvAM.
   Context `{HField : Field} {AeqDec : Dec (@eq tA)}.
   Add Field field_thy_inst : (make_field_theory HField).
   Open Scope A_scope.
@@ -54,10 +49,10 @@ Section minv.
   Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
   Notation msingular := (@msingular _ Aadd 0 Amul 1).
   Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).
-  Notation mdetEx := (@mdetEx _ Aadd 0 Aopp Amul 1).
+  Notation "| M |" := (mdet M) : mat_scope.
   Notation madj := (@madj _ Aadd 0 Aopp Amul 1).
   Notation "M \A" := (madj M) : mat_scope.
-  Notation mcofactorEx := (@mcofactorEx _ Aadd 0 Aopp Amul 1).
+  Notation mcofactor := (@mcofactor _ Aadd 0 Aopp Amul 1).
   Notation mdet1 := (@mdet1 tA).
   Notation mdet2 := (@mdet2 _ Aadd Aopp Amul).
   Notation mdet3 := (@mdet3 _ Aadd Aopp Amul).
@@ -65,145 +60,240 @@ Section minv.
   Notation cramerRule := (@cramerRule _ Aadd 0 Aopp Amul 1 Ainv).
 
   (* ======================================================================= *)
-  (** ** Check matrix invertibility *)
+  (** ** Check matrix invertibility by AM*)
 
   (** Check the invertibility of matrix `M` *)
-  Definition minvtbleb {n} (M : smat n) : bool :=
-    if Aeqdec (mdetEx M) 0 then false else true.
+  Definition minvtblebAM {n} (M : smat n) : bool :=
+    if Aeqdec (|M|) 0 then false else true.
 
-  (** minvtble M <-> minvtbleb M = true *)
-  Lemma minvtble_iff_minvtbleb_true : forall {n} (M : smat n),
-      minvtble M <-> minvtbleb M = true.
+  (** minvtble M <-> minvtblebAM M = true *)
+  Lemma minvtble_iff_minvtblebAM_true : forall {n} (M : smat n),
+      minvtble M <-> minvtblebAM M = true.
   Proof.
     intros. rewrite minvtble_iff_mdet_neq0.
-    unfold minvtbleb. rewrite mdetEx_eq_mdet.
-    destruct Aeqdec; easy.
+    unfold minvtblebAM. destruct Aeqdec; easy.
   Qed.
   
-  (** msingular M <-> minvtbleb M = false *)
-  Lemma msingular_iff_minvtbleb_false : forall {n} (M : smat n),
-      msingular M <-> minvtbleb M = false.
+  (** msingular M <-> minvtblebAM M = false *)
+  Lemma msingular_iff_minvtblebAM_false : forall {n} (M : smat n),
+      msingular M <-> minvtblebAM M = false.
   Proof.
-    intros. unfold msingular. rewrite minvtble_iff_minvtbleb_true.
+    intros. unfold msingular. rewrite minvtble_iff_minvtblebAM_true.
     rewrite not_true_iff_false. tauto.
   Qed.
 
+  (** M * N = mat1 -> minvtblebAM M = true *)
+  Lemma mmul_eq1_imply_minvtblebAM_true_l : forall {n} (M N : smat n),
+      M * N = mat1 -> minvtblebAM M = true.
+  Proof.
+    intros. apply minvtble_iff_minvtblebAM_true.
+    apply mmul_eq1_imply_minvtble_l in H; auto.
+  Qed.
+
+  (** M * N = mat1 -> minvtblebAM N = true. *)
+  Lemma mmul_eq1_imply_minvtblebAM_true_r : forall {n} (M N : smat n),
+      M * N = mat1 -> minvtblebAM N = true.
+  Proof.
+    intros. apply minvtble_iff_minvtblebAM_true.
+    apply mmul_eq1_imply_minvtble_r in H; auto.
+  Qed.
+
 
   (* ======================================================================= *)
-  (** ** Inverse matrix (option version) *)
+  (** ** Inverse matrix (option version) by AM*)
 
   (** Inverse matrix (option version) *)
-  Definition minvo {n} (M : smat n) : option (smat n) :=
-    if minvtbleb M
-    then Some ((/ mdetEx M) c* (madj M))
+  Definition minvoAM {n} (M : smat n) : option (smat n) :=
+    if minvtblebAM M
+    then Some ((/ |M|) c* (madj M))
     else None.
 
   (** `minvo` return `Some`, iff M is invertible *)
-  Lemma minvo_Some_iff_minvtble : forall {n} (M : smat n),
-      (exists M', minvo M = Some M') <-> minvtble M.
+  Lemma minvoAM_Some_iff_minvtble : forall {n} (M : smat n),
+      (exists M', minvoAM M = Some M') <-> minvtble M.
   Proof.
-    intros. rewrite minvtble_iff_minvtbleb_true. split; intros.
-    - destruct H as [M' H]. unfold minvo in H.
-      destruct minvtbleb; try easy.
-    - exists ((/ mdetEx M) c* (madj M)). unfold minvo.
-      destruct minvtbleb; try easy.
+    intros. rewrite minvtble_iff_minvtblebAM_true. split; intros.
+    - destruct H as [M' H]. unfold minvoAM in H.
+      destruct minvtblebAM; try easy.
+    - exists ((/ |M|) c* (madj M)). unfold minvoAM.
+      destruct minvtblebAM; try easy.
   Qed.
 
-  (** `minvo` return `None`, iff M is singular *)
-  Lemma minvo_None_iff_msingular : forall {n} (M : smat n),
-      minvo M = None <-> msingular M.
+  (** `minvoAM` return `None`, iff M is singular *)
+  Lemma minvoAM_None_iff_msingular : forall {n} (M : smat n),
+      minvoAM M = None <-> msingular M.
   Proof.
-    intros. rewrite msingular_iff_minvtbleb_false. split; intros.
-    - unfold minvo in H. destruct minvtbleb; try easy.
-    - unfold minvo. destruct minvtbleb; try easy.
+    intros. rewrite msingular_iff_minvtblebAM_false. split; intros.
+    - unfold minvoAM in H. destruct minvtblebAM; try easy.
+    - unfold minvoAM. destruct minvtblebAM; try easy.
   Qed.
 
-  (** If `minvo M` return `Some M'`, then `M' * M = mat1` *)
-  Lemma minvo_Some_imply_eq1_l : forall {n} (M M' : smat n),
-      minvo M = Some M' -> M' * M = mat1.
+  (** If `minvoAM M` return `Some M'`, then `M' * M = mat1` *)
+  Lemma minvoAM_Some_imply_eq1_l : forall {n} (M M' : smat n),
+      minvoAM M = Some M' -> M' * M = mat1.
   Proof.
-    intros. unfold minvo in H. destruct minvtbleb eqn:E; try easy. inv H.
-    rewrite mdetEx_eq_mdet. apply mmul_det_cmul_adj_l.
-    apply minvtble_iff_minvtbleb_true in E.
+    intros. unfold minvoAM in H. destruct minvtblebAM eqn:E; try easy. inv H.
+    apply mmul_det_cmul_adj_l.
+    apply minvtble_iff_minvtblebAM_true in E.
     apply minvtble_iff_mdet_neq0; auto.
   Qed.
 
-  (** If `minvo M` return `Some M'`, then `M * M' = mat1` *)
-  Lemma minvo_Some_imply_eq1_r : forall {n} (M M' : smat n),
-      minvo M = Some M' -> M * M' = mat1.
+  (** If `minvoAM M` return `Some M'`, then `M * M' = mat1` *)
+  Lemma minvoAM_Some_imply_eq1_r : forall {n} (M M' : smat n),
+      minvoAM M = Some M' -> M * M' = mat1.
   Proof.
-    intros. apply minvo_Some_imply_eq1_l in H.
+    intros. apply minvoAM_Some_imply_eq1_l in H.
     apply mmul_eq1_comm; auto.
   Qed.
   
-  
   (* ======================================================================= *)
-  (** ** Inverse matrix (default value version) *)
+  (** ** Inverse matrix by AM*)
   
-  (** Inverse matrix (with identity matrix as default value) *)
-  Definition minv {n} (M : smat n) :=
-    if minvtbleb M then (/ mdetEx M) c* (madj M) else mat1.
-  Notation "M \-1" := (minv M) : mat_scope.
+  (** Inverse matrix *)
+  Definition minvAM {n} (M : smat n) := (/ |M|) c* (madj M).
+  Notation "M \-1" := (minvAM M) : mat_scope.
 
-  (** If `minvo M` return `Some N`, then `M\-1` equal to `N` *)
-  Lemma minvo_Some_imply_minv : forall {n} (M N : smat n), minvo M = Some N -> M\-1 = N.
+  (** If `minvoAM M` return `Some N`, then `M\-1` equal to `N` *)
+  Lemma minvoAM_Some_imply_minvAM : forall {n} (M N : smat n),
+      minvoAM M = Some N -> M\-1 = N.
   Proof.
-    intros. unfold minvo, minv in *.
-    destruct minvtbleb eqn:E; try easy. inv H. auto.
+    intros. unfold minvoAM, minvAM in *.
+    destruct minvtblebAM eqn:E; try easy. inv H. auto.
   Qed.
-
-  (** If `minvo M` return `None`, then `M\-1` equal to `mat1` *)
-  Lemma minvo_None_imply_minv : forall {n} (M  : smat n), minvo M = None -> M\-1 = mat1.
-  Proof.
-    intros. unfold minvo, minv in *.
-    destruct minvtbleb eqn:E; try easy.
-  Qed.
-  
-  (** M\-1 * M = mat1 *)
-  Lemma mmul_minv_l : forall {n} (M : smat n), minvtble M -> M\-1 * M = mat1.
-  Proof.
-    intros. unfold minv. rewrite mdetEx_eq_mdet.
-    apply minvtble_iff_minvtbleb_true in H as H1. rewrite H1.
-    apply mmul_det_cmul_adj_l. apply minvtble_iff_mdet_neq0 in H. auto.
-  Qed.
-
-
-  (* ======================================================================= *)
-  (** ** Inverse matrix (No-check version) *)
-
-  (** Inverse matrix (won't check the inversibility) *)
-  Definition minvNoCheck {n} (M : smat n) := (/ mdetEx M) c* (madj M).
-
-  (** If `M` is invertible, then [minvNoCheckAM] is equivalent to [minvAM] *)
-  Lemma minvNoCheck_spec : forall {n} (M : smat n), minvtble M -> minvNoCheck M = M\-1.
-  Proof.
-    intros. unfold minvNoCheck, minv in *.
-    apply minvtble_iff_minvtbleb_true in H. rewrite H. auto.
-  Qed.
-
-  
-  (* ======================================================================= *)
-  (** ** Get one element of inverse matrix *)
-
-  (* Note: the purpose of this function is to support quickly evaluation *)
 
   (** Get (i,j) element of inverse matrix of matrix `M` *)
-  Definition minvElement {n} (M : smat (S n)) (i j : 'I_(S n)) : tA :=
-    ((/ (mdetEx M)) * mcofactorEx M j i)%A.
-
-  (** If `M` is invertible, minvElement M i j = (M\-1).[i].[j] *)
-  Lemma minvElement_spec : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
-      minvtble M -> minvElement M i j = (M\-1).[i].[j].
+  Lemma mnth_minvAM : forall n (M : smat (S n)) (i j : 'I_(S n)),
+      minvtble M -> (M\-1).[i].[j] = ((/ (mdet M)) * mcofactor M j i)%A.
+  Proof. intros. auto. Qed.
+  
+  (** M\-1 * M = mat1 *)
+  Lemma mmul_minvAM_l : forall {n} (M : smat n), minvtble M -> M\-1 * M = mat1.
   Proof.
-    intros. unfold minvElement, minv in *.
-    apply minvtble_iff_minvtbleb_true in H. rewrite H.
-    rewrite mnth_mcmul. unfold madj. auto.
+    intros. unfold minvAM.
+    apply minvtble_iff_minvtblebAM_true in H as H1.
+    apply mmul_det_cmul_adj_l. apply minvtble_iff_mdet_neq0 in H. auto.
   Qed.
+  
+  (** M * M\-1 = mat1 *)
+  Lemma mmul_minvAM_r : forall {n} (M : smat n), minvtble M -> M * M\-1 = mat1.
+  Proof. intros. apply mmul_minvAM_l in H. apply mmul_eq1_comm; auto. Qed.
+
+  (** minvtble M -> minvtble (M \-1) *)
+  Lemma minvAM_minvtble : forall {n} (M : smat n), minvtble M -> minvtble (M\-1).
+  Proof.
+    intros. apply minvtble_iff_minvtbleR. hnf.
+    exists M. apply mmul_minvAM_l; auto.
+  Qed.
+  
+  (** M * N = mat1 -> M \-1 = N *)
+  Lemma mmul_eq1_imply_minvAM_l : forall {n} (M N : smat n), M * N = mat1 -> M\-1 = N.
+  Proof.
+    intros. apply mmul_eq1_imply_minvtble_l in H as H'.
+    assert (M * N = M * M\-1). rewrite H. rewrite mmul_minvAM_r; auto.
+    apply mmul_cancel_l in H0; auto.
+  Qed.
+
+  (** M * N = mat1 -> N \-1 = M *)
+  Lemma mmul_eq1_imply_minvAM_r : forall {n} (M N : smat n), M * N = mat1 -> N\-1 = M.
+  Proof.
+    intros. apply mmul_eq1_imply_minvtble_r in H as H'.
+    assert (M * N = N\-1 * N). rewrite H. rewrite mmul_minvAM_l; auto.
+    apply mmul_cancel_r in H0; auto.
+  Qed.
+
+  (** mat1 \-1 = mat1 *)
+  Lemma minvAM_mat1 : forall n, (@mat1 n)\-1 = mat1.
+  Proof. intros. apply mmul_eq1_imply_minvAM_l. rewrite mmul_1_l; auto. Qed.
+
+  (** minvtble M -> M \-1 \-1 = M *)
+  Lemma minvAM_minvAM : forall n (M : smat n), minvtble M -> M \-1 \-1 = M.
+  Proof. intros. apply mmul_eq1_imply_minvAM_l. apply mmul_minvAM_l; auto. Qed.
+
+  (** (M * N)\-1 = (N\-1) * (M\-1) *)
+  Lemma minvAM_mmul : forall n (M N : smat n),
+      minvtble M -> minvtble N -> (M * N)\-1 = N\-1 * M\-1.
+  Proof.
+    intros. apply mmul_eq1_imply_minvAM_l. rewrite !mmul_assoc.
+    rewrite <- (mmul_assoc N). rewrite mmul_minvAM_r; auto.
+    rewrite mmul_1_l. apply mmul_minvAM_r; auto.
+  Qed.
+
+  (** (M \T) \-1 = (M \-1) \T *)
+  Lemma minvAM_mtrans : forall n (M : smat n), minvtble M -> (M \T) \-1 = (M \-1) \T.
+  Proof.
+    intros. apply mmul_eq1_imply_minvAM_l. rewrite <- mtrans_mmul.
+    rewrite mmul_minvAM_l; auto. rewrite mtrans_mat1; auto.
+  Qed.
+
+  (** |M \-1| = / (|M|) *)
+  Lemma mdet_minvAM : forall {n} (M : smat n), minvtble M -> |M\-1| = / |M|.
+  Proof.
+    intros. assert (|M * M\-1| = |@mat1 n|). f_equal. apply mmul_minvAM_r; auto.
+    rewrite mdet_mmul, mdet_mat1 in H0.
+    apply field_inv_eq_l in H0; auto.
+    apply minvtble_iff_mdet_neq0; auto.
+  Qed.
+
+  (* ======================================================================= *)
+  (** ** Inverse matrix with lists for input and output by AM *)
+  
+  (** Check matrix invertibility with lists as input *)
+  Definition minvtblebListAM (n : nat) (dl : dlist tA) : bool :=
+    @minvtblebAM n (l2m 0 dl).
+
+  (** Inverse matrix with lists for input and output *)
+  Definition minvListAM (n : nat) (dl : dlist tA) : dlist tA :=
+    m2l (@minvAM n (l2m 0 dl)).
+
+  (** `minvtblebListAM` is equivalent to `minvtblebAM`, by definition *)
+  Lemma minvtblebListAM_spec : forall (n : nat) (dl : dlist tA),
+      minvtblebListAM n dl = @minvtblebAM n (l2m 0 dl).
+  Proof. intros. auto. Qed.
+
+  (** The matrix of [minvListAM dl] is the inverse of the matrix of [dl] *)
+  Lemma minvListAM_spec : forall (n : nat) (dl : dlist tA),
+      let M : smat n := l2m 0 dl in
+      let M' : smat n := l2m 0 (minvListAM n dl) in
+      minvtblebListAM n dl = true ->
+      M' * M = mat1.
+  Proof.
+    intros. unfold minvtblebListAM in H. unfold minvListAM in M'.
+    unfold M', M. rewrite l2m_m2l. apply mmul_minvAM_l; auto.
+    apply minvtble_iff_minvtblebAM_true. auto.
+  Qed.
+
+  (* ======================================================================= *)
+  (** ** Solve equation with inverse matrix by AM *)
+
+  (** Solve the equation A*x=b. *)
+  Definition solveEqAM {n} (A : smat n) (b : vec n) : vec n := (A\-1) *v b.
+
+  (** A *v (solveEqAM A b) = b *)
+  Lemma solveEqAM_spec : forall {n} (A : smat n) (b : vec n),
+      minvtble A -> A *v (solveEqAM A b) = b.
+  Proof.
+    intros. unfold solveEqAM.
+    rewrite <- mmulv_assoc. rewrite mmul_minvAM_r; auto. rewrite mmulv_1_l. auto.
+  Qed.
+
+  (** Solve the equation A*x=b over list *)
+  Definition solveEqListAM (n : nat) (lA : dlist tA) (lb : list tA) : list tA :=
+    let A : smat n := l2m 0 lA in
+    let b : vec n := l2v 0 lb in
+    let x := solveEqAM A b in
+    v2l x.
+
+  (** {solveEqListAM lA lb} = solveEqAM {lA} {lb} *)
+  Lemma solveEqListAM_spec : forall n (lA : dlist tA) (lb : list tA),
+      let A : smat n := l2m 0 lA in
+      let b : vec n := l2v 0 lb in
+      l2v 0 (solveEqListAM n lA lb) = solveEqAM A b.
+  Proof. intros. unfold solveEqListAM. rewrite l2v_v2l. auto. Qed.
 
   (* ======================================================================= *)
   (** ** Direct formulas of inverse matrix *)
 
-  (* Get the formulas by computation *)
+  (* Try to get the formulas by computation *)
   Section formulas_by_computtation.
     Variable a11 a12 a13 a14 a21 a22 a23 a24 a31 a32 a33 a34 a41 a42 a43 a44 : tA.
     Let M1 : smat 1 := l2m 0 [[a11]].
@@ -212,10 +302,10 @@ Section minv.
     Let M4 : smat 4 := l2m 0 [[a11;a12;a13;a14];[a21;a22;a23;a24];
                               [a31;a32;a33;a34];[a41;a42;a43;a44]].
 
-    (* Compute m2l (minvNoCheck M1). *)
-    (* Compute m2l (minvNoCheck M2). *)
-    (* Compute m2l (minvNoCheck M3). *)
-    (* Compute m2l (minvNoCheck M4). *)
+    (* Compute m2l (M1\-1). *)
+    (* Compute m2l (M2\-1). *)
+    (* Compute m2l (M3\-1). *)
+    (* Compute m2l (M4\-1). *)
     (* Althouhg these formulas are correct, but the expression is too long.
        To get simple formulas, there are two ideas:
        1. use a simplifier to proces the result, liek RAST.
@@ -235,52 +325,40 @@ Section minv.
     | H: ?a = Azero |- ?b = Azero => symmetry; rewrite <- H at 1; try ring
     end.
     
-  Definition minv1 (M : smat 1) : smat 1 := l2m 0 [[1/M.11]].
+  Definition minvAM1 (M : smat 1) : smat 1 := l2m 0 [[1/M.11]].
 
-  (** minvtble M -> minv1 M = inv M *)
-  Lemma minv1_eq_minv : forall M, minvtble M -> minv1 M = M\-1.
+  (** minvtble M -> minvAM1 M = inv M *)
+  Lemma minvAM1_eq_minvAM : forall M, minvtble M -> minvAM1 M = M\-1.
   Proof.
     intros. apply minvtble_iff_mdet_neq0 in H.
-    rewrite <- minvNoCheck_spec; [|apply minvtble_iff_mdet_neq0; auto].
-    rewrite <- mdetEx_eq_mdet in H.
-    apply m2l_inj; cbv in *; rewrite <- !(nth_m2f 0) in *; list_eq;
-      field; solve_neq0_neq0; solve_eq0_eq0.
+    v2eALL M. cbv in H. meq. field. solve_neq0_neq0. solve_eq0_eq0.
   Qed.
 
-  Definition minv2 (M : smat 2) : smat 2 :=
-    /(mdet2 M) c*
-      l2m 0 [[M.22; -M.12]; [-M.21; M.11]].
+  Definition minvAM2 (M : smat 2) : smat 2 :=
+    /(mdet2 M) c* l2m 0 [[M.22; -M.12]; [-M.21; M.11]].
 
-  (** minvtble M -> minv2 M = inv M *)
-  Lemma minv2_eq_minv : forall M, minvtble M -> minv2 M = M\-1.
+  (** minvtble M -> minvAM2 M = inv M *)
+  Lemma minvAM2_eq_minvAM : forall M, minvtble M -> minvAM2 M = M\-1.
   Proof.
     intros. apply minvtble_iff_mdet_neq0 in H.
-    rewrite <- minvNoCheck_spec; [|apply minvtble_iff_mdet_neq0; auto].
-    rewrite <- mdetEx_eq_mdet in H.
-    apply m2l_inj; cbv in *; rewrite <- !(nth_m2f 0) in *; list_eq;
-      field; solve_neq0_neq0; solve_eq0_eq0.
+    v2eALL M. cbv in H. meq. all: field; solve_neq0_neq0; solve_eq0_eq0.
   Qed.
   
   (* Note, this formula come from matlab, needn't manual work *)
-  Definition minv3 (M : smat 3) : smat 3 :=
+  Definition minvAM3 (M : smat 3) : smat 3 :=
     /(mdet3 M) c*
       l2m 0 [[(M.22*M.33-M.23*M.32); -(M.12*M.33-M.13*M.32); (M.12*M.23-M.13*M.22)];
              [-(M.21*M.33-M.23*M.31); (M.11*M.33-M.13*M.31); -(M.11*M.23-M.13*M.21)];
              [(M.21*M.32-M.22*M.31); -(M.11*M.32-M.12*M.31); (M.11*M.22-M.12*M.21)]]%A.
 
-  (** minvtble M -> minv3 M = inv M *)
-  Lemma minv3_eq_minv : forall M, minvtble M -> minv3 M = M\-1.
-    (* TO SPEED UP THE COMPILATION *)
-  Admitted.
-  (* Proof. *)
-  (*   intros. apply minvtble_iff_mdet_neq0 in H. *)
-  (*   rewrite <- minvNoCheck_spec; [|apply minvtble_iff_mdet_neq0; auto]. *)
-  (*   rewrite <- mdetEx_eq_mdet in H. *)
-  (*   apply m2l_inj; cbv in *; rewrite <- !(nth_m2f 0) in *; list_eq; *)
-  (*     field; solve_neq0_neq0; solve_eq0_eq0. *)
-  (* Qed. *)
+  (** minvtble M -> minvAM3 M = inv M *)
+  Lemma minvAM3_eq_minvAM : forall M, minvtble M -> minvAM3 M = M\-1.
+  Proof.
+    intros. apply minvtble_iff_mdet_neq0 in H.
+    v2eALL M. cbv in H. meq. all: field; solve_neq0_neq0; solve_eq0_eq0.
+  Qed.
 
-  Definition minv4 (M : smat 4) : smat 4 :=
+  Definition minvAM4 (M : smat 4) : smat 4 :=
     /(mdet4 M) c*
       l2m 0 [[(M.22*M.33*M.44 - M.22*M.34*M.43 - M.23*M.32*M.44 + M.23*M.34*M.42 +
                  M.24*M.32*M.43 - M.24*M.33*M.42);
@@ -318,241 +396,13 @@ Section minv.
               (M.11*M.22*M.33 - M.11*M.23*M.32 - M.12*M.21*M.33 + M.12*M.23*M.31 +
                  M.13*M.21*M.32 - M.13*M.22*M.31)]]%A.
   
-  (** minvtble M -> minv4 M = inv M *)
-  Lemma minv4_eq_minv : forall M, minvtble M -> minv4 M = M\-1.
+  (** minvtble M -> minvAM4 M = inv M *)
+  Lemma minvAM4_eq_minvAM : forall M, minvtble M -> minvAM4 M = M\-1.
     (* TO SPEED UP THE COMPILATION *)
   Admitted.
   (* Proof. *)
   (*   intros. apply minvtble_iff_mdet_neq0 in H. *)
-  (*   rewrite <- minvNoCheck_spec; [|apply minvtble_iff_mdet_neq0; auto]. *)
-  (*   rewrite <- mdetEx_eq_mdet in H. *)
-  (*   apply m2l_inj; cbv in *; rewrite <- !(nth_m2f 0) in *; list_eq; *)
-  (*     field; solve_neq0_neq0; solve_eq0_eq0. *)
+  (*   v2eALL M. cbv in H. meq. all: field; solve_neq0_neq0; solve_eq0_eq0. *)
   (* Qed. *)
-  
 
-End minv.
-
-
-(* ############################################################################ *)
-(** * Matrix Inversion by Adjoint Matrix (module version)  *)
-
-Module MinvCoreAM (E : FieldElementType) <: MinvCore E.
-  Export E.
-  Add Field field_thy_inst : (make_field_theory Field).
-  Open Scope A_scope.
-  Open Scope mat_scope.
-
-  Local Notation "0" := Azero : A_scope.
-  Local Notation "1" := Aone : A_scope.
-  Local Infix "+" := Aadd : A_scope.
-  Local Notation "- a" := (Aopp a) : A_scope.
-  Local Notation "a - b" := ((a + -b)%A) : A_scope.
-  Local Infix "*" := Amul : A_scope.
-  Local Notation "/ a" := (Ainv a) : A_scope.
-  Local Notation "a / b" := ((a * /b)%A) : A_scope.
-
-  Local Notation smat n := (smat tA n).
-  Local Notation mat1 := (@mat1 _ Azero Aone).
-  Local Notation mcmul := (@mcmul _ Amul).
-  Local Infix "c*" := mcmul : mat_scope.
-  Local Notation mmul := (@mmul _ Aadd Azero Amul).
-  Local Infix "*" := mmul : mat_scope.
-  Local Notation mmulv := (@mmulv _ Aadd 0 Amul).
-  Local Infix "*v" := mmulv : mat_scope.
-  Local Notation madj := (@madj _ Aadd 0 Aopp Amul 1).
-  Local Notation "M \A" := (madj M) : mat_scope.
-
-  Local Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).
-  Local Notation mdetEx := (@mdetEx _ Aadd 0 Aopp Amul 1).
-  Local Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
-  Local Notation msingular := (@msingular _ Aadd 0 Amul 1).
-    
-  (* ======================================================================= *)
-  (** ** Check matrix invertibility *)
-
-  (** Check the invertibility of matrix `M` *)
-  Definition minvtbleb {n} (M : smat n) : bool :=
-    @minvtbleb _ Aadd 0 Aopp Amul 1 _ _ M.
-
-  (** minvtble M <-> minvtbleb M = true *)
-  Lemma minvtble_iff_minvtbleb_true : forall {n} (M : smat n),
-      minvtble M <-> minvtbleb M = true.
-  Proof. intros. apply minvtble_iff_minvtbleb_true. Qed.
-  
-  (** msingular M <-> minvtbleb M = false *)
-  Lemma msingular_iff_minvtbleb_false : forall {n} (M : smat n),
-      msingular M <-> minvtbleb M = false.
-  Proof. intros. apply msingular_iff_minvtbleb_false. Qed.
-
-
-  (* ======================================================================= *)
-  (** ** Inverse matrix (option version) *)
-
-  (** Inverse matrix (option version) *)
-  Definition minvo {n} (M : smat n) : option (smat n) :=
-    @minvo _ Aadd 0 Aopp Amul 1 Ainv _ _ M.
-
-  (** `minvo` return `Some`, iff M is invertible *)
-  Lemma minvo_Some_iff_minvtble : forall {n} (M : smat n),
-      (exists M', minvo M = Some M') <-> minvtble M.
-  Proof. intros. apply minvo_Some_iff_minvtble. Qed.
-
-  (** `minvo` return `None`, iff M is singular *)
-  Lemma minvo_None_iff_msingular : forall {n} (M : smat n),
-      minvo M = None <-> msingular M.
-  Proof. intros. apply minvo_None_iff_msingular. Qed.
-
-  (** If `minvo M` return `Some M'`, then `M' * M = mat1` *)
-  Lemma minvo_Some_imply_eq1_l : forall {n} (M M' : smat n),
-      minvo M = Some M' -> M' * M = mat1.
-  Proof. intros. apply minvo_Some_imply_eq1_l; auto. Qed.
-
-  (** If `minvo M` return `Some M'`, then `M * M' = mat1` *)
-  Lemma minvo_Some_imply_eq1_r : forall {n} (M M' : smat n),
-      minvo M = Some M' -> M * M' = mat1.
-  Proof. intros. apply minvo_Some_imply_eq1_r; auto. Qed.
-  
-  (* ======================================================================= *)
-  (** ** Inverse matrix (default value version) *)
-  
-  (** Inverse matrix (with identity matrix as default value) *)
-  Definition minv {n} (M : smat n) := @minv _ Aadd 0 Aopp Amul 1 Ainv _ _ M.
-  Notation "M \-1" := (minv M) : mat_scope.
-
-  (** If `minvo M` return `Some N`, then `M\-1` equal to `N` *)
-  Lemma minvo_Some_imply_minv : forall {n} (M N : smat n), minvo M = Some N -> M\-1 = N.
-  Proof. intros. apply minvo_Some_imply_minv; auto. Qed.
-
-  (** If `minvo M` return `None`, then `M\-1` equal to `mat1` *)
-  Lemma minvo_None_imply_minv : forall {n} (M  : smat n), minvo M = None -> M\-1 = mat1.
-  Proof. intros. apply minvo_None_imply_minv; auto. Qed.
-  
-  (** M\-1 * M = mat1 *)
-  Lemma mmul_minv_l : forall {n} (M : smat n), minvtble M -> M\-1 * M = mat1.
-  Proof. intros. apply mmul_minv_l; auto. Qed.
-
-
-  (* ======================================================================= *)
-  (** ** Inverse matrix (No-check version) *)
-
-  (** Inverse matrix (won't check the inversibility) *)
-  Definition minvNoCheck {n} (M : smat n) :=
-    @minvNoCheck _ Aadd 0 Aopp Amul 1 Ainv _ M.
-
-  (** If `M` is invertible, then [minvNoCheckAM] is equivalent to [minvAM] *)
-  Lemma minvNoCheck_spec : forall {n} (M : smat n), minvtble M -> minvNoCheck M = M\-1.
-  Proof. intros. apply minvNoCheck_spec; auto. Qed.
-  
-End MinvCoreAM.
-
-
-(* ############################################################################ *)
-(** * Matrix inversion by Adjoint Matrix *)
-Module MinvAM (E : FieldElementType).
-  Module MinvCore_inst := MinvCoreAM E.
-  Module Minv_inst := Minv E MinvCore_inst.
-  Export Minv_inst.
-
-  Local Notation "0" := Azero : A_scope.
-  Local Notation "1" := Aone : A_scope.
-  Local Infix "+" := Aadd : A_scope.
-  Local Notation "- a" := (Aopp a) : A_scope.
-  Local Notation "a - b" := ((a + -b)%A) : A_scope.
-  Local Infix "*" := Amul : A_scope.
-  Local Notation "/ a" := (Ainv a) : A_scope.
-  Local Notation "a / b" := ((a * /b)%A) : A_scope.
-
-  Local Notation smat n := (smat tA n).
-  Local Notation mat1 := (@mat1 _ Azero Aone).
-  Local Notation mcmul := (@mcmul _ Amul).
-  Local Infix "c*" := mcmul : mat_scope.
-  Local Notation mmul := (@mmul _ Aadd Azero Amul).
-  Local Infix "*" := mmul : mat_scope.
-  Local Notation mmulv := (@mmulv _ Aadd 0 Amul).
-  Local Infix "*v" := mmulv : mat_scope.
-  Local Notation madj := (@madj _ Aadd 0 Aopp Amul 1).
-  Local Notation "M \A" := (madj M) : mat_scope.
-
-  Local Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).
-  Local Notation mdetEx := (@mdetEx _ Aadd 0 Aopp Amul 1).
-  Local Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
-  Local Notation msingular := (@msingular _ Aadd 0 Amul 1).
-  
-  Notation mcofactorEx := (@mcofactorEx _ Aadd 0 Aopp Amul 1).
-  Notation mdet1 := (@mdet1 tA).
-  Notation mdet2 := (@mdet2 _ Aadd Aopp Amul).
-  Notation mdet3 := (@mdet3 _ Aadd Aopp Amul).
-  Notation mdet4 := (@mdet4 _ Aadd Aopp Amul).
-  Notation cramerRule := (@cramerRule _ Aadd 0 Aopp Amul 1 Ainv).
-
-
-  (* ======================================================================= *)
-  (** ** Solve equation by inverse matrix without check the inversibility *)
-
-  (** Solve the equation with the form of A*x=b, but without check the inversibility. *)
-  Definition solveEqNoCheck {n} (A : smat n) (b : vec n) : vec n :=
-    (minvNoCheck A) *v b.
-
-  (** minvtble A -> solveEqNoCheck A b = solveEq A b *)
-  Theorem solveEqNoCheck_spec : forall {n} (A : smat n) (b : @vec tA n),
-      minvtble A -> solveEqNoCheck A b = solveEq A b.
-  Proof. intros. unfold solveEqNoCheck. rewrite minvNoCheck_spec; auto. Qed.
-
-  (** Solve the equation with the form of A*x=b over list, but without check the 
-      inversibility *)
-  Definition solveEqListNoCheck (n : nat) (lA : dlist tA) (lb : list tA) : list tA :=
-    let A : smat n := l2m 0 lA in
-    let b : vec n := l2v 0 lb in
-    let x := solveEqNoCheck A b in
-    v2l x.
-
-  (** minvtble {lA} -> {solveEqListNoCheck lA lb} = solveEqList {lA} {lb} *)
-  Theorem solveEqListNoCheck_spec : forall n (lA : dlist tA) (lb : list tA),
-      let A : smat n := l2m 0 lA in
-      minvtble A -> solveEqListNoCheck n lA lb = solveEqList n lA lb.
-  Proof. intros. unfold solveEqListNoCheck. rewrite solveEqNoCheck_spec; auto. Qed.
-
-  
-  (* ======================================================================= *)
-  (** ** Get one element of inverse matrix *)
-
-  (* Note: the purpose of this function is to support quickly evaluation *)
-
-  (** Get (i,j) element of inverse matrix of matrix `M` *)
-  Definition minvElement {n} (M : smat (S n)) (i j : 'I_(S n)) : tA :=
-    @minvElement _ Aadd 0 Aopp Amul 1 Ainv _ M i j.
-
-  (** If `M` is invertible, minvElement M i j = (M\-1).[i].[j] *)
-  Lemma minvElement_spec : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
-      minvtble M -> minvElement M i j = (M\-1).[i].[j].
-  Proof. intros. apply minvElement_spec; auto. Qed.
-
-  (* ======================================================================= *)
-  (** ** Direct formulas of inverse matrix *)
-    
-  Definition minv1 (M : smat 1) : smat 1 := @minv1 _ 0 Amul 1 Ainv M.
-
-  (** minvtble M -> minv1 M = inv M *)
-  Lemma minv1_eq_minv : forall M, minvtble M -> minv1 M = M\-1.
-  Proof. intros. apply minv1_eq_minv; auto. Qed.
-
-  Definition minv2 (M : smat 2) : smat 2 := @minv2 _ Aadd 0 Aopp Amul Ainv M.
-
-  (** minvtble M -> minv2 M = inv M *)
-  Lemma minv2_eq_minv : forall M, minvtble M -> minv2 M = M\-1.
-  Proof. intros. apply minv2_eq_minv; auto. Qed.
-  
-  Definition minv3 (M : smat 3) : smat 3 := @minv3 _ Aadd 0 Aopp Amul Ainv M.
-
-  (** minvtble M -> minv3 M = inv M *)
-  Lemma minv3_eq_minv : forall M, minvtble M -> minv3 M = M\-1.
-  Proof. intros. apply minv3_eq_minv; auto. Qed.
-
-  Definition minv4 (M : smat 4) : smat 4 := @minv4 _ Aadd 0 Aopp Amul Ainv M.
-  
-  (** minvtble M -> minv4 M = inv M *)
-  Lemma minv4_eq_minv : forall M, minvtble M -> minv4 M = M\-1.
-  Proof. intros. apply minv4_eq_minv; auto. Qed.
-  
-End MinvAM.
+End minvAM.

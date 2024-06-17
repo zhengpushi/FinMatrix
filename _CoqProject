@@ -16,12 +16,14 @@
 # -arg -w -arg -extraction-logical-axiom
 
 # ========== CoqExt ====================
+FinMatrix/CoqExt/LogicExt.v
+FinMatrix/CoqExt/MyExtrOCamlR.v
 FinMatrix/CoqExt/Basic.v
 FinMatrix/CoqExt/BoolExt.v
-FinMatrix/CoqExt/FuncExt.v
 FinMatrix/CoqExt/StrExt.v
 FinMatrix/CoqExt/ListExt.v
 FinMatrix/CoqExt/Hierarchy.v
+FinMatrix/CoqExt/ElementType.v
 FinMatrix/CoqExt/NatExt.v
 FinMatrix/CoqExt/PositiveExt.v
 FinMatrix/CoqExt/ZExt.v
@@ -51,7 +53,6 @@ FinMatrix/CoqExt/RFunExt.v
 FinMatrix/CoqExt/RAnalysisExt.v
 FinMatrix/CoqExt/Complex.v
 FinMatrix/CoqExt/LinearSpace.v
-FinMatrix/CoqExt/MyExtrOCamlR.v
 
 # ========== Matrix ====================
 FinMatrix/Matrix/Fin.v
@@ -60,12 +61,13 @@ FinMatrix/Matrix/Vector.v
 FinMatrix/Matrix/Matrix.v
 FinMatrix/Matrix/Permutation.v
 FinMatrix/Matrix/MatrixDet.v
+# FinMatrix/Matrix/MatrixDet_test.v
 FinMatrix/Matrix/MatrixGauss.v
-FinMatrix/Matrix/MatrixInvBase.v
+# FinMatrix/Matrix/MatrixGauss_test.v
+FinMatrix/Matrix/MatrixInvertible.v
 FinMatrix/Matrix/MatrixInvAM.v
 FinMatrix/Matrix/MatrixInvGE.v
 FinMatrix/Matrix/MatrixOrth.v
-FinMatrix/Matrix/ElementType.v
 FinMatrix/Matrix/MatrixModule.v
 FinMatrix/Matrix/MatrixNat.v
 FinMatrix/Matrix/MatrixZ.v
@@ -74,6 +76,4 @@ FinMatrix/Matrix/MatrixQc.v
 FinMatrix/Matrix/MatrixR.v
 FinMatrix/Matrix/MatrixC.v
 FinMatrix/Matrix/MatrixRFun.v
-FinMatrix/Matrix/MatrixInvAM_test.v
-FinMatrix/Matrix/MatrixInvGE_test.v
 # FinMatrix/Matrix/VectorSpace.v

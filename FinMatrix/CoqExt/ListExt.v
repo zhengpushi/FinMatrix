@@ -30,11 +30,10 @@
      Leibniz Equality version
  *)
 
+Require Export List SetoidList. Export ListNotations.
 Require Import StrExt.
 Require Export NatExt.
 Require Export Hierarchy.
-Require Export List. Export ListNotations.
-
 
 Open Scope nat_scope.
 Open Scope list.

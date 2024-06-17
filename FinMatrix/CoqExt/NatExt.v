@@ -11,8 +11,9 @@
   1. naming of nat variable: n, m, k, p, q, r
  *)
 
-Require Export Hierarchy ElementType.
 Require Export Init.Nat PeanoNat Arith Lia.
+Require Export ElementType.
+
 Open Scope nat_scope.
 
 (* ######################################################################### *)

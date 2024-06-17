@@ -8,10 +8,11 @@
   date      : 2023.12
 *)
 
-Require Export Hierarchy.  
-Require Import Numbers.BinNums.
-Require Import PArith.BinPos.
+Require Export Numbers.BinNums.
+Require Export PArith.BinPos.
 (* Import Pos.   (* too many things I needn't, such that `eq` is strange. *) *)
+Require Export NatExt.
+
 Open Scope positive_scope.
 
 

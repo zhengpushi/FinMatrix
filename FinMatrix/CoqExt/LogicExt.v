@@ -9,15 +9,17 @@
   
 *)
 
-Require Export FunctionalExtensionality.
-Require Export PropExtensionality.
-Require Export Ensembles.       (* 这里有一些全称量词的性质比较有趣 *)
-Require Export Classical.
+Require Export Coq.Logic.Classical.
+Require Export Coq.Logic.FunctionalExtensionality.
+Require Export Coq.Logic.PropExtensionality.
+Require Import Coq.Sets.Ensembles.
 
 
-(** * 标准库已有的性质 *)
+(* ######################################################################### *)
+(** * Existing properties in Coq standard library *)
 
-(** *** 来自 Coq.Logic.FunctionalExtensionality *)
+(* ======================================================================= *)
+(** ** Properties from Coq.Logic.FunctionalExtensionality *)
 
 (* 依赖类型上的 eta转换 *)
 (* Check eta_expansion_dep. *)
@@ -44,17 +46,19 @@ Require Export Classical.
 (* Check equal_f. *)
 (* : ?f = ?g -> forall x : ?A, ?f x = ?g x *)
 
-
 (* 策略 extensionality *)
 
 
-(** *** 来自 Coq.Logic.PropExtensionality *)
+(* ======================================================================= *)
+(** ** Properties from Coq.Logic.PropExtensionality *)
 
 (* 命题外延性 *)
 (* Axiom propositional_extensionality : forall (P Q : Prop), (P <-> Q) -> P = Q. *)
 
 
-(** *** 来自 Coq.Logic.Classical_Prop *)
+(* ======================================================================= *)
+(** ** Properties Coq.Logic.Classical_Prop *)
+
 (*
 Axiom classic : forall P:Prop, P \/ ~ P.
 Lemma NNPP : forall p:Prop, ~ ~ p -> p.
@@ -73,8 +77,8 @@ Lemma imply_and_or2 : forall P Q R:Prop, (P -> Q) -> P \/ R -> Q \/ R.
 Lemma proof_irrelevance : forall (P:Prop) (p1 p2:P), p1 = p2.
  *)
 
-
-(** *** 来自 Coq.Logic.EqdepFacts *)
+(* ======================================================================= *)
+(** ** Properties from Coq.Logic.EqdepFacts *)
 
 (* 相等性证明是唯一的 *)
 (* Check UIP. *)
@@ -85,9 +89,11 @@ Lemma proof_irrelevance : forall (P:Prop) (p1 p2:P), p1 = p2.
 (* : forall (U : Type) (x : U) (p : x = x), p = eq_refl *)
 
 
+(* ######################################################################### *)
+(** * Other properties *)
 
-(** ** 新的性质 *)
-
+(* ======================================================================= *)
+(** ** Properties for logic operations *)
 
 (* P \/ P = P *)
 Lemma or_same : forall (P : Prop), P \/ P -> P.
@@ -114,8 +120,8 @@ Lemma extensionality_ensembles : forall (U : Type) (A B : U -> Prop),
 Proof. intros.
   (* 集合相等的外延性公理 *) apply Extensionality_Ensembles. auto. Qed.
 
-
-(** *** Good exercises for logic *)
+(* ======================================================================= *)
+(** ** Exercises for logic *)
 Section exercise_forall_exist_not.
 
   (** Existing lemmas
@@ -156,3 +162,44 @@ not_all_not_ex: forall (U : Type) (P : U -> Prop), ~ (forall n : U, ~ P n) -> ex
   Proof. Abort.
   
 End exercise_forall_exist_not.
+
+(* ======================================================================= *)
+(** ** Properties for function *)
+
+(** Two functions are equal, iff extensional equal *)
+Lemma feq_iff : forall {A} (f g : A -> A), f = g <-> (forall x, f x = g x).
+Proof. intros. split; intros; subst; auto. extensionality x; auto. Qed.
+
+(** A short name of "functional_extensionality" *)
+(* Definition fun_eq {A B} := @functional_extensionality A B. *)
+(* Ltac fun_eq := apply functional_extensionality. *)
+
+(** eta expansion *)
+(* Check eta_expansion. *)
+
+(** Bidirection form of functional extensionality (unary function) *)
+Lemma fun_eq_iff_forall_eq : forall A B (f g : A -> B),
+    (fun i => f i) = (fun i => g i) <-> forall i, f i = g i.
+Proof.
+  intros. split; intros.
+  - (* We can not use functional_extensionality here *)
+    (* Although these proofs are simple, but it is very cumbersome.
+       I hope to get some concise way *)
+    remember (fun (f:A->B) (i:A) => f i) as F eqn:EqF.
+    replace (fun i => f i) with (F f) in H by (rewrite EqF; auto).
+    replace (fun i => g i) with (F g) in H by (rewrite EqF; auto).
+    replace (f i) with (F f i) by (rewrite EqF; auto).
+    replace (g i) with (F g i) by (rewrite EqF; auto).
+    rewrite H. auto.
+  - extensionality i. auto.
+Qed.
+
+(** Another form of functional extensionality (binary function) *)
+Lemma fun_eq_iff_forall_eq2 : forall A B C (f g : A -> B -> C),
+    (fun i j => f i j) = (fun i j => g i j) <-> forall i j, f i j = g i j.
+Proof.
+  intros. split; intros.
+  - rewrite (fun_eq_iff_forall_eq) in H. rewrite H. auto. 
+  - extensionality i. extensionality j. auto.
+Qed.
+

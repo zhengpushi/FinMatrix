@@ -9,9 +9,9 @@
 *)
 
 
-Require Export PositiveExt ZExt.
 Require Export QArith Qround.
-Require Export Hierarchy ElementType.
+Require Export ZExt.
+
 Open Scope Q.
 
 

@@ -10,8 +10,9 @@
   remark    :
  *)
 
-Require Export Basic Hierarchy.
-Require Export Reals Lia Lra.
+Require Export Reals Lra.
+Require Export ElementType.
+
 Open Scope R_scope.
 
 

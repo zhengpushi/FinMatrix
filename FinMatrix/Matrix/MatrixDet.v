@@ -66,10 +66,7 @@
       该矩阵应该满足：每一行相加都相等，每一列相加也相等。
  *)
 
-Require Import Extraction.
-Require Export ListExt NatExt Matrix Permutation.
-Require ZArith Reals.
-
+Require Export ListExt NatExt Permutation Matrix.
 
 Generalizable Variable tA Aadd Azero Aopp Amul Aone Ainv.
 
@@ -577,72 +574,6 @@ Section mdet_concrete.
 End mdet_concrete.
 
 
-(* ======================================================================= *)
-(** ** Test of determinant *)
-
-(** *** Test of determinant on `Z` type *)
-Section testZ.
-  Import ZArith.
-  Open Scope Z_scope.
-  Let mdet {n} (M : @smat Z n) : Z := @mdet _ Z.add 0 Z.opp Z.mul 1 n M.
-
-  (* 《高等代数》邱维声 第三版 习题2.2 *)
-  Let ex_1_5 : mat Z 5 5 :=
-        l2m 0 [[0;0;0;1;0];[0;0;2;0;0];[0;3;8;0;0];[4;9;0;7;0];[6;0;0;0;5]].
-  Goal mdet ex_1_5 = 120. cbv. auto. Qed.
-
-  Let ex_2_1 : mat Z 3 3 := l2m 0 [[1;4;2];[3;5;1];[2;1;6]].
-  Goal mdet ex_2_1 = -49. cbv. auto. Qed.
-End testZ.
-
-(** *** Test of determinant on `R` type *)
-Section testR.
-  Import Reals.
-  Open Scope R_scope.
-  Notation "0" := R0.
-  Notation "1" := R1.
-  Let mdet {n} (M : @smat R n) : R := @mdet _ Rplus 0 Ropp Rmult 1 n M.
-
-  Variable a11 a12 a13 a21 a22 a23 a31 a32 a33 : R.
-
-  (* Eval cbv in mdet (mkmat_1_1 a11). *)
-  (* = 0 + a11 * 1 *)
-  (* Eval cbv in mdet (mkmat_2_2 a11 a12 a21 a22). *)
-  (* = 0 + a11 * (a22 * 1) + - (a12 * (a21 * 1)) *)
-  (* Eval cbv in mdet (mkmat_3_3 a11 a12 a13 a21 a22 a23 a31 a32 a33). *)
-  (* = 0 + a11 * (a22 * (a33 * 1)) 
-         + - (a12 * (a21 * (a33 * 1))) 
-         + a12 * (a23 * (a31 * 1)) 
-         + - (a11 * (a23 * (a32 * 1))) 
-         + a13 * (a21 * (a32 * 1)) 
-         + - (a13 * (a22 * (a31 * 1))) *)
-
-  (* 《高等代数》邱维声 第三版 习题2.2 *)
-  Let ex_2_3 : mat R 3 3 := l2m 0 [[a11;a12;a13];[0;a22;a23];[0;0;a33]].
-  Goal mdet ex_2_3 = a11 * a22 * a33. cbv. lra. Qed.
-
-  (* 2.2.2节，例题3 *)
-  Example eg_2_2_2_3 : forall a1 a2 a3 a4 a5 b1 b2 b3 b4 b5 c1 c2 d1 d2 e1 e2 : R,
-      mdet (@l2m _ 0 5 5
-              [[a1;a2;a3;a4;a5];
-               [b1;b2;b3;b4;b5];
-               [ 0; 0; 0;c1;c2];
-               [ 0; 0; 0;d1;d2];
-               [ 0; 0; 0;e1;e2]]) = 0.
-  Proof. intros. cbv. lra. Qed.
-
-  (* 2.2.2节，例题4 *)
-  Example eg_2_2_2_4 : forall x:R,
-      mdet (@l2m _ 0 4 4
-              [[7*x;x;1;2*x];
-               [1;x;5;-1];
-               [4;3;x;1];
-               [2;-1;1;x]]) = 7*x^4 - 5*x^3 - 99*x^2 + 38*x + 11.
-  Proof. intros. cbv. lra. Qed.
-  
-End testR.
-
-
 (* ############################################################################ *)
 (** * Cofactor expansion of the determinant *)
 Section mdetEx.
@@ -777,7 +708,7 @@ Section mdetEx.
   (** ** cofactor matrix (matrix of cofactors) 代数余子阵 *)
 
   (** cofactor matrix of M *)
-  Definition mcomat {n} (M : smat (S n)) : smat (S n) := fun i j => mcofactor M i j.
+  (* Definition mcomat {n} (M : smat (S n)) : smat (S n) := fun i j => mcofactor M i j. *)
 
 
   (* ======================================================================= *)
@@ -881,48 +812,6 @@ Section mdetEx.
   Lemma vdot_mcofactor_col_same_eq_det : forall {n} (M : smat (S n)) (j : 'I_(S n)),
       vdot (M&[j]) (fun i => mcofactor M i j) = |M|.
   Proof. intros. rewrite <- mdetExCol_eq_mdet with (j:=j). auto. Qed.
-
-  
-  Section example1.
-    (* 
-       a b 0 0 ... 0 0 0 
-       0 a b 0 ... 0 0 0
-       0 0 a b ... 0 0 0
-       ...
-       0 0 0 0 ... a b 0
-       0 0 0 0 ... 0 a b    = a^n + (-1)^(n+1)b^2
-     *)
-    
-    (* Variable n : nat. *)
-    Let n := 7.
-    Variable a b : tA.
-    Let M1 : smat (S n) := mdiagMk 0 (vrepeat a).
-    Let M2 : smat (S n) := mclsr (mdiagMk 0 (vrepeat b)) #1.
-    Let M := M1 + M2.
-    (* Compute m2l M. *)
-
-    
-    (* a ^ n *)
-    Fixpoint ApowNat (a : tA) (n : nat) : tA :=
-      match n with
-      | O => Aone
-      | S n' => a * ApowNat a n'
-      end.
-
-    Example mdet_example1 :
-    |M| = (ApowNat a (S n) + (if odd (S (S n)) then -b*b else b*b))%A.
-    Proof.
-      rewrite <- (mdetExCol_eq_mdet) with (j:=#0).
-      unfold M,M1,M2.
-      simpl.
-      Abort.
-
-  End example1.
-
-  Section example2.
-    (* Vandermonde determinant *)
-  End example2.
-
 
   (** Cofactor expansion of `M` along the 0-th row *)
   (* Note that, it is not simply use `mdetExRow`, but a recursively definition *)
@@ -1038,6 +927,7 @@ Section madj.
   Notation "/ a" := (Ainv a) : A_scope.
   Notation "a / b" := ((a * /b)%A) : A_scope.
 
+  Notation vec n := (@vec tA n).
   Notation vsum := (@vsum _ Aadd 0).
 
   Notation smat n := (smat tA n).
@@ -1050,8 +940,9 @@ Section madj.
   Infix "*v" := mmulv : mat_scope.
   Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).
   Notation "| M |" := (mdet M) : mat_scope.
-  Notation mdetEx := (@mdetEx _ Aadd 0 Aopp Amul 1).
   Notation mcofactor := (@mcofactor _ Aadd 0 Aopp Amul 1).
+
+  Notation mdetEx := (@mdetEx _ Aadd 0 Aopp Amul 1).
   Notation mcofactorEx := (@mcofactorEx _ Aadd 0 Aopp Amul 1).
   
   (* ======================================================================= *)
@@ -1061,7 +952,7 @@ Section madj.
   Definition madj {n} : smat n -> smat n := 
     match n with
     | O => fun M => M 
-    | S n' => fun M i j => mcofactorEx M j i
+    | S n' => fun M i j => mcofactor M j i
     end.
   Notation "M \A" := (madj M) : mat_scope.
 
@@ -1096,8 +987,6 @@ Section madj.
     intros. apply meq_iff_mnth; intros.
     unfold madj. destruct n. fin.
     rewrite mnth_mmul. unfold mcol.
-    replace (fun i0 => mcofactorEx M j i0) with (fun i0 => mcofactor M j i0).
-    2:{ extensionality i0. rewrite mcofactorEx_eq_mcofactor. auto. }
     destruct (i ??= j) as [E|E].
     - fin2nat. subst.
       rewrite vdot_mcofactor_row_same_eq_det.
@@ -1113,8 +1002,6 @@ Section madj.
     intros. apply meq_iff_mnth; intros.
     unfold madj. destruct n. fin.
     rewrite mnth_mmul. rewrite vdot_comm.
-    replace (fun j0 => mcofactorEx M j0 i) with (fun j0 => mcofactor M j0 i).
-    2:{ extensionality j0. rewrite mcofactorEx_eq_mcofactor. auto. }
     destruct (i ??= j) as [E|E].
     - fin2nat. subst.
       rewrite vdot_mcofactor_col_same_eq_det.
@@ -1165,18 +1052,18 @@ Section madj.
 
   (** Cramer rule, which can solve the equation with the form of A*x=b.
       Note, the result is valid only when |B| is not zero *)
-  Definition cramerRule {n} (A : smat n) (b : @vec tA n) : @vec tA n :=
-    fun i => mdetEx (msetc A b i) / (mdetEx A).
+  Definition cramerRule {n} (A : smat n) (b : vec n) : vec n :=
+    fun i => |msetc A b i| / |A|.
 
   (** A *v (cramerRule A b) = b, (The dimension is `S n`) *)
-  Lemma cramerRule_eq_S : forall {n} (A : smat (S n)) (b : @vec tA (S n)),
+  Lemma cramerRule_eq_S : forall {n} (A : smat (S n)) (b : vec (S n)),
   |A| <> 0 -> A *v (cramerRule A b) = b.
   Proof.
-    intros. unfold cramerRule. rewrite !mdetEx_eq_mdet.
+    intros. unfold cramerRule.
     remember (msetc A b) as C. apply veq_iff_vnth; intros.
     rewrite vnth_mmulv. unfold vdot. unfold vmap2.
     rewrite vsum_eq with (b:=fun j => (/|A| * (A.[i].[j] * |C j|))%A).
-    2:{ intros. rewrite !mdetEx_eq_mdet. field. auto. }
+    2:{ intros. field. auto. }
     rewrite <- vsum_cmul_l.
     rewrite vsum_eq
       with (b:=fun j => (vsum (fun k => A.[i].[j] * (b.[k] * mcofactor A k j)))%A).
@@ -1203,7 +1090,7 @@ Section madj.
   Qed.
 
   (** A *v (cramerRule A b) = b *)
-  Theorem cramerRule_spec : forall {n} (A : smat n) (b : @vec tA n),
+  Theorem cramerRule_spec : forall {n} (A : smat n) (b : vec n),
   |A| <> 0 -> A *v (cramerRule A b) = b.
   Proof.
     intros. destruct n.
@@ -1218,6 +1105,11 @@ Section madj.
     let x := cramerRule A b in
     v2l x.
 
+  (** length (cramerRuleList n lA lb) = n *)
+  Lemma cramerRuleList_length : forall (n : nat) (lA : dlist tA) (lb : list tA),
+      length (cramerRuleList n lA lb) = n.
+  Proof. intros. unfold cramerRuleList. rewrite v2l_length. auto. Qed.
+
   (** {cramerRuleList lA lb} = cramerRule {lA} {lb} *)
   Theorem cramerRuleList_spec : forall n (lA : dlist tA) (lb : list tA),
       let A : smat n := l2m 0 lA in
@@ -1226,27 +1118,3 @@ Section madj.
   Proof. intros. unfold cramerRuleList. rewrite l2v_v2l. auto. Qed.
   
 End madj.
-
-Section test.
-  Import QcExt.
-  
-  Notation cramerRule := (@cramerRule _ Qcplus 0 Qcopp Qcmult 1 Qcinv).
-  Notation cramerRuleList := (@cramerRuleList _ Qcplus 0 Qcopp Qcmult 1 Qcinv).
-  Notation mdetEx := (@mdetEx _ Qcplus 0 Qcopp Qcmult 1).
-
-  Let lA1 := Q2Qc_dlist [[1;2];[3;4]]%Q.
-  Let lb1 := Q2Qc_list [5;6]%Q.
-  Let A1 : smat Qc 2 := l2m 0 lA1.
-  Let b1 : @vec Qc 2 := l2v 0 lb1.
-  (* Compute v2l (cramerRule A1 b1). *)
-  (* Compute cramerRuleList 2 lA1 lb1. *)
-
-  Let lA2 := Q2Qc_dlist
-               [[1;2;3;4;5];
-                [2;4;3;5;1];
-                [3;1;5;2;4];
-                [4;5;2;3;1];
-                [5;4;1;2;3]]%Q.
-  Let lb2 := Q2Qc_list [1;2;3;5;4]%Q.
-  (* Compute cramerRuleList 5 lA2 lb2. *)
-End test.

@@ -18,7 +18,7 @@
  *)
 
 Require Import Extraction.
-Require Export ListExt NatExt Matrix.
+Require Export ListExt NatExt.
 
 Generalizable Variable A Aadd Azero Aopp Amul Aone Ainv.
 
@@ -337,7 +337,7 @@ Section ronum.
     remember (if a <? b then 1 else 0) as n.
     replace n with (0 + n) by lia.
     rewrite fold_left_rebase; try lia.
-    intros. rewrite Heqf. fin.
+    intros. rewrite Heqf. lia.
   Qed.
 
   (** forall i, nth i l Azero <? a = true -> ronum1 a l > 0 *)
@@ -402,7 +402,7 @@ Section ronum.
     2:{
       apply lt_S_n in H,H0,H1.
       rewrite lswap_cons_S_S; auto. simpl. rewrite IHl; auto.
-      pose proof (nat_add_ASGroup).
+      pose proof (natAdd_ASGroup).
       asgroup. (* Tips, example for usage of asgroup *)
       rewrite ronum1_lswap; auto. }
     - clear IHl.

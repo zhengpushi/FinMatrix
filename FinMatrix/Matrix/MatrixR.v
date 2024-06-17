@@ -23,17 +23,14 @@
      |v| = √<v, v>
  *)
 
-Require Export Hierarchy RExt RFunExt.
+Require Export RExt RFunExt.
 Require Export MatrixModule.
-Require Import ExtrOcamlBasic ExtrOcamlNatInt MyExtrOCamlR.
+
 
 (* ######################################################################### *)
 (** * Matrix theory come from common implementations *)
 
 Include (NormedOrderedFieldMatrixTheory NormedOrderedFieldElementTypeR).
-
-(* A TEMPORARY Fix: Let "Hierarchy.le_xx" has more priority than "Nat.le_xx" *)
-Import RExt Hierarchy.
 
 Open Scope R_scope.
 Open Scope vec_scope.
@@ -1472,7 +1469,7 @@ Lemma v3unit_sqr_x : forall (a : vec 3), vunit a -> a.1² = (1 - a.2² - a.3²)%
 Proof. intros. cbv in *. ra. Qed.
 
 Lemma v3unit_sqr_y : forall (a : vec 3), vunit a -> a.2² = (1 - a.1² - a.3²)%R.
-Proof. intros. v2e a. rewrite Ha in *. cbv in H. cbv. ra. Qed.
+Proof. intros. v2e a. cbv in H. cbv. ra. Qed.
 
 Lemma v3unit_sqr_z : forall (a : vec 3), vunit a -> a.3² = (1 - a.1² - a.2²)%R.
 Proof. intros. cbv in *. ra. Qed.
@@ -2188,7 +2185,7 @@ Section Symbol_matrix.
   Let M' : smat 3 := l2m [[a11;a12;a13];[a21;a22;a23];[a31;a32;a33]].
   
   (* Find inverse matrix *)
-  Goal minvNoCheck M = M'.
+  Goal M\-1 = M'.
   Proof.
     meq; field_simplify; autorewrite with R. 
     all:

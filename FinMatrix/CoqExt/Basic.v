@@ -27,19 +27,16 @@
 (* ######################################################################### *)
 (** * Basic libraries *) 
 
-Require Export Coq.Classes.Morphisms.     (* respectful, ==> *)
 Require Export Coq.Setoids.Setoid.        (*  *)
+Require Export Coq.Classes.Morphisms.     (* respectful, ==> *)
 Require Export Coq.Classes.SetoidTactics. (* add_morphism_tactic *)
 Require Export Coq.Relations.Relations.   (* equivalence *)
 Require Export Coq.Bool.Sumbool.          (* sumbool_not *)
 Require Export Coq.Bool.Bool.             (* reflect *)
-Require Export Ring.                      (* ring *)
-Require Export Field.                     (* field *)
+Require Export List.
+Require Export LogicExt.
+Require Export ExtrOcamlBasic ExtrOcamlNatInt MyExtrOCamlR.
 
-Require Export Coq.Logic.Classical.
-Require Export Coq.Logic.FunctionalExtensionality.
-
-Require Arith ZArith QArith Qcanon Reals List SetoidList.
 
 
 (* ######################################################################### *)
@@ -47,7 +44,7 @@ Require Arith ZArith QArith Qcanon Reals List SetoidList.
 
 (* Reserved Notations, to keep same precedence and associativity *)
 
-(* ****************************************************** *)
+(* ======================================================================= *)
 (* The precedence ∈ [60,100) are logic operations *)
 
 (* These are truely boolean value, but not friendly for "computation". 
@@ -69,7 +66,7 @@ Reserved Infix    "??>="   (at level 70).           (* decidable procedure for "
 (* Reserved Infix    "=="      (at level 70, no associativity).      (* equiv *) *)
 (* Reserved Notation "a != b"  (at level 70, no associativity).      (* not equiv *) *)
 
-(* ****************************************************** *)
+(* ======================================================================= *)
 (* The precedence ∈ [30,60) are vector/matrix operations *)
 Reserved Infix    "+"       (at level 50, left associativity).    (* add *)
 Reserved Infix    "-"       (at level 50, left associativity).    (* sub *)
@@ -113,8 +110,7 @@ Reserved Notation "-f g"    (at level 35, right associativity).   (* fopp *)
 Reserved Notation "/f g"    (at level 35, right associativity).   (* finv *)
 
 
-
-(* ****************************************************** *)
+(* ======================================================================= *)
 (* The precedence ∈ [1,30) are element operations *)
 
 Reserved Notation "| r |"   (at level 30, r at level 25, format "| r |").  (* Rabs *)
@@ -333,6 +329,49 @@ Qed.
 
 
 (* ######################################################################### *)
+(** * Repeat executing an unary function *)
+
+(** execute an unary function multiply times with the initial value. 
+    Similiar to fold.
+    nexec a0 f n := f (f ... (f x) ...) *)
+Fixpoint nexec {A:Type} (a0:A) (f:A->A) (n:nat) : A :=
+  match n with
+  | O => a0
+  | S n' => nexec (f a0) f n'
+  end.
+
+(* Compute nexec 0 S 3. *)
+
+(** nexec rewriting *)
+Lemma nexec_rw : forall (A:Type) (a:A) (f:A->A) (n:nat),
+  nexec (f a) f n = f (nexec a f n).
+Proof.
+  intros. revert a. induction n; intros; simpl; auto. 
+Qed.
+
+(** Linear property of nexec *)
+Lemma nexec_linear : forall (A:Type) (a:A) (f:A->A) (g:A->A) (n:nat)
+  (H: forall x:A, f (g x) = g (f x)),
+  nexec (g a) f n = g (nexec a f n).
+Proof.
+  intros. revert a. induction n; intros; simpl; auto. rewrite H,IHn. auto.
+Qed.
+
+(** map f (seq 0 (S n)) = map f (seq 0 n) + f n
+    So, a0 + f 0 + f 1 + ... + f n = (a0 + f 0 + ... + f (n-1)) + f n *)
+Lemma fold_map_seq : forall (A:Type) (f:nat->A) (g:A->A->A) (a0:A) (n:nat),
+  fold_left g (map f (seq 0 (S n))) a0 = g (fold_left g (map f (seq 0 n)) a0) (f n).
+Proof.
+  intros.
+  rewrite seq_S.  (* seq start (S len) = (seq start len ++ [(start + len)]) *)
+  rewrite map_app. (* map f (l ++ l') = (map f l ++ map f l') *)
+  rewrite fold_left_app. (* 
+    fold_left f (l ++ l') i = fold_left f l' (fold_left f l i) *)
+  simpl. auto.
+Qed.
+
+
+(* ######################################################################### *)
 (** * Extension for option type *)
 
 (** Convert option type to base type  *)
@@ -372,25 +411,10 @@ Proof. intros. destruct a. simpl. apply sig_eq_iff; auto. Qed.
 (* ######################################################################### *)
 (** * Usually used scopes *)
 
-(** Scope for matrix/vector/list element type *)
+(** Scope for element type of matrix/vector/list *)
 Declare Scope A_scope.
 Delimit Scope A_scope with A.
 Open Scope A.
-
-(** Scope for list type *)
-(* Declare Scope list_scope. *)
-(* Delimit Scope list_scope with list. *)
-(* Open Scope list. *)
-
-(** Scope for list list type *)
-(* Declare Scope dlist_scope. *)
-(* Delimit Scope dlist_scope with dlist. *)
-(* Open Scope dlist. *)
-
-(** Scope for function (especially for nat-indexed function such as "nat -> A") *)
-(* Declare Scope fun_scope. *)
-(* Delimit Scope fun_scope with F. (* Note that, Ranalysis1 defined Rfun_scope with F *) *)
-(* Open Scope fun_scope. *)
 
 (** Scope for vector type *)
 Declare Scope vec_scope.

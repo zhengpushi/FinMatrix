@@ -8,8 +8,10 @@
   date      : 2021.12
 
   remark    :
+  1. we choose minvAM as the inverse matrix instead of minvGE, which is almost 
+     a random choice.
 
-  Ref: 
+  reference: 
   1. https://en.wikipedia.org/wiki/Orthogonal_group#Special_orthogonal_group
   2. https://en.wikipedia.org/wiki/Orthogonal_matrix
 
@@ -150,37 +152,44 @@ Generalizable Variable tA Aadd Aopp Amul Ainv Alt Ale Altb Aleb a2r.
 (* ######################################################################### *)
 (** * Orthogonal Matrix *)
 
-(** More theory of matrix inversion, dependent on core theory `Minv` *)
-Module MatrixOrth (F : FieldElementType).
-  Open Scope nat_scope.
+Section morth.
+  Context `{HField : Field} {AeqDec : Dec (@eq tA)}.
+  Add Field field_thy_inst : (make_field_theory HField).
   Open Scope A_scope.
   Open Scope mat_scope.
-
-  Module AM := MinvAM F.
-  Import AM.
-
-  Local Notation "0" := Azero : A_scope.
-  Local Notation "1" := Aone : A_scope.
-  Local Notation "- a" := (Aopp a) : A_scope.
   
-  Local Notation vec n := (@vec tA n).
-  Local Notation vzero := (@vzero _ 0).
-  Local Notation vdot := (@vdot _ Aadd 0 Amul).
-  Local Notation "< u , v >" := (vdot u v) : vec_scope.
-  Local Notation vunit := (@vunit _ Aadd 0 Amul 1).
-  Local Notation vorth := (@vorth _ Aadd 0 Amul).
-  Local Infix "_|_" := vorth : vec_scope.
+  Notation "0" := Azero : A_scope.
+  Notation "1" := Aone : A_scope.
+  Infix "+" := Aadd : A_scope.
+  Notation "- a" := (Aopp a) : A_scope.
+  Notation "a - b" := ((a + -b)%A) : A_scope.
+  Infix "*" := Amul : A_scope.
+  Notation "/ a" := (Ainv a) : A_scope.
+  Notation "a / b" := ((a * /b)%A) : A_scope.
 
-  Local Notation mat r c := (mat tA r c).
-  Local Notation smat n := (smat tA n).
-  Local Notation "M \T" := (@mtrans tA _ _ M) : mat_scope.
-  Local Notation mat1 := (@mat1 _ Azero Aone).
-  Local Notation mmul := (@mmul _ Aadd Azero Amul).
-  Local Infix "*" := mmul : mat_scope.
-  Local Notation mmulv := (@mmulv _ Aadd 0 Amul).
-  Local Infix "*v" := mmulv : mat_scope.
-  Local Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
-  Local Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).
+  Notation vec n := (@vec tA n).
+  Notation vzero := (@vzero _ 0).
+  Notation vdot := (@vdot _ Aadd 0 Amul).
+  Notation "< u , v >" := (vdot u v) : vec_scope.
+  Notation vunit := (@vunit _ Aadd 0 Amul 1).
+  Notation vorth := (@vorth _ Aadd 0 Amul).
+  Infix "_|_" := vorth : vec_scope.
+
+  Notation mat r c := (mat tA r c).
+  Notation smat n := (mat n n).
+  Notation mat1 := (@mat1 _ 0 1).
+  Notation mcmul := (@mcmul _ Amul).
+  Infix "c*" := mcmul : mat_scope.
+  Notation mmul := (@mmul _ Aadd 0 Amul).
+  Infix "*" := mmul : mat_scope.
+  Notation mmulv := (@mmulv _ Aadd 0 Amul).
+  Infix "*v" := mmulv : mat_scope.
+
+  Notation minvtble := (@minvtble _ Aadd 0 Amul 1).
+  Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).
+  Notation "| M |" := (mdet M) : mat_scope.
+  Notation minvAM := (@minvAM _ Aadd 0 Aopp Amul 1 Ainv _).
+  Notation "M \-1" := (minvAM M) : mat_scope.
 
   (* ======================================================================= *)
   (** ** Orthonormal vectors 标准正交的向量组 *)
@@ -196,7 +205,7 @@ Module MatrixOrth (F : FieldElementType).
       forall i1 i2, i1 <> i2 -> M.[i1] _|_ M.[i2].
 
     Lemma mtrans_mcolsOrth : forall {r c} (M : mat r c), mrowsOrth M -> mcolsOrth (M\T).
-    Proof. intros. hnf in *. intros. simp_mat. Qed.
+    Proof. intros. hnf in *. intros. auto_vec. Qed.
 
     Lemma mtrans_mrowsOrth : forall {r c} (M : mat r c), mcolsOrth M -> mrowsOrth (M\T).
     Proof. intros. hnf in *. intros. auto. Qed.
@@ -233,11 +242,11 @@ Module MatrixOrth (F : FieldElementType).
 
     Lemma mtrans_mcolsUnit : forall {r c} (M : mat r c),
         mrowsUnit M -> mcolsUnit (M\T).
-    Proof. intros. hnf in *. intros. simp_mat. Qed.
+    Proof. intros. hnf in *. intros. auto_vec. Qed.
 
     Lemma mtrans_mrowsUnit : forall {r c} (M : mat r c),
         mcolsUnit M -> mrowsUnit (M\T).
-    Proof. intros. hnf in *. intros. simp_mat. Qed.
+    Proof. intros. hnf in *. intros. auto_vec. Qed.
 
     (*
   (** bool version *)
@@ -294,28 +303,25 @@ Module MatrixOrth (F : FieldElementType).
     Qed.
 
     (** orthogonal M -> M\-1 = M\T *)
-    Lemma morth_imply_minv_eq_trans : forall {n} (M : smat n),
-        morth M -> minv M = M\T.
-    Proof. intros. hnf in H.  apply mmul_eq1_imply_minv_r; auto. Qed.
+    Lemma morth_imply_minv_eq_trans : forall {n} (M : smat n), morth M -> M\-1 = M\T.
+    Proof. intros. hnf in H.  apply mmul_eq1_imply_minvAM_r; auto. Qed.
 
     (** M\-1 = M\T -> orthogonal M *)
     Lemma minv_eq_trans_imply_morth : forall {n} (M : smat n),
-        minvtble M -> minv M = M\T -> morth M.
-    Proof. intros. hnf. rewrite <- H0. apply mmul_minv_l; auto. Qed.
+        minvtble M -> M\-1 = M\T -> morth M.
+    Proof. intros. hnf. rewrite <- H0. apply mmul_minvAM_l; auto. Qed.
 
     (** orthogonal M <-> M\T * M = mat1 *)
-    Lemma morth_iff_mul_trans_l : forall {n} (M : smat n),
-        morth M <-> M\T * M = mat1.
+    Lemma morth_iff_mul_trans_l : forall {n} (M : smat n), morth M <-> M\T * M = mat1.
     Proof. intros. hnf. auto. Qed.
 
     (** orthogonal M <-> M * M\T = mat1 *)
-    Lemma morth_iff_mul_trans_r : forall {n} (M : smat n),
-        morth M <-> M * M\T = mat1.
+    Lemma morth_iff_mul_trans_r : forall {n} (M : smat n), morth M <-> M * M\T = mat1.
     Proof.
       intros. hnf. split; intros H; auto.
       - pose proof (morth_minvtble M H).
         apply morth_imply_minv_eq_trans in H. rewrite <- H.
-        apply mmul_minv_r; auto.
+        apply mmul_minvAM_r; auto.
       - hnf. rewrite mmul_eq1_comm; auto.
     Qed.
 
@@ -439,7 +445,7 @@ Module MatrixOrth (F : FieldElementType).
   (* https://en.wikipedia.org/wiki/Orthogonal_group#Special_orthogonal_group *)
   Section GOn.
     
-    (** The set of GOn *)
+    (** The type of GOn *)
     Record GOn {n: nat} := {
         GOn_mat :> smat n;
         GOn_orth : morth GOn_mat
@@ -554,7 +560,7 @@ Module MatrixOrth (F : FieldElementType).
   (* https://en.wikipedia.org/wiki/Orthogonal_group#Special_orthogonal_group *)
   Section SOn.
     
-    (** The set of SOn *)
+    (** The type of SOn *)
     Record SOn {n: nat} := {
         SOn_GOn :> @GOn n;
         SOn_det1 : mdet SOn_GOn = 1
@@ -592,13 +598,13 @@ Module MatrixOrth (F : FieldElementType).
       Unshelve. apply H.
     Defined.
 
-    (* 这个证明失败了，所以下面分解为两个步骤 *)
+    (* This proof failed, so we use two steps to solve it *)
     Lemma SOn_eq_iff_try : forall {n} (x1 x2 : @SOn n),
         GOn_mat x1 = GOn_mat x2 -> x1 = x2.
     Proof.
       intros.
       destruct x1 as [[M1 Horth1] Hdet1], x2 as [[M2 Horth2] Hdet2]; simpl in *.
-      subst. f_equal.             (* Tips: f_equal 不能正确的处理 Record *)
+      subst. f_equal.   (* Tips: f_equal cannot properly handle Record *)
       - intros. rewrite H1. f_equal.
     Abort.
     
@@ -698,7 +704,7 @@ Module MatrixOrth (F : FieldElementType).
     (** M\T * M = mat1 *)
     Lemma SOn_mul_trans_l_eq1 : forall {n} (M : @SOn n), M\T * M = mat1.
     Proof.
-      intros. rewrite <- SOn_minv_eq_trans. apply mmul_minv_l.
+      intros. rewrite <- SOn_minv_eq_trans. apply mmul_minvAM_l.
       destruct M as [[M H] H1]. simpl in *.
       apply minvtble_iff_mdet_neq0. rewrite H1.
       apply field_1_neq_0; auto.
@@ -712,5 +718,5 @@ Module MatrixOrth (F : FieldElementType).
     Qed.
 
   End SOn.
-End MatrixOrth.
+End morth.
 

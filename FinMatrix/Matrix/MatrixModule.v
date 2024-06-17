@@ -26,10 +26,11 @@
 
 
 Require Export Matrix.
-Require Export ElementType.
 Require Export MatrixDet.
-Require Export MatrixInvAM MatrixInvGE.
+Require Export MatrixInvAM.
+Require Export MatrixInvGE.
 Require Export MatrixOrth.
+Require Export ElementType.
 
 
 (* ######################################################################### *)
@@ -157,8 +158,15 @@ Module BasicMatrixTheory (E : ElementType).
   Lemma l2v_v2l : forall {n} (a : vec n), @l2v n (v2l a) = a.
   Proof. intros. apply l2v_v2l. Qed.
 
+  (** v2l a = v2l b -> a = b *)
   Lemma v2l_inj : forall {n} (a b : vec n), v2l a = v2l b -> a = b.
   Proof. intros. apply v2l_inj; auto. Qed.
+
+  (** l2v l1 = l2v l2 -> l1 = l2 *)
+  Lemma l2v_inj : forall {n} (l1 l2 : list tA),
+      length l1 = n -> length l2 = n -> @l2v n l1 = @l2v n l2 -> l1 = l2.
+  Proof. intros. apply l2v_inj in H1; auto. Qed.
+  
   
   (* ======================================================================= *)
   (** ** Make concrete vector *)
@@ -692,7 +700,6 @@ Module BasicMatrixTheory (E : ElementType).
 
   (* ======================================================================= *)
   (** ** Folding of a vector *)
-  (* Context {A B : Type} {Azero : A} {Bzero : B}.  *)
 
   (** ((x + a.1) + a.2) + ... *)
   Definition vfoldl {B} {n} (a : vec n) (x : B) (f : B -> tA -> B) : B :=
@@ -715,10 +722,11 @@ Module BasicMatrixTheory (E : ElementType).
   Ltac veq :=
     apply v2l_inj; cbv; list_eq.
     
-  Open Scope mat_scope.
-  
+
   (* ======================================================================= *)
   (** ** Definition of the matrix type *)
+
+  Open Scope mat_scope.
   
   (** matrix type *)
   Notation mat r c := (@mat tA r c).
@@ -943,7 +951,7 @@ Module BasicMatrixTheory (E : ElementType).
   Notation "M &4" := (mcol M #3) : mat_scope.
 
   (** (mrow M i).j = M.i.j *)
-  Lemma vnth_mrow : forall {r c} (M : mat r c) (i : 'I_r) (j : 'I_c),
+  Lemma vnth_mrow : forall r c (M : mat r c) (i : 'I_r) (j : 'I_c),
       (mrow M i).[j] = M.[i].[j].
   Proof. intros. apply vnth_mrow. Qed.
 
@@ -972,6 +980,15 @@ Module BasicMatrixTheory (E : ElementType).
     mappc (Azero:=0) M N.
 
   (* ======================================================================= *)
+  (** ** Get head or tail row *)
+
+  (** Get head row *)
+  Definition mheadr {r c} (M : mat (S r) c) : vec c := mheadr M.
+
+  (** Get tail row *)
+  Definition mtailr {r c} (M : mat (S r) c) : vec c := mtailr M.
+
+  (* ======================================================================= *)
   (** ** Get head or tail column *)
 
   (** Get head column *)
@@ -981,11 +998,11 @@ Module BasicMatrixTheory (E : ElementType).
   Definition mtailc {r c} (M : mat r (S c)) : vec r := mtailc M.
   
   (** (mheadc M).i = M.i.0 *)
-  Lemma vnth_mheadc : forall {r c} (M : mat r (S c)) i, (mheadc M).[i] = M.[i].[fin0].
+  Lemma vnth_mheadc : forall r c (M : mat r (S c)) i, (mheadc M).[i] = M.[i].[fin0].
   Proof. intros. apply vnth_mheadc; auto. Qed.
 
   (** (mtailc M).i = M.i.(n-1) *)
-  Lemma vnth_mtailc : forall {r c} (M : mat r (S c)) i, (mtailc M).[i] = M.[i].[#c].
+  Lemma vnth_mtailc : forall r c (M : mat r (S c)) i, (mtailc M).[i] = M.[i].[#c].
   Proof. intros. apply vnth_mtailc; auto. Qed.
 
   (* ======================================================================= *)
@@ -1003,11 +1020,11 @@ Module BasicMatrixTheory (E : ElementType).
   (** Construct a matrix with a matrix and a column vector *)
   Definition mconscT {r c} (M : mat r c) (a : vec r) : mat r (S c) := mconscT M a.
 
-  Lemma vnth_mconscH : forall {r c} (M : mat (S r) c) (a : vec (S r)) (i : 'I_(S r)),
+  Lemma vnth_mconscH : forall r c (M : mat (S r) c) (a : vec (S r)) (i : 'I_(S r)),
       (mconscH a M).[i] = vconsH (a.[i]) (M.[i]).
   Proof. intros; apply vnth_mconscH; auto. Qed.
 
-  Lemma vnth_mconscT : forall {r c} (M : mat r c) (a : vec r) i,
+  Lemma vnth_mconscT : forall r c (M : mat r c) (a : vec r) i,
       (mconscT M a).[i] = vconsT M.[i] a.[i].
   Proof. intros. apply vnth_mconscT; auto. Qed.
 
@@ -1027,68 +1044,68 @@ Module BasicMatrixTheory (E : ElementType).
   Definition mremovecT {r c} (M : mat r (S c)) : mat r c := mremovecT M.
 
 
-  (**     [a11 a12 a13]
-      A = ------------
-          [a21 a22 a23]
-          [a31 a32 a33] *)
+  (**     [a11 a12 a13] *)
+  (*     A = ------------ *)
+  (*         [a21 a22 a23] *)
+  (*         [a31 a32 a33] *)
   Lemma meq_mconsrH_mheadr_mremoverH : forall {r c} (A : mat (S r) c),
       A = mconsrH (mheadr A) (mremoverH A).
   Proof. intros. apply meq_mconsrH_mheadr_mremoverH. Qed.
 
-  (**     [a11 a12 a13]
-      A = [a21 a22 a23]
-          ------------
-          [a31 a32 a33] *)
+  (**     [a11 a12 a13] *)
+  (*     A = [a21 a22 a23] *)
+  (*         ------------ *)
+  (*         [a31 a32 a33] *)
   Lemma meq_mconsrT_mremoverT_mtailr : forall {r c} (A : mat (S r) c),
       A = mconsrT (mremoverT A) (mtailr A).
   Proof. intros. apply meq_mconsrT_mremoverT_mtailr. Qed.
 
-  (**     [a11 | a12 a13]
-      A = [a21 | a22 a23]
-          [a31 | a32 a33] *)
+  (**     [a11 | a12 a13] *)
+  (*     A = [a21 | a22 a23] *)
+  (*         [a31 | a32 a33] *)
   Lemma meq_mconscH_mheadc_mremovecH : forall {r c} (A : mat r (S c)),
       A = mconscH (mheadc A) (mremovecH A).
   Proof. intros. apply meq_mconscH_mheadc_mremovecH. Qed.
 
-  (**     [a11 a12 | a13]
-      A = [a21 a22 | a23]
-          [a31 a32 | a33] *)
+  (**     [a11 a12 | a13] *)
+  (*     A = [a21 a22 | a23] *)
+  (*         [a31 a32 | a33] *)
   Lemma meq_mconscT_mremovecT_mtailc : forall {r c} (A : mat r (S c)),
       A = mconscT (mremovecT A) (mtailc A).
   Proof. intros. apply meq_mconscT_mremovecT_mtailc. Qed.
   
 
-  (** [A11 A12 | u1]   [A11 A12 | u1]
-      [A21 A22 | u2] = [A21 A22 | u2]
-      [------- | --]   [------------]
-      [ v1  v2 |  x]   [ v1  v2 |  x] *)
+  (** [A11 A12 | u1]   [A11 A12 | u1] *)
+  (*     [A21 A22 | u2] = [A21 A22 | u2] *)
+  (*     [------- | --]   [------------] *)
+  (*     [ v1  v2 |  x]   [ v1  v2 |  x] *)
   Lemma mconscT_mconsrT_vconsT_eq_mconsrT_mconscT_vconsT :
     forall {r c} (A : mat r c) (u : vec r) (v : vec c) (x : tA),
       mconscT (mconsrT A v) (vconsT u x) = mconsrT (mconscT A u) (vconsT v x).
   Proof. intros. apply mconscT_mconsrT_vconsT_eq_mconsrT_mconscT_vconsT. Qed.
 
-  (** [u1 | A11 A12]   [u1 | A11 A12]
-      [u2 | A21 A22] = [u2 | A21 A22]
-      [-- | -------]   [------------]
-      [ x |  v1  v2]   [ x |  v1  v2] *)
+  (** [u1 | A11 A12]   [u1 | A11 A12] *)
+  (*     [u2 | A21 A22] = [u2 | A21 A22] *)
+  (*     [-- | -------]   [------------] *)
+  (*     [ x |  v1  v2]   [ x |  v1  v2] *)
   Lemma mconscH_vconsT_mconsrT_eq_mconsrT_mconscH_vconsH :
     forall {r c} (A : mat r c) (u : vec r) (v : vec c) (x : tA),
       mconscH (vconsT u x) (mconsrT A v) = mconsrT (mconscH u A) (vconsH x v).
   Proof. intros. apply mconscH_vconsT_mconsrT_eq_mconsrT_mconscH_vconsH. Qed.
 
-  (** [ v1  v2 |  x]   [ v1  v2 |  x] 
-      [------- | --] = [------------]
-      [A11 A12 | u1]   [A11 A12 | u1]
-      [A21 A22 | u2]   [A21 A22 | u2] *)
+  (** [ v1  v2 |  x]   [ v1  v2 |  x]  *)
+  (*     [------- | --] = [------------] *)
+  (*     [A11 A12 | u1]   [A11 A12 | u1] *)
+  (*     [A21 A22 | u2]   [A21 A22 | u2] *)
   Lemma mconscT_mconsrH_vconsH_eq_mconsrH_vconsT_mconscT :
     forall {r c} (A : mat r c) (u : vec r) (v : vec c) (x : tA),
       mconscT (mconsrH v A) (vconsH x u) = mconsrH (vconsT v x) (mconscT A u).
   Proof. intros. apply mconscT_mconsrH_vconsH_eq_mconsrH_vconsT_mconscT. Qed.
   
-  (** [ x |  v1  v2]   [ x |  v1  v2]
-      [-- | -------] = [------------]
-      [u1 | A11 A12]   [u1 | A11 A12]
-      [u2 | A21 A22]   [u2 | A21 A22] *)
+  (** [ x |  v1  v2]   [ x |  v1  v2] *)
+  (*     [-- | -------] = [------------] *)
+  (*     [u1 | A11 A12]   [u1 | A11 A12] *)
+  (*     [u2 | A21 A22]   [u2 | A21 A22] *)
   Lemma mconscH_vconsH_mconsrH_eq_mconsrH_vconsH_mconscH :
     forall {r c} (A : mat r c) (u : vec r) (v : vec c) (x : tA),
       mconscH (vconsH x u) (mconsrH v A) = mconsrH (vconsH x v) (mconscH u A).
@@ -1102,12 +1119,12 @@ Module BasicMatrixTheory (E : ElementType).
   Definition mmap2 {r c} (f : tA -> tA -> tA) (M N : mat r c) : mat r c := mmap2 f M N.
 
   Lemma mmap2_comm :
-    forall {r c} (f : tA -> tA -> tA) (M N : mat r c) {Comm : Commutative f}, 
+    forall {r c} (f : tA -> tA -> tA) (M N : mat r c) {Comm : Commutative f},
       mmap2 f M N = mmap2 f N M.
   Proof. intros. apply mmap2_comm; auto. Qed.
   
   Lemma mmap2_assoc :
-    forall {r c} (f : tA -> tA -> tA) (M N O : mat r c) {Assoc : Associative f}, 
+    forall {r c} (f : tA -> tA -> tA) (M N O : mat r c) {Assoc : Associative f},
       mmap2 f (mmap2 f M N) O = mmap2 f M (mmap2 f N O).
   Proof. intros. apply mmap2_assoc; auto. Qed.
 
@@ -1145,7 +1162,7 @@ Module BasicMatrixTheory (E : ElementType).
   Notation "M \T" := (mtrans M) : mat_scope.
 
   (** Transpose twice keep unchanged. *)
-  Lemma mtrans_mtrans : forall {r c} (M : mat r c), M \T \T = M.
+  Lemma mtrans_mtrans : forall r c (M : mat r c), M \T \T = M.
   Proof. intros. apply mtrans_mtrans. Qed.
   
   (* ======================================================================= *)
@@ -1195,12 +1212,12 @@ Module BasicMatrixTheory (E : ElementType).
   Lemma mcol_mat0 : forall {r c} j, (fun k => (@mat0 r c).[k].[j]) = vzero.
   Proof. intros. apply mcol_mat0 with (j:=j). Qed.
 
-  (* ======================================================================= *)
-  (** ** Automation for matrix equality proofs *)
+  (* (* ======================================================================= *) *)
+  (* (** ** Automation for matrix equality proofs *) *)
 
-  (** Convert equality of two matrices to point-wise element equalities *)
-  Ltac meq :=
-    apply m2l_inj; cbv; list_eq.
+  (* (** Convert equality of two matrices to point-wise element equalities *) *)
+  (* Ltac meq := *)
+  (*   apply m2l_inj; cbv; list_eq. *)
 
 End BasicMatrixTheory.
 
@@ -1245,20 +1262,20 @@ Module MonoidMatrixTheory (E : MonoidElementType).
       a.[i] = x -> (forall j, i <> j -> a.[j] = 0) -> vsum a = x.
   Proof. intros. apply vsum_unique with (i:=i); auto. Qed.
 
-  (** `vsum` of the m+n elements equal to plus of two parts.
-      Σ[0,(m+n)] a = Σ[0,m](fun i=>a[i]) + Σ[m,m+n] (fun i=>a[m+i]) *)
+  (** `vsum` of the m+n elements equal to plus of two parts. *)
+  (*     Σ[0,(m+n)] a = Σ[0,m](fun i=>a[i]) + Σ[m,m+n] (fun i=>a[m+i]) *)
   Lemma vsum_plusIdx : forall m n (a : vec (m + n)),
       vsum a = (vsum (fun i => a.[fin2AddRangeR i]) +
                  vsum (fun i => a.[fin2AddRangeAddL i]))%A.
   Proof. intros. apply vsum_plusIdx; auto. Qed.
 
   (** The order of two nested summations can be exchanged.
-      ∑[i,0,r](∑[j,0,c] a.ij) = 
-      a00 + a01 + ... + a0c + 
-      a10 + a11 + ... + a1c + 
-      ...
-      ar0 + ar1 + ... + arc = 
-      ∑[j,0,c](∑[i,0,r] a.ij) *)
+       ∑[i,0,r](∑[j,0,c] a.ij) =
+       a00 + a01 + ... + a0c +
+       a10 + a11 + ... + a1c +
+       ...
+       ar0 + ar1 + ... + arc =
+       ∑[j,0,c](∑[i,0,r] a.ij) *)
   Lemma vsum_vsum : forall r c (a : @Vector.vec (vec c) r),
       vsum (fun i => vsum (fun j => a.[i].[j])) =
         vsum (fun j => vsum (fun i => a.[i].[j])).
@@ -1289,10 +1306,10 @@ Module MonoidMatrixTheory (E : MonoidElementType).
   #[export] Instance vadd_AMonoid : forall n, AMonoid (@vadd n) vzero.
   Proof. apply vadd_AMonoid. Qed.
 
-  Open Scope mat_scope.
-  
   (* ======================================================================= *)
   (** ** Matrix addition *)
+
+  Open Scope mat_scope.
 
   Definition madd {r c} (M N : mat r c) : mat r c := madd M N (Aadd:=Aadd).
   Infix "+" := madd : mat_scope.
@@ -1319,11 +1336,11 @@ Module MonoidMatrixTheory (E : MonoidElementType).
   Proof. intros. apply madd_perm. Qed.
 
   (** mat0 + M = M *)
-  Lemma madd_0_l : forall {r c} (M : mat r c), mat0 + M = M. 
+  Lemma madd_0_l : forall {r c} (M : mat r c), mat0 + M = M.
   Proof. intros. apply madd_0_l. Qed.
 
   (** M + mat0 = M *)
-  Lemma madd_0_r : forall {r c} (M : mat r c), M + mat0 = M. 
+  Lemma madd_0_r : forall {r c} (M : mat r c), M + mat0 = M.
   Proof. intros. apply madd_0_r. Qed.
 
   (** (M + N) \T = M \T + N \T *)
@@ -1430,7 +1447,7 @@ Module RingMatrixTheory (E : RingElementType).
   Infix "c*" := vcmul : vec_scope.
 
   (** (x .* a)[i] = x .* a[i] *)
-  Lemma vnth_vcmul : forall {n} (a : vec n) x i, (x c* a).[i] = x * (a.[i]).
+  Lemma vnth_vcmul : forall n (a : vec n) x i, (x c* a).[i] = x * (a.[i]).
   Proof. intros. cbv. auto. Qed.
 
   (** x .* (y .* a) = (x * y) .* a *)
@@ -1606,10 +1623,10 @@ Module RingMatrixTheory (E : RingElementType).
   Lemma vorth_comm : forall {n} (a b : vec n), a _|_ b -> b _|_ a.
   Proof. intros. apply vorth_comm; auto. Qed.
 
-  Open Scope mat_scope.
-
   (* ======================================================================= *)
   (** ** Identity matrix *)
+
+  Open Scope mat_scope.
 
   (** Identity matrix *)
   Definition mat1 {n : nat} : mat n n := @mat1 _ 0 1 _.
@@ -1685,7 +1702,8 @@ Module RingMatrixTheory (E : RingElementType).
   (* ======================================================================= *)
   (** ** Matrix subtraction *)
   
-  (* Definition msub {r c} (M N : mat r c) : mat r c := @msub _ Aadd Aopp _ _ M N. *)
+  (* Definition msub {r c} (M N : mat r c) : mat r c := (M + - N). *)
+  (* Infix "-" := msub : mat_scope. *)
   Notation "M - N" := ((M + -N)%M) : mat_scope.
 
   (** M - N = M + (- N) *)
@@ -1777,12 +1795,12 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mcmul_perm. Qed.
 
   (** (x + y) .* M = (x .* M) + (y .* M) *)
-  Lemma mcmul_add_distr : forall {r c} (x y : tA) (M : mat r c), 
+  Lemma mcmul_add_distr : forall {r c} (x y : tA) (M : mat r c),
       (x + y)%A c* M = (x c* M) + (y c* M).
   Proof. intros. apply mcmul_add_distr. Qed.
 
   (** x c* (M + N) = (x c* M) + (x c* N) *)
-  Lemma mcmul_madd_distr : forall {r c} (x : tA) (M N : mat r c), 
+  Lemma mcmul_madd_distr : forall {r c} (x : tA) (M N : mat r c),
       x c* (M + N) = (x c* M) + (x c* N).
   Proof. intros. apply mcmul_madd_distr. Qed.
   
@@ -1858,12 +1876,12 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply vdot_eq_mmul. Qed.
 
   (** (M * N) * O = M * (N * O) *)
-  Lemma mmul_assoc : forall {r c s t : nat} (M : mat r c) (N : mat c s) (O : mat s t), 
+  Lemma mmul_assoc : forall {r c s t : nat} (M : mat r c) (N : mat c s) (O : mat s t),
       (M * N) * O = M * (N * O).
   Proof. intros. apply mmul_assoc. Qed.
 
   (** M * (N + O) = M * N + M * O *)
-  Lemma mmul_madd_distr_l : forall {r c s : nat} (M : mat r c) (N O : mat c s), 
+  Lemma mmul_madd_distr_l : forall {r c s : nat} (M : mat r c) (N O : mat c s),
       M * (N + O) = M * N + M * O.
   Proof. intros. apply mmul_madd_distr_l. Qed.
   
@@ -1873,7 +1891,7 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mmul_madd_distr_r. Qed.
 
   (** M * (N - O) = M * N - M * O *)
-  Lemma mmul_msub_distr_l : forall {r c s : nat} (M : mat r c) (N O : mat c s), 
+  Lemma mmul_msub_distr_l : forall {r c s : nat} (M : mat r c) (N O : mat c s),
       M * (N - O) = M * N - M * O.
   Proof. intros. apply mmul_msub_distr_l. Qed.
   
@@ -1909,12 +1927,12 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mmul_1_r. Qed.
 
   (** x c* (M * N) = (x c* M) * N. *)
-  Lemma mmul_mcmul_l : forall {r c s} (x : tA) (M : mat r c) (N : mat c s), 
+  Lemma mmul_mcmul_l : forall {r c s} (x : tA) (M : mat r c) (N : mat c s),
       (x c* M) * N = x c* (M * N).
   Proof. intros. apply mmul_mcmul_l. Qed.
   
   (** x c* (M * N) = M * (x c* N) *)
-  Lemma mmul_mcmul_r : forall {r c s} (x : tA) (M : mat r c) (N : mat c s), 
+  Lemma mmul_mcmul_r : forall {r c s} (x : tA) (M : mat r c) (N : mat c s),
       M * (x c* N) = x c* (M * N).
   Proof. intros. apply mmul_mcmul_r. Qed.
   
@@ -1987,12 +2005,12 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mmulv_1_l. Qed.
 
   (** (x .* M) *v a = x .* (M *v a) *)
-  Lemma mmulv_mcmul : forall {r c} (x : tA) (M : mat r c) (a : vec c), 
+  Lemma mmulv_mcmul : forall {r c} (x : tA) (M : mat r c) (a : vec c),
       (x c* M) *v a = (x c* (M *v a))%V.
   Proof. intros. apply mmulv_mcmul. Qed.
   
   (** M *v (x .* a) = x .* (M *v a) *)
-  Lemma mmulv_vcmul : forall {r c} (x : tA) (M : mat r c) (a : vec c), 
+  Lemma mmulv_vcmul : forall {r c} (x : tA) (M : mat r c) (a : vec c),
       M *v (x c* a)%V = (x c* (M *v a))%V.
   Proof. intros. apply mmulv_vcmul. Qed.
 
@@ -2070,12 +2088,12 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mvmul_1_r. Qed.
 
   (** a v* (x .* M) = x .* (a v* M) *)
-  Lemma mvmul_mcmul : forall {r c} (a : vec r) (x : tA) (M : mat r c), 
+  Lemma mvmul_mcmul : forall {r c} (a : vec r) (x : tA) (M : mat r c),
       a v* (x c* M) = (x c* (a v* M))%V.
   Proof. intros. apply mvmul_mcmul. Qed.
   
   (** (x .* a) v* M  = x .* (a v* M) *)
-  Lemma mvmul_vcmul : forall {r c} (a : vec r) (x : tA) (M : mat r c), 
+  Lemma mvmul_vcmul : forall {r c} (a : vec r) (x : tA) (M : mat r c),
       (x c* a)%V v* M = (x c* (a v* M))%V.
   Proof. intros. apply mvmul_vcmul. Qed.
 
@@ -2095,18 +2113,21 @@ Module RingMatrixTheory (E : RingElementType).
 
   (* ======================================================================= *)
   (** ** Mixed properties about mmul, mmulv, mvmul  *)
-  (*
-       x x x               xy xy | bx
-       x x x   y y | b     xy xy | bx
-       ----- * y y | b  =  ------ ---
-       a a a   y y | b     ay ay | ab
-   *)
+
+  (** x x x               xy xy | bx
+      x x x   y y | b     xy xy | bx
+      ----- * y y | b  =  ----- | --
+      a a a   y y | b     ay ay | ab *)
   Lemma mmul_mconsrT_mconscT_eq_mconscT :
     forall {r c s} (M1 : mat r c) (v1 : vec c) (M2 : mat c s) (v2 : vec c),
       mconsrT M1 v1 * mconscT M2 v2 =
         mconscT (mconsrT (M1 * M2) (v1 v* M2)) (vconsT (M1 *v v2) (<v1,v2>)).
   Proof. intros. apply mmul_mconsrT_mconscT_eq_mconscT. Qed.
 
+  (** x x x               xy xy | bx
+      x x x   y y | b     xy xy | bx
+      ----- * y y | b  =  ----------
+      a a a   y y | b     ax ax | ab *)
   Lemma mmul_mconsrT_mconscT_eq_mconsrT :
     forall {r c s} (M1 : mat r c) (v1 : vec c) (M2 : mat c s) (v2 : vec c),
       mconsrT M1 v1 * mconscT M2 v2 =
@@ -2115,7 +2136,7 @@ Module RingMatrixTheory (E : RingElementType).
   
   
   (* ======================================================================= *)
-  (** ** Skew-symmetric matrix *)
+  (** ** skew-symmetric matrix *)
   
   (** Given matrix is skew-symmetric matrices *)
   Definition skewP {n} (M : smat n) : Prop := - M = M\T.
@@ -2195,10 +2216,17 @@ Module RingMatrixTheory (E : RingElementType).
   (** |M| <> 0 <-> mdet_exp <> 0 *)
   Lemma mdet3_neq0_iff : forall (M : smat 3),
       |M| <> 0 <->
-         (M.11 * M.22 * M.33 - M.11 * M.23 * M.32 - 
-            M.12 * M.21 * M.33 + M.12 * M.23 * M.31 + 
+         (M.11 * M.22 * M.33 - M.11 * M.23 * M.32 -
+            M.12 * M.21 * M.33 + M.12 * M.23 * M.31 +
             M.13 * M.21 * M.32 - M.13 * M.22 * M.31)%A <> 0.
   Proof. intros. apply mdet3_neq0_iff. Qed.
+  
+  (* ======================================================================= *)
+  (** ** Cofactor of a matrix 代数余子式 *)
+
+  (** Get (i,j)-th cofactor of matrix `M` *)
+  Definition mcofactor {n} (M : smat (S n)) (i j : 'I_(S n)) : tA :=
+     @mcofactor _ Aadd 0 Aopp Amul 1 _ M i j.
   
   (* ======================================================================= *)
   (** ** Adjoint matrix (Adjugate matrix, adj(A), A* ) *)
@@ -2276,13 +2304,12 @@ End OrderedRingMatrixTheory.
 (* ######################################################################### *)
 (** * Field matrix theory *)
 
+
 Module FieldMatrixTheory (E : FieldElementType).
   
   Include (RingMatrixTheory E).
-  
-  Module AM := MinvAM E.
-  Module GE := MinvGE E.
-  Module Import OrthAM := MatrixOrth E.
+
+
   Open Scope vec_scope.
 
   (* ======================================================================= *)
@@ -2332,17 +2359,17 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply (vcmul_same_imply_v0 x a); auto. Qed.
 
   (** x .* a = y .* a -> (x = y \/ a = 0) *)
-  Lemma vcmul_sameV_imply_eqX_or_v0 : forall {n} (x y : tA) (a : vec n), 
+  Lemma vcmul_sameV_imply_eqX_or_v0 : forall {n} (x y : tA) (a : vec n),
       x c* a = y c* a -> (x = y \/ a = vzero).
   Proof. intros. apply vcmul_sameV_imply_eqX_or_v0; auto. Qed.
 
   (** x .* a = y .* a -> a <> 0 -> x = y *)
-  Lemma vcmul_sameV_imply_eqX : forall {n} (x y : tA) (a : vec n), 
+  Lemma vcmul_sameV_imply_eqX : forall {n} (x y : tA) (a : vec n),
       x c* a = y c* a -> a <> vzero -> x = y.
   Proof. intros. apply vcmul_sameV_imply_eqX in H; auto. Qed.
 
   (** x .* a = y .* a -> x <> y -> a = 0 *)
-  Lemma vcmul_sameV_imply_v0 : forall {n} (x y : tA) (a : vec n), 
+  Lemma vcmul_sameV_imply_v0 : forall {n} (x y : tA) (a : vec n),
       x c* a = y c* a -> x <> y -> a = vzero.
   Proof. intros. apply vcmul_sameV_imply_v0 in H; auto. Qed.
 
@@ -2400,11 +2427,10 @@ Module FieldMatrixTheory (E : FieldElementType).
   Lemma vunit_neq0 : forall {n} (a : vec n), vunit a -> a <> vzero.
   Proof. intros. apply vunit_neq0; auto. Qed.
 
-  
-  Open Scope mat_scope.
-  
   (* ======================================================================= *)
   (** ** Properties about zero or non-zero matrices *)
+  
+  Open Scope mat_scope.
 
   (** x .* M = 0 -> (x = 0) \/ (M = 0) *)
   Lemma mcmul_eq0_imply_x0_or_m0 : forall {r c} (M : mat r c) x,
@@ -2514,7 +2540,7 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply mtrans_minvtble; auto. Qed.
 
   (** Multiplication preserve `invertible` property *)
-  Lemma mmul_minvtble: forall {n} (M N : smat n), 
+  Lemma mmul_minvtble: forall {n} (M N : smat n),
       minvtble M -> minvtble N -> minvtble (M * N).
   Proof. intros. apply mmul_minvtble; auto. Qed.
 
@@ -2566,23 +2592,22 @@ Module FieldMatrixTheory (E : FieldElementType).
   Lemma mmul_eq1_comm : forall {n} (M1 M2 : smat n),
       M1 * M2 = mat1 -> M2 * M1 = mat1.
   Proof. intros. apply mmul_eq1_comm; auto. Qed.
-
+  
   (* ======================================================================= *)
-  (** ** Matrix inversion by GE (Gauss Elimination) *)
-  Import GE.
+  (** ** Gauss Elimination operations *)
 
-  (** 行变换列表转换为矩阵 *)
+  (** Convert a list of row-operations to a matrix *)
   Definition rowOps2mat {n} (l : list (@RowOp tA n)) : smat (S n) :=
-    rowOps2mat l.
+    @rowOps2mat _ Aadd 0 Amul 1 _ l.
 
   (** rowOps2mat (l1 ++ l2) = rowOps2mat l1 * rowOps2mat l2 *)
   Lemma rowOps2mat_app : forall {n} (l1 l2 : list (@RowOp tA n)),
       rowOps2mat (l1 ++ l2) = rowOps2mat l1 * rowOps2mat l2.
   Proof. intros. apply rowOps2mat_app. Qed.
   
-  (** 行变换列表转换为反作用的矩阵。即，rowOps2mat的逆矩阵 *)
+  (** Convert a list of row-operations to a its inverse matrix *)
   Definition rowOps2matInv {n} (l : list (@RowOp tA n)) : smat (S n) :=
-    rowOps2matInv l.
+    @rowOps2matInv _ Aadd 0 Aopp Amul 1 Ainv _ l.
 
   (** rowOps2matInv (l1 ++ l2) = rowOps2matInv l2 * rowOps2matInv l1 *)
   Lemma rowOps2matInv_app : forall {n} (l1 l2 : list (@RowOp tA n)),
@@ -2599,138 +2624,148 @@ Module FieldMatrixTheory (E : FieldElementType).
       Forall (@roValid _ 0 _) l -> rowOps2mat l * rowOps2matInv l = mat1.
   Proof. intros. apply mmul_rowOps2mat_rowOps2matInv_eq1; auto. Qed.
 
-  (* (** 将矩阵M的第 j 列的后 x 行元素变为 0。当 j=#0时，x=n *) *)
-  (* Notation elimDown := (@elimDown _ Aadd 0 Aopp Amul). *)
+  (** Change the last x row elements of the j-th column of the matrix M to 0. *)
+  Definition elimDown {n} (M : smat (S n)) (j : 'I_(S n)) (x : nat) :=
+    @elimDown _ Aadd 0 Aopp Amul _ n M x j.
 
-  (* (** 将矩阵M的第 j 列的前 x 行元素变为 0。当 j=#(S n)时，x=S n *) *)
-  (* Notation elimUp := (@elimUp _ Aadd 0 Aopp Amul). *)
+  (** Change the first x row elements of the j-th column of the matrix M to 0. *)
+  Definition elimUp {n} (M : smat (S n)) (j : 'I_(S n)) (x : nat) :=
+      @elimUp _ Aadd 0 Aopp Amul _ n M x j.
 
-  (* (** 将矩阵M的后 x 行化为标准上三角形。参数 x 最大为维数 *) *)
-  (* Notation toREF := (@toREF _ Aadd 0 Aopp Amul Ainv). *)
+  (** Convert the last x rows of matrix M into a standard upper triangle.
+      Note, the max value of x is the dimension *)
+  Definition toREF {n} (M : smat (S n)) (x : nat) :=
+    @toREF _ Aadd 0 Aopp Amul Ainv _ _ M x.
 
-  (* (** 将矩阵 M 的前 x 行(列)化为行最简阶梯形。当 x 为 S n 时表示整个矩阵 *) *)
-  (* Notation toRREF := (@toRREF _ Aadd 0 Aopp Amul). *)
+  (** Convert the first x rows (columns) of matrix M into the RREF *)
+  Definition toRREF {n} (M : smat (S n)) (x : nat) :=
+    @toRREF _ Aadd 0 Aopp Amul _ _ M x.
 
-    
+  (* ======================================================================= *)
+  (** ** Check matrix invertibility by GE *)
+
   (** Check the invertibility of matrix `M` *)
-  Definition minvtblebGE {n} (M : smat n) : bool := minvtbleb M.
+  Definition minvtblebGE {n} (M : smat n) : bool :=
+    @minvtblebGE _ Aadd 0 Aopp Amul Ainv _ _ M.
 
   (** minvtble M <-> minvtblebGE M = true *)
   Lemma minvtble_iff_minvtblebGE_true : forall {n} (M : smat n),
       minvtble M <-> minvtblebGE M = true.
-  Proof. intros. apply minvtble_iff_minvtbleb_true. Qed.
+  Proof. intros. apply minvtble_iff_minvtblebGE_true. Qed.
   
   (** msingular M <-> minvtblebGE M = false *)
   Lemma msingular_iff_minvtblebGE_false : forall {n} (M : smat n),
       msingular M <-> minvtblebGE M = false.
-  Proof. intros. apply msingular_iff_minvtbleb_false. Qed.
+  Proof. intros. apply msingular_iff_minvtblebGE_false. Qed.
+
+  (** M * N = mat1 -> minvtblebGE M = true *)
+  Lemma mmul_eq1_imply_minvtblebGE_true_l : forall {n} (M N : smat n),
+      M * N = mat1 -> minvtblebGE M = true.
+  Proof. intros. apply mmul_eq1_imply_minvtblebGE_true_l in H; auto. Qed.
+
+  (** M * N = mat1 -> minvtblebGE N = true. *)
+  Lemma mmul_eq1_imply_minvtblebGE_true_r : forall {n} (M N : smat n),
+      M * N = mat1 -> minvtblebGE N = true.
+  Proof. intros. apply mmul_eq1_imply_minvtblebGE_true_r in H; auto. Qed.
+
+  (* ======================================================================= *)
+  (** ** Inverse matrix (option version) by GE *)
 
   (** Inverse matrix (option version) *)
-  Definition minvoGE {n} (M : smat n) : option (smat n) := minvo M.
+  Definition minvoGE {n} (M : smat n) : option (smat n) :=
+    @minvoGE _ Aadd 0 Aopp Amul 1 Ainv _ _ M.
 
   (** `minvoGE` return `Some`, iff M is invertible *)
   Lemma minvoGE_Some_iff_minvtble : forall {n} (M : smat n),
       (exists M', minvoGE M = Some M') <-> minvtble M.
-  Proof. intros. apply minvo_Some_iff_minvtble. Qed.
+  Proof. intros. apply minvoGE_Some_iff_minvtble. Qed.
 
   (** `minvoGE` return `None`, iff M is singular *)
   Lemma minvoGE_None_iff_msingular : forall {n} (M : smat n),
       minvoGE M = None <-> msingular M.
-  Proof. intros. apply minvo_None_iff_msingular. Qed.
+  Proof. intros. apply minvoGE_None_iff_msingular. Qed.
 
   (** If `minvoGE M` return `Some M'`, then `M' * M = mat1` *)
   Lemma minvoGE_Some_imply_eq1_l : forall {n} (M M' : smat n),
       minvoGE M = Some M' -> M' * M = mat1.
-  Proof. intros. apply minvo_Some_imply_eq1_l; auto. Qed.
+  Proof. intros. apply minvoGE_Some_imply_eq1_l; auto. Qed.
 
   (** If `minvoGE M` return `Some M'`, then `M * M' = mat1` *)
   Lemma minvoGE_Some_imply_eq1_r : forall {n} (M M' : smat n),
       minvoGE M = Some M' -> M * M' = mat1.
-  Proof. intros. apply minvo_Some_imply_eq1_r; auto. Qed.
-
+  Proof. intros. apply minvoGE_Some_imply_eq1_r; auto. Qed.
+  
+  (* ======================================================================= *)
+  (** ** Inverse matrix (default value version) by GE *)
+  
   (** Inverse matrix (with identity matrix as default value) *)
-  Definition minvGE {n} (M : smat n) : smat n := minv M.
+  Definition minvGE {n} (M : smat n) := @minvGE _ Aadd 0 Aopp Amul 1 Ainv _ _ M.
 
-  Module MinvGENotations.
+  Module Import MinvGENotations.
     Notation "M \-1" := (minvGE M) : mat_scope.
   End MinvGENotations.
 
   (** If `minvoGE M` return `Some N`, then `M\-1` equal to `N` *)
   Lemma minvoGE_Some_imply_minvGE : forall {n} (M N : smat n),
       minvoGE M = Some N -> M\-1 = N.
-  Proof. intros. apply minvo_Some_imply_minv; auto. Qed.
-
-  (** If `minvoGE M` return `None`, then `M\-1` equal to `mat1` *)
-  Lemma minvoGE_None_imply_minv : forall {n} (M  : smat n),
-      minvoGE M = None -> M\-1 = mat1.
-  Proof. intros. apply minvo_None_imply_minv; auto. Qed.
+  Proof. intros. apply minvoGE_Some_imply_minvGE; auto. Qed.
   
   (** M\-1 * M = mat1 *)
   Lemma mmul_minvGE_l : forall {n} (M : smat n), minvtble M -> M\-1 * M = mat1.
-  Proof. intros. apply mmul_minv_l; auto. Qed.
-
-
-  (** M * N = mat1 -> minvtblebGE M = true *)
-  Lemma mmul_eq1_imply_minvtblebGE_true_l : forall {n} (M N : smat n),
-      M * N = mat1 -> minvtblebGE M = true.
-  Proof. intros. apply mmul_eq1_imply_minvtbleb_true_l in H; auto. Qed.
-
-  (** M * N = mat1 -> minvtblebGE N = true. *)
-  Lemma mmul_eq1_imply_minvtblebGE_true_r : forall {n} (M N : smat n),
-      M * N = mat1 -> minvtblebGE N = true.
-  Proof. intros. apply mmul_eq1_imply_minvtbleb_true_r in H; auto. Qed.
-
-  (** minvtble M -> minvtble (M \-1) *)
-  Lemma minvGE_minvtble : forall {n} (M : smat n),
-      minvtble M -> minvtble (M\-1).
-  Proof. intros. apply minv_minvtble; auto. Qed.
+  Proof. intros. apply mmul_minvGE_l; auto. Qed.
   
   (** M * M\-1 = mat1 *)
   Lemma mmul_minvGE_r : forall {n} (M : smat n), minvtble M -> M * M\-1 = mat1.
-  Proof. intros. apply mmul_minv_r; auto. Qed.
+  Proof. intros. apply mmul_minvGE_r; auto. Qed.
+
+  (** minvtble M -> minvtble (M \-1) *)
+  Lemma minvGE_minvtble : forall {n} (M : smat n), minvtble M -> minvtble (M\-1).
+  Proof. intros. apply minvGE_minvtble; auto. Qed.
   
   (** M * N = mat1 -> M \-1 = N *)
   Lemma mmul_eq1_imply_minvGE_l : forall {n} (M N : smat n), M * N = mat1 -> M\-1 = N.
-  Proof. intros. apply mmul_eq1_imply_minv_l; auto. Qed.
+  Proof. intros. apply mmul_eq1_imply_minvGE_l; auto. Qed.
 
   (** M * N = mat1 -> N \-1 = M *)
   Lemma mmul_eq1_imply_minvGE_r : forall {n} (M N : smat n), M * N = mat1 -> N\-1 = M.
-  Proof. intros. apply mmul_eq1_imply_minv_r; auto. Qed.
+  Proof. intros. apply mmul_eq1_imply_minvGE_r; auto. Qed.
 
   (** mat1 \-1 = mat1 *)
-  Lemma minvGE_mat1 : forall n, @minv n mat1 = mat1.
-  Proof. intros. apply minv_mat1. Qed.
+  Lemma minvGE_mat1 : forall n, (@mat1 n)\-1 = mat1.
+  Proof. intros. apply minvGE_mat1. Qed.
 
   (** minvtble M -> M \-1 \-1 = M *)
   Lemma minvGE_minvGE : forall n (M : smat n), minvtble M -> M \-1 \-1 = M.
-  Proof. intros. apply minv_minv; auto. Qed.
+  Proof. intros. apply minvGE_minvGE; auto. Qed.
 
   (** (M * N)\-1 = (N\-1) * (M\-1) *)
   Lemma minvGE_mmul : forall n (M N : smat n),
       minvtble M -> minvtble N -> (M * N)\-1 = N\-1 * M\-1.
-  Proof. intros. apply minv_mmul; auto. Qed.
+  Proof. intros. apply minvGE_mmul; auto. Qed.
 
   (** (M \T) \-1 = (M \-1) \T *)
-  Lemma minvGE_mtrans : forall n (M : smat n),
-      minvtble M -> (M \T) \-1 = (M \-1) \T.
-  Proof. intros. apply minv_mtrans; auto. Qed.
+  Lemma minvGE_mtrans : forall n (M : smat n), minvtble M -> (M \T) \-1 = (M \-1) \T.
+  Proof. intros. apply minvGE_mtrans; auto. Qed.
 
-  (** |M \-1| = / |M| *)
+  (** |M \-1| = / (|M|) *)
   Lemma mdet_minvGE : forall {n} (M : smat n), minvtble M -> |M\-1| = / |M|.
-  Proof. intros. apply mdet_minv; auto. Qed.
+  Proof. intros. apply mdet_minvGE; auto. Qed.
+
+  (* ======================================================================= *)
+  (** ** Inverse matrix with lists for input and output by GE *)
   
   (** Check matrix invertibility with lists as input *)
   Definition minvtblebListGE (n : nat) (dl : dlist tA) : bool :=
-    minvtblebList n dl.
+    @minvtblebListGE _ Aadd 0 Aopp Amul Ainv _ n dl.
 
   (** Inverse matrix with lists for input and output *)
   Definition minvListGE (n : nat) (dl : dlist tA) : dlist tA :=
-    minvList n dl.
+    @minvListGE _ Aadd 0 Aopp Amul 1 Ainv _ n dl.
 
-  (** `minvtblebListGE` is equal to `minvtblebGE`, by definition *)
+  (** `minvtblebListGE` is equivalent to `minvtblebGE`, by definition *)
   Lemma minvtblebListGE_spec : forall (n : nat) (dl : dlist tA),
       minvtblebListGE n dl = @minvtblebGE n (l2m dl).
-  Proof. intros. apply minvtblebList_spec. Qed.
+  Proof. intros. apply minvtblebListGE_spec. Qed.
 
   (** The matrix of [minvListGE dl] is the inverse of the matrix of [dl] *)
   Lemma minvListGE_spec : forall (n : nat) (dl : dlist tA),
@@ -2738,179 +2773,164 @@ Module FieldMatrixTheory (E : FieldElementType).
       let M' : smat n := l2m (minvListGE n dl) in
       minvtblebListGE n dl = true ->
       M' * M = mat1.
-  Proof. intros. apply minvList_spec; auto. Qed.
+  Proof. intros. apply minvListGE_spec; auto. Qed.
 
-  (** Solve the equation with the form of A*x=b. *)
-  Definition solveEqGE {n} (A : smat n) (b : vec n) : vec n := solveEq A b.
+  (* ======================================================================= *)
+  (** ** Solve equation with inverse matrix by GE *)
+
+  (** Solve the equation A*x=b. *)
+  Definition solveEqGE {n} (A : smat n) (b : vec n) : vec n :=
+    @solveEqGE _ Aadd 0 Aopp Amul 1 Ainv _ n A b.
 
   (** A *v (solveEqGE A b) = b *)
   Lemma solveEqGE_spec : forall {n} (A : smat n) (b : vec n),
       minvtble A -> A *v (solveEqGE A b) = b.
-  Proof. intros. apply solveEq_spec; auto. Qed.
+  Proof. intros. apply solveEqGE_spec; auto. Qed.
 
-  (** Solve the equation with the form of A*x=b over list *)
+  (** Solve the equation A*x=b over list *)
   Definition solveEqListGE (n : nat) (lA : dlist tA) (lb : list tA) : list tA :=
-    solveEqList n lA lb.
+    @solveEqListGE _ Aadd 0 Aopp Amul 1 Ainv _ n lA lb.
 
-  (** {solveEqListGE lA lb} = solveEq {lA} {lb} *)
+  (** {solveEqListGE lA lb} = solveEqGE {lA} {lb} *)
   Lemma solveEqListGE_spec : forall n (lA : dlist tA) (lb : list tA),
       let A : smat n := l2m lA in
       let b : vec n := l2v lb in
-      l2v (solveEqList n lA lb) = solveEqGE A b.
-  Proof. intros. apply solveEqList_spec. Qed.
-
-  (* ======================================================================= *)
-  (** ** Matrix Inversion by AM *)
-  Import AM.
+      l2v (solveEqListGE n lA lb) = solveEqGE A b.
+  Proof. intros. apply solveEqListGE_spec. Qed.
   
+  (* ======================================================================= *)
+  (** ** Check matrix invertibility by AM *)
+
   (** Check the invertibility of matrix `M` *)
-  Definition minvtblebAM {n} (M : smat n) : bool := minvtbleb M.
+  Definition minvtblebAM {n} (M : smat n) : bool :=
+    @minvtblebAM _ Aadd 0 Aopp Amul 1 _ _ M.
 
   (** minvtble M <-> minvtblebAM M = true *)
   Lemma minvtble_iff_minvtblebAM_true : forall {n} (M : smat n),
       minvtble M <-> minvtblebAM M = true.
-  Proof. intros. apply minvtble_iff_minvtbleb_true. Qed.
+  Proof. intros. apply minvtble_iff_minvtblebAM_true. Qed.
   
   (** msingular M <-> minvtblebAM M = false *)
   Lemma msingular_iff_minvtblebAM_false : forall {n} (M : smat n),
       msingular M <-> minvtblebAM M = false.
-  Proof. intros. apply msingular_iff_minvtbleb_false. Qed.
-
-  (** Inverse matrix (option version) *)
-  Definition minvoAM {n} (M : smat n) : option (smat n) := minvo M.
-
-  (** `minvoAM` return `Some`, iff M is invertible *)
-  Lemma minvoAM_Some_iff_minvtble : forall {n} (M : smat n),
-      (exists M', minvoAM M = Some M') <-> minvtble M.
-  Proof. intros. apply minvo_Some_iff_minvtble. Qed.
-
-  (** `minvoAM` return `None`, iff M is singular *)
-  Lemma minvoAM_None_iff_msingular : forall {n} (M : smat n),
-      minvoAM M = None <-> msingular M.
-  Proof. intros. apply minvo_None_iff_msingular. Qed.
-
-  (** If `minvoAM M` return `Some M'`, then `M' * M = mat1` *)
-  Lemma minvoAM_Some_imply_eq1_l : forall {n} (M M' : smat n),
-      minvoAM M = Some M' -> M' * M = mat1.
-  Proof. intros. apply minvo_Some_imply_eq1_l; auto. Qed.
-
-  (** If `minvoAM M` return `Some M'`, then `M * M' = mat1` *)
-  Lemma minvoAM_Some_imply_eq1_r : forall {n} (M M' : smat n),
-      minvoAM M = Some M' -> M * M' = mat1.
-  Proof. intros. apply minvo_Some_imply_eq1_r; auto. Qed.
-
-  (** Inverse matrix (with identity matrix as default value) *)
-  Definition minvAM {n} (M : smat n) : smat n := minv M.
-
-  Module Export MinvAMNotations.
-    Notation "M \-1" := (minvAM M) : mat_scope.
-  End MinvAMNotations.
-
-  (** If `minvoAM M` return `Some N`, then `M\-1` equal to `N` *)
-  Lemma minvoAM_Some_imply_minvAM : forall {n} (M N : smat n),
-      minvoAM M = Some N -> M\-1 = N.
-  Proof. intros. apply minvo_Some_imply_minv; auto. Qed.
-
-  (** If `minvoAM M` return `None`, then `M\-1` equal to `mat1` *)
-  Lemma minvoAM_None_imply_minv : forall {n} (M  : smat n),
-      minvoAM M = None -> M\-1 = mat1.
-  Proof. intros. apply minvo_None_imply_minv; auto. Qed.
-  
-  (** M\-1 * M = mat1 *)
-  Lemma mmul_minvAM_l : forall {n} (M : smat n), minvtble M -> M\-1 * M = mat1.
-  Proof. intros. apply mmul_minv_l; auto. Qed.
-
-  
-  (** Formula of inversion matrix on dimension-1 *)
-  Definition minvAM1 (M : smat 1) : smat 1 := minv1 M.
-
-  (** minvtble M -> minvAM1 M = M\-1 *)
-  Lemma minvAM1_eq_minvAM : forall M, minvtble M -> minvAM1 M = M\-1.
-  Proof. intros. apply minv1_eq_minv; auto. Qed.
-
-  (** Formula of inversion matrix on dimension-2 *)
-  Definition minvAM2 (M : smat 2) : smat 2 := minv2 M.
-
-  (** minvtble M -> minv2 M = M\-1 *)
-  Lemma minvAM2_eq_minvAM : forall M, minvtble M -> minvAM2 M = M\-1.
-  Proof. intros. apply minv2_eq_minv; auto. Qed.
-  
-  (** Formula of inversion matrix on dimension-3 *)
-  Definition minvAM3 (M : smat 3) : smat 3 := minv3 M.
-  
-  (** minvtble M -> minv3 M = M\-1 *)
-  Lemma minvAM3_eq_minvAM : forall M, minvtble M -> minvAM3 M = M\-1.
-  Proof. intros. apply minv3_eq_minv; auto. Qed.
-
-  (** Formula of inversion matrix on dimension-4 *)
-  Definition minvAM4 (M : smat 4) : smat 4 := minv4 M.
-  
-  (** minvtble M -> minv4 M = M\-1 *)
-  Lemma minvAM4_eq_minvAM : forall M, minvtble M -> minvAM4 M = M\-1.
-  Proof. intros. apply minv4_eq_minv; auto. Qed.
-
+  Proof. intros. apply msingular_iff_minvtblebAM_false. Qed.
 
   (** M * N = mat1 -> minvtblebAM M = true *)
   Lemma mmul_eq1_imply_minvtblebAM_true_l : forall {n} (M N : smat n),
       M * N = mat1 -> minvtblebAM M = true.
-  Proof. intros. apply mmul_eq1_imply_minvtbleb_true_l in H; auto. Qed.
+  Proof. intros. apply mmul_eq1_imply_minvtblebAM_true_l in H; auto. Qed.
 
   (** M * N = mat1 -> minvtblebAM N = true. *)
   Lemma mmul_eq1_imply_minvtblebAM_true_r : forall {n} (M N : smat n),
       M * N = mat1 -> minvtblebAM N = true.
-  Proof. intros. apply mmul_eq1_imply_minvtbleb_true_r in H; auto. Qed.
+  Proof. intros. apply mmul_eq1_imply_minvtblebAM_true_r in H; auto. Qed.
+
+  (* ======================================================================= *)
+  (** ** Inverse matrix (option version) by AM *)
+
+  (** Inverse matrix (option version) *)
+  Definition minvoAM {n} (M : smat n) : option (smat n) :=
+    @minvoAM _ Aadd 0 Aopp Amul 1 Ainv _ _ M.
+
+  (** `minvoAM` return `Some`, iff M is invertible *)
+  Lemma minvoAM_Some_iff_minvtble : forall {n} (M : smat n),
+      (exists M', minvoAM M = Some M') <-> minvtble M.
+  Proof. intros. apply minvoAM_Some_iff_minvtble. Qed.
+
+  (** `minvoAM` return `None`, iff M is singular *)
+  Lemma minvoAM_None_iff_msingular : forall {n} (M : smat n),
+      minvoAM M = None <-> msingular M.
+  Proof. intros. apply minvoAM_None_iff_msingular. Qed.
+
+  (** If `minvoAM M` return `Some M'`, then `M' * M = mat1` *)
+  Lemma minvoAM_Some_imply_eq1_l : forall {n} (M M' : smat n),
+      minvoAM M = Some M' -> M' * M = mat1.
+  Proof. intros. apply minvoAM_Some_imply_eq1_l; auto. Qed.
+
+  (** If `minvoAM M` return `Some M'`, then `M * M' = mat1` *)
+  Lemma minvoAM_Some_imply_eq1_r : forall {n} (M M' : smat n),
+      minvoAM M = Some M' -> M * M' = mat1.
+  Proof. intros. apply minvoAM_Some_imply_eq1_r; auto. Qed.
+  
+  (* ======================================================================= *)
+  (** ** Inverse matrix (default value version) by AM *)
+  
+  (** Inverse matrix (with identity matrix as default value) *)
+  Definition minvAM {n} (M : smat n) := @minvAM _ Aadd 0 Aopp Amul 1 Ainv _ M.
+
+  Module Import MinvAMNotations.
+    Notation "M \-1" := (minvAM M) : mat_scope.
+  End MinvAMNotations.
+
+  (* We use minvAM as default matrix inversion method *)
+  Export MinvAMNotations.
+
+  (** Get (i,j) element of inverse matrix of `M`. Note that GE method can't do it *)
+  Lemma mnth_minvAM : forall n (M : smat (S n)) (i j : 'I_(S n)),
+      minvtble M -> (M\-1).[i].[j] = ((/ (mdet M)) * mcofactor M j i)%A.
+  Proof. intros. apply mnth_minvAM; auto. Qed.
+
+  (** If `minvoAM M` return `Some N`, then `M\-1` equal to `N` *)
+  Lemma minvoAM_Some_imply_minvAM : forall {n} (M N : smat n),
+      minvoAM M = Some N -> M\-1 = N.
+  Proof. intros. apply minvoAM_Some_imply_minvAM; auto. Qed.
+  
+  (** M\-1 * M = mat1 *)
+  Lemma mmul_minvAM_l : forall {n} (M : smat n), minvtble M -> M\-1 * M = mat1.
+  Proof. intros. apply mmul_minvAM_l; auto. Qed.
 
   (** minvtble M -> minvtble (M \-1) *)
-  Lemma minvAM_minvtble : forall {n} (M : smat n),
-      minvtble M -> minvtble (M\-1).
-  Proof. intros. apply minv_minvtble; auto. Qed.
+  Lemma minvAM_minvtble : forall {n} (M : smat n), minvtble M -> minvtble (M\-1).
+  Proof. intros. apply minvAM_minvtble; auto. Qed.
   
   (** M * M\-1 = mat1 *)
   Lemma mmul_minvAM_r : forall {n} (M : smat n), minvtble M -> M * M\-1 = mat1.
-  Proof. intros. apply mmul_minv_r; auto. Qed.
+  Proof. intros. apply mmul_minvAM_r; auto. Qed.
   
   (** M * N = mat1 -> M \-1 = N *)
   Lemma mmul_eq1_imply_minvAM_l : forall {n} (M N : smat n), M * N = mat1 -> M\-1 = N.
-  Proof. intros. apply mmul_eq1_imply_minv_l; auto. Qed.
+  Proof. intros. apply mmul_eq1_imply_minvAM_l; auto. Qed.
 
   (** M * N = mat1 -> N \-1 = M *)
   Lemma mmul_eq1_imply_minvAM_r : forall {n} (M N : smat n), M * N = mat1 -> N\-1 = M.
-  Proof. intros. apply mmul_eq1_imply_minv_r; auto. Qed.
+  Proof. intros. apply mmul_eq1_imply_minvAM_r; auto. Qed.
 
   (** mat1 \-1 = mat1 *)
-  Lemma minvAM_mat1 : forall n, @minv n mat1 = mat1.
-  Proof. intros. apply minv_mat1. Qed.
+  Lemma minvAM_mat1 : forall n, (@mat1 n)\-1 = mat1.
+  Proof. intros. apply minvAM_mat1. Qed.
 
   (** minvtble M -> M \-1 \-1 = M *)
   Lemma minvAM_minvAM : forall n (M : smat n), minvtble M -> M \-1 \-1 = M.
-  Proof. intros. apply minv_minv; auto. Qed.
+  Proof. intros. apply minvAM_minvAM; auto. Qed.
 
   (** (M * N)\-1 = (N\-1) * (M\-1) *)
   Lemma minvAM_mmul : forall n (M N : smat n),
       minvtble M -> minvtble N -> (M * N)\-1 = N\-1 * M\-1.
-  Proof. intros. apply minv_mmul; auto. Qed.
+  Proof. intros. apply minvAM_mmul; auto. Qed.
 
   (** (M \T) \-1 = (M \-1) \T *)
-  Lemma minvAM_mtrans : forall n (M : smat n),
-      minvtble M -> (M \T) \-1 = (M \-1) \T.
-  Proof. intros. apply minv_mtrans; auto. Qed.
+  Lemma minvAM_mtrans : forall n (M : smat n), minvtble M -> (M \T) \-1 = (M \-1) \T.
+  Proof. intros. apply minvAM_mtrans; auto. Qed.
 
-  (** |M \-1| = / |M| *)
+  (** |M \-1| = / (|M|) *)
   Lemma mdet_minvAM : forall {n} (M : smat n), minvtble M -> |M\-1| = / |M|.
-  Proof. intros. apply mdet_minv; auto. Qed.
+  Proof. intros. apply mdet_minvAM; auto. Qed.
+
+  (* ======================================================================= *)
+  (** ** Inverse matrix with lists for input and output by AM *)
   
   (** Check matrix invertibility with lists as input *)
   Definition minvtblebListAM (n : nat) (dl : dlist tA) : bool :=
-    minvtblebList n dl.
+    @minvtblebListAM _ Aadd 0 Aopp Amul 1 _ n dl.
 
   (** Inverse matrix with lists for input and output *)
   Definition minvListAM (n : nat) (dl : dlist tA) : dlist tA :=
-    minvList n dl.
+    @minvListAM _ Aadd 0 Aopp Amul 1 Ainv n dl.
 
-  (** `minvtblebListAM` is equal to `minvtblebAM`, by definition *)
+  (** `minvtblebListAM` is equivalent to `minvtblebAM`, by definition *)
   Lemma minvtblebListAM_spec : forall (n : nat) (dl : dlist tA),
       minvtblebListAM n dl = @minvtblebAM n (l2m dl).
-  Proof. intros. apply minvtblebList_spec. Qed.
+  Proof. intros. apply minvtblebListAM_spec. Qed.
 
   (** The matrix of [minvListAM dl] is the inverse of the matrix of [dl] *)
   Lemma minvListAM_spec : forall (n : nat) (dl : dlist tA),
@@ -2918,109 +2938,68 @@ Module FieldMatrixTheory (E : FieldElementType).
       let M' : smat n := l2m (minvListAM n dl) in
       minvtblebListAM n dl = true ->
       M' * M = mat1.
-  Proof. intros. apply minvList_spec; auto. Qed.
+  Proof. intros. apply minvListAM_spec; auto. Qed.
 
-  (** Solve the equation with the form of A*x=b. *)
-  Definition solveEqAM {n} (A : smat n) (b : vec n) : vec n := solveEq A b.
+  (* ======================================================================= *)
+  (** ** Solve equation with inverse matrix by AM *)
+
+  (** Solve the equation A*x=b. *)
+  Definition solveEqAM {n} (A : smat n) (b : vec n) : vec n :=
+    @solveEqAM _ Aadd 0 Aopp Amul 1 Ainv n A b.
 
   (** A *v (solveEqAM A b) = b *)
   Lemma solveEqAM_spec : forall {n} (A : smat n) (b : vec n),
       minvtble A -> A *v (solveEqAM A b) = b.
-  Proof. intros. apply solveEq_spec; auto. Qed.
+  Proof. intros. apply solveEqAM_spec; auto. Qed.
 
-  (** Solve the equation with the form of A*x=b over list *)
+  (** Solve the equation A*x=b over list *)
   Definition solveEqListAM (n : nat) (lA : dlist tA) (lb : list tA) : list tA :=
-    solveEqList n lA lb.
+    @solveEqListAM _ Aadd 0 Aopp Amul 1 Ainv n lA lb.
 
-  (** {solveEqListAM lA lb} = solveEq {lA} {lb} *)
+  (** {solveEqListAM lA lb} = solveEqAM {lA} {lb} *)
   Lemma solveEqListAM_spec : forall n (lA : dlist tA) (lb : list tA),
       let A : smat n := l2m lA in
       let b : vec n := l2v lb in
-      l2v (solveEqList n lA lb) = solveEqAM A b.
-  Proof. intros. apply solveEqList_spec. Qed.
-
+      l2v (solveEqListAM n lA lb) = solveEqAM A b.
+  Proof. intros. apply solveEqListAM_spec. Qed.
   
-  (** Inverse matrix (won't check the inversibility) *)
-  Definition minvNoCheckAM {n} (M : smat n) : smat n := minvNoCheck M.
-
-  (** If `M` is invertible, then [minvNoCheckAM] is equivalent to [minvAM] *)
-  Lemma minvNoCheckAM_spec : forall {n} (M : smat n),
-      minvtble M -> minvNoCheckAM M = M\-1.
-  Proof. intros. apply minvNoCheck_spec; auto. Qed.
-
-  (** Solve the equation with the form of A*x=b, but without check the inversibility. *)
-  Definition solveEqNoCheckAM {n} (A : smat n) (b : vec n) : vec n :=
-    (minvNoCheckAM A) *v b.
-
-  (** minvtble A -> solveEqNoCheckAM A b = solveEqAM A b *)
-  Theorem solveEqNoCheckAM_spec : forall {n} (A : smat n) (b : vec n),
-      minvtble A -> solveEqNoCheckAM A b = solveEqAM A b.
-  Proof. intros. apply solveEqNoCheck_spec; auto. Qed.
-
-  (** Solve the equation with the form of A*x=b over list, but without check the 
-      inversibility *)
-  Definition solveEqListNoCheckAM (n : nat) (lA : dlist tA) (lb : list tA) : list tA :=
-    solveEqListNoCheck n lA lb.
-
-  (** minvtble {lA} -> {solveEqListNoCheckAM lA lb} = solveEqListAM {lA} {lb} *)
-  Theorem solveEqListNoCheckAM_spec : forall n (lA : dlist tA) (lb : list tA),
-      let A : smat n := l2m lA in
-      minvtble A -> solveEqListNoCheckAM n lA lb = solveEqListAM n lA lb.
-  Proof. intros. apply solveEqListNoCheck_spec; auto. Qed.
-  
-
   (* ======================================================================= *)
-  (** ** Matrix Inversion (default method, JUST IS Notaiton of AM) *)
-  Import AM.
-  Import MinvAMNotations.
+  (** ** Direct formulas of inverse matrix by AM *)
+    
+  Definition minvAM1 (M : smat 1) : smat 1 := @minvAM1 _ 0 Amul 1 Ainv M.
 
-  Notation minvtbleb := minvtblebAM.
-  Notation minvtble_iff_minvtbleb_true := minvtble_iff_minvtblebAM_true.
-  Notation msingular_iff_minvtbleb_false := msingular_iff_minvtblebAM_false.
-  Notation minvo := minvoAM.
-  Notation minvo_Some_iff_minvtble := minvoAM_Some_iff_minvtble.
-  Notation minvo_None_iff_msingular := minvoAM_None_iff_msingular.
-  Notation minvo_Some_imply_eq1_l := minvoAM_Some_imply_eq1_l.
-  Notation minvo_Some_imply_eq1_r := minvoAM_Some_imply_eq1_r.
-  Notation minv := minvAM.
-  Notation minvo_Some_imply_minv := minvoAM_Some_imply_minvAM.
-  Notation minvo_None_imply_minv := minvoAM_None_imply_minv.
-  Notation mmul_minv_l := mmul_minvAM_l.
-  Notation mmul_minv_r := mmul_minvAM_r.
-  Notation minv_minvtble := minvAM_minvtble.
-  Notation mmul_eq1_imply_minv_l := mmul_eq1_imply_minvAM_l.
-  Notation mmul_eq1_imply_minv_r := mmul_eq1_imply_minvAM_r.
-  Notation minv_mat1 := minvAM_mat1.
-  Notation minv_minv := minvAM_minvAM.
-  Notation minv_mmul := minvAM_mmul.
-  Notation minv_mtrans := minvAM_mtrans.
-  Notation mdet_minv := mdet_minvAM.
-  Notation minvtblebList := minvtblebListAM.
-  Notation minvtblebList_spec := minvtblebListAM_spec.
-  Notation minvList := minvListAM.
-  Notation minvList_spec := minvListAM_spec.
+  (** minvtble M -> minvAM1 M = minvAM M *)
+  Lemma minvAM1_eq_minvAM : forall M, minvtble M -> minvAM1 M = M\-1.
+  Proof. intros. apply minvAM1_eq_minvAM; auto. Qed.
 
-  (* tips: we use GE model to solve equation for smaller time complexicity *)
-  Notation solveEq := solveEqGE.
-  Notation solveEq_spec := solveEqGE_spec.
+  Definition minvAM2 (M : smat 2) : smat 2 := @minvAM2 _ Aadd 0 Aopp Amul Ainv M.
 
-  (* tips: only AM has NoCheck version *)  
-  Notation minvNoCheck := minvNoCheckAM.
-  Notation minvNoCheck_spec := minvNoCheckAM_spec.
-  Notation solveEqNoCheck := solveEqNoCheckAM.
-  Notation solveEqNoCheck_spec := solveEqNoCheckAM_spec.
-  Notation solveEqListNoCheck := solveEqListNoCheckAM.
-  Notation solveEqListNoCheck_spec := solveEqListNoCheckAM_spec.
+  (** minvtble M -> minvAM2 M = minvAM M *)
+  Lemma minvAM2_eq_minvAM : forall M, minvtble M -> minvAM2 M = M\-1.
+  Proof. intros. apply minvAM2_eq_minvAM; auto. Qed.
+  
+  Definition minvAM3 (M : smat 3) : smat 3 := @minvAM3 _ Aadd 0 Aopp Amul Ainv M.
+
+  (** minvtble M -> minvAM3 M = minvAM M *)
+  Lemma minvAM3_eq_minvAM : forall M, minvtble M -> minvAM3 M = M\-1.
+  Proof. intros. apply minvAM3_eq_minvAM; auto. Qed.
+
+  Definition minvAM4 (M : smat 4) : smat 4 := @minvAM4 _ Aadd 0 Aopp Amul Ainv M.
+  
+  (** minvtble M -> minvAM4 M = minvAM M *)
+  Lemma minvAM4_eq_minvAM : forall M, minvtble M -> minvAM4 M = M\-1.
+  Proof. intros. apply minvAM4_eq_minvAM; auto. Qed.
+
 
   (* ======================================================================= *)
   (** ** Orthonormal vectors 标准正交的向量组 *)
 
   (** All (different) columns of a matrix are orthogonal each other.
       For example: [v1;v2;v3] => v1_|_v2 && v1_|_v3 && v2_|_v3. *)
-  Definition mcolsOrth {r c} (M : mat r c) : Prop := mcolsOrth M.
+  Definition mcolsOrth {r c} (M : mat r c) : Prop := @mcolsOrth _ Aadd 0 Amul _ _ M.
 
   (** All (different) rows of a matrix are orthogonal each other. *)
-  Definition mrowsOrth {r c} (M : mat r c) : Prop := mrowsOrth M.
+  Definition mrowsOrth {r c} (M : mat r c) : Prop := @mrowsOrth _ Aadd 0 Amul _ _ M.
 
   Lemma mtrans_mcolsOrth : forall {r c} (M : mat r c), mrowsOrth M -> mcolsOrth (M\T).
   Proof. intros. apply mtrans_mcolsOrth; auto. Qed.
@@ -3031,10 +3010,10 @@ Module FieldMatrixTheory (E : FieldElementType).
 
   (** All columns of a matrix are unit vector.
       For example: [v1;v2;v3] => unit v1 && unit v2 && unit v3 *)
-  Definition mcolsUnit {r c} (M : mat r c) : Prop := mcolsUnit M.
+  Definition mcolsUnit {r c} (M : mat r c) : Prop := @mcolsUnit _ Aadd 0 Amul 1 _ _ M.
 
   (** All rows of a matrix are unit vector. *)
-  Definition mrowsUnit {r c} (M : mat r c) : Prop := mrowsUnit M.
+  Definition mrowsUnit {r c} (M : mat r c) : Prop := @mrowsUnit _ Aadd 0 Amul 1 _ _ M.
 
   Lemma mtrans_mcolsUnit : forall {r c} (M : mat r c), mrowsUnit M -> mcolsUnit (M\T).
   Proof. intros. apply mtrans_mcolsUnit; auto. Qed.
@@ -3044,10 +3023,12 @@ Module FieldMatrixTheory (E : FieldElementType).
 
 
   (** The columns of a matrix is orthogomal *)
-  Definition mcolsOrthonormal {r c} (M : mat r c) : Prop := mcolsOrthonormal M.
+  Definition mcolsOrthonormal {r c} (M : mat r c) : Prop :=
+    @mcolsOrthonormal _ Aadd 0 Amul 1 _ _ M.
 
   (** The rows of a matrix is orthogomal *)
-  Definition mrowsOrthonormal {r c} (M : mat r c) : Prop := mrowsOrthonormal M.
+  Definition mrowsOrthonormal {r c} (M : mat r c) : Prop :=
+    @mrowsOrthonormal _ Aadd 0 Amul 1 _ _ M.
 
   (** mrowsOrthonormal M -> mcolsOrthonormal (M\T)  *)
   Lemma mtrans_mcolsOrthonormal : forall {r c} (M : mat r c),
@@ -3064,7 +3045,7 @@ Module FieldMatrixTheory (E : FieldElementType).
   (** ** Orthogonal matrix *)
 
   (** An orthogonal matrix *)
-  Definition morth {n} (M : smat n) : Prop := morth M.
+  Definition morth {n} (M : smat n) : Prop := @morth _ Aadd 0 Amul 1 _ M.
   
   (** matrix M is orthogonal <-> columns of M are orthogomal *)
   Lemma morth_iff_mcolsOrthonormal : forall {n} (M : smat n),
@@ -3130,15 +3111,15 @@ Module FieldMatrixTheory (E : FieldElementType).
   (* ======================================================================= *)
   (** ** O(n): General Orthogonal Group, General Linear Group *)
   
-  (** The set of GOn *)
-  Definition GOn {n : nat} := @GOn n.
+  (** The type of GOn *)
+  Definition GOn {n : nat} := @GOn _ Aadd 0 Amul 1 n.
 
   (** Additional coercion, hence the re-definition of `mat` and `GOn` *)
-  Definition GOn_mat {n} (M : @GOn n) : mat n n := GOn_mat M.
-  Coercion GOn_mat : GOn >-> mat.
+  Definition GOn_mat {n} (M : @GOn n) : smat n := GOn_mat M.
+  Coercion GOn_mat : GOn >-> smat.
 
   (** The condition to form a GOn from a matrix *)
-  Definition GOnP {n} (M : smat n) : Prop := GOnP M.
+  Definition GOnP {n} (M : smat n) : Prop := @GOnP _ Aadd 0 Amul 1 _ M.
 
   Lemma GOnP_spec : forall {n} (M : @GOn n), GOnP M.
   Proof. intros. apply GOnP_spec. Qed.
@@ -3184,22 +3165,22 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply GOn_Group. Qed.
 
   (** M \-1 = M \T *)
-  Lemma GOn_imply_inv_eq_trans : forall {n} (M : @GOn n), M\-1 = (GOn_mat M) \T.
+  Lemma GOn_imply_inv_eq_trans : forall {n} (M : @GOn n), M\-1 = M \T.
   Proof. intros. apply GOn_imply_minv_eq_trans. Qed.
 
 
   (* ======================================================================= *)
   (** ** SO(n): Special Orthogonal Group, Rotation Group *)
 
-  (** The set of SOn *)
-  Definition SOn {n: nat} := @SOn n.
+  (** The type of SOn *)
+  Definition SOn {n: nat} := @SOn _ Aadd 0 Aopp Amul 1 n.
 
   (** Additional coercion, hence the re-definition of `mat` and `SOn` *)
   Definition SOn_GOn {n} (M : @SOn n) : @GOn n := SOn_GOn M.
   Coercion SOn_GOn : SOn >-> GOn.
 
   (** The condition to form a SOn from a matrix *)
-  Definition SOnP {n} (M : smat n) : Prop := SOnP M.
+  Definition SOnP {n} (M : smat n) : Prop := @SOnP _ Aadd 0 Aopp Amul 1 _ M.
 
   Lemma SOnP_spec : forall {n} (M : @SOn n), SOnP M.
   Proof. intros. apply SOnP_spec. Qed.
@@ -3257,15 +3238,15 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply SOn_Group. Qed.
 
   (** M \-1 = M \T *)
-  Lemma SOn_minv_eq_trans : forall {n} (M : @SOn n), M\-1 = (GOn_mat M) \T.
+  Lemma SOn_minv_eq_trans : forall {n} (M : @SOn n), M\-1 = M \T.
   Proof. intros. apply SOn_minv_eq_trans. Qed.
 
   (** M\T * M = mat1 *)
-  Lemma SOn_mul_trans_l_eq1 : forall {n} (M : @SOn n), (GOn_mat M)\T * M = mat1.
+  Lemma SOn_mul_trans_l_eq1 : forall {n} (M : @SOn n), (M\T) * M = mat1.
   Proof. intros. apply SOn_mul_trans_l_eq1. Qed.
 
   (** M * M\T = mat1 *)
-  Lemma SOn_mul_trans_r_eq1 : forall {n} (M : @SOn n), M * (GOn_mat M)\T = mat1.
+  Lemma SOn_mul_trans_r_eq1 : forall {n} (M : @SOn n), M * (M\T) = mat1.
   Proof. intros. apply SOn_mul_trans_r_eq1. Qed.
   
 End FieldMatrixTheory.
@@ -3491,10 +3472,8 @@ Module NormedOrderedFieldMatrixTheory (E : NormedOrderedFieldElementType).
   
   Include (OrderedFieldMatrixTheory E).
 
-  Import OrthAM.
-
   Open Scope vec_scope.
-  
+
   (** Length of a vector *)
   Definition vlen {n} (a : vec n) : R := @vlen _ Aadd 0 Amul a2r _ a.
   Notation "|| a ||" := (vlen a) : vec_scope.
@@ -3593,12 +3572,6 @@ Module NormedOrderedFieldMatrixTheory (E : NormedOrderedFieldElementType).
   (** vunit a -> || a || = 1 *)
   Lemma vlen_eq1_imply_vunit : forall {n} (a : vec n), ||a|| = 1%R -> vunit a.
   Proof. intros. apply vunit_spec; auto. Qed.
-
-  (* Context `{HOrderedField : OrderedField tA Aadd Azero Aopp Amul Aone Ainv}. *)
-  (* Context `{HConvertToR *)
-  (*     : ConvertToR tA Aadd Azero Aopp Amul Aone Ainv Alt Ale Altb Aleb a2r}. *)
-  (* Notation vlen := (@vlen _ Aadd Azero Amul a2r). *)
-  (* Notation "|| a ||" := (vlen a) : vec_scope. *)
 
   (** Transformation by orthogonal matrix will keep length. *)
   Lemma morth_keep_length : forall {n} (M : smat n) (a : vec n),

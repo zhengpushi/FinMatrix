@@ -12,7 +12,6 @@
 
 Require Export RExtBase RExtSqr RExtAbs.
 
-
 (* ======================================================================= *)
 (** ** Basic automation *)
 

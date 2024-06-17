@@ -33,9 +33,9 @@ Require Export Coq.Classes.SetoidTactics. (* add_morphism_tactic *)
 Require Export Coq.Relations.Relations.   (* equivalence *)
 Require Export Coq.Bool.Sumbool.          (* sumbool_not *)
 Require Export Coq.Bool.Bool.             (* reflect *)
-Require Export List.
-Require Export LogicExt.
 Require Export ExtrOcamlBasic ExtrOcamlNatInt MyExtrOCamlR.
+Require Export LogicExt BoolExt StrExt.
+Require Export List.
 
 
 

@@ -100,10 +100,8 @@
  *)
 
 Require Import Coq.Logic.Description. (* constructive_definite_description *)
-Require Export Ring Field.
-Require Export Reals.
 Require Export Basic.
-Require Export BoolExt.
+Require Export Reals Ring Field.
 Import ListNotations.
 
 Open Scope nat_scope.

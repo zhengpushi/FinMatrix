@@ -61,9 +61,9 @@ FinMatrix/Matrix/Vector.v
 FinMatrix/Matrix/Matrix.v
 FinMatrix/Matrix/Permutation.v
 FinMatrix/Matrix/MatrixDet.v
-# FinMatrix/Matrix/MatrixDet_test.v
+FinMatrix/Matrix/MatrixDet_test.v
 FinMatrix/Matrix/MatrixGauss.v
-# FinMatrix/Matrix/MatrixGauss_test.v
+FinMatrix/Matrix/MatrixGauss_test.v
 FinMatrix/Matrix/MatrixInvertible.v
 FinMatrix/Matrix/MatrixInvAM.v
 FinMatrix/Matrix/MatrixInvGE.v

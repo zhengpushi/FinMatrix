@@ -608,11 +608,14 @@ End veyes.
 (* ======================================================================= *)
 (** ** Get head or tail element *)
 
-Section vhead_vtail.
-  Context {tA} {Azero : tA}.
+(** Get head element *)
+Definition vhead {tA n} (a : @vec tA (S n)) : tA := a.[fin0].
 
-  (** Get head element *)
-  Definition vhead {n} (a : @vec tA (S n)) : tA := a.[fin0].
+(** Get tail element *)
+Definition vtail {tA n} (a : @vec tA (S n)) : tA := a.[#n].
+
+Section props.
+  Context tA {Azero : tA}.
 
   (** vhead a is = a.0 *)
   Lemma vhead_spec : forall {n} (a : @vec tA (S n)), vhead a = (v2f Azero a) 0.
@@ -625,9 +628,6 @@ Section vhead_vtail.
   Lemma vhead_eq : forall {n} (a : @vec tA (S n)), vhead a = a.[fin0].
   Proof. auto. Qed.
 
-  (** Get tail element *)
-  Definition vtail {n} (a : @vec tA (S n)) : tA := a.[#n].
-
   (** vtail a = a.(n - 1) *)
   Lemma vtail_spec : forall {n} (a : @vec tA (S n)), vtail a = (v2f Azero a) n.
   Proof.
@@ -638,7 +638,11 @@ Section vhead_vtail.
   (** vtail a = a $ (n - 1) *)
   Lemma vtail_eq : forall {n} (a : @vec tA (S n)), vtail a = a.[#n].
   Proof. auto. Qed.
-End vhead_vtail.
+End props.
+
+#[export] Hint Rewrite vhead_eq : vec.
+#[export] Hint Rewrite vtail_eq : vec.
+
 
 (* ======================================================================= *)
 (** ** Get head or tail elements *)

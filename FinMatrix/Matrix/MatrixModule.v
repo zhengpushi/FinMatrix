@@ -1028,6 +1028,80 @@ Module BasicMatrixTheory (E : ElementType).
       (mconscT M a).[i] = vconsT M.[i] a.[i].
   Proof. intros. apply vnth_mconscT; auto. Qed.
 
+
+  (**     [a11 a12 | v1]
+          [a21 a22 | v2]
+   mtailr  ------- | --  =  [u1 u2 x]
+          [ u1  u2 |  x]  *)
+  Lemma mtailr_mconscT_mconsrT_vconsT :
+    forall r c (A : mat r c) (u : vec c) (v : vec r) (x : tA),
+      mtailr (mconscT (mconsrT A u) (vconsT v x)) = vconsT u x.
+  Proof. intros. apply mtailr_mconscT_mconsrT_vconsT. Qed.
+
+  (**     [a11 a12 | v1]    [v1]
+          [a21 a22 | v2]    [v2]
+   mtailc  ------------  =  [x]
+          [ u1  u2 |  x]  *)
+  Lemma mtailc_mconsrT_mconscT_vconsT :
+    forall r c (A : mat r c) (u : vec c) (v : vec r) (x : tA),
+      mtailc (mconsrT (mconscT A v) (vconsT u x)) = vconsT v x.
+  Proof. intros. apply mtailc_mconsrT_mconscT_vconsT. Qed.
+
+  (**     [v1 | a11 a12]   [v1]
+          [v2 | a21 a22]   [v2]
+   mheadc  -- | -------  = [ x]
+          [ x |  u1  u2]  *)
+  Lemma mheadc_mconscH_vconsT_mconsrT :
+    forall r c (A : mat r c) (u : vec c) (v : vec r) (x : tA),
+      mheadc (mconscH (vconsT v x) (mconsrT A u)) = vconsT v x.
+  Proof. intros. apply mheadc_mconscH_vconsT_mconsrT. Qed.
+
+  (**     [v1 | a11 a12]
+          [v2 | a21 a22]
+   mtailr  ------------  = [ x u1 u2]
+          [ x |  u1  u2]  *)
+  Lemma mtailc_mconsrT_mconscH_vconsH :
+    forall r c (A : mat r c) (u : vec c) (v : vec r) (x : tA),
+      mtailr (mconsrT (mconscH v A) (vconsH x u)) = vconsH x u.
+  Proof. intros. apply mtailc_mconsrT_mconscH_vconsH. Qed.
+
+  (**     [ u1  u2 |  x]
+   mheadr  ------- | --  = [u1 u2 x]
+          [a11 a12 | v1]
+          [a21 a22 | v2]  *)
+  Lemma mheadr_mconscT_mconsrH_vconsH :
+    forall r c (A : mat r c) (u : vec c) (v : vec r) (x : tA),
+      mheadr (mconscT (mconsrH u A) (vconsH x v)) = vconsT u x.
+  Proof. intros. apply veq_iff_vnth; intros. auto_vec. Qed.
+
+  (**     [ u1  u2 |  x]   [ x]
+   mtailc  ------------  = [v1]
+          [a11 a12 | v1]   [v2]
+          [a21 a22 | v2]  *)
+  Lemma mtailc_mconsrH_vconsT_mconscT :
+    forall r c (A : mat r c) (u : vec c) (v : vec r) (x : tA),
+      mtailc (mconsrH (vconsT u x) (mconscT A v)) = vconsH x v.
+  Proof. intros. apply mtailc_mconsrH_vconsT_mconscT. Qed.
+
+  (**     [ x |  u1  u2]
+   mheadr  -- | -------  = [x u1 u2]
+          [v1 | a11 a12]
+          [v2 | a21 a22]  *)
+  Lemma mheadr_mconscH_vconsH_mconsrH :
+    forall r c (A : mat r c) (u : vec c) (v : vec r) (x : tA),
+      mheadr (mconscH (vconsH x v) (mconsrH u A)) = vconsH x u.
+  Proof. intros. apply mheadr_mconscH_vconsH_mconsrH. Qed.
+
+  (**     [ x |  u1  u2]   [ x]
+   mheadc  ------------  = [u1]
+          [v1 | a11 a12]   [u2]
+          [v2 | a21 a22]  *)
+  Lemma mheadc_mconsrH_vconsH_mconsrH :
+    forall r c (A : mat r c) (u : vec c) (v : vec r) (x : tA),
+      mheadr (mconsrH (vconsH x u) (mconscH v A)) = vconsH x u.
+  Proof. intros. apply mheadc_mconsrH_vconsH_mconsrH. Qed.
+
+
   (* ======================================================================= *)
   (** ** Remove exact one row or column at head or tail *)
 
@@ -1043,6 +1117,26 @@ Module BasicMatrixTheory (E : ElementType).
   (** Remove tail column *)
   Definition mremovecT {r c} (M : mat r (S c)) : mat r c := mremovecT M.
 
+  (** mremoverH (mconsrH A v) = A *)
+  Lemma mremoverH_mconsrH : forall r c (A : mat r c) (v : vec c),
+      mremoverH (mconsrH v A) = A.
+  Proof. intros. apply mremoverH_mconsrH. Qed.
+
+  (** mremoverT (mconsrT A v) = A *)
+  Lemma mremoverT_mconsrT : forall r c (A : mat r c) (v : vec c),
+      mremoverT (mconsrT A v) = A.
+  Proof. intros. apply mremoverT_mconsrT. Qed.
+
+  (** mremovecH (mconscH A v) = A *)
+  Lemma mremovecH_mconscH : forall r c (A : mat r c) (v : vec r),
+      mremovecH (mconscH v A) = A.
+  Proof. intros. apply mremovecH_mconscH. Qed.
+
+  (** mremovecT (mconscT A v) = A *)
+  Lemma mremovecT_mconscT : forall r c (A : mat r c) (v : vec r),
+      mremovecT (mconscT A v) = A.
+  Proof. intros. apply mremovecT_mconscT. Qed.
+  
 
   (**     [a11 a12 a13] *)
   (*     A = ------------ *)

@@ -239,6 +239,10 @@ Proof.
   Unshelve. auto.
 Qed.
 
+(** fin2nat i <> n -> fin2nat i < n*)
+Lemma fin2nat_neq_n_imply_lt : forall n (i : 'I_(S n)), fin2nat i <> n -> fin2nat i < n.
+Proof. intros. pose proof (fin2nat_lt i). lia. Qed.
+
 
 (** ** [nat] to ['I_n] *)
 
@@ -314,6 +318,9 @@ Ltac fin :=
             apply (fin2nat_imply_nat2finS n i H)
         | H : fin2nat ?i = ?n |- ?i = nat2finS ?n =>
             symmetry; apply (fin2nat_imply_nat2finS n i H)
+        (* fin2nat i <> n |- fin2nat i < n ==> solve it*)
+        | [i : 'I_(S ?n), H : fin2nat ?i <> ?n |- fin2nat ?i < ?n] =>
+            apply fin2nat_neq_n_imply_lt; auto
         (* destruct the pattern about "??=, ??<, ??<=" *)
         | [ H : context [(?i ??= ?j)%nat] |- _]  => destruct (i ??= j)%nat as [E|E]
         | [ |- context [(?i ??= ?j)%nat]]        => destruct (i ??= j)%nat as [E|E]

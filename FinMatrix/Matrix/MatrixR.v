@@ -1447,31 +1447,40 @@ Proof. intros. cbv. ring. Qed.
 
 (** A 3D unit vector satisfy these algebraic equations *)
 
-Lemma v3unit_sqr_xyz : forall (a : vec 3), vunit a -> (a.1² + a.2² + a.3² = 1)%R.
+Lemma v3unit_sqr_xyz : forall (a : vec 3),
+    vunit a -> (a.1 * a.1 + a.2 * a.2 + a.3 * a.3 = 1)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_xzy : forall (a : vec 3), vunit a -> (a.1² + a.3² + a.2² = 1)%R.
+Lemma v3unit_sqr_xzy : forall (a : vec 3),
+    vunit a -> (a.1 * a.1 + a.3 * a.3 + a.2 * a.2 = 1)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_yzx : forall (a : vec 3), vunit a -> (a.2² + a.3² + a.1² = 1)%R.
+Lemma v3unit_sqr_yzx : forall (a : vec 3),
+    vunit a -> (a.2 * a.2 + a.3 * a.3 + a.1 * a.1 = 1)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_yxz : forall (a : vec 3), vunit a -> (a.2² + a.1² + a.3² = 1)%R.
+Lemma v3unit_sqr_yxz : forall (a : vec 3),
+    vunit a -> (a.2 * a.2 + a.1 * a.1 + a.3 * a.3 = 1)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_zxy : forall (a : vec 3), vunit a -> (a.3² + a.1² + a.2² = 1)%R.
+Lemma v3unit_sqr_zxy : forall (a : vec 3),
+    vunit a -> (a.3 * a.3 + a.1 * a.1 + a.2 * a.2 = 1)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_zyx : forall (a : vec 3), vunit a -> (a.3² + a.2² + a.1² = 1)%R.
+Lemma v3unit_sqr_zyx : forall (a : vec 3),
+    vunit a -> (a.3 * a.3 + a.2 * a.2 + a.1 * a.1 = 1)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_x : forall (a : vec 3), vunit a -> a.1² = (1 - a.2² - a.3²)%R.
+Lemma v3unit_sqr_x : forall (a : vec 3),
+    vunit a -> (a.1 * a.1 = 1 - a.2 * a.2 - a.3 * a.3)%R.
 Proof. intros. cbv in *. ra. Qed.
 
-Lemma v3unit_sqr_y : forall (a : vec 3), vunit a -> a.2² = (1 - a.1² - a.3²)%R.
+Lemma v3unit_sqr_y : forall (a : vec 3),
+    vunit a -> (a.2 * a.2 = 1 - a.1 * a.1 - a.3 * a.3)%R.
 Proof. intros. v2e a. cbv in H. cbv. ra. Qed.
 
-Lemma v3unit_sqr_z : forall (a : vec 3), vunit a -> a.3² = (1 - a.1² - a.2²)%R.
+Lemma v3unit_sqr_z : forall (a : vec 3),
+    vunit a -> (a.3 * a.3 = 1 - a.1 * a.1 - a.2 * a.2)%R.
 Proof. intros. cbv in *. ra. Qed.
 
 (** vnorm a = (a.1 / ||a||, a.2 / ||a||, a.3 / ||v||) *)

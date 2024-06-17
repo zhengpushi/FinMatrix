@@ -750,6 +750,95 @@ Lemma vnth_mconscT : forall tA r c (M : mat tA r c) (a : @vec tA r) i,
 Proof. auto. Qed.
 #[export] Hint Rewrite vnth_mconscT : vec.
 
+
+(**       [a11 a12 | v1]
+          [a21 a22 | v2]
+   mtailr  ------- | --  =  [u1 u2 x]
+          [ u1  u2 |  x]  *)
+Lemma mtailr_mconscT_mconsrT_vconsT :
+  forall tA r c (A : mat tA r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
+    mtailr (mconscT (mconsrT A u) (vconsT v x)) = vconsT u x.
+Proof.
+  intros. apply veq_iff_vnth; intros. auto_vec. f_equal.
+  all: rewrite vnth_vconsT_n; fin.
+Qed.
+
+(**       [a11 a12 | v1]    [v1]
+          [a21 a22 | v2]    [v2]
+   mtailc  ------------  =  [x]
+          [ u1  u2 |  x]  *)
+Lemma mtailc_mconsrT_mconscT_vconsT :
+  forall tA r c (A : mat tA r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
+    mtailc (mconsrT (mconscT A v) (vconsT u x)) = vconsT v x.
+Proof.
+  intros. apply veq_iff_vnth; intros. auto_vec. destruct (i ??= r).
+  - rewrite vnth_vconsT_n; auto. rewrite !vnth_vconsT_n; auto. fin.
+  - erewrite vnth_vconsT_lt. auto_vec. rewrite vnth_vconsT_n; fin.
+    erewrite vnth_vconsT_lt; auto. Unshelve. fin.
+Qed.
+
+(**       [v1 | a11 a12]   [v1]
+          [v2 | a21 a22]   [v2]
+   mheadc  -- | -------  = [ x]
+          [ x |  u1  u2]  *)
+Lemma mheadc_mconscH_vconsT_mconsrT :
+  forall tA r c (A : mat tA r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
+    mheadc (mconscH (vconsT v x) (mconsrT A u)) = vconsT v x.
+Proof. intros. apply veq_iff_vnth; intros. auto_vec. Qed.
+
+(**       [v1 | a11 a12]
+          [v2 | a21 a22]
+   mtailr  ------------  = [ x u1 u2]
+          [ x |  u1  u2]  *)
+Lemma mtailc_mconsrT_mconscH_vconsH :
+  forall tA r c (A : mat tA r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
+    mtailr (mconsrT (mconscH v A) (vconsH x u)) = vconsH x u.
+Proof.
+  intros. apply veq_iff_vnth; intros. auto_vec. rewrite vnth_vconsT_n; auto. fin.
+Qed.
+
+(**       [ u1  u2 |  x]
+   mheadr  ------- | --  = [u1 u2 x]
+          [a11 a12 | v1]
+          [a21 a22 | v2]  *)
+Lemma mheadr_mconscT_mconsrH_vconsH :
+  forall tA r c (A : mat tA r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
+    mheadr (mconscT (mconsrH u A) (vconsH x v)) = vconsT u x.
+Proof. intros. apply veq_iff_vnth; intros. auto_vec. Qed.
+
+(**       [ u1  u2 |  x]   [ x]
+   mtailc  ------------  = [v1]
+          [a11 a12 | v1]   [v2]
+          [a21 a22 | v2]  *)
+Lemma mtailc_mconsrH_vconsT_mconscT :
+  forall tA r c (A : mat tA r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
+    mtailc (mconsrH (vconsT u x) (mconscT A v)) = vconsH x v.
+Proof.
+  intros. apply veq_iff_vnth; intros. auto_vec. destruct (i ??= 0).
+  - rewrite vnth_vconsH_0. rewrite vnth_vconsT_n; fin. rewrite vnth_vconsH_0; auto.
+    all: destruct i; fin.
+  - erewrite vnth_vconsH_gt0. auto_vec. rewrite vnth_vconsT_n; fin.
+    erewrite vnth_vconsH_gt0. auto. Unshelve. fin.
+Qed.
+
+(**       [ x |  u1  u2]
+   mheadr  -- | -------  = [x u1 u2]
+          [v1 | a11 a12]
+          [v2 | a21 a22]  *)
+Lemma mheadr_mconscH_vconsH_mconsrH :
+  forall tA r c (A : mat tA r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
+    mheadr (mconscH (vconsH x v) (mconsrH u A)) = vconsH x u.
+Proof. intros. apply veq_iff_vnth; intros. auto_vec. Qed.
+
+(**       [ x |  u1  u2]   [ x]
+   mheadc  ------------  = [u1]
+          [v1 | a11 a12]   [u2]
+          [v2 | a21 a22]  *)
+Lemma mheadc_mconsrH_vconsH_mconsrH :
+  forall tA r c (A : mat tA r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
+    mheadr (mconsrH (vconsH x u) (mconscH v A)) = vconsH x u.
+Proof. intros. apply veq_iff_vnth; intros. auto_vec. Qed.
+
 Section test.
   Let a : @vec nat 2 := l2v 9 [1;2].
   Let M : @mat nat 2 2 := l2m 9 [[3;4];[5;6]].
@@ -771,6 +860,16 @@ Definition mremoverH {tA r c} (M : @mat tA (S r) c) : @mat tA r c := vremoveH M.
 Definition mremoverT {tA r c} (M : @mat tA (S r) c) : @mat tA r c := vremoveT M.
 #[export] Hint Unfold mremoverT : vec.
 
+(** mremoverH (mconsrH A v) = A *)
+Lemma mremoverH_mconsrH : forall tA r c (A : @mat tA r c) (v : vec c),
+    mremoverH (mconsrH v A) = A.
+Proof. intros. unfold mremoverH, mconsrH. rewrite vremoveH_vconsH; auto. Qed.
+
+(** mremoverT (mconsrT A v) = A *)
+Lemma mremoverT_mconsrT : forall tA r c (A : @mat tA r c) (v : vec c),
+    mremoverT (mconsrT A v) = A.
+Proof. intros. unfold mremoverT, mconsrT. rewrite vremoveT_vconsT; auto. Qed.
+
 
 (* ======================================================================= *)
 (** ** Remove one column at head or tail *)
@@ -784,6 +883,24 @@ Definition mremovecH {tA r c} (M : @mat tA r (S c)) : @mat tA r c :=
 Definition mremovecT {tA r c} (M : @mat tA r (S c)) : @mat tA r c :=
   fun i => vremoveT (M.[i]).
 #[export] Hint Unfold mremovecT : vec.
+
+(** mremovecH (mconscH A v) = A *)
+Lemma mremovecH_mconscH : forall tA r c (A : @mat tA r c) (v : vec r),
+    mremovecH (mconscH v A) = A.
+Proof.
+  intros. unfold mremovecH, mconscH. apply meq_iff_mnth; intros.
+  auto_vec. rewrite vnth_vremoveH. erewrite vnth_vconsH_gt0; auto. fin.
+  Unshelve. fin.
+Qed.
+
+(** mremovecT (mconscT A v) = A *)
+Lemma mremovecT_mconscT : forall tA r c (A : @mat tA r c) (v : vec r),
+    mremovecT (mconscT A v) = A.
+Proof.
+  intros. unfold mremovecT, mconscT. apply meq_iff_mnth; intros.
+  auto_vec. rewrite vnth_vremoveT. erewrite vnth_vconsT_lt; auto. fin.
+  Unshelve. fin.
+Qed.
 
 
 (* ======================================================================= *)

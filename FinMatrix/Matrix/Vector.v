@@ -364,8 +364,28 @@ Section l2v_v2l.
   Lemma v2l_surj : forall {n} (l : list tA), length l = n -> (exists a : vec n, v2l a = l).
   Proof. intros. exists (l2v l). apply v2l_l2v; auto. Qed.
 
+  (** a = b -> v2l a = v2l b *)
+  Lemma v2l_eq : forall n (a b : vec n), a = b -> v2l a = v2l b.
+  Proof. intros. subst. auto.  Qed.
+
 End l2v_v2l.
 
+(* ======================================================================= *)
+(** ** Convert vector to its elements *)
+
+Lemma veq_exist_1 : forall {tA} (a : @vec tA 1), exists a1 : tA, a = l2v a1 [a1].
+Proof. intros. exists (a.1). apply v2l_inj; cbv; list_eq. Qed.
+
+Lemma veq_exist_2 : forall {tA} (a : @vec tA 2), exists a1 a2 : tA, a = l2v a1 [a1;a2].
+Proof. intros. exists (a.1),(a.2). apply v2l_inj; cbv; list_eq. Qed.
+
+Lemma veq_exist_3 : forall {tA} (a : @vec tA 3), exists a1 a2 a3 : tA, a = l2v a1 [a1;a2;a3].
+Proof. intros. exists (a.1),(a.2),(a.3). apply v2l_inj; cbv; list_eq. Qed.
+
+Lemma veq_exist_4 : forall {tA} (a : @vec tA 4),
+  exists a1 a2 a3 a4 : tA, a = l2v a2 [a1;a2;a3;a4].
+Proof. intros. exists (a.1),(a.2),(a.3),(a.4). apply v2l_inj; cbv; list_eq. Qed.
+  
 
 (* ======================================================================= *)
 (** ** Automation for vector operations *)
@@ -389,7 +409,6 @@ Ltac veq :=
   (* convert list equality to point-wise element equalities *)
   list_eq.
 
-
 Section test.
   (* [1;2;3] *)
   Let v : vec 3 := fun (i : 'I_3) => S i.
@@ -404,29 +423,8 @@ Section test.
     apply veq_iff_vnth; intros.
     repeat (destruct i; simpl; auto; try lia).
   Qed.
-  
 End test.
 
-(* ======================================================================= *)
-(** Convert vector to its elements *)
-
-Section veq_exist.
-  Context {tA : Type}.
-
-  Lemma veq_exist_1 : forall (a : @vec tA 1), exists a1 : tA, a = l2v a1 [a1].
-  Proof. intros. exists (a.1). apply v2l_inj; cbv; list_eq. Qed.
-
-  Lemma veq_exist_2 : forall (a : @vec tA 2), exists a1 a2 : tA, a = l2v a1 [a1;a2].
-  Proof. intros. exists (a.1),(a.2). apply v2l_inj; cbv; list_eq. Qed.
-
-  Lemma veq_exist_3 : forall (a : @vec tA 3), exists a1 a2 a3 : tA, a = l2v a1 [a1;a2;a3].
-  Proof. intros. exists (a.1),(a.2),(a.3). apply v2l_inj; cbv; list_eq. Qed.
-
-  Lemma veq_exist_4 : forall (a : @vec tA 4), exists a1 a2 a3 a4 : tA, a = l2v a2 [a1;a2;a3;a4].
-  Proof. intros. exists (a.1),(a.2),(a.3),(a.4). apply v2l_inj; cbv; list_eq. Qed.
-  
-End veq_exist.
-  
 (** destruct a vector to its elements *)
 Ltac v2e a :=
   let a1 := fresh "a1" in
@@ -436,16 +434,16 @@ Ltac v2e a :=
   let Ha := fresh "Ha" in
   match type of a with
   | vec 1 =>
-      destruct (veq_exist_1 a) as (a1,Ha); rewrite Ha in *;
+      destruct (veq_exist_1 a) as (a1,Ha); try rewrite Ha in *;
       try clear a Ha
   | vec 2 =>
-      destruct (veq_exist_2 a) as (a1,(a2,Ha)); rewrite Ha in *;
+      destruct (veq_exist_2 a) as (a1,(a2,Ha)); try rewrite Ha in *;
       try clear a Ha
   | vec 3 =>
-      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); rewrite Ha in *;
+      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); try rewrite Ha in *;
       try clear a Ha
   | vec 4 =>
-      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha in *;
+      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); try rewrite Ha in *;
       try clear a Ha
   end.
 
@@ -458,23 +456,18 @@ Ltac v2eALL a :=
   let Ha := fresh "Ha" in
   match type of a with
   | vec 1 =>
-      destruct (veq_exist_1 a) as (a1,Ha); rewrite Ha in *;
-      try clear a Ha;
-      try (v2e a1)
+      destruct (veq_exist_1 a) as (a1,Ha); try rewrite Ha in *;
+      try clear a Ha; try (v2e a1)
   | vec 2 =>
-      destruct (veq_exist_2 a) as (a1,(a2,Ha)); rewrite Ha in *;
-      try clear a Ha;
-      try (v2e a1; v2e a2)
+      destruct (veq_exist_2 a) as (a1,(a2,Ha)); try rewrite Ha in *;
+      try clear a Ha; try (v2e a1; v2e a2)
   | vec 3 =>
-      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); rewrite Ha in *;
-      try clear a Ha;
-      try (v2e a1; v2e a2; v2e a3)
+      destruct (veq_exist_3 a) as (a1,(a2,(a3,Ha))); try rewrite Ha in *;
+      try clear a Ha; try (v2e a1; v2e a2; v2e a3)
   | vec 4 =>
-      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); rewrite Ha in *;
-      try clear a Ha;
-      try (v2e a1; v2e a2; v2e a3; v2e a4)
+      destruct (veq_exist_4 a) as (a1,(a2,(a3,(a4,Ha)))); try rewrite Ha in *;
+      try clear a Ha; try (v2e a1; v2e a2; v2e a3; v2e a4)
   end.
-
 
 Section test.
   Goal forall tA (v : @vec tA 3), v = v.
@@ -2311,6 +2304,15 @@ Section vopp.
   (** - (a + b) = (- a) + (- b) *)
   Lemma vopp_vadd : forall {n} (a b : vec n), - (a + b) = (- a) + (- b).
   Proof. intros. rewrite group_opp_distr. apply commutative. Qed.
+
+  (** a + b = 0 -> - a = b *)
+  Lemma vadd_eq0_imply_vopp_l : forall {n} (a b : vec n), a + b = vzero -> - a = b.
+  Proof. intros. apply group_opp_uniq_l; auto. Qed.
+    
+  (** a + b = 0 -> - b = a *)
+  Lemma vadd_eq0_imply_vopp_r : forall {n} (a b : vec n), a + b = vzero -> - b = a.
+  Proof. intros. apply group_opp_uniq_r; auto. Qed.
+
 End vopp.
 
 (** ** Vector subtraction *)

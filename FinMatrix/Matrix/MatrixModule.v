@@ -166,6 +166,10 @@ Module BasicMatrixTheory (E : ElementType).
   Lemma l2v_inj : forall {n} (l1 l2 : list tA),
       length l1 = n -> length l2 = n -> @l2v n l1 = @l2v n l2 -> l1 = l2.
   Proof. intros. apply l2v_inj in H1; auto. Qed.
+
+  (** a = b -> v2l a = v2l b *)
+  Lemma v2l_eq : forall n (a b : vec n), a = b -> v2l a = v2l b.
+  Proof. intros. apply v2l_eq; auto. Qed.
   
   
   (* ======================================================================= *)
@@ -984,9 +988,11 @@ Module BasicMatrixTheory (E : ElementType).
 
   (** Get head row *)
   Definition mheadr {r c} (M : mat (S r) c) : vec c := mheadr M.
+  #[export] Hint Unfold mheadr : vec.
 
   (** Get tail row *)
   Definition mtailr {r c} (M : mat (S r) c) : vec c := mtailr M.
+  #[export] Hint Unfold mtailr : vec.
 
   (* ======================================================================= *)
   (** ** Get head or tail column *)
@@ -1121,21 +1127,25 @@ Module BasicMatrixTheory (E : ElementType).
   Lemma mremoverH_mconsrH : forall r c (A : mat r c) (v : vec c),
       mremoverH (mconsrH v A) = A.
   Proof. intros. apply mremoverH_mconsrH. Qed.
+  #[export] Hint Rewrite mremoverH_mconsrH : vec.
 
   (** mremoverT (mconsrT A v) = A *)
   Lemma mremoverT_mconsrT : forall r c (A : mat r c) (v : vec c),
       mremoverT (mconsrT A v) = A.
   Proof. intros. apply mremoverT_mconsrT. Qed.
+  #[export] Hint Rewrite mremoverT_mconsrT : vec.
 
   (** mremovecH (mconscH A v) = A *)
   Lemma mremovecH_mconscH : forall r c (A : mat r c) (v : vec r),
       mremovecH (mconscH v A) = A.
   Proof. intros. apply mremovecH_mconscH. Qed.
+  #[export] Hint Rewrite mremovecH_mconscH : vec.
 
   (** mremovecT (mconscT A v) = A *)
   Lemma mremovecT_mconscT : forall r c (A : mat r c) (v : vec r),
       mremovecT (mconscT A v) = A.
   Proof. intros. apply mremovecT_mconscT. Qed.
+  #[export] Hint Rewrite mremovecT_mconscT : vec.
   
 
   (**     [a11 a12 a13] *)
@@ -1510,6 +1520,14 @@ Module RingMatrixTheory (E : RingElementType).
   (** - (a + b) = (- a) + (- b) *)
   Lemma vopp_vadd : forall {n} (a b : vec n), - (a + b) = (- a) + (- b).
   Proof. intros. apply vopp_vadd. Qed.
+
+  (** a + b = 0 -> - a = b *)
+  Lemma vadd_eq0_imply_vopp_l : forall {n} (a b : vec n), a + b = vzero -> - a = b.
+  Proof. intros. apply vadd_eq0_imply_vopp_l; auto. Qed.
+    
+  (** a + b = 0 -> - b = a *)
+  Lemma vadd_eq0_imply_vopp_r : forall {n} (a b : vec n), a + b = vzero -> - b = a.
+  Proof. intros. apply vadd_eq0_imply_vopp_r; auto. Qed.
 
   (* ======================================================================= *)
   (** ** Vector subtraction *)
@@ -2253,6 +2271,50 @@ Module RingMatrixTheory (E : RingElementType).
   (* Infix "⦿" := mhp : mat_scope. *)
 
   (* ======================================================================= *)
+  (** ** minor of matrix  余子式，余因式，余因子展开式 *)
+
+  (** (i,j) minor of M *)
+  Definition mminor {n} (M : smat (S n)) (i j : 'I_(S n)) : tA :=
+    @mminor _ Aadd 0 Aopp Amul 1 _ M i j.
+
+  (** minor(M\T,i,j) = minor(M,j,i) *)
+  Lemma mminor_mtrans : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
+      mminor (M\T) i j = mminor M j i.
+  Proof. intros. apply mminor_mtrans. Qed.
+
+  (** mminor (msetr M a i) i j = mminor M i j *)
+  Lemma mminor_msetr : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
+      mminor (msetr M a i) i j = mminor M i j.
+  Proof. intros. apply mminor_msetr. Qed.
+  
+  (** mminor (msetc M a j) i j = mminor M i j *)
+  Lemma mminor_msetc : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
+      mminor (msetc M a j) i j = mminor M i j.
+  Proof. intros. apply mminor_msetc. Qed.
+  
+  (* ======================================================================= *)
+  (** ** cofactor of matrix  代数余子式 *)
+
+  (** (i,j) cofactor of M *)
+  Definition mcofactor {n} (M : smat (S n)) (i j : 'I_(S n)) : tA :=
+    @mcofactor _ Aadd 0 Aopp Amul 1 _ M i j.
+
+  (** A(M\T,i,j) = A(M,j,i) *)
+  Lemma mcofactor_mtrans : forall {n} (M : smat (S n)) (i j : 'I_(S n)),
+      mcofactor (M\T) i j = mcofactor M j i.
+  Proof. intros. apply mcofactor_mtrans. Qed.
+
+  (** mcofactor (msetr M a i) i j = mcofactor M i j *)
+  Lemma mcofactor_msetr : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
+      mcofactor (msetr M a i) i j = mcofactor M i j.
+  Proof. intros. apply mcofactor_msetr. Qed.
+
+  (** mcofactor (msetc M a j) i j = mcofactor M i j *)
+  Lemma mcofactor_msetc : forall {n} (M : smat (S n)) (a : vec (S n)) (i j : 'I_(S n)),
+      mcofactor (msetc M a j) i j = mcofactor M i j.
+  Proof. intros. apply mcofactor_msetc. Qed.
+
+  (* ======================================================================= *)
   (** ** Determinant of a matrix over a ring *)
 
   (** Determinant of a square matrix *)
@@ -2270,6 +2332,55 @@ Module RingMatrixTheory (E : RingElementType).
   (** |mat1| = 1 *)
   Lemma mdet_mat1 : forall {n}, |@mat1 n| = 1.
   Proof. intros. apply mdet_mat1. Qed.
+
+  (** Cofactor expansion of `M` along the i-th row *)
+  Definition mdetExRow {n} (A : smat n) (i : 'I_n) : tA :=
+    @mdetExRow _ Aadd 0 Aopp Amul 1 _ A i.
+
+  (** Cofactor expansion of `M` along the j-th column *)
+  Definition mdetExCol {n} (A : smat n) (i : 'I_n) : tA :=
+    @mdetExCol _ Aadd 0 Aopp Amul 1 _ A i.
+
+  (** row_expansion (M\T, i) = col_expansion (M, i) *)
+  Lemma mdetExRow_mtrans : forall {n} (M : smat n) (i : 'I_n),
+      mdetExRow (M \T) i = mdetExCol M i.
+  Proof. intros. apply mdetExRow_mtrans. Qed.
+
+  (** col_expansion (M\T, i) = row_expansion (M, i) *)
+  Lemma mdetExCol_mtrans : forall {n} (M : smat n) (i : 'I_n),
+      mdetExCol (M \T) i = mdetExRow M i.
+  Proof. intros. apply mdetExCol_mtrans. Qed.
+
+  (** Cofactor expansion by row is equivalent to full expansion *)
+  Lemma mdetExRow_eq_mdet : forall {n} (M : smat n) (i : 'I_n), mdetExRow M i = mdet M.
+  Proof. intros. apply mdetExRow_eq_mdet. Qed.
+
+  (** Cofactor expansion by column is equivalent to full expansion *)
+  Lemma mdetExCol_eq_mdet : forall {n} (M : smat n) (j : 'I_n), mdetExCol M j = mdet M.
+  Proof. intros. apply mdetExCol_eq_mdet. Qed.
+
+  (** Cofactor expansion by row is equivalent to cofactor expansion by column *)
+  Lemma mdetExRow_eq_mdetExCol : forall {n} (M : smat n) (i : 'I_n),
+      mdetExRow M i = mdetExCol M i.
+  Proof. intros. apply mdetExRow_eq_mdetExCol. Qed.
+
+  (**     [r11 r12 r13 | v1]       [r11 r12 r13]
+      det [r21 r22 r23 | v2] = det [r21 r22 r23]
+          [r31 r32 r33 | v3]       [r31 r32 r33]
+          [  0   0   0 |  1] *)
+  Lemma mdet_mconsrT_vconsT_vzero_1_eq : forall {n} (A : mat n (S n)),
+      |mconsrT A (vconsT vzero Aone)| = |mremovecT A|.
+  Proof. intros. apply mdet_mconsrT_vconsT_vzero_1_eq; auto. Qed.
+
+  (** < i-th row, cofactor of i-th row > = |M| *)
+  Lemma vdot_mcofactor_row_same_eq_det : forall {n} (M : smat (S n)) (i : 'I_(S n)),
+      vdot (M.[i]) (fun j => mcofactor M i j) = |M|.
+  Proof. intros. apply vdot_mcofactor_row_same_eq_det. Qed.
+
+  (** < j-th column, cofactor of j-th column > = |M| *)
+  Lemma vdot_mcofactor_col_same_eq_det : forall {n} (M : smat (S n)) (j : 'I_(S n)),
+      vdot (M&[j]) (fun i => mcofactor M i j) = |M|.
+  Proof. intros. apply vdot_mcofactor_col_same_eq_det. Qed.
 
   (** Determinant by cofactor expansion along the 0-th row *)
   Definition mdetEx {n} (M : smat n) : tA := @mdetEx _ Aadd 0 Aopp Amul Aone _ M.
@@ -2314,13 +2425,6 @@ Module RingMatrixTheory (E : RingElementType).
             M.12 * M.21 * M.33 + M.12 * M.23 * M.31 +
             M.13 * M.21 * M.32 - M.13 * M.22 * M.31)%A <> 0.
   Proof. intros. apply mdet3_neq0_iff. Qed.
-  
-  (* ======================================================================= *)
-  (** ** Cofactor of a matrix 代数余子式 *)
-
-  (** Get (i,j)-th cofactor of matrix `M` *)
-  Definition mcofactor {n} (M : smat (S n)) (i j : 'I_(S n)) : tA :=
-     @mcofactor _ Aadd 0 Aopp Amul 1 _ M i j.
   
   (* ======================================================================= *)
   (** ** Adjoint matrix (Adjugate matrix, adj(A), A* ) *)
@@ -2553,6 +2657,16 @@ Module FieldMatrixTheory (E : FieldElementType).
   Lemma mmul_eq1_imply_mdet_neq0_r : forall {n} (M N : smat n),
       M * N = mat1 -> |N| <> 0.
   Proof. intros. apply mmul_eq1_imply_mdet_neq0_r in H; auto. Qed.
+
+  (** < i-th row, cofactor of k-th row > = 0 (if i <> k) *)
+  Lemma vdot_mcofactor_row_diff_eq0 : forall {n} (M : smat (S n)) (i k : 'I_(S n)),
+      i <> k -> vdot (M.[i]) (fun j => mcofactor M k j) = 0.
+  Proof. intros. apply vdot_mcofactor_row_diff_eq0; auto. Qed.
+  
+  (** < j-th column, cofactor of l-column row > = 0 (if j <> l) *)
+  Lemma vdot_mcofactor_col_diff_eq0 : forall {n} (M : smat (S n)) (j l : 'I_(S n)),
+      j <> l -> vdot (M&[j]) (fun i => mcofactor M i l) = 0.
+  Proof. intros. apply vdot_mcofactor_col_diff_eq0; auto. Qed.
 
   (* ======================================================================= *)
   (** ** Cramer rule *)

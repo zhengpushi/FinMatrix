@@ -588,7 +588,9 @@ Section mdetEx.
 
   Notation vsum := (@vsum _ Aadd 0).
   Notation vdot := (@vdot _ Aadd 0 Amul).
+  Notation vzero := (vzero 0).
   
+  Notation mat r c := (mat tA r c).
   Notation smat n := (smat tA n).
   Notation mat0 := (@mat0 _ 0).
   Notation madd := (@madd _ Aadd).
@@ -742,14 +744,14 @@ Section mdetEx.
   Proof. intros. rewrite <- mdetExRow_mtrans. auto. Qed.
 
   (** Cofactor expansion by row is equivalent to full expansion *)
-  Theorem mdetExRow_eq_mdet : forall {n} (M : smat n) (i : 'I_n), mdetExRow M i = mdet M.
+  Lemma mdetExRow_eq_mdet : forall {n} (M : smat n) (i : 'I_n), mdetExRow M i = mdet M.
   Proof.
     intros. destruct n. cbv; ring.
     unfold mdetExRow, mdet in *.
   Admitted.
 
   (** Cofactor expansion by column is equivalent to full expansion *)
-  Theorem mdetExCol_eq_mdet : forall {n} (M : smat n) (j : 'I_n), mdetExCol M j = mdet M.
+  Lemma mdetExCol_eq_mdet : forall {n} (M : smat n) (j : 'I_n), mdetExCol M j = mdet M.
   Proof.
     intros.
     pose proof(mdetExRow_eq_mdet (M\T) j).
@@ -758,16 +760,26 @@ Section mdetEx.
   Qed.
 
   (** Cofactor expansion by row is equivalent to cofactor expansion by column *)
-  Theorem mdetExRow_eq_mdetExCol : forall {n} (M : smat n) (i : 'I_n),
+  Lemma mdetExRow_eq_mdetExCol : forall {n} (M : smat n) (i : 'I_n),
       mdetExRow M i = mdetExCol M i.
   Proof. intros. rewrite mdetExRow_eq_mdet, mdetExCol_eq_mdet. auto. Qed.
+
+  (**     [r11 r12 r13 | v1]       [r11 r12 r13]
+      det [r21 r22 r23 | v2] = det [r21 r22 r23]
+          [r31 r32 r33 | v3]       [r31 r32 r33]
+          [  0   0   0 |  1] *)
+  Lemma mdet_mconsrT_vconsT_vzero_1_eq : forall {n} (A : mat n (S n)),
+  |mconsrT A (vconsT vzero Aone)| = |mremovecT A|.
+  Proof.
+  Admitted.
+  
 
   Section Field.
     Context `{HField: Field tA Aadd Azero Aopp Amul Aone}.
     Context {AeqDec: Dec (@eq tA)}.
     
     (** < i-th row, cofactor of k-th row > = 0 (if i <> k) *)
-    Theorem vdot_mcofactor_row_diff_eq0 : forall {n} (M : smat (S n)) (i k : 'I_(S n)),
+    Lemma vdot_mcofactor_row_diff_eq0 : forall {n} (M : smat (S n)) (i k : 'I_(S n)),
         i <> k -> vdot (M.[i]) (fun j => mcofactor M k j) = 0.
     Proof.
       intros.
@@ -794,7 +806,7 @@ Section mdetEx.
     Qed.
     
     (** < j-th column, cofactor of l-column row > = 0 (if j <> l) *)
-    Theorem vdot_mcofactor_col_diff_eq0 : forall {n} (M : smat (S n)) (j l : 'I_(S n)),
+    Lemma vdot_mcofactor_col_diff_eq0 : forall {n} (M : smat (S n)) (j l : 'I_(S n)),
         j <> l -> vdot (M&[j]) (fun i => mcofactor M i l) = 0.
     Proof.
       intros. pose proof (vdot_mcofactor_row_diff_eq0 (M\T) j l H).
@@ -850,7 +862,7 @@ Section mdetEx.
   Qed.
   
   (** mdetEx is equal to mdet *)
-  Theorem mdetEx_eq_mdet : forall {n} (M : smat n), mdetEx M = mdet M.
+  Lemma mdetEx_eq_mdet : forall {n} (M : smat n), mdetEx M = mdet M.
   Proof.
     intros. destruct n.
     - cbv. ring.
@@ -1090,7 +1102,7 @@ Section madj.
   Qed.
 
   (** A *v (cramerRule A b) = b *)
-  Theorem cramerRule_spec : forall {n} (A : smat n) (b : vec n),
+  Lemma cramerRule_spec : forall {n} (A : smat n) (b : vec n),
   |A| <> 0 -> A *v (cramerRule A b) = b.
   Proof.
     intros. destruct n.
@@ -1111,7 +1123,7 @@ Section madj.
   Proof. intros. unfold cramerRuleList. rewrite v2l_length. auto. Qed.
 
   (** {cramerRuleList lA lb} = cramerRule {lA} {lb} *)
-  Theorem cramerRuleList_spec : forall n (lA : dlist tA) (lb : list tA),
+  Lemma cramerRuleList_spec : forall n (lA : dlist tA) (lb : list tA),
       let A : smat n := l2m 0 lA in
       let b : vec n := l2v 0 lb in
       l2v 0 (cramerRuleList n lA lb) = cramerRule A b.

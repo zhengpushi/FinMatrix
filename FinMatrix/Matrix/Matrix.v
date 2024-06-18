@@ -3,7 +3,7 @@
   This file is part of FinMatrix. It is distributed under the MIT
   "expat license". You should have recieved a LICENSE file with it.
 
-  purpose   : Matrix implemented with Record-List model
+  purpose   : Matrix implemented with Fin-fun model
   author    : ZhengPu Shi
   date      : 2023.12
 

@@ -89,92 +89,91 @@ Hint Resolve
 
 #[export] Instance Zadd_InvL : InverseLeft Z.add 0 Z.opp.
 Proof. constructor; intros; ring. Qed.
+Hint Resolve Zadd_InvL : Z.
 
 #[export] Instance Zadd_InvR : InverseRight Z.add 0 Z.opp.
 Proof. constructor; intros; ring. Qed.
-
-Hint Resolve Zadd_InvL Zadd_InvR : Z.
+Hint Resolve Zadd_InvR : Z.
 
 
 (** Distributive *)
 
 #[export] Instance Zmul_add_DistrL : DistrLeft Z.add Z.mul.
 Proof. constructor; intros; ring. Qed.
+Hint Resolve Zmul_add_DistrL : Z.
 
 #[export] Instance Zmul_add_DistrR : DistrRight Z.add Z.mul.
 Proof. constructor; intros; ring. Qed.
-
-Hint Resolve Zmul_add_DistrL Zmul_add_DistrR : Z.
+Hint Resolve Zmul_add_DistrR : Z.
 
 (** Semigroup *)
 
 #[export] Instance Zadd_SGroup : SGroup Z.add.
 Proof. constructor; auto with Z. Qed.
+Hint Resolve Zadd_SGroup : Z.
 
 #[export] Instance Zmul_SGroup : SGroup Z.mul.
 Proof. constructor; auto with Z. Qed.
-
-Hint Resolve Zadd_SGroup Zmul_SGroup : Z.
+Hint Resolve Zmul_SGroup : Z.
 
 (** Abelian semigroup *)
 
 #[export] Instance Zadd_ASGroup : ASGroup Z.add.
 Proof. constructor; auto with Z. Qed.
+Hint Resolve Zadd_ASGroup : Z.
 
 #[export] Instance Zmul_ASGroup : ASGroup Z.mul.
 Proof. constructor; auto with Z. Qed.
-
-Hint Resolve
-  Zadd_ASGroup
-  Zmul_ASGroup
-  : Z.
+Hint Resolve Zmul_ASGroup : Z.
 
 (** Monoid *)
   
 #[export] Instance Zadd_Monoid : Monoid Z.add 0.
 Proof. constructor; auto with Z. Qed.
+Hint Resolve Zadd_Monoid : Z.
 
 #[export] Instance Zmul_Monoid : Monoid Z.mul 1.
 Proof. constructor; auto with Z. Qed.
-
-Hint Resolve Zadd_Monoid Zmul_Monoid : Z.
+Hint Resolve Zmul_Monoid : Z.
 
 (** Abelian monoid *)
   
 #[export] Instance Zadd_AMonoid : AMonoid Z.add 0.
 Proof. constructor; auto with Z. Qed.
+Hint Resolve Zadd_AMonoid : Z.
   
 #[export] Instance Zmul_AMonoid : AMonoid Z.mul 1.
 Proof. constructor; auto with Z. Qed.
-
-Hint Resolve Zadd_AMonoid Zmul_AMonoid : Z.
+Hint Resolve Zmul_AMonoid : Z.
 
 (** Group *)
 
 #[export] Instance Zadd_Group : Group Z.add 0 Z.opp.
 Proof. constructor; auto with Z. Qed.
-
 Hint Resolve Zadd_Group : Z.
 
 (** AGroup *)
 
 #[export] Instance Zadd_AGroup : AGroup Z.add 0 Z.opp.
 Proof. constructor; auto with Z. Qed.
-
 Hint Resolve Zadd_AGroup : Z.
+
+(** SRing *)
+
+#[export] Instance Z_SRing : SRing Z.add 0 Z.mul 1.
+Proof. constructor; auto with Z. intros. ring. Qed.
+Hint Resolve Z_SRing : Z.
 
 (** Ring *)
 
 #[export] Instance Z_Ring : Ring Z.add 0 Z.opp Z.mul 1.
 Proof. constructor; auto with Z. Qed.
-
 Hint Resolve Z_Ring : Z.
 
 (** ARing *)
 
 #[export] Instance Z_ARing : ARing Z.add 0 Z.opp Z.mul 1.
 Proof. constructor; auto with Z. Qed.
-
 Hint Resolve Z_ARing : Z.
 
 (** Order *)
@@ -184,7 +183,6 @@ Proof.
   constructor; intros; try lia; auto with Z.
   apply Z_dec'.
 Qed.
-
 Hint Resolve Z_Order : Z.
 
 #[export] Instance Z_OrderedARing :
@@ -194,7 +192,6 @@ Proof.
   intros; lia.
   intros. apply Zmult_lt_compat_r; auto.
 Qed.
-
 Hint Resolve Z_OrderedARing : Z.
 
 
@@ -234,6 +231,9 @@ Module RingElementTypeZ <: RingElementType.
   Infix "*" := Amul : A_scope.
   Notation "- a" := (Aopp a) : A_scope.
   Infix "-" := Asub : A_scope.
+
+  #[export] Instance SRing : SRing Aadd Azero Amul Aone.
+  Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
 
   #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
   Proof. repeat constructor; autounfold with tA; intros; ring. Qed.

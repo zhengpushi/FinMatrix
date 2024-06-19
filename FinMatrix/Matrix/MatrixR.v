@@ -98,13 +98,13 @@ Proof. intros. pose proof (vunit_vdot a H). auto. Qed.
 
 (** Normalization of a non-zero vector a.
       That is, make a unit vector that in the same directin as a. *)
-Definition vnorm {n} (a : vec n) : vec n := (1 / ||a||) c* a.
+Definition vnorm {n} (a : vec n) : vec n := (1 / ||a||) s* a.
 
 (** The component of a normalized vector is equivalent to its original component 
       divide the vector's length *)
 Lemma vnth_vnorm : forall {n} (a : vec n) i, a <> vzero -> (vnorm a).[i] = a.[i] / ||a||.
 Proof.
-  intros. unfold vnorm. rewrite vnth_vcmul; auto.
+  intros. unfold vnorm. rewrite vnth_vscal; auto.
   autounfold with tA. field. apply vlen_neq0_iff_neq0; auto.
 Qed.
 
@@ -112,14 +112,14 @@ Qed.
 Lemma vnorm_vunit_eq : forall {n} (a : vec n), vunit a -> vnorm a = a.
 Proof.
   intros. unfold vnorm. rewrite (vunit_spec a) in H. rewrite H.
-  autorewrite with R. apply vcmul_1_l.
+  autorewrite with R. apply vscal_1_l.
 Qed.
 
 (** Normalized vector is non-zero  *)
 Lemma vnorm_vnonzero : forall {n} (a : vec n), a <> vzero -> vnorm a <> vzero.
 Proof.
   intros. unfold vnorm. intro.
-  apply vcmul_eq0_imply_x0_or_v0 in H0. destruct H0; auto.
+  apply vscal_eq0_imply_x0_or_v0 in H0. destruct H0; auto.
   apply vlen_neq0_iff_neq0 in H. unfold Rdiv in H0.
   rewrite Rmult_1_l in H0. apply Rinv_neq_0_compat in H. easy.
 Qed.
@@ -127,7 +127,7 @@ Qed.
 (** The length of a normalized vector is one *)
 Lemma vnorm_len1 : forall {n} (a : vec n), a <> vzero -> ||vnorm a|| = 1.
 Proof.
-  intros. unfold vnorm. rewrite vlen_vcmul. unfold a2r, id. rewrite Aabs_eq_Rabs.
+  intros. unfold vnorm. rewrite vlen_vscal. unfold a2r, id. rewrite Aabs_eq_Rabs.
   pose proof (vlen_gt0 a H). rewrite Rabs_right; ra.
 Qed.
 
@@ -142,7 +142,7 @@ Proof.
   - apply vnorm_vnonzero; auto.
   - exists (||a||). split.
     + apply vlen_gt0; auto.
-    + unfold vnorm. rewrite vcmul_assoc. apply vcmul_same_if_x1_or_v0.
+    + unfold vnorm. rewrite vscal_assoc. apply vscal_same_if_x1_or_v0.
       left. autounfold with tA. field. apply vlen_neq0_iff_neq0; auto.
 Qed.
 
@@ -154,11 +154,11 @@ Proof. intros. split. apply vnorm_len1; auto. apply vnorm_vpara; auto. Qed.
 Lemma vnorm_idem : forall {n} (a : vec n), a <> vzero -> vnorm (vnorm a) = vnorm a.
 Proof. intros. apply vnorm_vunit_eq. apply vnorm_is_unit; auto. Qed.
 
-(** x <> 0 -> vnorm (x c* a) = (sign x) c* (vnorm a) *)
-Lemma vnorm_vcmul : forall {n} x (a : vec n),
-    x <> 0 -> a <> vzero -> vnorm (x c* a) = sign x c* (vnorm a).
+(** x <> 0 -> vnorm (x s* a) = (sign x) s* (vnorm a) *)
+Lemma vnorm_vscal : forall {n} x (a : vec n),
+    x <> 0 -> a <> vzero -> vnorm (x s* a) = sign x s* (vnorm a).
 Proof.
-  intros. unfold vnorm. rewrite vlen_vcmul. rewrite !vcmul_assoc.
+  intros. unfold vnorm. rewrite vlen_vscal. rewrite !vscal_assoc.
   f_equal. unfold sign. autounfold with tA. apply vlen_neq0_iff_neq0 in H0.
   unfold a2r,id. rewrite Aabs_eq_Rabs.
   bdestruct (0 <? x).
@@ -166,19 +166,19 @@ Proof.
   - bdestruct (x =? 0). easy. rewrite Rabs_left; ra.
 Qed.
 
-(** x > 0 -> vnorm (x c* a) = vnorm a *)
-Lemma vnorm_vcmul_k_gt0 : forall {n} x (a : vec n),
-    x > 0 -> a <> vzero -> vnorm (x c* a) = vnorm a.
+(** x > 0 -> vnorm (x s* a) = vnorm a *)
+Lemma vnorm_vscal_k_gt0 : forall {n} x (a : vec n),
+    x > 0 -> a <> vzero -> vnorm (x s* a) = vnorm a.
 Proof.
-  intros. rewrite vnorm_vcmul; auto; ra. rewrite sign_gt0; auto. apply vcmul_1_l.
+  intros. rewrite vnorm_vscal; auto; ra. rewrite sign_gt0; auto. apply vscal_1_l.
 Qed.
 
-(** x < 0 -> vnorm (x c* a) = vnorm a *)
-Lemma vnorm_vcmul_k_lt0 : forall {n} x (a : vec n),
-    x < 0 -> a <> vzero -> vnorm (x c* a) = - vnorm a.
+(** x < 0 -> vnorm (x s* a) = vnorm a *)
+Lemma vnorm_vscal_k_lt0 : forall {n} x (a : vec n),
+    x < 0 -> a <> vzero -> vnorm (x s* a) = - vnorm a.
 Proof.
-  intros. rewrite vnorm_vcmul; auto; ra. rewrite sign_lt0; auto.
-  rewrite (vcmul_opp 1). f_equal. apply vcmul_1_l.
+  intros. rewrite vnorm_vscal; auto; ra. rewrite sign_lt0; auto.
+  rewrite (vscal_opp 1). f_equal. apply vscal_1_l.
 Qed.
 
 (** -1 <= (vnorm a)[i] <= 1 *)
@@ -198,7 +198,7 @@ Lemma vnth_div_vlen_bound : forall {n} (a : vec n) i,
     a <> vzero -> -1 <= a i / (|| a ||) <= 1.
 Proof.
   intros. pose proof (vnth_vnorm_bound a i H). unfold vnorm in H0.
-  rewrite vnth_vcmul in H0. autounfold with tA in *. ra.
+  rewrite vnth_vscal in H0. autounfold with tA in *. ra.
 Qed.
 
 (** <vnorm a, vnorm b> = <a, b> / (||a|| * ||b||) *)
@@ -206,7 +206,7 @@ Lemma vdot_vnorm : forall {n} (a b : vec n),
     a <> vzero -> b <> vzero ->
     <vnorm a, vnorm b> = <a, b> / (||a|| * ||b||).
 Proof.
-  intros. unfold vnorm. rewrite vdot_vcmul_l, vdot_vcmul_r.
+  intros. unfold vnorm. rewrite vdot_vscal_l, vdot_vscal_r.
   autounfold with tA. field. split; apply vlen_neq0_iff_neq0; auto.
 Qed.
 
@@ -225,7 +225,7 @@ Lemma sqrt_1_minus_sqr_vdot : forall {n} (a b : vec n),
     sqrt (1 - <vnorm a, vnorm b>²) =
       sqrt (((<a, a> * <b, b>) - <a, b>²) / (||a|| * ||b||)²).
 Proof.
-  intros. unfold vnorm. rewrite vdot_vcmul_l, vdot_vcmul_r. autounfold with tA.
+  intros. unfold vnorm. rewrite vdot_vscal_l, vdot_vscal_r. autounfold with tA.
   replace (1 - (1 / (||a||) * (1 / (||b||) * (<a, b>)))²)%R
     with (((<a, a> * <b, b>) - <a, b>²) / (||a|| * ||b||)²); auto.
   rewrite !Rsqr_mult, !Rsqr_div'. rewrite <- !vdot_sameR. field_simplify_eq.
@@ -236,7 +236,7 @@ Qed.
 (** vnorm a _|_ b <-> a _|_ b *)
 Lemma vorth_vnorm_l : forall {n} (a b : vec n), a <> vzero -> (vnorm a _|_ b <-> a _|_ b).
 Proof.
-  intros. unfold vorth, vnorm in *. rewrite vdot_vcmul_l. autounfold with tA.
+  intros. unfold vorth, vnorm in *. rewrite vdot_vscal_l. autounfold with tA.
   assert (1 * / (||a||) <> 0)%R; ra.
   apply vlen_neq0_iff_neq0 in H; ra.
 Qed.
@@ -302,13 +302,13 @@ Proof.
   - destruct (Aeqdec b vzero).
     + subst. rewrite vdot_0_r, vlen_vzero. rewrite Rmult_0_l,Rmult_0_r. auto.
     + unfold vangle. rewrite cos_acos.
-      * unfold vnorm. rewrite <- vdot_vcmul_r. rewrite <- vdot_vcmul_l.
-        rewrite !vcmul_assoc. autounfold with tA.
+      * unfold vnorm. rewrite <- vdot_vscal_r. rewrite <- vdot_vscal_l.
+        rewrite !vscal_assoc. autounfold with tA.
         replace ((||a||) * (1 / ||a||))%R with 1;
           [|field; apply vlen_neq0_iff_neq0; auto].
         replace ((||b||) * (1 / ||b||))%R with 1;
           [|field; apply vlen_neq0_iff_neq0; auto].
-        rewrite !vcmul_1_l. auto.
+        rewrite !vscal_1_l. auto.
       * apply vdot_vnorm_bound; auto.
 Qed.
 
@@ -421,39 +421,39 @@ Lemma sin_vangle_gt0 : forall {n} (a b : vec n),
 Proof. intros. pose proof (vangle_bound a b H H0). apply sin_gt_0; ra. Qed.
 
 (** 0 < x -> (x .* a) /_ b = a /_ b *)
-Lemma vangle_vcmul_l_gt0 : forall {n} (a b : vec n) (x : R),
-    0 < x -> a <> vzero -> b <> vzero -> (x c* a) /_ b = a /_ b.
+Lemma vangle_vscal_l_gt0 : forall {n} (a b : vec n) (x : R),
+    0 < x -> a <> vzero -> b <> vzero -> (x s* a) /_ b = a /_ b.
 Proof.
-  intros. unfold vangle. rewrite vnorm_vcmul; auto.
-  rewrite vdot_vcmul_l. unfold sign. bdestruct (0 <? x); ra.
+  intros. unfold vangle. rewrite vnorm_vscal; auto.
+  rewrite vdot_vscal_l. unfold sign. bdestruct (0 <? x); ra.
   bdestruct (x =? 0); ra.
 Qed.
 
-(** x < 0 -> (x c* a) /_ b = PI - a /_ b *)
-Lemma vangle_vcmul_l_lt0 : forall {n} (a b : vec n) (x : R),
-    x < 0 -> a <> vzero -> b <> vzero -> (x c* a) /_ b = (PI - (a /_ b))%R.
+(** x < 0 -> (x s* a) /_ b = PI - a /_ b *)
+Lemma vangle_vscal_l_lt0 : forall {n} (a b : vec n) (x : R),
+    x < 0 -> a <> vzero -> b <> vzero -> (x s* a) /_ b = (PI - (a /_ b))%R.
 Proof.
-  intros. unfold vangle. rewrite vnorm_vcmul; auto.
-  rewrite vdot_vcmul_l. unfold sign. bdestruct (0 <? x); ra.
+  intros. unfold vangle. rewrite vnorm_vscal; auto.
+  rewrite vdot_vscal_l. unfold sign. bdestruct (0 <? x); ra.
   - bdestruct (x =? 0); ra.
   - bdestruct (x =? 0); ra.
 Qed.
 
 (** 0 < x -> a /_ (x .* b) = a /_ b *)
-Lemma vangle_vcmul_r_gt0 : forall {n} (a b : vec n) (x : R),
-    0 < x -> a <> vzero -> b <> vzero -> a /_ (x c* b) = a /_ b.
+Lemma vangle_vscal_r_gt0 : forall {n} (a b : vec n) (x : R),
+    0 < x -> a <> vzero -> b <> vzero -> a /_ (x s* b) = a /_ b.
 Proof.
-  intros. unfold vangle. rewrite vnorm_vcmul; auto.
-  rewrite vdot_vcmul_r. unfold sign. bdestruct (0 <? x); ra.
+  intros. unfold vangle. rewrite vnorm_vscal; auto.
+  rewrite vdot_vscal_r. unfold sign. bdestruct (0 <? x); ra.
   bdestruct (x =? 0); ra.
 Qed.
 
 (** x < 0 -> a /_ (x .* b) = PI - a /_ b *)
-Lemma vangle_vcmul_r_lt0 : forall {n} (a b : vec n) (x : R),
-    x < 0 -> a <> vzero -> b <> vzero -> a /_ (x c* b) = (PI - (a /_ b))%R.
+Lemma vangle_vscal_r_lt0 : forall {n} (a b : vec n) (x : R),
+    x < 0 -> a <> vzero -> b <> vzero -> a /_ (x s* b) = (PI - (a /_ b))%R.
 Proof.
-  intros. unfold vangle. rewrite vnorm_vcmul; auto.
-  rewrite vdot_vcmul_r. unfold sign. bdestruct (0 <? x); ra.
+  intros. unfold vangle. rewrite vnorm_vscal; auto.
+  rewrite vdot_vscal_r. unfold sign. bdestruct (0 <? x); ra.
   - bdestruct (x =? 0); ra.
   - bdestruct (x =? 0); ra.
 Qed.
@@ -469,31 +469,31 @@ Lemma vangle_vnorm_r : forall {n} (a b : vec n),
 Proof. intros. unfold vangle. rewrite vnorm_idem; auto. Qed.
 
 (** 0 < x -> (x .* a) /_ a = 0 *)
-Lemma vangle_vcmul_same_l_gt0 : forall {n} (a : vec n) x,
-    a <> vzero -> 0 < x -> (x c* a) /_ a = 0.
+Lemma vangle_vscal_same_l_gt0 : forall {n} (a : vec n) x,
+    a <> vzero -> 0 < x -> (x s* a) /_ a = 0.
 Proof.
-  intros. rewrite vangle_vcmul_l_gt0; auto. apply vangle_self; auto.
+  intros. rewrite vangle_vscal_l_gt0; auto. apply vangle_self; auto.
 Qed.
 
 (** 0 < x -> a /_ (x .* a) = 0 *)
-Lemma vangle_vcmul_same_r_gt0 : forall {n} (a : vec n) x,
-    a <> vzero -> 0 < x -> a /_ (x c* a) = 0.
+Lemma vangle_vscal_same_r_gt0 : forall {n} (a : vec n) x,
+    a <> vzero -> 0 < x -> a /_ (x s* a) = 0.
 Proof.
-  intros. rewrite vangle_vcmul_r_gt0; auto. apply vangle_self; auto.
+  intros. rewrite vangle_vscal_r_gt0; auto. apply vangle_self; auto.
 Qed.
 
 (** x < 0 -> (x * a) /_ a = π *)
-Lemma vangle_vcmul_same_l_lt0 : forall {n} (a : vec n) x,
-    a <> vzero -> x < 0 -> (x c* a) /_ a = PI.
+Lemma vangle_vscal_same_l_lt0 : forall {n} (a : vec n) x,
+    a <> vzero -> x < 0 -> (x s* a) /_ a = PI.
 Proof.
-  intros. rewrite vangle_vcmul_l_lt0; auto. rewrite vangle_self; auto. ring.
+  intros. rewrite vangle_vscal_l_lt0; auto. rewrite vangle_self; auto. ring.
 Qed.
 
 (** x < 0 -> a /_ (x * a) = π *)
-Lemma vangle_vcmul_same_r_lt0 : forall {n} (a : vec n) x,
-    a <> vzero -> x < 0 -> a /_ (x c* a) = PI.
+Lemma vangle_vscal_same_r_lt0 : forall {n} (a : vec n) x,
+    a <> vzero -> x < 0 -> a /_ (x s* a) = PI.
 Proof.
-  intros. rewrite vangle_vcmul_r_lt0; auto. rewrite vangle_self; auto. ring.
+  intros. rewrite vangle_vscal_r_lt0; auto. rewrite vangle_self; auto. ring.
 Qed.
 
 (** a //+ b -> a /_ b = 0 *)
@@ -501,7 +501,7 @@ Lemma vpara_imply_vangle_0 : forall {n} (a b : vec n),
     a <> vzero -> b <> vzero -> a //+ b -> a /_ b = 0.
 Proof.
   intros. apply vpara_imply_uniqueX in H1. destruct H1 as [x [[H1 H2] _]].
-  rewrite <- H2. rewrite vangle_vcmul_r_gt0; auto. apply vangle_self; auto.
+  rewrite <- H2. rewrite vangle_vscal_r_gt0; auto. apply vangle_self; auto.
 Qed.
 
 (** a //- b -> a /_ b = π *)
@@ -509,7 +509,7 @@ Lemma vantipara_imply_vangle_PI : forall {n} (a b : vec n),
     a <> vzero -> b <> vzero -> a //- b -> a /_ b = PI.
 Proof.
   intros. apply vantipara_imply_uniqueX in H1. destruct H1 as [x [[H1 H2] _]].
-  rewrite <- H2. rewrite vangle_vcmul_r_lt0; auto. rewrite vangle_self; auto. lra.
+  rewrite <- H2. rewrite vangle_vscal_r_lt0; auto. rewrite vangle_self; auto. lra.
 Qed.
 
 (** a // b -> (a /_ b = 0 \/ a /_ b = π) *)
@@ -723,7 +723,7 @@ Definition v2i : vec 2 := mkvec2 1 0.
 Definition v2j : vec 2 := mkvec2 0 1.
 
 (** 任意向量都能写成该向量的坐标在标准基向量下的线性组合 *)
-Lemma v2_linear_composition : forall (a : vec 2), a = a.1 c* v2i + a.2 c* v2j.
+Lemma v2_linear_composition : forall (a : vec 2), a = a.1 s* v2i + a.2 s* v2j.
 Proof. intros. apply v2eq_iff. cbv. ra. Qed.
 
 (** 标准基向量的长度为 1 *)
@@ -843,7 +843,7 @@ Lemma vangle2A_eq_vangle2C : forall (a b : vec 2),
     a <> vzero -> b <> vzero -> vangle2A a b = vangle2C a b.
 Proof.
   intros. unfold vangle2A,vangle2,vangle,vnorm.
-  rewrite !vdot_vcmul_l,!vdot_vcmul_r.
+  rewrite !vdot_vscal_l,!vdot_vscal_r.
   pose proof (vlen_gt0 a H). pose proof (vlen_gt0 b H0).
   pose proof (vdot_gt0 a H). pose proof (vdot_gt0 b H0).
   autounfold with tA.
@@ -1125,11 +1125,11 @@ Proof.
   intros. destruct H as [H1 [H2 [x [H3 H4]]]].
   destruct (Aeqdec a vzero), (Aeqdec b vzero); try easy.
   assert (x = 1).
-  { rewrite <- H4 in H0. rewrite vlen_vcmul in H0. unfold a2r,id in H0.
+  { rewrite <- H4 in H0. rewrite vlen_vscal in H0. unfold a2r,id in H0.
     symmetry in H0. apply Rmult_eq_r_reg in H0; auto.
     autounfold with tA in *. unfold Aabs in H0. destruct (Ale_dec 0 x); lra.
     apply vlen_neq0_iff_neq0; auto. }
-  rewrite H in H4. rewrite vcmul_1_l in H4; auto.
+  rewrite H in H4. rewrite vscal_1_l in H4; auto.
 Qed.
 
 (** 两个反平行向量 a 和 b 若长度相等，则 a = - b *)
@@ -1139,11 +1139,11 @@ Proof.
   intros. destruct H as [H1 [H2 [x [H3 H4]]]].
   destruct (Aeqdec a vzero), (Aeqdec b vzero); try easy.
   assert (x = - (1))%R.
-  { rewrite <- H4 in H0. rewrite vlen_vcmul in H0. unfold a2r,id in H0.
+  { rewrite <- H4 in H0. rewrite vlen_vscal in H0. unfold a2r,id in H0.
     symmetry in H0. apply Rmult_eq_r_reg in H0; auto.
     autounfold with tA in *. unfold Aabs in H0. destruct (Ale_dec 0 x); lra.
     apply vlen_neq0_iff_neq0; auto. }
-  rewrite H in H4. rewrite vcmul_neg1_l in H4. rewrite <- H4, vopp_vopp. auto.
+  rewrite H in H4. rewrite vscal_neg1_l in H4. rewrite <- H4, vopp_vopp. auto.
 Qed.
 
 (** 两个共线向量 a 和 b 若长度相等，则 a = ± b *)
@@ -1223,13 +1223,13 @@ Lemma v3cross_sub_distr_r : forall a b c : vec 3,
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
 (** (x .* a) × b = x .* (a × b) *)
-Lemma v3cross_vcmul_assoc_l : forall (x : R) (a b : vec 3),
-    (x c* a) \x b = x c* (a \x b).
+Lemma v3cross_vscal_assoc_l : forall (x : R) (a b : vec 3),
+    (x s* a) \x b = x s* (a \x b).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
-(** a × (x .* b) = x c* (a × b) *)
-Lemma v3cross_vcmul_assoc_r : forall (x : R) (a b : vec 3),
-    a \x (x c* b) = x c* (a \x b).
+(** a × (x .* b) = x s* (a × b) *)
+Lemma v3cross_vscal_assoc_r : forall (x : R) (a b : vec 3),
+    a \x (x s* b) = x s* (a \x b).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
 (** <a × b, c> = <c × a, b> *)
@@ -1256,19 +1256,19 @@ Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 Lemma v3cross_a_ab : forall a b : vec 3, a \x (a \x b) = - ((a \x b) \x a).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
-(** (a × b) × a = <a, a> c* a - <a, b> c* a *)
+(** (a × b) × a = <a, a> s* a - <a, b> s* a *)
 Lemma v3cross_ab_a_eq_minus : forall a b : vec 3,
-    (a \x b) \x a = <a, a> c* b - <a, b> c* a.
+    (a \x b) \x a = <a, a> s* b - <a, b> s* a.
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
-(** a × (b × a) = <a, a> c* b - <a, b> c* a *)
+(** a × (b × a) = <a, a> s* b - <a, b> s* a *)
 Lemma v3cross_a_ba_eq_minus : forall a b : vec 3,
-    a \x (b \x a) = <a, a> c* b - <a, b> c* a.
+    a \x (b \x a) = <a, a> s* b - <a, b> s* a.
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
-(** a × (a × b) = <a, b> c* a - <a, a> c* b *)
+(** a × (a × b) = <a, b> s* a - <a, a> s* b *)
 Lemma v3cross_a_ab_eq_minus : forall a b : vec 3,
-    a \x (a \x b) = <a, b> c* a - <a, a> c* b.
+    a \x (a \x b) = <a, b> s* a - <a, a> s* b.
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
 (** <a × b, c × d> = <a, c> * <b, d> - <a, d> * <b, c> *)
@@ -1336,16 +1336,16 @@ Proof.
   -
 Abort.
 
-(** a × b = (sin (u ∠ a) * ||a|| * ||b||) c* vnorm (a × b) *)
-Lemma v3cross_eq_vcmul : forall (a b : vec 3),
+(** a × b = (sin (u ∠ a) * ||a|| * ||b||) s* vnorm (a × b) *)
+Lemma v3cross_eq_vscal : forall (a b : vec 3),
     a <> vzero -> b <> vzero ->
     a /_ b <> 0 -> a /_ b <> PI ->
-    a \x b = ((sin (a /_ b) * ||a|| * ||b||)%R c* vnorm (a \x b)).
+    a \x b = ((sin (a /_ b) * ||a|| * ||b||)%R s* vnorm (a \x b)).
 Proof.
   intros. unfold vnorm. rewrite vlen_v3cross; auto.
-  rewrite vcmul_assoc.
-  match goal with |- context [?x c* _] => replace x with 1 end.
-  rewrite vcmul_1_l; easy.
+  rewrite vscal_assoc.
+  match goal with |- context [?x s* _] => replace x with 1 end.
+  rewrite vscal_1_l; easy.
   autounfold with tA. field. repeat split.
   - pose proof (sin_vangle_gt0 a b H H0). ra.
   - apply vlen_neq0_iff_neq0; auto.
@@ -1488,7 +1488,7 @@ Lemma v3norm_eq : forall (a : vec 3),
     let v' := vnorm a in
     a <> vzero -> (v'.1 = a.1 / ||a||) /\ (v'.2 = a.2 / ||a||) /\ (v'.3 = a.3 / ||a||).
 Proof.
-  intros. unfold v', vnorm. rewrite !vnth_vcmul. autounfold with tA.
+  intros. unfold v', vnorm. rewrite !vnth_vscal. autounfold with tA.
   repeat split; ra.
 Qed.
 
@@ -1510,7 +1510,7 @@ Qed.
       l2m [[x * x; x * y; x * z];
            [y * x; y * y; y * z];
            [z * x; z * y; z * z]]%R in
-    (1 / <a, a>) c* (M * u).
+    (1 / <a, a>) s* (M * u).
 
   Lemma v3proj_spec : forall a b : vec 3, v3proj a b = vproj a b.
   Proof. apply v3eq_iff; cbv; ra. Qed.
@@ -1562,7 +1562,7 @@ Definition v3k : vec 3 := mkvec3 0 0 1.
 
 (** 任意向量都能写成该向量的坐标在标准基向量下的线性组合 *)
 Lemma v3_linear_composition : forall (a : vec 3),
-    a = a.1 c* v3i + a.2 c* v3j + a.3 c* v3k.
+    a = a.1 s* v3i + a.2 s* v3j + a.3 s* v3k.
 Proof. intros. apply v3eq_iff. cbv. ra. Qed.
 
 (** 标准基向量的长度为 1 *)
@@ -1757,7 +1757,7 @@ Lemma v3angle_add : forall (a b c : vec 3),
 Proof.
   (* 由于 a /_ b 和 b /_ a 并没有区分，所以该性质不成立。*)
   (* intros. unfold vangle. unfold vnorm. unfold vlen. *)
-  (* unfold vcmul. unfold vdot. unfold Vector.vdot. *)
+  (* unfold vscal. unfold vdot. unfold Vector.vdot. *)
   (* vec2fun. unfold Tmul,Tadd,T0,T. *)
   (* autorewrite with R. *)
 Abort.
@@ -1778,10 +1778,10 @@ Definition v4l : vec 4 := mkvec4 0 0 0 1.
 Open Scope mat_scope.
 
 (** norm space *)
-Class Norm `{Ring} (f : tA -> R) (cmul : R -> tA -> tA) := {
+Class Norm `{Ring} (f : tA -> R) (scal : R -> tA -> tA) := {
     Norm_pos : forall a : tA, 0 <= f a;
     Norm_eq0_iff : forall a : tA, f a = 0 <-> a = Azero;
-    Norm_cmul_compat : forall (c : R) (a : tA), f (cmul c a) = ((Rabs c) * f a)%A
+    Norm_scal_compat : forall (c : R) (a : tA), f (scal c a) = ((Rabs c) * f a)%A
   }.
 
 (* Equivalent form of matrix norm *)
@@ -1789,9 +1789,9 @@ Definition mnorm_spec_pos {r c} (mnorm : mat r c -> R) : Prop :=
   forall M : mat r c,
     (M <> mat0 -> mnorm M > 0) /\ (M = mat0 -> mnorm M = 0).
 
-Definition mnorm_spec_mcmul {r c} (mnorm : mat r c -> R) : Prop :=
+Definition mnorm_spec_mscal {r c} (mnorm : mat r c -> R) : Prop :=
   forall (M : mat r c) (x : R),
-    mnorm (x c* M) = ((Rabs x) * (mnorm M))%R.
+    mnorm (x s* M) = ((Rabs x) * (mnorm M))%R.
 
 Definition mnorm_spec_trig {r c} (mnorm : mat r c -> R) : Prop :=
   forall (M N : mat r c),
@@ -1826,7 +1826,7 @@ Proof.
     rewrite mnth_mat0. unfold Azero. ra.
 Qed.
 
-Lemma mnormF_spec_mcmul : forall r c, mnorm_spec_mcmul (@mnormF r c).
+Lemma mnormF_spec_mscal : forall r c, mnorm_spec_mscal (@mnormF r c).
 Proof.
 Admitted.
 
@@ -1843,7 +1843,7 @@ Lemma morth_keep_norm : forall {n} (M : smat n) (a : vec n),
 Proof.
   intros. unfold vnorm.
   pose proof (morth_keep_length M). unfold vlen. rewrite H0; auto.
-  rewrite <- mmulv_vcmul. auto.
+  rewrite <- mmulv_vscal. auto.
 Qed.
 
 (** Transformation by orthogonal matrix will keep angle. *)
@@ -1920,9 +1920,9 @@ Section morth_keep_cross_try.
   Notation "M \-1" := (minvAM M) : mat_scope.
 
   Goal forall (M : smat 3) (a b : vec 3),
-      mdet M <> 0 -> (M *v a) \x (M *v b) = ((mdet M) c* (M\-1\T *v (a \x b)))%V.
+      mdet M <> 0 -> (M *v a) \x (M *v b) = ((mdet M) s* (M\-1\T *v (a \x b)))%V.
   Proof.
-    intros. rewrite <- mmulv_mcmul.
+    intros. rewrite <- mmulv_mscal.
     (* rewrite <- mcomat_eq; auto. *)
     (* rewrite !v3cross_eq_skew_mul_vec. *)
     (* rewrite <- !mmulv_assoc. f_equal. *)

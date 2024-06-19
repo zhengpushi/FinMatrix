@@ -37,8 +37,6 @@ Section minvGE.
   
   Notation smat n := (smat tA n).
   Notation mat1 := (@mat1 _ Azero Aone).
-  Notation mcmul := (@mcmul _ Amul).
-  Infix "c*" := mcmul : mat_scope.
   Notation mmul := (@mmul _ Aadd Azero Amul).
   Infix "*" := mmul : mat_scope.
   Infix "*" := mmul : mat_scope.

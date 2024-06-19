@@ -131,22 +131,28 @@ Proof. intros. pose proof natAdd_ASGroup. asgroup. Qed.
   
 #[export] Instance natAdd_Monoid : Monoid Nat.add 0.
 Proof. constructor; auto with nat. Qed.
+Hint Resolve natAdd_Monoid : nat.
 
 #[export] Instance natMul_Monoid : Monoid Nat.mul 1.
 Proof. constructor; auto with nat. Qed.
-
-Hint Resolve
-  natAdd_Monoid
-  natMul_Monoid
-  : nat.
+Hint Resolve natMul_Monoid : nat.
 
 (** Abelian monoid *)
   
 #[export] Instance natAdd_AMonoid : AMonoid Nat.add 0.
 Proof. constructor; auto with nat. Qed.
+Hint Resolve natAdd_AMonoid : nat.
   
 #[export] Instance natMul_AMonoid : AMonoid Nat.mul 1.
 Proof. constructor; auto with nat. Qed.
+Hint Resolve natMul_AMonoid : nat.
+
+(** SRing *)
+
+#[export] Instance nat_SRing : SRing Nat.add 0 Nat.mul 1.
+Proof. constructor; auto with nat. Qed.
+Hint Resolve nat_SRing : nat.
+
 
 (** Order *)
 

@@ -149,21 +149,62 @@ Section block_matrix.
     pose proof (fin2nat_lt i). pose proof (fin2nat_lt j). unfold bmrb, bmmake. fin.
     all: exfalso; fin.
   Qed.
-  
+
+  Lemma bmmake_lu_ru_lb_rb : forall r1 r2 c1 c2 (A : mat (r1 + r2) (c1 + c2)),
+      bmmake (bmlu A) (bmru A) (bmlb A) (bmrb A) = A.
+  Proof.
+    intros. apply meq_iff_mnth; intros. unfold bmmake, bmlu, bmru, bmlb, bmrb. fin.
+  Qed.
 
   (* ======================================================================= *)
   (** ** Algebraic operations of block matrices *)
   
-  Context `{HARing : ARing tA}.
-  Add Ring ring_inst : (make_ring_theory HARing).
+  Context `{HSRing : SRing tA Aadd 0}.
+  (* Add Ring ring_inst : (make_ring_theory HARing). *)
   Notation "0" := Azero : A_scope.
   Notation "1" := Aone : A_scope.
 
   Notation madd := (@madd _ Aadd _ _).
   Notation mmul := (@mmul _ Aadd 0 Amul _ _ _).
+  Notation mscal := (@mscal _ Amul _ _).
   Infix "+" := madd : mat_scope.
   Infix "*" := mmul : mat_scope.
+  Infix "s*" := mscal : mat_scope.
 
+  (** block matrix transpose *)
+  Definition bmtrans {r1 r2 c1 c2} (A : mat (r1 + r2) (c1 + c2))
+    : mat (c1 + c2) (r1 + r2) :=
+    bmmake
+      ((bmlu A)\T)
+      ((bmlb A)\T)
+      ((bmru A)\T)
+      ((bmrb A)\T).
+
+  Lemma bmtrans_eq : forall r1 r2 c1 c2 (A : mat (r1 + r2) (c1 + c2)),
+      bmtrans A = A\T.
+  Proof.
+    intros. apply meq_iff_mnth; intros. unfold mtrans, bmtrans, bmmake.
+    unfold bmlu, bmru, bmlb, bmrb. fin; auto_vec; f_equal; fin.
+  Qed.
+
+  (** block matrix scalar multiplication *)
+  Definition bmscal {r1 r2 c1 c2} (c : tA) (A : mat (r1 + r2) (c1 + c2))
+    : mat (r1 + r2) (c1 + c2) :=
+    bmmake
+      (c s* (bmlu A))
+      (c s* (bmru A))
+      (c s* (bmlb A))
+      (c s* (bmrb A)).
+
+  Lemma bmscal_eq : forall r1 r2 c1 c2 (c : tA) (A : mat (r1 + r2) (c1 + c2)),
+      bmscal c A = c s* A.
+  Proof.
+    intros. apply meq_iff_mnth; intros. unfold mscal, bmscal, bmmake.
+    unfold bmlu, bmru, bmlb, bmrb.
+    fin; auto_vec; try rewrite mnth_mscal; f_equal; f_equal; fin.
+  Qed.
+
+  (** block matrix addition *)
   Definition bmadd {r1 r2 c1 c2} (A B : mat (r1 + r2) (c1 + c2))
     : mat (r1 + r2) (c1 + c2) :=
     bmmake
@@ -172,6 +213,15 @@ Section block_matrix.
       (bmlb A + bmlb B)
       (bmrb A + bmrb B).
 
+  Lemma bmadd_eq : forall r1 r2 c1 c2 (A B : mat (r1 + r2) (c1 + c2)),
+      bmadd A B = A + B.
+  Proof.
+    intros. apply meq_iff_mnth; intros. unfold madd, bmadd, bmmake.
+    unfold bmlu, bmru, bmlb, bmrb.
+    fin; auto_vec; try rewrite mnth_madd; f_equal; f_equal; fin.
+  Qed.
+
+  (** block matrix multiplication *)
   Definition bmmul {r1 r2 c1 c2 s1 s2} (A : mat (r1 + r2) (c1 + c2))
     (B : mat (c1 + c2) (s1 + s2)) : mat (r1 + r2) (s1 + s2) :=
     bmmake
@@ -180,14 +230,48 @@ Section block_matrix.
       (bmlb A * bmlu B + bmrb A * bmlb B)
       (bmlb A * bmru B + bmrb A * bmrb B).
 
+  Lemma bmlu_mmul :
+    forall r1 r2 c1 c2 s1 s2 (A : mat (r1 + r2) (c1 + c2)) (B : mat (c1 + c2) (s1 + s2)),
+      bmlu (A * B) = bmlu A * bmlu B + bmru A * bmlb B.
+  Proof.
+    intros. apply meq_iff_mnth; intros. unfold bmlu, bmru, bmlb, bmrb.
+    rewrite mnth_madd. rewrite !mnth_mmul. rewrite vdot_vheadN_vtailN. f_equal.
+  Qed.
+
+  Lemma bmru_mmul :
+    forall r1 r2 c1 c2 s1 s2 (A : mat (r1 + r2) (c1 + c2)) (B : mat (c1 + c2) (s1 + s2)),
+      bmru (A * B) = bmlu A * bmru B + bmru A * bmrb B.
+  Proof.
+    intros. apply meq_iff_mnth; intros. unfold bmlu, bmru, bmlb, bmrb.
+    rewrite mnth_madd. rewrite !mnth_mmul. rewrite vdot_vheadN_vtailN. f_equal.
+  Qed.
+
+  Lemma bmlb_mmul :
+    forall r1 r2 c1 c2 s1 s2 (A : mat (r1 + r2) (c1 + c2)) (B : mat (c1 + c2) (s1 + s2)),
+      bmlb (A * B) = bmlb A * bmlu B + bmrb A * bmlb B.
+  Proof.
+    intros. apply meq_iff_mnth; intros. unfold bmlu, bmru, bmlb, bmrb.
+    rewrite mnth_madd. rewrite !mnth_mmul. rewrite vdot_vheadN_vtailN. f_equal.
+  Qed.
+
+  Lemma bmrb_mmul :
+    forall r1 r2 c1 c2 s1 s2 (A : mat (r1 + r2) (c1 + c2)) (B : mat (c1 + c2) (s1 + s2)),
+      bmrb (A * B) = bmlb A * bmru B + bmrb A * bmrb B.
+  Proof.
+    intros. apply meq_iff_mnth; intros. unfold bmlu, bmru, bmlb, bmrb.
+    rewrite mnth_madd. rewrite !mnth_mmul. rewrite vdot_vheadN_vtailN. f_equal.
+  Qed.
+
   Lemma bmmul_eq :
     forall r1 r2 c1 c2 s1 s2 (A : mat (r1 + r2) (c1 + c2)) (B : mat (c1 + c2) (s1 + s2)),
-      mmul A B = bmmul A B.
+      bmmul A B = mmul A B.
   Proof.
-    intros. apply meq_iff_mnth; intros.
-    unfold mmul, bmmul. unfold bmmake. fin.
-    - rewrite mnth_madd. rewrite !mnth_mmul.
-  Abort.
+    intros. unfold bmmul. symmetry. rewrite <- bmmake_lu_ru_lb_rb at 1. f_equal.
+    rewrite bmlu_mmul; auto.
+    rewrite bmru_mmul; auto.
+    rewrite bmlb_mmul; auto.
+    rewrite bmrb_mmul; auto.
+  Qed.
 
 End block_matrix.
 
@@ -250,4 +334,35 @@ Section test.
   (* Compute m2l (mmul A1 A2). *)
   (* Compute m2l (bmmul A1 A2). *)
 
+  (* proof the equality of specific matrices by calculation *)
+  Goal mmul A1 A2 = bmmul A1 A2.
+  Proof. meq. Qed.
+
+  (* proof the equality by derivation *)
+  Goal mmul A1 A2 = bmmul A1 A2.
+  Proof. erewrite bmmul_eq; auto. auto with nat. Qed.
+
 End test.
+
+
+(* ######################################################################### *)
+(** * Block matrix with special cases *)
+Section block_matrix_special.
+  Context {tA : Type} (Azero : tA).
+  Notation mat r c := (mat tA r c).
+  Notation "0" := Azero : A_scope.
+
+  (** [a11 a12 | v1]
+      [a21 a22 | v2]
+       ------- | -- 
+      [ u1  u2 |  x] *)
+  Lemma mconscT_mconsrT_vconsT_eq_bmmake :
+    forall r c (A : mat r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
+      mconscT (mconsrT A u) (vconsT v x) =
+        mcastAdd2S (bmmake A (v2cv v) (v2rv u) (l2m 0 [[x]])).
+  Proof.
+    intros. apply meq_iff_mnth; intros.
+  Abort.
+
+End block_matrix_special.
+

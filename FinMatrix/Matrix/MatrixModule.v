@@ -26,6 +26,7 @@
 
 
 Require Export Matrix.
+Require Export BMatrix.
 Require Export MatrixDet.
 Require Export MatrixInvAM.
 Require Export MatrixInvGE.
@@ -592,16 +593,19 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply vconsT_vremoveT_vtail; auto. Qed.
 
   (** vremoveT (vconsT a x) = a *)
-  Lemma vremoveT_vconsT : forall {n} (a : vec n) x, vremoveT (vconsT a x) = a.
+  Lemma vremoveT_vconsT : forall n (a : vec n) x, vremoveT (vconsT a x) = a.
   Proof. intros. apply vremoveT_vconsT; auto. Qed.
+  Hint Rewrite vremoveT_vconsT : vec.
 
   (** vtail (vconsT a x) = x *)
-  Lemma vtail_vconsT : forall {n} (a : vec n) x, vtail (vconsT a x) = x.
+  Lemma vtail_vconsT : forall n (a : vec n) x, vtail (vconsT a x) = x.
   Proof. intros. apply vtail_vconsT; auto. Qed.
+  Hint Rewrite vtail_vconsT : vec.
 
   (** [vzero; 0] = vzero *)
-  Lemma vconsT_vzero_eq0 : forall {n}, @vconsT n vzero Azero = vzero.
+  Lemma vconsT_vzero_eq0 : forall n, @vconsT n vzero Azero = vzero.
   Proof. intros. apply vconsT_vzero_eq0; auto. Qed.
+  Hint Rewrite vconsT_vzero_eq0 : vec.
 
   (* ======================================================================= *)
   (** ** Construct vector with two vectors *)
@@ -1146,6 +1150,11 @@ Module BasicMatrixTheory (E : ElementType).
       mremovecT (mconscT A v) = A.
   Proof. intros. apply mremovecT_mconscT. Qed.
   #[export] Hint Rewrite mremovecT_mconscT : vec.
+
+  (** mremoverT (mremovecT A) = mremovecT (mremoverT A) *)
+  Lemma mremoverT_mremovecT_eq_mremovecT_mremoverT : forall r c (A : mat (S r) (S c)),
+      mremoverT (mremovecT A) = mremovecT (mremoverT A).
+  Proof. intros. apply mremoverT_mremovecT_eq_mremovecT_mremoverT. Qed.
   
 
   (**     [a11 a12 a13] *)
@@ -1233,7 +1242,7 @@ Module BasicMatrixTheory (E : ElementType).
   Proof. intros. apply mmap2_assoc; auto. Qed.
 
   (* ======================================================================= *)
-  (** ** matrix set row / column *)
+  (** ** Set one row or one column of a matrix *)
 
   (** set row *)
   Definition msetr {r c} (M : mat r c) (a : vec c) (i0 : 'I_r) : mat r c :=
@@ -1300,10 +1309,6 @@ Module BasicMatrixTheory (E : ElementType).
   (** zero matrix *)
   Definition mat0 {r c} : mat r c := @mat0 _ 0 r c.
 
-  (** mat0\T = mat0 *)
-  Lemma mtrans_mat0 : forall {r c : nat}, (@mat0 r c)\T = mat0.
-  Proof. intros. apply mtrans_mat0. Qed.
-
   (** mat0[i,j] = 0 *)
   Lemma mnth_mat0 : forall {r c} i j, (@mat0 r c).[i].[j] = 0.
   Proof. intros. apply mnth_mat0. Qed.
@@ -1316,12 +1321,63 @@ Module BasicMatrixTheory (E : ElementType).
   Lemma mcol_mat0 : forall {r c} j, (fun k => (@mat0 r c).[k].[j]) = vzero.
   Proof. intros. apply mcol_mat0 with (j:=j). Qed.
 
-  (* (* ======================================================================= *) *)
-  (* (** ** Automation for matrix equality proofs *) *)
+  (** mat0\T = mat0 *)
+  Lemma mtrans_mat0 : forall {r c : nat}, (@mat0 r c)\T = mat0.
+  Proof. intros. apply mtrans_mat0. Qed.
 
-  (* (** Convert equality of two matrices to point-wise element equalities *) *)
-  (* Ltac meq := *)
-  (*   apply m2l_inj; cbv; list_eq. *)
+  (** v2rv vzero = mat0 *)
+  Lemma v2rv_vzero : forall n, v2rv (@vzero n) = @mat0 1 n.
+  Proof. intros. apply v2rv_vzero. Qed.
+  Hint Rewrite v2rv_vzero : vec.
+
+  (** v2cv vzero = mat0 *)
+  Lemma v2cv_vzero : forall n, v2cv (@vzero n) = @mat0 n 1.
+  Proof. intros. apply v2cv_vzero. Qed.
+  Hint Rewrite v2cv_vzero : vec.
+
+  (* ======================================================================= *)
+  (** ** Conversion between block matrix and matrix *)
+
+  (** Get left upper matrix of matrix A *)
+  Definition bmlu {r1 r2 c1 c2} (A : mat (r1 + r2) (c1 + c2)) : mat r1 c1 := bmlu A.
+
+  (** Get right upper matrix of matrix A *)
+  Definition bmru {r1 r2 c1 c2} (A : mat (r1 + r2) (c1 + c2)) : mat r1 c2 := bmru A.
+
+  (** Get left bottom matrix of matrix A *)
+  Definition bmlb {r1 r2 c1 c2} (A : mat (r1 + r2) (c1 + c2)) : mat r2 c1 := bmlb A.
+
+  (** Get right bottom matrix of matrix A *)
+  Definition bmrb {r1 r2 c1 c2} (A : mat (r1 + r2) (c1 + c2)) : mat r2 c2 := bmrb A.
+
+  (** Make a block matrix from four matrices *)
+  Definition bmmake {r1 r2 c1 c2} (lu : mat r1 c1) (ru : mat r1 c2)
+    (lb : mat r2 c1) (rb : mat r2 c2) : mat (r1 + r2) (c1 + c2)
+    := bmmake lu ru lb rb.
+
+  Lemma bmlu_bmmake : forall r1 r2 c1 c2 (lu : mat r1 c1) (ru : mat r1 c2)
+                        (lb : mat r2 c1) (rb : mat r2 c2),
+      bmlu (bmmake lu ru lb rb) = lu.
+  Proof. intros. apply bmlu_bmmake. Qed.
+
+  Lemma bmru_bmmake : forall r1 r2 c1 c2 (lu : mat r1 c1) (ru : mat r1 c2)
+                        (lb : mat r2 c1) (rb : mat r2 c2),
+      bmru (bmmake lu ru lb rb) = ru.
+  Proof. intros. apply bmru_bmmake. Qed.
+
+  Lemma bmlb_bmmake : forall r1 r2 c1 c2 (lu : mat r1 c1) (ru : mat r1 c2)
+                        (lb : mat r2 c1) (rb : mat r2 c2),
+      bmlb (bmmake lu ru lb rb) = lb.
+  Proof. intros. apply bmlb_bmmake. Qed.
+
+  Lemma bmrb_bmmake : forall r1 r2 c1 c2 (lu : mat r1 c1) (ru : mat r1 c2)
+                        (lb : mat r2 c1) (rb : mat r2 c2),
+      bmrb (bmmake lu ru lb rb) = rb.
+  Proof. intros. apply bmrb_bmmake. Qed.
+
+  Lemma bmmake_lu_ru_lb_rb : forall r1 r2 c1 c2 (A : mat (r1 + r2) (c1 + c2)),
+      bmmake (bmlu A) (bmru A) (bmlb A) (bmrb A) = A.
+  Proof. intros. apply bmmake_lu_ru_lb_rb. Qed.
 
 End BasicMatrixTheory.
 
@@ -1391,6 +1447,10 @@ Module MonoidMatrixTheory (E : MonoidElementType).
   Definition vadd {n} (a b : vec n) : vec n := vadd a b (Aadd:=Aadd).
   Infix "+" := vadd : vec_scope.
 
+  (** (a + b).i = a.i + b.i *)
+  Lemma vnth_vadd : forall {n} (a b : vec n) i, (a + b).[i] = (a.[i] + b.[i])%A.
+  Proof. intros. apply vnth_vadd. Qed.
+
   (** (a + b) + c = a + (b + c) *)
   Lemma vadd_assoc : forall {n} (a b c : vec n), (a + b) + c = a + (b + c).
   Proof. intros. apply vadd_assoc. Qed.
@@ -1400,12 +1460,14 @@ Module MonoidMatrixTheory (E : MonoidElementType).
   Proof. intros. apply vadd_comm. Qed.
 
   (** 0 + a = a *)
-  Lemma vadd_0_l : forall {n} (a : vec n), vzero + a = a.
+  Lemma vadd_0_l : forall n (a : vec n), vzero + a = a.
   Proof. intros. apply vadd_0_l. Qed.
+  Hint Rewrite vadd_0_l : vec.
 
   (** a + 0 = a *)
-  Lemma vadd_0_r : forall {n} (a : vec n), a + vzero = a.
+  Lemma vadd_0_r : forall n (a : vec n), a + vzero = a.
   Proof. intros. apply vadd_0_r. Qed.
+  Hint Rewrite vadd_0_r : vec.
 
   #[export] Instance vadd_AMonoid : forall n, AMonoid (@vadd n) vzero.
   Proof. apply vadd_AMonoid. Qed.
@@ -1440,12 +1502,14 @@ Module MonoidMatrixTheory (E : MonoidElementType).
   Proof. intros. apply madd_perm. Qed.
 
   (** mat0 + M = M *)
-  Lemma madd_0_l : forall {r c} (M : mat r c), mat0 + M = M.
+  Lemma madd_0_l : forall r c (M : mat r c), mat0 + M = M.
   Proof. intros. apply madd_0_l. Qed.
+  Hint Rewrite madd_0_l : vec.
 
   (** M + mat0 = M *)
-  Lemma madd_0_r : forall {r c} (M : mat r c), M + mat0 = M.
+  Lemma madd_0_r : forall r c (M : mat r c), M + mat0 = M.
   Proof. intros. apply madd_0_r. Qed.
+  Hint Rewrite madd_0_r : vec.
 
   (** (M + N) \T = M \T + N \T *)
   Lemma mtrans_madd : forall {r c} (M N : mat r c), (M + N) \T = M \T + N \T.
@@ -1495,12 +1559,14 @@ Module RingMatrixTheory (E : RingElementType).
   Notation "- a" := (vopp a) : vec_scope.
 
   (** - a + a = 0 *)
-  Lemma vadd_vopp_l : forall {n} (a : vec n), (- a) + a = vzero.
+  Lemma vadd_vopp_l : forall n (a : vec n), (- a) + a = vzero.
   Proof. intros. apply vadd_vopp_l. Qed.
+  Hint Rewrite vadd_vopp_l : vec.
   
   (** a + - a = 0 *)
-  Lemma vadd_vopp_r : forall {n} (a : vec n), a + (- a) = vzero.
+  Lemma vadd_vopp_r : forall n (a : vec n), a + (- a) = vzero.
   Proof. intros. apply vadd_vopp_r. Qed.
+  Hint Rewrite vadd_vopp_r : vec.
 
   #[export] Instance vadd_AGroup : forall n, AGroup (@vadd n) vzero vopp.
   Proof. intros. apply vadd_AGroup. Qed.
@@ -1555,66 +1621,69 @@ Module RingMatrixTheory (E : RingElementType).
 
   (** ** Vector scalar multiplication *)
 
-  Definition vcmul {n} (x : tA) (a : vec n) : vec n := vcmul (Amul:=Amul) x a.
-  Infix "c*" := vcmul : vec_scope.
+  Definition vscal {n} (x : tA) (a : vec n) : vec n := vscal (Amul:=Amul) x a.
+  Infix "s*" := vscal : vec_scope.
 
   (** (x .* a)[i] = x .* a[i] *)
-  Lemma vnth_vcmul : forall n (a : vec n) x i, (x c* a).[i] = x * (a.[i]).
+  Lemma vnth_vscal : forall n (a : vec n) x i, (x s* a).[i] = x * (a.[i]).
   Proof. intros. cbv. auto. Qed.
 
   (** x .* (y .* a) = (x * y) .* a *)
-  Lemma vcmul_assoc : forall {n} (x y : tA) (a : vec n),
-      x c* (y c* a) = (x * y)%A c* a.
-  Proof. intros. apply vcmul_assoc. Qed.
+  Lemma vscal_assoc : forall {n} (x y : tA) (a : vec n),
+      x s* (y s* a) = (x * y)%A s* a.
+  Proof. intros. apply vscal_assoc. Qed.
 
   (** x .* (y .* a) = y .* (x .* a) *)
-  Lemma vcmul_perm : forall {n} (x y : tA) (a : vec n),
-      x c* (y c* a) = y c* (x c* a).
-  Proof. intros. apply vcmul_perm. Qed.
+  Lemma vscal_perm : forall {n} (x y : tA) (a : vec n),
+      x s* (y s* a) = y s* (x s* a).
+  Proof. intros. apply vscal_perm. Qed.
 
   (** (x + y) .* a = (x .* a) + (y .* a) *)
-  Lemma vcmul_add : forall {n} (x y : tA) (a : vec n),
-      (x + y)%A c* a = (x c* a) + (y c* a).
-  Proof. intros. apply vcmul_add. Qed.
+  Lemma vscal_add : forall {n} (x y : tA) (a : vec n),
+      (x + y)%A s* a = (x s* a) + (y s* a).
+  Proof. intros. apply vscal_add. Qed.
 
   (** x .* (a + b) = (x .* a) + (x .* b) *)
-  Lemma vcmul_vadd : forall {n} x (a b : vec n),
-      x c* (a + b) = (x c* a) + (x c* b).
-  Proof. intros. apply vcmul_vadd. Qed.
+  Lemma vscal_vadd : forall {n} x (a b : vec n),
+      x s* (a + b) = (x s* a) + (x s* b).
+  Proof. intros. apply vscal_vadd. Qed.
 
   (** 1 .* a = a *)
-  Lemma vcmul_1_l : forall {n} (a : vec n), 1 c* a = a.
-  Proof. intros. apply vcmul_1_l. Qed.
+  Lemma vscal_1_l : forall n (a : vec n), 1 s* a = a.
+  Proof. intros. apply vscal_1_l. Qed.
+  Hint Rewrite vscal_1_l : vec.
 
   (** 0 .* a = 0 *)
-  Lemma vcmul_0_l : forall {n} (a : vec n), 0 c* a = vzero.
-  Proof. intros. apply vcmul_0_l. Qed.
+  Lemma vscal_0_l : forall n (a : vec n), 0 s* a = vzero.
+  Proof. intros. apply vscal_0_l. Qed.
+  Hint Rewrite vscal_0_l : vec.
 
   (** x .* 0 = 0 *)
-  Lemma vcmul_0_r : forall {n} x, x c* (@vzero n) = vzero.
-  Proof. intros. apply vcmul_0_r. Qed.
+  Lemma vscal_0_r : forall n x, x s* (@vzero n) = vzero.
+  Proof. intros. apply vscal_0_r. Qed.
+  Hint Rewrite vscal_0_r : vec.
   
   (** (-x) .* a = - (x .* a) *)
-  Lemma vcmul_opp : forall {n} x (a : vec n), (- x)%A c* a = - (x c* a).
-  Proof. intros. apply vcmul_opp. Qed.
+  Lemma vscal_opp : forall {n} x (a : vec n), (- x)%A s* a = - (x s* a).
+  Proof. intros. apply vscal_opp. Qed.
   
   (** x .* (- a) = - (x .* a) *)
-  Lemma vcmul_vopp : forall {n} x (a : vec n), x c* (- a) = - (x c* a).
-  Proof. intros. apply vcmul_vopp. Qed.
+  Lemma vscal_vopp : forall {n} x (a : vec n), x s* (- a) = - (x s* a).
+  Proof. intros. apply vscal_vopp. Qed.
 
   (** (-x) .* (- a) = x .* a *)
-  Lemma vcmul_opp_vopp : forall {n} x (a : vec n), (- x)%A c* (- a) = x c* a.
-  Proof. intros. apply vcmul_opp_vopp. Qed.
+  Lemma vscal_opp_vopp : forall {n} x (a : vec n), (- x)%A s* (- a) = x s* a.
+  Proof. intros. apply vscal_opp_vopp. Qed.
 
   (** x .* (a - b) = (x .* a) - (x .* b) *)
-  Lemma vcmul_vsub : forall {n} x (a b : vec n),
-      x c* (a - b) = (x c* a) - (x c* b).
-  Proof. intros. apply vcmul_vsub. Qed.
+  Lemma vscal_vsub : forall {n} x (a b : vec n),
+      x s* (a - b) = (x s* a) - (x s* b).
+  Proof. intros. apply vscal_vsub. Qed.
 
   (** a <> 0 -> b <> 0 -> x .* a = b -> x <> 0 *)
-  Lemma vcmul_eq_imply_x_neq0 : forall {n} (a b : vec n) x,
-      a <> vzero -> b <> vzero -> x c* a = b -> x <> 0.
-  Proof. intros. apply vcmul_eq_imply_x_neq0 in H1; auto. Qed.
+  Lemma vscal_eq_imply_x_neq0 : forall {n} (a b : vec n) x,
+      a <> vzero -> b <> vzero -> x s* a = b -> x <> 0.
+  Proof. intros. apply vscal_eq_imply_x_neq0 in H1; auto. Qed.
 
   (* ======================================================================= *)
   (** ** Vector dot product *)
@@ -1627,12 +1696,14 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply vdot_comm. Qed.
 
   (** <vzero, a> = 0 *)
-  Lemma vdot_0_l : forall {n} (a : vec n), <vzero, a> = 0.
+  Lemma vdot_0_l : forall n (a : vec n), <vzero, a> = 0.
   Proof. intros. apply vdot_0_l. Qed.
+  Hint Rewrite vdot_0_l : vec.
 
   (** <a, vzero> = 0 *)
-  Lemma vdot_0_r : forall {n} (a : vec n), <a, vzero> = 0.
+  Lemma vdot_0_r : forall n (a : vec n), <a, vzero> = 0.
   Proof. intros. apply vdot_0_r. Qed.
+  Hint Rewrite vdot_0_r : vec.
 
   (** <a + b, c> = <a, c> + <b, c> *)
   Lemma vdot_vadd_l : forall {n} (a b c : vec n), <a + b, c> = (<a, c> + <b, c>)%A.
@@ -1659,12 +1730,12 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply vdot_vsub_r. Qed.
 
   (** <x .* a, b> = x * <a, b> *)
-  Lemma vdot_vcmul_l : forall {n} (a b : vec n) (x : tA), <x c* a, b> = x * <a, b>.
-  Proof. intros. apply vdot_vcmul_l. Qed.
+  Lemma vdot_vscal_l : forall {n} (a b : vec n) (x : tA), <x s* a, b> = x * <a, b>.
+  Proof. intros. apply vdot_vscal_l. Qed.
 
   (** <a, x .* b> = x * <a, b> *)
-  Lemma vdot_vcmul_r : forall {n} (a b : vec n) (x : tA), <a, x c* b> = x * <a, b>.
-  Proof. intros. apply vdot_vcmul_r. Qed.
+  Lemma vdot_vscal_r : forall {n} (a b : vec n) (x : tA), <a, x s* b> = x * <a, b>.
+  Proof. intros. apply vdot_vscal_r. Qed.
 
   (** <a, veye i> = a i *)
   Lemma vdot_veye_r : forall {n} (a : vec n) i, <a, veye i> = a i.
@@ -1673,6 +1744,16 @@ Module RingMatrixTheory (E : RingElementType).
   (** <veye i, a> = a i *)
   Lemma vdot_veye_l : forall {n} (a : vec n) i, <veye i, a> = a i.
   Proof. intros. apply vdot_veye_l. Qed.
+
+  (** <vconsT a x, vconsT b y> = <a, b> + x * y *)
+  Lemma vdot_vconsT_vconsT : forall {n} (a b : vec n) (x y : tA),
+      <vconsT a x, vconsT b y> = (<a, b> + x * y)%A.
+  Proof. intros. apply vdot_vconsT_vconsT. Qed.
+
+  (** <a, b> = <a1, b1> + <a2, b2> *)
+  Lemma vdot_vheadN_vtailN : forall m n (v1 v2 : vec (m + n)),
+      <v1, v2> = (<vheadN v1, vheadN v2> + <vtailN v1, vtailN v2>)%A.
+  Proof. intros. apply vdot_vheadN_vtailN. Qed.
   
   (** <a, b> <> 0 -> a <> 0 *)
   Lemma vdot_neq0_imply_neq0_l : forall {n} (a b : vec n), <a, b> <> 0 -> a <> vzero.
@@ -1701,14 +1782,14 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply vsum_opp; auto. Qed.
 
   (** x * Σa = Σ(fun i -> x * a.[i]) *)
-  Lemma vsum_cmul_l : forall {n} (a : vec n) x,
+  Lemma vsum_scal_l : forall {n} (a : vec n) x,
       x * vsum a = vsum (fun i => x * a.[i]).
-  Proof. intros. apply vsum_cmul_l. Qed.
+  Proof. intros. apply vsum_scal_l. Qed.
 
   (** Σa * x = Σ(fun i -> a.[i] * x) *)
-  Lemma vsum_cmul_r : forall {n} (a : vec n) x,
+  Lemma vsum_scal_r : forall {n} (a : vec n) x,
       vsum a * x = vsum (fun i => a.[i] * x).
-  Proof. intros. apply vsum_cmul_r. Qed.
+  Proof. intros. apply vsum_scal_r. Qed.
 
   (* ======================================================================= *)
   (** ** Unit vector *)
@@ -1758,6 +1839,55 @@ Module RingMatrixTheory (E : RingElementType).
   (** mat1[i,j] = 0 *)
   Lemma mnth_mat1_diff : forall {n} i j, i <> j -> (@mat1 n).[i].[j] = 0.
   Proof. intros. apply mnth_mat1_diff; auto. Qed.
+
+
+  (** [1 0 0 | 0]   [1 0 0 0]
+      [0 1 0 | 0]   [0 1 0 0]
+      [0 0 1 | 0] = [0 0 1 0]
+      [----  | -]   [0 0 0 1]
+      [0 0 0 | 1] *)
+  Lemma mat1_eq_mconscT_mconsrT_vconsT : forall {n},
+      @mat1 (S n) = mconscT (mconsrT mat1 vzero) (vconsT vzero 1).
+  Proof. intros. apply  mat1_eq_mconscT_mconsrT_vconsT. Qed.
+
+  (** [1 0 0 | 0]   [1 0 0 0]
+      [0 1 0 | 0]   [0 1 0 0]
+      [0 0 1 | 0] = [0 0 1 0]
+      [---------]   [0 0 0 1]
+      [0 0 0 | 1] *)
+  Lemma mat1_eq_mconsrT_mconscT_vconsT : forall {n},
+      @mat1 (S n) = mconsrT (mconscT mat1 vzero) (vconsT vzero 1).
+  Proof. intros. apply mat1_eq_mconsrT_mconscT_vconsT. Qed.
+
+  (** [a11 a12 | u1]
+        [a21 a22 | u2]          [a11 a12]        [u1]        [v1]
+        ---- ---------  = I <=> [a21 a22] = I /\ [u2] = 0 /\ [v1] = 0 /\ x = 1
+        [ v1  v2 |  x] *)
+  Lemma mconsrT_mconscT_vconsT_imply_mat1 : forall n (A : smat n) (u v : vec n) x,
+      A = mat1 -> u = vzero -> v = vzero -> x = 1 ->
+      mconsrT (mconscT A u) (vconsT v x) = mat1.
+  Proof. intros. apply mconsrT_mconscT_vconsT_imply_mat1; auto. Qed.
+
+  Lemma mtailr_mat1 : forall {n}, mtailr (@mat1 (S n)) = vconsT vzero 1.
+  Proof. intros. apply mtailr_mat1. Qed.
+
+  Lemma mtailc_mat1 : forall {n}, mtailc (@mat1 (S n)) = vconsT vzero 1.
+  Proof. intros. apply mtailc_mat1. Qed.
+
+  Lemma mremoverT_mremovecT_mat1 : forall {n},
+      mremoverT (mremovecT (@mat1 (S n))) = mat1.
+  Proof. intros. apply mremoverT_mremovecT_mat1. Qed.
+
+  Lemma mremovecT_mremoverT_mat1 : forall {n},
+      mremovecT (mremoverT (@mat1 (S n))) = mat1.
+  Proof. intros. apply mremovecT_mremoverT_mat1. Qed.
+
+  Lemma mtailc_mremoverT_mat1 : forall {n}, mtailc (mremoverT (@mat1 (S n))) = vzero.
+  Proof. intros. apply mtailc_mremoverT_mat1. Qed.
+
+  Lemma mtailr_mremovecT_mat1 : forall {n}, mtailr (mremovecT (@mat1 (S n))) = vzero.
+  Proof. intros. apply mtailr_mremovecT_mat1. Qed.
+  
 
   (* ======================================================================= *)
   (** ** Matrix trace *)
@@ -1867,80 +1997,80 @@ Module RingMatrixTheory (E : RingElementType).
   (** ** Scalar multiplication of matrix *)
 
   (** Scalar multiplication of matrix *)
-  Definition mcmul {r c} (x : tA) (M : mat r c) : mat r c := mcmul x M (Amul:=Amul).
-  Infix "c*" := mcmul : mat_scope.
+  Definition mscal {r c} (x : tA) (M : mat r c) : mat r c := mscal x M (Amul:=Amul).
+  Infix "s*" := mscal : mat_scope.
 
   (** (x .* M)[i,j] = x * M[i,j] *)
-  Lemma mnth_mcmul : forall {r c} (M : mat r c) x i j,
-      (x c* M).[i].[j] = x * (M.[i].[j]).
-  Proof. intros. unfold mcmul. apply mnth_mcmul. Qed.
+  Lemma mnth_mscal : forall {r c} (M : mat r c) x i j,
+      (x s* M).[i].[j] = x * (M.[i].[j]).
+  Proof. intros. unfold mscal. apply mnth_mscal. Qed.
 
   (** cv2v (x .* M) = x .* (cv2v M) *)
-  Lemma cv2v_mcmul : forall {n} (x : tA) (M : cvec n),
-      cv2v (x c* M) = (x c* (cv2v M))%V.
-  Proof. intros. apply cv2v_mcmul. Qed.
+  Lemma cv2v_mscal : forall {n} (x : tA) (M : cvec n),
+      cv2v (x s* M) = (x s* (cv2v M))%V.
+  Proof. intros. apply cv2v_mscal. Qed.
 
   (** 0 .* M = mat0 *)
-  Lemma mcmul_0_l : forall {r c} (M : mat r c), 0 c* M = mat0.
-  Proof. intros. apply mcmul_0_l. Qed.
+  Lemma mscal_0_l : forall {r c} (M : mat r c), 0 s* M = mat0.
+  Proof. intros. apply mscal_0_l. Qed.
 
   (** x .* mat0 = mat0 *)
-  Lemma mcmul_0_r : forall {r c} x, x c* (@mat0 r c) = mat0.
-  Proof. intros. apply mcmul_0_r. Qed.
+  Lemma mscal_0_r : forall {r c} x, x s* (@mat0 r c) = mat0.
+  Proof. intros. apply mscal_0_r. Qed.
 
   (** 1 .* M = M *)
-  Lemma mcmul_1_l : forall {r c} (M : mat r c), 1 c* M = M.
-  Proof. intros. apply mcmul_1_l. Qed.
+  Lemma mscal_1_l : forall {r c} (M : mat r c), 1 s* M = M.
+  Proof. intros. apply mscal_1_l. Qed.
 
   (** x .* mat1 = mdiag([a,a,...]) *)
-  Lemma mcmul_1_r : forall {n} x, x c* mat1 = mdiagMk (vrepeat n x).
-  Proof. intros. apply mcmul_1_r. Qed.
+  Lemma mscal_1_r : forall {n} x, x s* mat1 = mdiagMk (vrepeat n x).
+  Proof. intros. apply mscal_1_r. Qed.
 
   (** x .* (y .* M) = (x * y) .* M *)
-  Lemma mcmul_assoc : forall {r c} (x y : tA) (M : mat r c),
-      x c* (y c* M) = (x * y) c* M.
-  Proof. intros. apply mcmul_assoc. Qed.
+  Lemma mscal_assoc : forall {r c} (x y : tA) (M : mat r c),
+      x s* (y s* M) = (x * y) s* M.
+  Proof. intros. apply mscal_assoc. Qed.
 
   (** x .* (y .* M) = y .* (x .* M) *)
-  Lemma mcmul_perm : forall {r c} (x y : tA) (M : mat r c),
-      x c* (y c* M) = y c* (x c* M).
-  Proof. intros. apply mcmul_perm. Qed.
+  Lemma mscal_perm : forall {r c} (x y : tA) (M : mat r c),
+      x s* (y s* M) = y s* (x s* M).
+  Proof. intros. apply mscal_perm. Qed.
 
   (** (x + y) .* M = (x .* M) + (y .* M) *)
-  Lemma mcmul_add_distr : forall {r c} (x y : tA) (M : mat r c),
-      (x + y)%A c* M = (x c* M) + (y c* M).
-  Proof. intros. apply mcmul_add_distr. Qed.
+  Lemma mscal_add_distr : forall {r c} (x y : tA) (M : mat r c),
+      (x + y)%A s* M = (x s* M) + (y s* M).
+  Proof. intros. apply mscal_add_distr. Qed.
 
-  (** x c* (M + N) = (x c* M) + (x c* N) *)
-  Lemma mcmul_madd_distr : forall {r c} (x : tA) (M N : mat r c),
-      x c* (M + N) = (x c* M) + (x c* N).
-  Proof. intros. apply mcmul_madd_distr. Qed.
+  (** x s* (M + N) = (x s* M) + (x s* N) *)
+  Lemma mscal_madd_distr : forall {r c} (x : tA) (M N : mat r c),
+      x s* (M + N) = (x s* M) + (x s* N).
+  Proof. intros. apply mscal_madd_distr. Qed.
   
   (** (-x) .* M  = - (x .* M) *)
-  Lemma mcmul_opp : forall {r c} x (M : mat r c), (- x)%A c* M = - (x c* M).
-  Proof. intros. apply mcmul_opp. Qed.
+  Lemma mscal_opp : forall {r c} x (M : mat r c), (- x)%A s* M = - (x s* M).
+  Proof. intros. apply mscal_opp. Qed.
   
-  (** x c* (- M)  = - (x c* M) *)
-  Lemma mcmul_mopp : forall {r c} x (M : mat r c), x c* (- M) = - (x c* M).
-  Proof. intros. apply mcmul_mopp. Qed.
+  (** x s* (- M)  = - (x s* M) *)
+  Lemma mscal_mopp : forall {r c} x (M : mat r c), x s* (- M) = - (x s* M).
+  Proof. intros. apply mscal_mopp. Qed.
 
-  (** x c* (M - N) = (x c* M) - (x c* N) *)
-  Lemma mcmul_msub : forall {r c} x (M N : mat r c),
-      x c* (M - N) = (x c* M) - (x c* N).
-  Proof. intros. apply mcmul_msub. Qed.
+  (** x s* (M - N) = (x s* M) - (x s* N) *)
+  Lemma mscal_msub : forall {r c} x (M N : mat r c),
+      x s* (M - N) = (x s* M) - (x s* N).
+  Proof. intros. apply mscal_msub. Qed.
 
-  (** (x c* M) \T = x c* (M \T) *)
-  Lemma mtrans_mcmul : forall {r c} (x : tA) (M : mat r c), (x c* M) \T = x c* (M \T).
-  Proof. intros. apply mtrans_mcmul. Qed.
+  (** (x s* M) \T = x s* (M \T) *)
+  Lemma mtrans_mscal : forall {r c} (x : tA) (M : mat r c), (x s* M) \T = x s* (M \T).
+  Proof. intros. apply mtrans_mscal. Qed.
 
-  (** tr (x c* M) = a * tr (m) *)
-  Lemma mtrace_mcmul : forall {n} (x : tA) (M : smat n), tr (x c* M) = (x * tr M)%A.
-  Proof. intros. apply mtrace_mcmul. Qed.
+  (** tr (x s* M) = a * tr (m) *)
+  Lemma mtrace_mscal : forall {n} (x : tA) (M : smat n), tr (x s* M) = (x * tr M)%A.
+  Proof. intros. apply mtrace_mscal. Qed.
 
   (** M <> 0 -> N <> 0 -> x .* M = N -> x <> 0 *)
-  Lemma mcmul_eq_imply_not_x0 : forall {r c} (M N : mat r c) x,
-      M <> mat0 -> N <> mat0 -> x c* M = N -> x <> 0.
-  Proof. intros. apply mcmul_eq_imply_not_x0 in H1; auto. Qed.
+  Lemma mscal_eq_imply_not_x0 : forall {r c} (M N : mat r c) x,
+      M <> mat0 -> N <> mat0 -> x s* M = N -> x <> 0.
+  Proof. intros. apply mscal_eq_imply_not_x0 in H1; auto. Qed.
 
   (* ======================================================================= *)
   (** ** Matrix multiplication *)
@@ -2023,12 +2153,14 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mmul_mopp_r. Qed.
 
   (** mat0 * M = mat0 *)
-  Lemma mmul_0_l : forall {r c s} (M : mat c s), (@mat0 r c) * M = mat0.
+  Lemma mmul_0_l : forall r c s (M : mat c s), (@mat0 r c) * M = mat0.
   Proof. intros. apply mmul_0_l. Qed.
+  Hint Rewrite mmul_0_l : vec.
 
   (** M * mat0 = mat0 *)
-  Lemma mmul_0_r : forall {r c s} (M : mat r c), M * (@mat0 c s) = mat0.
+  Lemma mmul_0_r : forall r c s (M : mat r c), M * (@mat0 c s) = mat0.
   Proof. intros. apply mmul_0_r. Qed.
+  Hint Rewrite mmul_0_r : vec.
 
   (** mat1 * M = M *)
   Lemma mmul_1_l : forall {r c : nat} (M : mat r c), mat1 * M = M.
@@ -2038,15 +2170,15 @@ Module RingMatrixTheory (E : RingElementType).
   Lemma mmul_1_r : forall {r c : nat} (M : mat r c), M * mat1 = M.
   Proof. intros. apply mmul_1_r. Qed.
 
-  (** x c* (M * N) = (x c* M) * N. *)
-  Lemma mmul_mcmul_l : forall {r c s} (x : tA) (M : mat r c) (N : mat c s),
-      (x c* M) * N = x c* (M * N).
-  Proof. intros. apply mmul_mcmul_l. Qed.
+  (** x s* (M * N) = (x s* M) * N. *)
+  Lemma mmul_mscal_l : forall {r c s} (x : tA) (M : mat r c) (N : mat c s),
+      (x s* M) * N = x s* (M * N).
+  Proof. intros. apply mmul_mscal_l. Qed.
   
-  (** x c* (M * N) = M * (x c* N) *)
-  Lemma mmul_mcmul_r : forall {r c s} (x : tA) (M : mat r c) (N : mat c s),
-      M * (x c* N) = x c* (M * N).
-  Proof. intros. apply mmul_mcmul_r. Qed.
+  (** x s* (M * N) = M * (x s* N) *)
+  Lemma mmul_mscal_r : forall {r c s} (x : tA) (M : mat r c) (N : mat c s),
+      M * (x s* N) = x s* (M * N).
+  Proof. intros. apply mmul_mscal_r. Qed.
   
   (** (M * N) \T = N \T * M \T *)
   Lemma mtrans_mmul : forall {r c s} (M : mat r c) (N : mat c s),
@@ -2105,26 +2237,29 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mmulv_msub. Qed.
   
   (** 0 *v a = 0 *)
-  Lemma mmulv_0_l : forall {r c} (a : vec c), (@mat0 r c) *v a = vzero.
+  Lemma mmulv_0_l : forall r c (a : vec c), (@mat0 r c) *v a = vzero.
   Proof. intros. apply mmulv_0_l. Qed.
+  Hint Rewrite mmulv_0_l : vec.
   
   (** M *v 0 = 0 *)
-  Lemma mmulv_0_r : forall {r c} (M : mat r c), M *v vzero = vzero.
+  Lemma mmulv_0_r : forall r c (M : mat r c), M *v vzero = vzero.
   Proof. intros. apply mmulv_0_r. Qed.
+  Hint Rewrite mmulv_0_r : vec.
   
   (** 1 *v a = a *)
-  Lemma mmulv_1_l : forall {n} (a : vec n), mat1 *v a = a.
+  Lemma mmulv_1_l : forall n (a : vec n), mat1 *v a = a.
   Proof. intros. apply mmulv_1_l. Qed.
+  Hint Rewrite mmulv_1_l : vec.
 
   (** (x .* M) *v a = x .* (M *v a) *)
-  Lemma mmulv_mcmul : forall {r c} (x : tA) (M : mat r c) (a : vec c),
-      (x c* M) *v a = (x c* (M *v a))%V.
-  Proof. intros. apply mmulv_mcmul. Qed.
+  Lemma mmulv_mscal : forall {r c} (x : tA) (M : mat r c) (a : vec c),
+      (x s* M) *v a = (x s* (M *v a))%V.
+  Proof. intros. apply mmulv_mscal. Qed.
   
   (** M *v (x .* a) = x .* (M *v a) *)
-  Lemma mmulv_vcmul : forall {r c} (x : tA) (M : mat r c) (a : vec c),
-      M *v (x c* a)%V = (x c* (M *v a))%V.
-  Proof. intros. apply mmulv_vcmul. Qed.
+  Lemma mmulv_vscal : forall {r c} (x : tA) (M : mat r c) (a : vec c),
+      M *v (x s* a)%V = (x s* (M *v a))%V.
+  Proof. intros. apply mmulv_vscal. Qed.
 
   (** <a, b> = (a\T *v b).1 *)
   Lemma vdot_eq_mmulv : forall {n} (a b : vec n), <a, b> = (v2rv a *v b).1.
@@ -2139,6 +2274,20 @@ Module RingMatrixTheory (E : RingElementType).
   Lemma v2rv_mmulv : forall {r c} (M : mat r c) (a : vec c),
       v2rv (M *v a) = (v2rv a * M\T).
   Proof. intros. apply v2rv_mmulv. Qed.
+
+  (** [a11 a12 a13 | u1]   [b11 b12 | v1]   
+      [a21 a22 a23 | u2]   [b21 b22 | v2]    [A*B+u*q  A*v+u*y]
+      -----------------  * [b31 b32 | v2] =  [p*B+x*q  p*v+x*y]
+      [ p1  p2  p3 |  x]   --------------
+                           [ q1  q2 |  y] *)
+  Lemma mmul_mconsrT_mconscT_vconsT :
+    forall r c s (A : mat r c) (B : mat c s) u v p q x y,
+      (mconsrT (mconscT A u) (vconsT p x)) * (mconsrT (mconscT B v) (vconsT q y))
+      = mconsrT
+          (mconscT (A * B + v2cv u * v2rv q) (A *v v + y s* u)%V)
+          (vconsT (rv2v (v2rv p * B) + x s* q)%V (<p,v> + x * y)%A).
+  Proof. intros. apply mmul_mconsrT_mconscT_vconsT. Qed.
+  
 
   (* ======================================================================= *)
   (** ** Vector multiply matrix (treat vector as row vector) *)
@@ -2200,14 +2349,14 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mvmul_1_r. Qed.
 
   (** a v* (x .* M) = x .* (a v* M) *)
-  Lemma mvmul_mcmul : forall {r c} (a : vec r) (x : tA) (M : mat r c),
-      a v* (x c* M) = (x c* (a v* M))%V.
-  Proof. intros. apply mvmul_mcmul. Qed.
+  Lemma mvmul_mscal : forall {r c} (a : vec r) (x : tA) (M : mat r c),
+      a v* (x s* M) = (x s* (a v* M))%V.
+  Proof. intros. apply mvmul_mscal. Qed.
   
   (** (x .* a) v* M  = x .* (a v* M) *)
-  Lemma mvmul_vcmul : forall {r c} (a : vec r) (x : tA) (M : mat r c),
-      (x c* a)%V v* M = (x c* (a v* M))%V.
-  Proof. intros. apply mvmul_vcmul. Qed.
+  Lemma mvmul_vscal : forall {r c} (a : vec r) (x : tA) (M : mat r c),
+      (x s* a)%V v* M = (x s* (a v* M))%V.
+  Proof. intros. apply mvmul_vscal. Qed.
 
   (** <a, b> = (a v* v2cv b).1 *)
   Lemma vdot_eq_mvmul : forall {n} (a b : vec n), <a, b> = (a v* v2cv b).1.
@@ -2459,6 +2608,61 @@ Module RingMatrixTheory (E : RingElementType).
       minvtble M -> minvtbleR M.
   Proof. intros. apply minvtble_imply_minvtbleR; auto. Qed.
 
+  (* ======================================================================= *)
+  (** ** Algebraic operations of block matrices *)
+
+  (** block matrix transpose *)
+  Definition bmtrans {r1 r2 c1 c2} (A : mat (r1 + r2) (c1 + c2))
+    : mat (c1 + c2) (r1 + r2) := bmtrans A.
+
+  Lemma bmtrans_eq : forall r1 r2 c1 c2 (A : mat (r1 + r2) (c1 + c2)),
+      bmtrans A = A\T.
+  Proof. intros. apply bmtrans_eq. Qed.
+
+  (** block matrix scalar multiplication *)
+  Definition bmscal {r1 r2 c1 c2} (c : tA) (A : mat (r1 + r2) (c1 + c2))
+    : mat (r1 + r2) (c1 + c2) := bmscal (Amul:=Amul) c A.
+
+  Lemma bmscal_eq : forall r1 r2 c1 c2 (c : tA) (A : mat (r1 + r2) (c1 + c2)),
+      bmscal c A = c s* A.
+  Proof. intros. apply bmscal_eq. Qed.
+
+  (** block matrix addition *)
+  Definition bmadd {r1 r2 c1 c2} (A B : mat (r1 + r2) (c1 + c2))
+    : mat (r1 + r2) (c1 + c2) := bmadd (Aadd:=Aadd) A B.
+
+  Lemma bmadd_eq : forall r1 r2 c1 c2 (A B : mat (r1 + r2) (c1 + c2)), bmadd A B = A + B.
+  Proof. intros. apply bmadd_eq. Qed.
+
+  (** block matrix multiplication *)
+  Definition bmmul {r1 r2 c1 c2 s1 s2} (A : mat (r1 + r2) (c1 + c2))
+    (B : mat (c1 + c2) (s1 + s2)) : mat (r1 + r2) (s1 + s2) :=
+    bmmul 0 (Aadd:=Aadd) (Amul:=Amul) A B.
+
+  Lemma bmlu_mmul :
+    forall r1 r2 c1 c2 s1 s2 (A : mat (r1 + r2) (c1 + c2)) (B : mat (c1 + c2) (s1 + s2)),
+      bmlu (A * B) = bmlu A * bmlu B + bmru A * bmlb B.
+  Proof. intros. apply bmlu_mmul with (Aone:=Aone). apply SRing. Qed.
+
+  Lemma bmru_mmul :
+    forall r1 r2 c1 c2 s1 s2 (A : mat (r1 + r2) (c1 + c2)) (B : mat (c1 + c2) (s1 + s2)),
+      bmru (A * B) = bmlu A * bmru B + bmru A * bmrb B.
+  Proof. intros. apply bmru_mmul with (Aone:=Aone). apply SRing. Qed.
+
+  Lemma bmlb_mmul :
+    forall r1 r2 c1 c2 s1 s2 (A : mat (r1 + r2) (c1 + c2)) (B : mat (c1 + c2) (s1 + s2)),
+      bmlb (A * B) = bmlb A * bmlu B + bmrb A * bmlb B.
+  Proof. intros. apply bmlb_mmul with (Aone:=Aone). apply SRing. Qed.
+
+  Lemma bmrb_mmul :
+    forall r1 r2 c1 c2 s1 s2 (A : mat (r1 + r2) (c1 + c2)) (B : mat (c1 + c2) (s1 + s2)),
+      bmrb (A * B) = bmlb A * bmru B + bmrb A * bmrb B.
+  Proof. intros. apply bmrb_mmul with (Aone:=Aone). apply SRing. Qed.
+
+  Lemma bmmul_eq :
+    forall r1 r2 c1 c2 s1 s2 (A : mat (r1 + r2) (c1 + c2)) (B : mat (c1 + c2) (s1 + s2)),
+      bmmul A B = mmul A B.
+  Proof. intros. apply bmmul_eq with (Aone:=Aone). apply SRing. Qed.
   
 End RingMatrixTheory.
 
@@ -2519,67 +2723,67 @@ Module FieldMatrixTheory (E : FieldElementType).
 
 
   (* ======================================================================= *)
-  (** ** Properties about vcmul *)
+  (** ** Properties about vscal *)
   
   (** x .* a = 0 -> (k = 0) \/ (v = 0) *)
-  Lemma vcmul_eq0_imply_x0_or_v0 : forall {n} x (a : vec n),
-      x c* a = vzero -> (x = 0) \/ (a = vzero).
-  Proof. intros. apply vcmul_eq0_imply_x0_or_v0; auto. Qed.
+  Lemma vscal_eq0_imply_x0_or_v0 : forall {n} x (a : vec n),
+      x s* a = vzero -> (x = 0) \/ (a = vzero).
+  Proof. intros. apply vscal_eq0_imply_x0_or_v0; auto. Qed.
 
   (** x .* a = 0 -> a <> 0 -> x = 0 *)
-  Lemma vcmul_eq0_imply_x0 : forall {n} (x : tA) (a : vec n),
-      x c* a = vzero -> a <> vzero -> x = 0.
-  Proof. intros. apply (vcmul_eq0_imply_x0 x a); auto. Qed.
+  Lemma vscal_eq0_imply_x0 : forall {n} (x : tA) (a : vec n),
+      x s* a = vzero -> a <> vzero -> x = 0.
+  Proof. intros. apply (vscal_eq0_imply_x0 x a); auto. Qed.
 
   (** x .* a = 0 -> x <> 0 -> a = 0 *)
-  Lemma vcmul_eq0_imply_v0 : forall {n} (x : tA) (a : vec n),
-      x c* a = vzero -> x <> 0 -> a = vzero.
-  Proof. intros. apply (vcmul_eq0_imply_v0 x a); auto. Qed.
+  Lemma vscal_eq0_imply_v0 : forall {n} (x : tA) (a : vec n),
+      x s* a = vzero -> x <> 0 -> a = vzero.
+  Proof. intros. apply (vscal_eq0_imply_v0 x a); auto. Qed.
   
   (** x .* a = a -> x = 1 \/ a = 0 *)
-  Lemma vcmul_same_imply_x1_or_v0 : forall {n} (x : tA) (a : vec n),
-      x c* a = a -> (x = 1 \/ a = vzero).
-  Proof. intros. apply vcmul_same_imply_x1_or_v0; auto. Qed.
+  Lemma vscal_same_imply_x1_or_v0 : forall {n} (x : tA) (a : vec n),
+      x s* a = a -> (x = 1 \/ a = vzero).
+  Proof. intros. apply vscal_same_imply_x1_or_v0; auto. Qed.
   
   (** x = 1 \/ a = 0 -> x .* a = a *)
-  Lemma vcmul_same_if_x1_or_v0 : forall {n} (x : tA) (a : vec n),
-      (x = 1 \/ a = vzero) -> x c* a = a.
-  Proof. intros. apply vcmul_same_if_x1_or_v0; auto. Qed.
+  Lemma vscal_same_if_x1_or_v0 : forall {n} (x : tA) (a : vec n),
+      (x = 1 \/ a = vzero) -> x s* a = a.
+  Proof. intros. apply vscal_same_if_x1_or_v0; auto. Qed.
   
   (** x .* a = a -> a <> 0 -> x = 1 *)
-  Lemma vcmul_same_imply_x1 : forall {n} (x : tA) (a : vec n),
-      x c* a = a -> a <> vzero -> x = 1.
-  Proof. intros. apply (vcmul_same_imply_x1 x a); auto. Qed.
+  Lemma vscal_same_imply_x1 : forall {n} (x : tA) (a : vec n),
+      x s* a = a -> a <> vzero -> x = 1.
+  Proof. intros. apply (vscal_same_imply_x1 x a); auto. Qed.
   
   (** x .* a = a -> x <> 1 -> a = 0 *)
-  Lemma vcmul_same_imply_v0 : forall {n} (x : tA) (a : vec n),
-      x c* a = a -> x <> 1 -> a = vzero.
-  Proof. intros. apply (vcmul_same_imply_v0 x a); auto. Qed.
+  Lemma vscal_same_imply_v0 : forall {n} (x : tA) (a : vec n),
+      x s* a = a -> x <> 1 -> a = vzero.
+  Proof. intros. apply (vscal_same_imply_v0 x a); auto. Qed.
 
   (** x .* a = y .* a -> (x = y \/ a = 0) *)
-  Lemma vcmul_sameV_imply_eqX_or_v0 : forall {n} (x y : tA) (a : vec n),
-      x c* a = y c* a -> (x = y \/ a = vzero).
-  Proof. intros. apply vcmul_sameV_imply_eqX_or_v0; auto. Qed.
+  Lemma vscal_sameV_imply_eqX_or_v0 : forall {n} (x y : tA) (a : vec n),
+      x s* a = y s* a -> (x = y \/ a = vzero).
+  Proof. intros. apply vscal_sameV_imply_eqX_or_v0; auto. Qed.
 
   (** x .* a = y .* a -> a <> 0 -> x = y *)
-  Lemma vcmul_sameV_imply_eqX : forall {n} (x y : tA) (a : vec n),
-      x c* a = y c* a -> a <> vzero -> x = y.
-  Proof. intros. apply vcmul_sameV_imply_eqX in H; auto. Qed.
+  Lemma vscal_sameV_imply_eqX : forall {n} (x y : tA) (a : vec n),
+      x s* a = y s* a -> a <> vzero -> x = y.
+  Proof. intros. apply vscal_sameV_imply_eqX in H; auto. Qed.
 
   (** x .* a = y .* a -> x <> y -> a = 0 *)
-  Lemma vcmul_sameV_imply_v0 : forall {n} (x y : tA) (a : vec n),
-      x c* a = y c* a -> x <> y -> a = vzero.
-  Proof. intros. apply vcmul_sameV_imply_v0 in H; auto. Qed.
+  Lemma vscal_sameV_imply_v0 : forall {n} (x y : tA) (a : vec n),
+      x s* a = y s* a -> x <> y -> a = vzero.
+  Proof. intros. apply vscal_sameV_imply_v0 in H; auto. Qed.
 
   (** (x .* a) _|_ b <-> a _|_ b *)
-  Lemma vorth_vcmul_l : forall {n} x (a b : vec n),
-      x <> 0 -> ((x c* a) _|_ b <-> a _|_ b).
-  Proof. intros. apply vorth_vcmul_l; auto. Qed.
+  Lemma vorth_vscal_l : forall {n} x (a b : vec n),
+      x <> 0 -> ((x s* a) _|_ b <-> a _|_ b).
+  Proof. intros. apply vorth_vscal_l; auto. Qed.
   
   (** a _|_ (x .* b) <-> a _|_ b *)
-  Lemma vorth_vcmul_r : forall {n} x (a b : vec n),
-      x <> 0 -> (a _|_ (x c* b) <-> a _|_ b).
-  Proof. intros. apply vorth_vcmul_r; auto. Qed.
+  Lemma vorth_vscal_r : forall {n} x (a b : vec n),
+      x <> 0 -> (a _|_ (x s* b) <-> a _|_ b).
+  Proof. intros. apply vorth_vscal_r; auto. Qed.
 
   (* ======================================================================= *)
   (** ** Projection component of a vector onto another *)
@@ -2591,8 +2795,8 @@ Module FieldMatrixTheory (E : FieldElementType).
   Lemma vorth_imply_vproj_eq0 : forall {n} (a b : vec n), a _|_ b -> vproj a b = vzero.
   Proof. intros. apply vorth_imply_vproj_eq0; auto. Qed.
 
-  (** vunit b -> vproj a b = <a, b> c* b *)
-  Lemma vproj_vunit : forall {n} (a b : vec n), vunit b -> vproj a b = <a, b> c* b.
+  (** vunit b -> vproj a b = <a, b> s* b *)
+  Lemma vproj_vunit : forall {n} (a b : vec n), vunit b -> vproj a b = <a, b> s* b.
   Proof. intros. apply vproj_vunit; auto. Qed.
   
   (* ======================================================================= *)
@@ -2631,19 +2835,19 @@ Module FieldMatrixTheory (E : FieldElementType).
   Open Scope mat_scope.
 
   (** x .* M = 0 -> (x = 0) \/ (M = 0) *)
-  Lemma mcmul_eq0_imply_x0_or_m0 : forall {r c} (M : mat r c) x,
-      x c* M = mat0 -> x = 0 \/ (M = mat0).
-  Proof. intros. apply mcmul_eq0_imply_x0_or_m0; auto. Qed.
+  Lemma mscal_eq0_imply_x0_or_m0 : forall {r c} (M : mat r c) x,
+      x s* M = mat0 -> x = 0 \/ (M = mat0).
+  Proof. intros. apply mscal_eq0_imply_x0_or_m0; auto. Qed.
 
   (** (M <> 0 /\ x .* M = 0) -> M = 0 *)
-  Lemma mcmul_mnonzero_eq0_imply_x0 : forall {r c} (M : mat r c) x,
-      M <> mat0 -> x c* M = mat0 -> x = 0.
-  Proof. intros. apply mcmul_mnonzero_eq0_imply_x0 with (M:=M); auto. Qed.
+  Lemma mscal_mnonzero_eq0_imply_x0 : forall {r c} (M : mat r c) x,
+      M <> mat0 -> x s* M = mat0 -> x = 0.
+  Proof. intros. apply mscal_mnonzero_eq0_imply_x0 with (M:=M); auto. Qed.
 
   (** x .* M = M -> x = 1 \/ M = 0 *)
-  Lemma mcmul_same_imply_x1_or_m0 : forall {r c} x (M : mat r c),
-      x c* M = M -> x = 1 \/ (M = mat0).
-  Proof. intros. apply mcmul_same_imply_x1_or_m0; auto. Qed.
+  Lemma mscal_same_imply_x1_or_m0 : forall {r c} x (M : mat r c),
+      x s* M = M -> x = 1 \/ (M = mat0).
+  Proof. intros. apply mscal_same_imply_x1_or_m0; auto. Qed.
 
   (* ======================================================================= *)
   (** ** Determinant of a matrix over a field *)
@@ -2787,14 +2991,14 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply mmul_eq1_uniq_r with (M:=M); auto. Qed.
 
   (** M * N = mat1 -> M = /|N| .* N\A *)
-  Lemma mmul_eq1_imply_det_cmul_adj_l : forall {n} (M N : smat n),
-      M * N = mat1 -> M = /|N| c* N\A.
-  Proof. intros. apply mmul_eq1_imply_det_cmul_adj_l; auto. Qed.
+  Lemma mmul_eq1_imply_det_scal_adj_l : forall {n} (M N : smat n),
+      M * N = mat1 -> M = /|N| s* N\A.
+  Proof. intros. apply mmul_eq1_imply_det_scal_adj_l; auto. Qed.
 
   (** M * N = mat1 -> N = /|M| .* M\A *)
-  Lemma mmul_eq1_imply_det_cmul_adj_r : forall {n} (M N : smat n),
-      M * N = mat1 -> N = /|M| c* M\A.
-  Proof. intros. apply mmul_eq1_imply_det_cmul_adj_r; auto. Qed.
+  Lemma mmul_eq1_imply_det_scal_adj_r : forall {n} (M N : smat n),
+      M * N = mat1 -> N = /|M| s* M\A.
+  Proof. intros. apply mmul_eq1_imply_det_scal_adj_r; auto. Qed.
     
   (** M1 * M2 = mat1 -> M2 * M1 = mat1 *)
   Lemma mmul_eq1_comm : forall {n} (M1 M2 : smat n),
@@ -3528,9 +3732,9 @@ Module OrderedFieldMatrixTheory (E : OrderedFieldElementType).
   Proof. intros. apply vproj_vadd; auto. Qed.
   
   (** vproj (x .* a) b = x .* (vproj a b) *)
-  Lemma vproj_vcmul : forall {n} (a b : vec n) x,
-      b <> vzero -> vproj (x c* a) b = x c* (vproj a b).
-  Proof. intros. apply vproj_vcmul; auto. Qed.
+  Lemma vproj_vscal : forall {n} (a b : vec n) x,
+      b <> vzero -> vproj (x s* a) b = x s* (vproj a b).
+  Proof. intros. apply vproj_vscal; auto. Qed.
 
   (** vproj a a = a *)
   Lemma vproj_same : forall {n} (a : vec n), a <> vzero -> vproj a a = a.
@@ -3547,9 +3751,9 @@ Module OrderedFieldMatrixTheory (E : OrderedFieldElementType).
   Proof. intros. apply vperp_vadd; auto. Qed.
 
   (** vperp (x .* a) b = x .* (vperp a b) *)
-  Lemma vperp_vcmul : forall {n} (x : tA) (a b : vec n),
-      b <> vzero -> vperp (x c* a) b = x c* (vperp a b).
-  Proof. intros. apply vperp_vcmul; auto. Qed.
+  Lemma vperp_vscal : forall {n} (x : tA) (a b : vec n),
+      b <> vzero -> vperp (x s* a) b = x s* (vperp a b).
+  Proof. intros. apply vperp_vscal; auto. Qed.
 
   (** vperp a a = vzero *)
   Lemma vperp_self : forall {n} (a : vec n), a <> vzero -> vperp a a = vzero.
@@ -3576,16 +3780,16 @@ Module OrderedFieldMatrixTheory (E : OrderedFieldElementType).
 
   (** a // b => ∃! x, x <> 0 /\ x .* a = b *)
   Lemma vcoll_imply_uniqueX : forall {n} (a b : vec n),
-      a // b -> (exists ! x, x <> 0 /\ x c* a = b).
+      a // b -> (exists ! x, x <> 0 /\ x s* a = b).
   Proof. intros; apply vcoll_imply_uniqueX; auto. Qed.
 
-  (** a // b -> (x c* a) // b *)
-  Lemma vcoll_vcmul_l : forall {n} x (a b : vec n), x <> 0 -> a // b -> x c* a // b.
-  Proof. intros; apply vcoll_vcmul_l; auto. Qed.
+  (** a // b -> (x s* a) // b *)
+  Lemma vcoll_vscal_l : forall {n} x (a b : vec n), x <> 0 -> a // b -> x s* a // b.
+  Proof. intros; apply vcoll_vscal_l; auto. Qed.
 
-  (** a // b -> a // (x c* b) *)
-  Lemma vcoll_vcmul_r : forall {n} x (a b : vec n), x <> 0 -> a // b -> a // (x c* b).
-  Proof. intros; apply vcoll_vcmul_r; auto. Qed.
+  (** a // b -> a // (x s* b) *)
+  Lemma vcoll_vscal_r : forall {n} x (a b : vec n), x <> 0 -> a // b -> a // (x s* b).
+  Proof. intros; apply vcoll_vscal_r; auto. Qed.
 
   (* ======================================================================= *)
   (** ** Two vectors are parallel (i.e., collinear with same direction) *)
@@ -3608,18 +3812,18 @@ Module OrderedFieldMatrixTheory (E : OrderedFieldElementType).
 
   (** a //+ b => ∃! x, 0 < x /\ x .* a = b *)
   Lemma vpara_imply_uniqueX : forall {n} (a b : vec n),
-      a //+ b -> (exists ! x, 0 < x /\ x c* a = b).
+      a //+ b -> (exists ! x, 0 < x /\ x s* a = b).
   Proof. intros. apply vpara_imply_uniqueX; auto. Qed.
 
-  (** a //+ b -> (x c* u) //+ a *)
-  Lemma vpara_vcmul_l : forall {n} x (a b : vec n),
-      0 < x -> a //+ b -> x c* a //+ b.
-  Proof. intros. apply vpara_vcmul_l; auto. Qed.
+  (** a //+ b -> (x s* u) //+ a *)
+  Lemma vpara_vscal_l : forall {n} x (a b : vec n),
+      0 < x -> a //+ b -> x s* a //+ b.
+  Proof. intros. apply vpara_vscal_l; auto. Qed.
 
   (** a //+ b -> a //+ (x .* b) *)
-  Lemma vpara_vcmul_r : forall {n} x (a b : vec n),
-      0 < x -> a //+ b -> a //+ (x c* b).
-  Proof. intros. apply vpara_vcmul_r; auto. Qed.
+  Lemma vpara_vscal_r : forall {n} x (a b : vec n),
+      0 < x -> a //+ b -> a //+ (x s* b).
+  Proof. intros. apply vpara_vscal_r; auto. Qed.
 
   (* ======================================================================= *)
   (** ** Two vectors are antiparallel (i.e., collinear with opposite direction) *)
@@ -3634,18 +3838,18 @@ Module OrderedFieldMatrixTheory (E : OrderedFieldElementType).
 
   (** a //- b => ∃! x, x < 0 /\ x * a = b *)
   Lemma vantipara_imply_uniqueX : forall {n} (a b : vec n),
-      a //- b -> (exists ! x, x < 0 /\ x c* a = b).
+      a //- b -> (exists ! x, x < 0 /\ x s* a = b).
   Proof. intros. apply vantipara_imply_uniqueX; auto. Qed.
 
   (** a //- b -> (x .* a) //- b *)
-  Lemma vantipara_vcmul_l : forall {n} x (a b : vec n),
-      0 < x -> a //- b -> x c* a //- b.
-  Proof. intros. apply vantipara_vcmul_l; auto. Qed.
+  Lemma vantipara_vscal_l : forall {n} x (a b : vec n),
+      0 < x -> a //- b -> x s* a //- b.
+  Proof. intros. apply vantipara_vscal_l; auto. Qed.
 
   (** a //- b -> a //- (x .* b) *)
-  Lemma vantipara_vcmul_r : forall {n} x (a b : vec n),
-      0 < x -> a //- b -> a //- (x c* b).
-  Proof. intros. apply vantipara_vcmul_r; auto. Qed.
+  Lemma vantipara_vscal_r : forall {n} x (a b : vec n),
+      0 < x -> a //- b -> a //- (x s* b).
+  Proof. intros. apply vantipara_vscal_r; auto. Qed.
   
   (* ======================================================================= *)
   (** ** Convert between //, //+, and //-  *)
@@ -3716,8 +3920,8 @@ Module NormedOrderedFieldMatrixTheory (E : NormedOrderedFieldElementType).
   Proof. intros. apply vlen_vopp. Qed.
 
   (** ||x .* a|| = |k| * ||a|| *)
-  Lemma vlen_vcmul : forall n x (a : vec n), ||x c* a|| = ((a2r (|x|))%A * ||a||)%R.
-  Proof. intros. apply vlen_vcmul. Qed.
+  Lemma vlen_vscal : forall n x (a : vec n), ||x s* a|| = ((a2r (|x|))%A * ||a||)%R.
+  Proof. intros. apply vlen_vscal. Qed.
 
   (** ||a + b||² = ||a||² + ||b||² + 2 * <a, b> *)
   Lemma vlen_sqr_vadd : forall {n} (a b : vec n),

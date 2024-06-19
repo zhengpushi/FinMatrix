@@ -243,6 +243,13 @@ Qed.
 Lemma fin2nat_neq_n_imply_lt : forall n (i : 'I_(S n)), fin2nat i <> n -> fin2nat i < n.
 Proof. intros. pose proof (fin2nat_lt i). lia. Qed.
 
+Lemma nat2finS_inj : forall n i j,
+    i < n -> j < n -> @nat2finS n i = @nat2finS n j -> i = j.
+Proof.
+  intros. unfold nat2finS in *. destruct (i ??< S n), (j ??< S n); try lia.
+  inv H1. auto.
+Qed.
+
 
 (** ** [nat] to ['I_n] *)
 
@@ -284,6 +291,7 @@ Qed.
 Ltac fin :=
   repeat
     (intros;
+     auto with fin;
      try autorewrite with fin in *;
      try
        (let E := fresh "E" in
@@ -344,7 +352,7 @@ Ltac fin :=
         (* (i : 'I_n) = (j : 'I_n) |- _ ==> subst it *)
         | H : ?i = ?j |- _ => match type of i with | fin ?n => try rewrite H in * end
         end);
-     auto; try reflexivity; try easy; try lia; try ring
+     auto with fin; try reflexivity; try easy; try lia; try ring
     ).
 
 
@@ -487,6 +495,13 @@ Proof. intros. unfold fin2SameRangeRemain. fin. Qed.
 Definition fSuccRange {n} (i : 'I_n) : 'I_(S n).
   refine (nat2finS (fin2nat i)).
 Defined.
+
+Lemma fSuccRange_inj : forall n (i j : 'I_n), fSuccRange i = fSuccRange j -> i = j.
+Proof.
+  intros. destruct i,j. unfold fSuccRange in H. fin.
+  apply nat2finS_inj in H; auto.
+Qed.
+Hint Resolve fSuccRange_inj : fin.
 
 Lemma fin2nat_fSuccRange : forall n (i : 'I_n),
     fin2nat (@fSuccRange n i) = fin2nat i.

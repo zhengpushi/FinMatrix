@@ -48,7 +48,7 @@ Section test.
     intros. rewrite mmul_msub_distr_r. auto.
   Qed.
 
-  Example mat_C_ex2 : forall r c (m1 m2 : mat r c) x, m1 = m2 -> x c* m1 = x c* m2.
+  Example mat_C_ex2 : forall r c (m1 m2 : mat r c) x, m1 = m2 -> x s* m1 = x s* m2.
   Proof. intros. f_equal. auto. Qed.
 
   (* test_monoid. *)

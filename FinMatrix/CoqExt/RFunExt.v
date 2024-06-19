@@ -12,7 +12,7 @@
 
   remark    :
   1. we won't use notations such as {+,-,*,/} in Reals at scope Rfun_scope (%F),
-     instead, we use {+f, -f, *f, /f, c*} in scope RFun_scope (%R).
+     instead, we use {+f, -f, *f, /f, s*} in scope RFun_scope (%R).
  *)
 
 Require Export RExt.
@@ -39,7 +39,7 @@ Notation finv := inv_fct.
 Notation fdiv f g := (fmul f (finv g)).
 
 (** Scalar multiplication of real function *)
-Definition fcmul (c : R) (f : R -> R) := fun x => c * f x.
+Definition fscal (c : R) (f : R -> R) := fun x => c * f x.
 
 
 Infix "+f" := fadd : RFun_scope.
@@ -49,7 +49,7 @@ Infix "/f" := fdiv : RFun_scope.
 Infix "/f" := fdiv : RFun_scope.
 Notation "-f g" := (fopp g) : RFun_scope.
 Notation "/f g" := (finv g) : RFun_scope.
-Infix "c*" := fcmul : RFun_scope.
+Infix "s*" := fscal : RFun_scope.
 
 
 (* ======================================================================= *)
@@ -75,7 +75,7 @@ Lemma fsub_ok : forall (u v : R -> R) (x : R), (u -f v) x = u x - v x. auto. Qed
 Lemma fmul_ok : forall (u v : R -> R) (x : R), (u *f v) x = u x * v x. auto. Qed.
 Lemma finv_ok : forall (v : R -> R) (x : R), (/f v) x = / v x. auto. Qed.
 Lemma fdiv_ok : forall (u v : R -> R) (x : R), (u /f v) x = u x / v x. auto. Qed.
-Lemma fcmul_ok : forall (c : R) (u : R -> R) (x : R), (c c* u) x = c * u x. auto. Qed.
+Lemma fscal_ok : forall (c : R) (u : R -> R) (x : R), (c s* u) x = c * u x. auto. Qed.
 
 
 (* ======================================================================= *)
@@ -86,7 +86,7 @@ Ltac feq :=
   intros;
   let x := fresh "x" in
   extensionality x;
-  repeat (rewrite ?fadd_ok,?fopp_ok,?fsub_ok,?fmul_ok,?finv_ok,?fdiv_ok, ?fcmul_ok);
+  repeat (rewrite ?fadd_ok,?fopp_ok,?fsub_ok,?fmul_ok,?finv_ok,?fdiv_ok, ?fscal_ok);
   autounfold with RFun;
   ra.
   (* try unfold fzero; *)
@@ -105,8 +105,8 @@ Lemma fmul_1_r : forall f, f *f fone = f. feq. Qed.
 Lemma fmul_inv_l : forall f, (forall x, f x <> 0) -> /f f *f f = fone. feq. Qed.
 Lemma fmul_inv_r : forall f, (forall x, f x <> 0) -> f *f /f f = fone. feq. Qed.
 
-Lemma fcmul_assoc1 : forall (c d : R) (u : R -> R), c c* (d c* u) = (c * d) c* u. feq. Qed.
-Lemma fcmul_assoc2 : forall (c : R) (u v : R -> R), c c* (u *f v) = (c c* u) *f v. feq. Qed.
+Lemma fscal_assoc1 : forall (c d : R) (u : R -> R), c s* (d s* u) = (c * d) s* u. feq. Qed.
+Lemma fscal_assoc2 : forall (c : R) (u v : R -> R), c s* (u *f v) = (c s* u) *f v. feq. Qed.
 
 (* ======================================================================= *)
 (** ** Multiply real function with a natural number *)
@@ -129,7 +129,7 @@ Fixpoint fnmul (n : nat) (f : R -> R) : R -> R :=
 (** * Algebraic structures *)
 
 (** equality is equivalence relation: Equivalence (@eq (R -> R)) *)
-Hint Resolve eq_equivalence : Rfun.
+Hint Resolve eq_equivalence : RFun.
 
 (** operations are well-defined. Eg: Proper (eq ==> eq ==> eq) fadd *)
 
@@ -148,7 +148,7 @@ Proof. simp_proper. intros; subst; auto. Qed.
 Hint Resolve
   fadd_wd fopp_wd
   fmul_wd finv_wd
-  : Rfun.
+  : RFun.
 
 (** Associative *)
 
@@ -161,7 +161,7 @@ Proof. constructor; intros. feq. Qed.
 Hint Resolve
   fadd_Assoc
   fmul_Assoc
-  : Rfun.
+  : RFun.
 
 (** Commutative *)
 
@@ -174,7 +174,7 @@ Proof. constructor; intros. feq. Qed.
 Hint Resolve
   fadd_Comm
   fmul_Comm
-  : Rfun.
+  : RFun.
 
 (** Identity Left/Right *)
 #[export] Instance fadd_IdL : IdentityLeft fadd fzero.
@@ -192,7 +192,7 @@ Proof. constructor; intros. feq. Qed.
 Hint Resolve
   fadd_IdL fadd_IdR
   fmul_IdL fmul_IdR
-  : Rfun.
+  : RFun.
 
 (** Inverse Left/Right *)
 
@@ -202,7 +202,7 @@ Proof. constructor; intros. feq. Qed.
 #[export] Instance fadd_InvR : InverseRight fadd fzero fopp.
 Proof. constructor; intros. feq. Qed.
 
-Hint Resolve fadd_InvL fadd_InvR : Rfun.
+Hint Resolve fadd_InvL fadd_InvR : RFun.
 
 (** Distributive *)
 
@@ -215,33 +215,33 @@ Proof. constructor; intros. feq. Qed.
 Hint Resolve
   fmul_add_DistrL
   fmul_add_DistrR
-  : Rfun.
+  : RFun.
 
 (** Semigroup *)
 
 #[export] Instance fadd_SGroup : SGroup fadd.
-Proof. constructor; auto with Rfun. Qed.
+Proof. constructor; auto with RFun. Qed.
 
 #[export] Instance fmul_SGroup : SGroup fmul.
-Proof. constructor; auto with Rfun. Qed.
+Proof. constructor; auto with RFun. Qed.
 
 Hint Resolve
   fadd_SGroup
   fmul_SGroup
-  : Rfun.
+  : RFun.
 
 (** Abelian semigroup *)
 
 #[export] Instance fadd_ASGroup : ASGroup fadd.
-Proof. constructor; auto with Rfun. Qed.
+Proof. constructor; auto with RFun. Qed.
 
 #[export] Instance fmul_ASGroup : ASGroup fmul.
-Proof. constructor; auto with Rfun. Qed.
+Proof. constructor; auto with RFun. Qed.
 
 Hint Resolve
   fadd_ASGroup
   fmul_ASGroup
-  : Rfun.
+  : RFun.
 
 Goal forall x1 x2 y1 y2 a b c, x1 + a + b + c + x2 = y1 + c + (b + a) + y2.
 Proof. intros. pose proof fadd_ASGroup. asgroup. Abort.
@@ -249,56 +249,59 @@ Proof. intros. pose proof fadd_ASGroup. asgroup. Abort.
 (** Monoid *)
   
 #[export] Instance fadd_Monoid : Monoid fadd fzero.
-Proof. constructor; auto with Rfun. Qed.
+Proof. constructor; auto with RFun. Qed.
 
 #[export] Instance fmul_Monoid : Monoid fmul fone.
-Proof. constructor; auto with Rfun. Qed.
+Proof. constructor; auto with RFun. Qed.
 
 Hint Resolve
   fadd_Monoid
   fmul_Monoid
-  : Rfun.
+  : RFun.
 
 (** Abelian monoid *)
   
 #[export] Instance fadd_AMonoid : AMonoid fadd fzero.
-Proof. constructor; auto with Rfun. Qed.
+Proof. constructor; auto with RFun. Qed.
   
 #[export] Instance fmul_AMonoid : AMonoid fmul fone.
-Proof. constructor; auto with Rfun. Qed.
+Proof. constructor; auto with RFun. Qed.
 
-Hint Resolve fadd_AMonoid fmul_AMonoid : Rfun.
+Hint Resolve fadd_AMonoid fmul_AMonoid : RFun.
 
 (** Group *)
 
 #[export] Instance fadd_Group : Group fadd fzero fopp.
-Proof. constructor; auto with Rfun. Qed.
-
-Hint Resolve fadd_Group : Rfun.
+Proof. constructor; auto with RFun. Qed.
+Hint Resolve fadd_Group : RFun.
 
 (** AGroup *)
 
 #[export] Instance fadd_AGroup : AGroup fadd fzero fopp.
-Proof. constructor; auto with Rfun. Qed.
+Proof. constructor; auto with RFun. Qed.
+Hint Resolve fadd_AGroup : RFun.
 
-Hint Resolve fadd_AGroup : Rfun.
+(** SRing *)
+
+#[export] Instance RFun_SRing : SRing fadd fzero fmul fone.
+Proof. constructor; auto with RFun. all: feq. Qed.
+Hint Resolve RFun_SRing : RFun.
 
 (** Ring *)
 
-#[export] Instance Rfun_Ring : Ring fadd fzero fopp fmul fone.
-Proof. constructor; auto with Rfun. Qed.
-
-Hint Resolve Rfun_Ring : Rfun.
+#[export] Instance RFun_Ring : Ring fadd fzero fopp fmul fone.
+Proof. constructor; auto with RFun. Qed.
+Hint Resolve RFun_Ring : RFun.
 
 (** ARing *)
 
-#[export] Instance Rfun_ARing : ARing fadd fzero fopp fmul fone.
-Proof. constructor; auto with Rfun. Qed.
+#[export] Instance RFun_ARing : ARing fadd fzero fopp fmul fone.
+Proof. constructor; auto with RFun. Qed.
 
-Hint Resolve Rfun_ARing : Rfun.
+Hint Resolve RFun_ARing : RFun.
 
 Section test.
-  Add Ring ring_inst : (make_ring_theory Rfun_ARing).
+  Add Ring ring_inst : (make_ring_theory RFun_ARing).
 
   Goal forall u v w : R -> R, u -f v *f (u -f w) = w *f v -f u *f v +f u.
   Proof. intros. ring. Qed.
@@ -306,9 +309,9 @@ End test.
 
 (** Field *)
 
-#[export] Instance Rfun_Field : Field fadd fzero fopp fmul fone finv.
+#[export] Instance RFun_Field : Field fadd fzero fopp fmul fone finv.
 Proof.
-  constructor; auto with Rfun.
+  constructor; auto with RFun.
   2:{ intro. cbv in H.
       rewrite fun_eq_iff_forall_eq in H. specialize (H R0). lra. }
   1:{ intros. apply fmul_inv_l.
@@ -326,7 +329,7 @@ Abort.
 (** * Instances for ElementType *)
    
 Module ElementTypeRFun <: ElementType.
-  Add Ring ring_inst : (make_ring_theory Rfun_ARing).
+  Add Ring ring_inst : (make_ring_theory RFun_ARing).
   
   Definition tA : Type := R -> R.
   Definition Azero : tA := fzero.
@@ -362,6 +365,9 @@ Module RingElementTypeRFun <: RingElementType.
   Infix "*" := Amul : A_scope.
   Notation "- a" := (Aopp a) : A_scope.
   Infix "-" := Asub : A_scope.
+
+  #[export] Instance SRing : SRing Aadd Azero Amul Aone.
+  Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
   
   #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
   Proof.

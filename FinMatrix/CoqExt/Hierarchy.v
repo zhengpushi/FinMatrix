@@ -52,7 +52,7 @@
      AMonoid Aadd Azeor                 abelian monoid<+,0>
      Group Aadd Azero Aopp              group<+,0,-a>
      AGroup Aadd Azero Aopp             abelian group<+,0,-a>
-     SemiRing Aadd Azero Amul Aone      semiring<+,0,*,1>
+     SRing Aadd Azero Amul Aone         semiring<+,0,*,1>
      Ring Aadd Azero Aopp Amul Aone     ring<+,0,-a,*,1>
      ARing Aadd Azero Aopp Amul Aone    abelian-ring<+,0,-a,*,1>
      Field Aadd Azero Aopp Amul Aone Ainv  field<+,0,-a,*,1,/a>
@@ -1708,14 +1708,17 @@ End Examples.
 
 
 (* ######################################################################### *)
-(** * SemiRing *)
-(* 区分半环与环：半环加法不需要逆元。比如<nat,+,*>是半环，但不是环 *)
+(** * SRing *)
+(* https://en.wikipedia.org/wiki/Semiring
+   区分半环与环：半环加法不需要逆元。比如<nat,+,*>是半环，但不是环 *)
 
 (** ** Class *)
 
 Class SRing {tA} Aadd (Azero : tA) Amul Aone := {
-    sringAddAM :: AMonoid Aadd Azero; (* 不确定交换性是否必要，姑且先留下 *)
-    sringMulAM :: AMonoid Amul Aone; (* 不确定交换性是否必要，姑且先留下 *)
+    sringAddAM :: AMonoid Aadd Azero;
+    sringMulM :: Monoid Amul Aone; (* 不确定交换性是否必要，姑且先留下 *)
+    sringMul0L : forall a, Amul Azero a = Azero;
+    sringMul0R : forall a, Amul a Azero = Azero;
     sringDistrL :: DistrLeft Aadd Amul;
     sringDistrR :: DistrRight Aadd Amul;
   }.
@@ -1726,17 +1729,67 @@ End Instances.
 
 (** ** Extra Theories *)
 Section Theory.
-
   Context `{HSRing : SRing}.
-
   Infix "+" := Aadd.
   Infix "*" := Amul.
 
 End Theory.
 
+
+Ltac sring_only add zero mul one :=
+  try match goal with
+    | [HSRing:SRing add zero mul one, H:context[mul zero ?a] |- _] =>
+        rewrite sringMul0L in H at 1
+    | [HSRing:SRing add zero mul one, H:context[mul ?a zero] |- _] =>
+        rewrite sringMul0R in H at 1
+    | [HSRing:SRing add zero mul one |- context[mul zero ?a]] =>
+        rewrite sringMul0L at 1
+    | [HSRing:SRing add zero mul one |- context[mul ?a zero]] =>
+        rewrite sringMul0R at 1
+    end;
+  try rewrite ?distrLeft, ?distrRight in *.
+
+Ltac sring :=
+  try match goal with
+    | HSRing : SRing ?add ?zero ?mul ?one |- _ =>
+        sring_only add zero mul one;
+        try pose proof (@sringAddAM _ add zero mul one HSRing) as HAddAM;
+        try pose proof (@sringMulM _ add zero mul one HSRing) as HMulM;
+        repeat
+          (amonoid)
+    end;
+  try match goal with
+    | AM : AMonoid ?f ?e |- _ => amonoid
+    end;
+  try match goal with
+    | M : Monoid ?f ?e |- _ => monoid
+    end;
+  try match goal with
+    | ASG : ASGroup ?f |- _ => asgroup
+    end;
+  try match goal with
+    | SG : SGroup ?f |- _ => sgroup
+    end.
+
 (** ** Examples *)
 
 Section Examples.
+  Context `{HSRing : SRing}.
+  Infix "+" := Aadd.
+  Infix "*" := Amul.
+  Notation "0" := Azero.
+
+  Goal forall a b, a * 0 = b -> b = 0.
+  Proof. intros. sring. Qed.
+
+  Goal forall a b, 0 * a = b -> b = 0.
+  Proof. intros. sring. Qed.
+
+  Goal forall a, 0 * a = 0.
+  Proof. intros. sring. Qed.
+
+  Goal forall a, a * 0 = 0.
+  Proof. intros. sring. Qed.
 
 End Examples.
 
@@ -1752,6 +1805,7 @@ End Examples.
 
 Class Ring {tA} Aadd (Azero : tA) Aopp Amul Aone := {
     ringAddAG :: AGroup Aadd Azero Aopp;
+    ringSRing :: SRing Aadd Azero Amul Aone;
     ringMulM :: Monoid Amul Aone;
     ringDistrL :: DistrLeft Aadd Amul;
     ringDistrR :: DistrRight Aadd Amul;

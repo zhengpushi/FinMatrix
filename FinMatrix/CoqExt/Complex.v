@@ -438,25 +438,25 @@ End triangle_ineq.
 (** ** Scalar multiplication of complex numbers *)
 
 (** scalar multiplication *)
-Definition Ccmul (k : R) (z : C) : C := (k * z.a) +i (k * z.b).
-Infix "c*" := Ccmul: C_scope.
+Definition Cscal (k : R) (z : C) : C := (k * z.a) +i (k * z.b).
+Infix "s*" := Cscal: C_scope.
 
-Lemma Cre_cmul : forall z k, (k c* z).a = (k * z.a)%R.
+Lemma Cre_scal : forall z k, (k s* z).a = (k * z.a)%R.
 Proof. intros (a,b) k; auto. Qed.
 
-Lemma Cim_cmul : forall z k, (k c* z).b = (k * z.b)%R.
+Lemma Cim_scal : forall z k, (k s* z).b = (k * z.b)%R.
 Proof. intros (a,b) k; auto. Qed.
 
-Lemma Ccmul_1 : forall z : C, 1 c* z = z.
+Lemma Cscal_1 : forall z : C, 1 s* z = z.
 Proof. Ceq. Qed.
 
-Lemma Ccmul_add_distr_l : forall k z1 z2, k c* (z1 + z2) = k c* z1 + k c* z2.
+Lemma Cscal_add_distr_l : forall k z1 z2, k s* (z1 + z2) = k s* z1 + k s* z2.
 Proof. Ceq. Qed.
 
-Lemma Ccmul_add_distr_r : forall k1 k2 z, (k1 + k2)%R c* z = k1 c* z + k2 c* z.
+Lemma Cscal_add_distr_r : forall k1 k2 z, (k1 + k2)%R s* z = k1 s* z + k2 s* z.
 Proof. Ceq. Qed.
 
-Lemma Ccmul_mul_swap_l : forall k1 k2 z, (k1 * k2)%R c* z = k1 c* (k2 c* z).
+Lemma Cscal_mul_swap_l : forall k1 k2 z, (k1 * k2)%R s* z = k1 s* (k2 s* z).
 Proof. Ceq. Qed.
 
 (** |k * z| = |k| * | z | *)
@@ -465,7 +465,7 @@ Proof. Ceq. Qed.
     <== \sqrt((ka)^2 + (kb)^2) = |k| * \sqrt(a^2 + b^2)
     <== (ka)^2 + (kb)^2 = k^2 * (a^2 +b^2)
  *)
-Lemma Cnorm_cmul : forall k z, |k c* z| = (| k | * | z |%C)%R.
+Lemma Cnorm_scal : forall k z, |k s* z| = (| k | * | z |%C)%R.
 Proof.
   intros k (a,b). unfold Cnorm; unfold Cnorm2; simpl.
   rewrite <- sqrt_Rsqr_abs. rewrite <- sqrt_mult; ra.
@@ -512,7 +512,7 @@ Proof. Ceq. Qed.
     <== (ac-bd)^2 + (ad+bc)^2 = (a^2+b^2)*(c^2+d^2)
     <== ring
  *)
-Lemma Cnorm_Cmult : forall z1 z2 : C, |z1 * z2| = (|z1|%C * |z2|%C)%R.
+Lemma Cnorm_Cmul : forall z1 z2 : C, |z1 * z2| = (|z1|%C * |z2|%C)%R.
 Proof. intros (a,b) (c,d). cbv. rewrite <- sqrt_mult; ra. f_equal. ra. Qed.
 
 Hint Resolve
@@ -576,7 +576,7 @@ Proof. intros z n ; induction n; auto. simpl. rewrite IHn. Ceq. Qed.
 Lemma Cnorm_pow : forall (z : C) n, |z ^ n| = ((| z |%C) ^ n)%R.
 Proof.
   intros z n; induction n. apply Cnorm_C1.
-  simpl; rewrite Cnorm_Cmult, IHn; reflexivity.
+  simpl; rewrite Cnorm_Cmul, IHn; reflexivity.
 Qed.
 
 
@@ -587,7 +587,7 @@ Definition Cinv (z : C) : C := (z.a / | z |2) +i (-z.b / | z |2).
 Notation "/ z" := (Cinv z) : C_scope.
 
 Lemma Cinv_rew : forall a b : R,
-    (a +i b) <> C0 -> /(a +i b) = (/ (a*a + b*b)) c* (a +i - b)%R.
+    (a +i b) <> C0 -> /(a +i b) = (/ (a*a + b*b)) s* (a +i - b)%R.
 Proof. Ceq. cbv; lra. cbv; lra. Qed.
 
 Lemma Cmul_inv_l : forall z : C, z <> C0 -> / z * z = C1.
@@ -919,7 +919,7 @@ Proof. apply Cnorm_triang_rev. Qed.
 (** ** 1.2.3 复数的三角表示 *)
 
 (** 复数三角表示的定义 *)
-Definition Ctrigo (r θ : R) : C := r c* (cos θ +i sin θ).
+Definition Ctrigo (r θ : R) : C := r s* (cos θ +i sin θ).
 Infix "^^" := Ctrigo (at level 30) : C_scope.
 
 (** 复数三角表示的重写形式 *)
@@ -927,7 +927,7 @@ Infix "^^" := Ctrigo (at level 30) : C_scope.
 
 (* (** 任意正整数r和实数θ，则存在一个复数z的三角表示如下 *) *)
 (* Lemma Ctrigo_r_theta_existsC : forall (r θ : R) (k : Z), *)
-(*     r > 0 -> (exists z : C, (z = Ccmul r (cos θ +i sin  θ))). *)
+(*     r > 0 -> (exists z : C, (z = Cscal r (cos θ +i sin  θ))). *)
 (* Proof. *)
 (*   intros. exists (Ctrigo r θ). auto. *)
 (* Qed. *)
@@ -935,7 +935,7 @@ Infix "^^" := Ctrigo (at level 30) : C_scope.
 (** 复数的三角表示有无穷多种选择 *)
 Lemma Ctrigo_many : forall (r θ : R) (k : Z),
     let θ' : R := (θ + 2 * (IZR k) * PI)%R in
-    r ^^ θ = r c* (cos θ' +i sin θ').
+    r ^^ θ = r s* (cos θ' +i sin θ').
 Proof.
   intros. unfold Ctrigo, θ'. rewrite cos_period_Z, sin_period_Z.
   auto.
@@ -1020,7 +1020,7 @@ Proof.
   (* 展开z会很繁琐 *)
   intros; unfold Cconj, Ctrigo.
   rewrite cos_neg, sin_neg, ?cos_Carg_neq0, ?sin_Carg_neq0; auto.
-  unfold Ccmul. simpl. f_equal; field; apply Cnorm_neq0_if_neq0; auto.
+  unfold Cscal. simpl. f_equal; field; apply Cnorm_neq0_if_neq0; auto.
 Qed.
 
 (** 1/z的三角表示 *)
@@ -1045,7 +1045,7 @@ Admitted.
 (** ** 1.2.4 用复数的三角表示作乘除法 *)
 
 (** 复数乘法运算的三角表示版本 *)
-Definition CmultTrigo (z1 z2 : C) : C :=
+Definition CmulTrigo (z1 z2 : C) : C :=
   Ctrigo (|z1|%C * |z2|%C)%R (/_  z1 + /_  z2)%R.
 
 (** 复数除法运算的三角表示版本。注意，z2 <> C0 *)
@@ -1053,11 +1053,11 @@ Definition CdivTrigo (z1 z2 : C) : C :=
   Ctrigo (|z1|%C / |z2|%C)%R (/_  z1 - /_  z2)%R.
 
 (** 复数乘法三角表示版本与常规乘法定义等价 *)
-Lemma CmultTrigo_eq_Cmult (z1 z2 : C) : 
-  z1 * z2 = CmultTrigo z1 z2.
+Lemma CmulTrigo_eq_Cmul (z1 z2 : C) : 
+  z1 * z2 = CmulTrigo z1 z2.
 Proof.
-  unfold CmultTrigo, Ctrigo.
-  rewrite cos_plus, sin_plus. unfold Ccmul.
+  unfold CmulTrigo, Ctrigo.
+  rewrite cos_plus, sin_plus. unfold Cscal.
   (* 是否为复数零来分类讨论 *)
   destruct (Aeqdec z1 C0), (Aeqdec z2 C0); subst; Ceq;
     repeat rewrite Cnorm_C0_eq0; autorewrite with R; auto.
@@ -1070,7 +1070,7 @@ Proof.
 
   (*   2:{ *)
   (*     rewrite ?Cnorm_C0_eq0. simpl. cbv. *)
-  (*   simpl. unfold Cmult. *)
+  (*   simpl. unfold Cmul. *)
 
   (*   ; ring_simplify. ; unfold R_R_to_C; f_equal; try ring. *)
   (*   unfold R_R_to_C. f_equal; field; split; apply Cnorm_ne0_iff_neq0; auto. *)
@@ -1082,7 +1082,7 @@ Lemma CdivTrigo_eq_Cdiv (z1 z2 : C) :
   z2 <> C0 -> z1 / z2 = CdivTrigo z1 z2.
 Proof.
   intros. unfold CdivTrigo, Ctrigo.
-  rewrite cos_minus, sin_minus. unfold Ccmul. simpl.
+  rewrite cos_minus, sin_minus. unfold Cscal. simpl.
   (* 是否为复数零来分类讨论 *)
   destruct (Aeqdec z1 C0), (Aeqdec z2 C0);
     subst; rewrite ?Cnorm_C0_eq0; unfold Cdiv.
@@ -1091,7 +1091,7 @@ Proof.
     (*     f_equal; field; apply Cnorm_ne0_iff_neq0; auto. *)
     (*   - apply C0_neq0_False in H; easy. *)
     (*   - repeat rewrite cos_Carg_neq0, sin_Carg_neq0; auto. *)
-    (*     destruct z1 as [x1 y1], z2 as [x2 y2]. unfold Cmult. simpl. *)
+    (*     destruct z1 as [x1 y1], z2 as [x2 y2]. unfold Cmul. simpl. *)
     (*     unfold Cnorm, Cnorm2. simpl. *)
     (*     remember (sqrt (x1 * x1 + y1 * y1)) as r1. *)
     (*     remember (sqrt (x2 * x2 + y2 * y2)) as r2. *)
@@ -1144,7 +1144,7 @@ Proof.
 Admitted.
 
 (** 复数乘方三角表示版本与常规乘方定义等价 *)
-Lemma CpowTrigo_eq_Cmult (z : C) (n : nat) : 
+Lemma CpowTrigo_eq_Cmul (z : C) (n : nat) : 
   Cpow z n  = CpowTrigo z n.
 Proof.
   generalize dependent z. induction n; intros; simpl.
@@ -1369,28 +1369,30 @@ Hint Resolve Cadd_AMonoid Cmul_AMonoid : C.
 
 #[export] Instance Cadd_Group : Group Cadd C0 Copp.
 Proof. constructor; auto with C. Qed.
-
 Hint Resolve Cadd_Group : C.
 
 (** AGroup *)
 
 #[export] Instance Cadd_AGroup : AGroup Cadd C0 Copp.
 Proof. constructor; auto with C. Qed.
-
 Hint Resolve Cadd_AGroup : C.
+
+(** SRing *)
+
+#[export] Instance C_SRing : SRing Cadd C0 Cmul C1.
+Proof. constructor; auto with C. all: Ceq. Qed.
+Hint Resolve C_SRing : C.
 
 (** Ring *)
 
 #[export] Instance C_Ring : Ring Cadd C0 Copp Cmul C1.
 Proof. constructor; auto with C. Qed.
-
 Hint Resolve C_Ring : C.
 
 (** ARing *)
 
 #[export] Instance C_ARing : ARing Cadd C0 Copp Cmul C1.
 Proof. constructor; auto with C. Qed.
-
 Hint Resolve C_ARing : C.
 
 (** Field *)
@@ -1439,6 +1441,9 @@ Module RingElementTypeC <: RingElementType.
   Infix "*" := Amul : A_scope.
   Notation "- a" := (Aopp a) : A_scope.
   Infix "-" := Asub : A_scope.
+
+  #[export] Instance SRing : SRing Aadd Azero Amul Aone.
+  Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
 
   #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
   Proof. repeat constructor; autounfold with tA; intros; ring. Qed.

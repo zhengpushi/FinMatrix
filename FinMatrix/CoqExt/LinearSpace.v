@@ -25,8 +25,8 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 
 Generalizable Variables A Aadd Azero Aopp Amul Aone Ainv Adiv Alt Ale
-  V Vadd Vzero Vopp Vcmul
-  W Wadd Wzero Wopp Wcmul.
+  V Vadd Vzero Vopp Vscal
+  W Wadd Wzero Wopp Wscal.
 Generalizable Variables B Badd Bzero.
 Generalizable Variables C Cadd Czero.
 
@@ -79,15 +79,15 @@ End vsum.
 
 (* elements of V called vectors, and elements of K called scalars  *)
 Class VectorSpace `{F : Field} {V : Type} (Vadd : V -> V -> V) (Vzero : V)
-  (Vopp : V -> V) (Vcmul : tA -> V -> V) := {
+  (Vopp : V -> V) (Vscal : tA -> V -> V) := {
     vs_vaddC :: Commutative Vadd;
     vs_vaddA :: Associative Vadd;
     vs_vaddIdR :: IdentityRight Vadd Vzero;
     vs_vaddInvR :: InverseRight Vadd Vzero Vopp;
-    vs_vcmul_1_l : forall v : V, Vcmul Aone v = v;
-    vs_vcmul_assoc : forall a b v, Vcmul (Amul a b) v = Vcmul a (Vcmul b v);
-    vs_vcmul_aadd : forall a b v, Vcmul (Aadd a b) v = Vadd (Vcmul a v) (Vcmul b v);
-    vs_vcmul_vadd : forall a u v, Vcmul a (Vadd u v) = Vadd (Vcmul a u) (Vcmul a v);
+    vs_vscal_1_l : forall v : V, Vscal Aone v = v;
+    vs_vscal_assoc : forall a b v, Vscal (Amul a b) v = Vscal a (Vscal b v);
+    vs_vscal_aadd : forall a b v, Vscal (Aadd a b) v = Vadd (Vscal a v) (Vscal b v);
+    vs_vscal_vadd : forall a u v, Vscal a (Vadd u v) = Vadd (Vscal a u) (Vscal a v);
   }.
 
 (** A field itself is a linear space *)
@@ -121,7 +121,7 @@ Section props.
   Notation "- v" := (Vopp v) : VectorSpace_scope.
   Notation Vsub u v := (u + -v).
   Infix "-" := Vsub : VectorSpace_scope.
-  Infix "c*" := Vcmul : VectorSpace_scope.
+  Infix "s*" := Vscal : VectorSpace_scope.
 
   (** 0 + v = v *)
   #[export] Instance vs_vaddIdL : IdentityLeft Vadd 0.
@@ -198,25 +198,25 @@ Section props.
   Proof. intros. eapply group_opp_uniq_r; auto. Qed.
   
   (** 0 .* v = 0 *)
-  Theorem vs_vcmul_0_l : forall v : V, 0%A c* v = 0.
+  Theorem vs_vscal_0_l : forall v : V, 0%A s* v = 0.
   Proof.
     (* 0 .* v = (0 + 0) .* v = 0 .* v + 0 .* v, 0 .* v = 0 + 0 .* v,
        Hence, 0 .* v + 0 .* v = 0 + 0 .* v. By the cancellation law, then ... *)
     intros. pose proof vs_vadd_AGroup as HAGroup_vadd.
-    assert (0%A c* v + 0%A c* v = 0%A c* v + 0).
-    - rewrite <- vs_vcmul_aadd. agroup. f_equal. field.
+    assert (0%A s* v + 0%A s* v = 0%A s* v + 0).
+    - rewrite <- vs_vscal_aadd. agroup. f_equal. field.
     - apply vs_cancel_l in H. auto.
   Qed.
 
   (** a .* 0 = 0 *)
-  Theorem vs_vcmul_0_r : forall a : tA, a c* 0 = 0.
+  Theorem vs_vscal_0_r : forall a : tA, a s* 0 = 0.
   Proof.
     (* a*0 = a*0 + 0, a*0 = a*(0 + 0) = a*0 + a*0,
        Thus, a*0 + 0 = a*0 + a*0. By the cancellation law, then ... *)
     intros. pose proof vs_vadd_AGroup as HAGroup_vadd.
-    assert (a c* 0 = a c* 0 + a c* 0).
-    { rewrite <- vs_vcmul_vadd. f_equal. agroup. }
-    assert (a c* 0 = a c* 0 + 0). agroup.
+    assert (a s* 0 = a s* 0 + a s* 0).
+    { rewrite <- vs_vscal_vadd. f_equal. agroup. }
+    assert (a s* 0 = a s* 0 + 0). agroup.
     rewrite H in H0 at 1. apply vs_cancel_l in H0. auto.
   Qed.
 
@@ -229,24 +229,24 @@ Section props.
   Proof. intros. apply group_sol_r; auto. Qed.
   
   (** (- c) * v = - (c * v) *)
-  Theorem vs_vcmul_opp : forall c v, (- c)%A c* v = - (c c* v).
+  Theorem vs_vscal_opp : forall c v, (- c)%A s* v = - (c s* v).
   Proof.
-    (* c*v + (-c)*v = 0, So, ... *)
+    (* s*v + (-c)*v = 0, So, ... *)
     intros. symmetry. apply vs_vopp_uniq_l; auto.
-    rewrite <- vs_vcmul_aadd. rewrite inverseRight, vs_vcmul_0_l; auto.
+    rewrite <- vs_vscal_aadd. rewrite inverseRight, vs_vscal_0_l; auto.
   Qed.
   
   (** c * (- v) = - (c * v) *)
-  Theorem vs_vcmul_vopp : forall c v, c c* (- v) = - (c c* v).
+  Theorem vs_vscal_vopp : forall c v, c s* (- v) = - (c s* v).
   Proof.
-    (* c*v + c*(-v) = 0, So, ... *)
+    (* s*v + s*(-v) = 0, So, ... *)
     intros. symmetry. apply vs_vopp_uniq_l; auto.
-    rewrite <- vs_vcmul_vadd. rewrite inverseRight, vs_vcmul_0_r; auto.
+    rewrite <- vs_vscal_vadd. rewrite inverseRight, vs_vscal_0_r; auto.
   Qed.
   
   (** (-1) * v = - v *)
-  Theorem vs_vcmul_opp1 : forall v : V, (-(1))%A c* v = -v.
-  Proof. intros. rewrite vs_vcmul_opp, vs_vcmul_1_l; auto. Qed.
+  Theorem vs_vscal_opp1 : forall v : V, (-(1))%A s* v = -v.
+  Proof. intros. rewrite vs_vscal_opp, vs_vscal_1_l; auto. Qed.
 
   (** v - v = 0 *)
   Theorem vs_vsub_self : forall v : V, v - v = 0.
@@ -256,19 +256,19 @@ Section props.
     Context {AeqDec : Dec (@eq tA)}.
     
     (** a .* v = 0 -> a = 0 \/ v = 0 *)
-    Theorem vs_vcmul_eq0_imply_k0_or_v0 : forall a v, a c* v = 0 -> a = 0%A \/ v = 0.
+    Theorem vs_vscal_eq0_imply_k0_or_v0 : forall a v, a s* v = 0 -> a = 0%A \/ v = 0.
     Proof.
       intros. destruct (Aeqdec a 0%A); auto. right.
-      assert (/a c* (a c* v) = /a c* 0) by (rewrite H; auto).
-      rewrite <- vs_vcmul_assoc in H0.
+      assert (/a s* (a s* v) = /a s* 0) by (rewrite H; auto).
+      rewrite <- vs_vscal_assoc in H0.
       rewrite field_mulInvL in H0; auto.
-      rewrite vs_vcmul_1_l, vs_vcmul_0_r in H0. auto.
+      rewrite vs_vscal_1_l, vs_vscal_0_r in H0. auto.
     Qed.
 
     (** a <> 0 -> v <> 0 -> a .* v <> 0 *)
-    Corollary vs_vcmul_neq0_if_neq0_neq0 : forall a v, a <> 0%A -> v <> 0 -> a c* v <> 0.
+    Corollary vs_vscal_neq0_if_neq0_neq0 : forall a v, a <> 0%A -> v <> 0 -> a s* v <> 0.
     Proof.
-      intros. intro. apply vs_vcmul_eq0_imply_k0_or_v0 in H1. destruct H1; auto.
+      intros. intro. apply vs_vscal_eq0_imply_k0_or_v0 in H1. destruct H1; auto.
     Qed.
   End AeqDec.
   
@@ -288,7 +288,7 @@ End props.
 Class SubSpaceStruct `{HVectorSpace : VectorSpace} (P : V -> Prop) := {
     ss_zero_keep : P Vzero;
     ss_add_closed : forall {u v : sig P}, P (Vadd u.val v.val);
-    ss_cmul_closed : forall {a : tA} {v : sig P}, P (Vcmul a v.val);
+    ss_scal_closed : forall {a : tA} {v : sig P}, P (Vscal a v.val);
   }.
 
 (* Is an element belong to H *)
@@ -304,22 +304,22 @@ Section makeSubSpace.
   Definition Hadd (u v : H) : H := exist _ (Vadd u.val v.val) ss_add_closed.
   Definition Hzero : H := exist _ Vzero ss_zero_keep.
   Definition Hopp (v : H) : H.
-    refine (exist _ (Vopp v.val) _). rewrite <- vs_vcmul_opp1.
-    apply ss_cmul_closed.
+    refine (exist _ (Vopp v.val) _). rewrite <- vs_vscal_opp1.
+    apply ss_scal_closed.
   Defined.
-  Definition Hcmul (a : tA) (v : H) : H := exist _ (Vcmul a v.val) ss_cmul_closed.
+  Definition Hscal (a : tA) (v : H) : H := exist _ (Vscal a v.val) ss_scal_closed.
 
-  Lemma makeSubSpace : VectorSpace Hadd Hzero Hopp Hcmul.
+  Lemma makeSubSpace : VectorSpace Hadd Hzero Hopp Hscal.
   Proof.
-    repeat constructor; unfold Hadd, Hcmul; intros.
+    repeat constructor; unfold Hadd, Hscal; intros.
     - apply sig_eq_iff. apply commutative.
     - apply sig_eq_iff. simpl. apply associative.
     - destruct a. apply sig_eq_iff. simpl. apply identityRight.
     - destruct a. apply sig_eq_iff. simpl. apply vs_vadd_vopp_r.
-    - destruct v. apply sig_eq_iff. simpl. apply vs_vcmul_1_l.
-    - destruct v. apply sig_eq_iff. simpl. apply vs_vcmul_assoc.
-    - destruct v. apply sig_eq_iff. simpl. apply vs_vcmul_aadd.
-    - destruct v. apply sig_eq_iff. simpl. apply vs_vcmul_vadd.
+    - destruct v. apply sig_eq_iff. simpl. apply vs_vscal_1_l.
+    - destruct v. apply sig_eq_iff. simpl. apply vs_vscal_assoc.
+    - destruct v. apply sig_eq_iff. simpl. apply vs_vscal_aadd.
+    - destruct v. apply sig_eq_iff. simpl. apply vs_vscal_vadd.
   Qed.
 End makeSubSpace.
 Arguments makeSubSpace {_ _ _ _ _ _ _ _ _ _ _ _ _ _ _} ss.
@@ -333,10 +333,10 @@ Section zero_SubSpace.
   Proof.
     constructor; auto.
     - intros. rewrite u.prf, v.prf. apply vs_vadd_0_l.
-    - intros. rewrite v.prf. apply vs_vcmul_0_r.
+    - intros. rewrite v.prf. apply vs_vscal_0_r.
   Qed.
 
-  #[export] Instance zero_SubSpace : VectorSpace Hadd Hzero Hopp Hcmul :=
+  #[export] Instance zero_SubSpace : VectorSpace Hadd Hzero Hopp Hscal :=
     makeSubSpace zero_SubSpaceStruct.
 End zero_SubSpace.
 
@@ -347,7 +347,7 @@ Section self_SubSpace.
   Instance self_SubSpaceStruct : SubSpaceStruct (fun v => True).
   Proof. constructor; auto. Qed.
 
-  #[export] Instance self_SubSpace : VectorSpace Hadd Hzero Hopp Hcmul :=
+  #[export] Instance self_SubSpace : VectorSpace Hadd Hzero Hopp Hscal :=
     makeSubSpace self_SubSpaceStruct.
   
 End self_SubSpace.

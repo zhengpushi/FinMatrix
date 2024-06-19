@@ -178,8 +178,6 @@ Section morth.
   Notation mat r c := (mat tA r c).
   Notation smat n := (mat n n).
   Notation mat1 := (@mat1 _ 0 1).
-  Notation mcmul := (@mcmul _ Amul).
-  Infix "c*" := mcmul : mat_scope.
   Notation mmul := (@mmul _ Aadd 0 Amul).
   Infix "*" := mmul : mat_scope.
   Notation mmulv := (@mmulv _ Aadd 0 Amul).

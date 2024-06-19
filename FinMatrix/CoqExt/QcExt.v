@@ -238,21 +238,24 @@ Hint Resolve Qcadd_AMonoid Qcmul_AMonoid : Qc.
 
 #[export] Instance Qcadd_Group : Group Qcplus 0 Qcopp.
 Proof. constructor; auto with Qc. Qed.
-
 Hint Resolve Qcadd_Group : Qc.
 
 (** AGroup *)
 
 #[export] Instance Qcadd_AGroup : AGroup Qcplus 0 Qcopp.
 Proof. constructor; auto with Qc. Qed.
-
 Hint Resolve Qcadd_AGroup : Qc.
+
+(** SRing *)
+
+#[export] Instance Qc_SRing : SRing Qcplus 0 Qcmult 1.
+Proof. constructor; auto with Qc; intros; ring. Qed.
+Hint Resolve Qc_SRing : Qc.
 
 (** Ring *)
 
 #[export] Instance Qc_Ring : Ring Qcplus 0 Qcopp Qcmult 1.
 Proof. constructor; auto with Qc. Qed.
-
 Hint Resolve Qc_Ring : Qc.
 
 (** ARing *)
@@ -389,6 +392,9 @@ Module RingElementTypeQc <: RingElementType.
   Infix "*" := Amul : A_scope.
   Notation "- a" := (Aopp a) : A_scope.
   Infix "-" := Asub : A_scope.
+
+  #[export] Instance SRing : SRing Aadd Azero Amul Aone.
+  Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
   
   #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
   Proof. repeat constructor; autounfold with tA; intros; ring. Qed.

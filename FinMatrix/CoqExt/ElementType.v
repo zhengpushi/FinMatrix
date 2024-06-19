@@ -156,9 +156,12 @@ Module Type RingElementType <: MonoidElementType.
   Notation "- a" := (Aopp a) : A_scope.
   Infix "-" := Asub : A_scope.
 
+  (** SRing structure can be derived from the context *)
+  Axiom SRing : SRing Aadd 0 Amul 1.
+  #[export] Existing Instance SRing.
+
   (** Ring structure can be derived from the context *)
   Axiom ARing : ARing Aadd 0 Aopp Amul 1.
-  
   #[export] Existing Instance ARing.
 
   (* Add Ring Ring_inst : (make_ring_theory ARing). *)
@@ -177,6 +180,12 @@ Module RingElementTypeFun (I O : RingElementType) <: RingElementType.
   Definition Aopp (f : tA) : tA := fun x : I.tA => O.Aopp (f x).
   Definition Amul (f g : tA) : tA := fun x : I.tA => O.Amul (f x) (g x).
   Notation Asub := (fun x y => Aadd x (Aopp y)).
+
+  #[export] Instance SRing : SRing Aadd Azero Amul Aone.
+  Proof.
+    repeat constructor; autounfold with tA; intros;
+      apply functional_extensionality; intros; cbv; ring.
+  Qed.
 
   #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
   Proof.

@@ -39,8 +39,8 @@ Section minvAM.
 
   Notation smat n := (smat tA n).
   Notation mat1 := (@mat1 _ Azero Aone).
-  Notation mcmul := (@mcmul _ Amul).
-  Infix "c*" := mcmul : mat_scope.
+  Notation mscal := (@mscal _ Amul).
+  Infix "s*" := mscal : mat_scope.
   Notation mmul := (@mmul _ Aadd Azero Amul).
   Infix "*" := mmul : mat_scope.
   Notation mmulv := (@mmulv _ Aadd 0 Amul).
@@ -105,7 +105,7 @@ Section minvAM.
   (** Inverse matrix (option version) *)
   Definition minvoAM {n} (M : smat n) : option (smat n) :=
     if minvtblebAM M
-    then Some ((/ |M|) c* (madj M))
+    then Some ((/ |M|) s* (madj M))
     else None.
 
   (** `minvo` return `Some`, iff M is invertible *)
@@ -115,7 +115,7 @@ Section minvAM.
     intros. rewrite minvtble_iff_minvtblebAM_true. split; intros.
     - destruct H as [M' H]. unfold minvoAM in H.
       destruct minvtblebAM; try easy.
-    - exists ((/ |M|) c* (madj M)). unfold minvoAM.
+    - exists ((/ |M|) s* (madj M)). unfold minvoAM.
       destruct minvtblebAM; try easy.
   Qed.
 
@@ -133,7 +133,7 @@ Section minvAM.
       minvoAM M = Some M' -> M' * M = mat1.
   Proof.
     intros. unfold minvoAM in H. destruct minvtblebAM eqn:E; try easy. inv H.
-    apply mmul_det_cmul_adj_l.
+    apply mmul_det_scal_adj_l.
     apply minvtble_iff_minvtblebAM_true in E.
     apply minvtble_iff_mdet_neq0; auto.
   Qed.
@@ -150,7 +150,7 @@ Section minvAM.
   (** ** Inverse matrix by AM*)
   
   (** Inverse matrix *)
-  Definition minvAM {n} (M : smat n) := (/ |M|) c* (madj M).
+  Definition minvAM {n} (M : smat n) := (/ |M|) s* (madj M).
   Notation "M \-1" := (minvAM M) : mat_scope.
 
   (** If `minvoAM M` return `Some N`, then `M\-1` equal to `N` *)
@@ -171,7 +171,7 @@ Section minvAM.
   Proof.
     intros. unfold minvAM.
     apply minvtble_iff_minvtblebAM_true in H as H1.
-    apply mmul_det_cmul_adj_l. apply minvtble_iff_mdet_neq0 in H. auto.
+    apply mmul_det_scal_adj_l. apply minvtble_iff_mdet_neq0 in H. auto.
   Qed.
   
   (** M * M\-1 = mat1 *)
@@ -335,7 +335,7 @@ Section minvAM.
   Qed.
 
   Definition minvAM2 (M : smat 2) : smat 2 :=
-    /(mdet2 M) c* l2m 0 [[M.22; -M.12]; [-M.21; M.11]].
+    /(mdet2 M) s* l2m 0 [[M.22; -M.12]; [-M.21; M.11]].
 
   (** minvtble M -> minvAM2 M = inv M *)
   Lemma minvAM2_eq_minvAM : forall M, minvtble M -> minvAM2 M = M\-1.
@@ -346,7 +346,7 @@ Section minvAM.
   
   (* Note, this formula come from matlab, needn't manual work *)
   Definition minvAM3 (M : smat 3) : smat 3 :=
-    /(mdet3 M) c*
+    /(mdet3 M) s*
       l2m 0 [[(M.22*M.33-M.23*M.32); -(M.12*M.33-M.13*M.32); (M.12*M.23-M.13*M.22)];
              [-(M.21*M.33-M.23*M.31); (M.11*M.33-M.13*M.31); -(M.11*M.23-M.13*M.21)];
              [(M.21*M.32-M.22*M.31); -(M.11*M.32-M.12*M.31); (M.11*M.22-M.12*M.21)]]%A.
@@ -359,7 +359,7 @@ Section minvAM.
   Qed.
 
   Definition minvAM4 (M : smat 4) : smat 4 :=
-    /(mdet4 M) c*
+    /(mdet4 M) s*
       l2m 0 [[(M.22*M.33*M.44 - M.22*M.34*M.43 - M.23*M.32*M.44 + M.23*M.34*M.42 +
                  M.24*M.32*M.43 - M.24*M.33*M.42);
               -(M.12*M.33*M.44 - M.12*M.34*M.43 - M.13*M.32*M.44 + M.13*M.34*M.42 +

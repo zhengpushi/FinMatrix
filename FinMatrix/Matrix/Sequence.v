@@ -321,28 +321,27 @@ Section seqsum_seqprod.
     - rewrite !seqsumS_tail. rewrite <- IHn; auto. agroup.
   Qed.
 
-  
-  (** Let's have an abelian ring structure *)
-  Context `{HARing : ARing tA Aadd Azero Aopp Amul Aone}.
-  Add Ring ring_inst : (make_ring_theory HARing).
+  (** Let's have an semi-ring structure *)
+  Context `{HSRing : SRing tA Aadd Azero Amul Aone}.
   Notation "1" := Aone : A_scope.
   Infix "*" := Amul : A_scope.
   
   (** Scalar multiplication of the sum of a sequence (simple form). *)
-  Lemma seqsum_cmul_l : forall (n : nat) (f : nat -> tA) (k : tA),
+  Lemma seqsum_scal_l : forall (n : nat) (f : nat -> tA) (k : tA),
       k * seqsum n f = seqsum n (fun i => k * f i).
   Proof.
     induction n; intros; simpl.
-    - rewrite !seqsum_len0. ring.
-    - rewrite !seqsumS_tail. ring_simplify. rewrite <- IHn. ring.
+    - rewrite !seqsum_len0. sring.
+    - rewrite !seqsumS_tail. sring.
   Qed.
 
   (** Scalar multiplication of the sum of a sequence (simple form). *)
-  Lemma seqsum_cmul_r : forall (n : nat) (f : nat -> tA) (k : tA),
+  Lemma seqsum_scal_r : forall (n : nat) (f : nat -> tA) (k : tA),
       seqsum n f * k = seqsum n (fun i => f i * k).
   Proof.
-    intros. rewrite commutative. rewrite seqsum_cmul_l.
-    apply seqsum_eq; intros; ring.
+    induction n; intros; simpl.
+    - rewrite !seqsum_len0. sring.
+    - rewrite !seqsumS_tail. sring.
   Qed.
   
   (** Product two sum equal to sum of products.
@@ -356,14 +355,13 @@ Section seqsum_seqprod.
       seqsum m f * seqsum n g = seqsum (m * n) (fun i => f (i / n) * g (i mod n)).
   Proof.
     induction m; intros; simpl.
-    - rewrite !seqsum_len0. ring.
+    - rewrite !seqsum_len0. sring.
     - replace (n + m * n)%nat with (m * n + n)%nat by ring.
       rewrite seqsum_plusIdx. rewrite <- IHm; auto.
-      rewrite seqsumS_tail. ring_simplify. agroup.
-      rewrite seqsum_cmul_l. apply seqsum_eq; intros.
+      rewrite seqsumS_tail. sring.
+      rewrite seqsum_scal_l. apply seqsum_eq; intros.
       rewrite add_mul_div; auto. rewrite add_mul_mod; auto.
   Qed.
-
 
   (** *** Sequence product *)
 
@@ -379,8 +377,8 @@ Section seqsum_seqprod.
   (** Replace the inital value of seqprodAux *)
   Lemma seqprodAux_rebase : forall n f a, seqprodAux n f a = seqprodAux n f 1 * a.
   Proof.
-    induction n; intros; simpl. ring.
-    rewrite IHn. rewrite IHn with (a:=f n * 1). ring.
+    induction n; intros; simpl. sring.
+    rewrite IHn. rewrite IHn with (a:=f n * 1). sring.
   Qed.
   
   (** seqprod with length 0 equal to 1 *)
@@ -389,7 +387,7 @@ Section seqsum_seqprod.
 
   (** Prod a sequence of (S n) elements, equal to addition of Prod and tail *)
   Lemma seqprodS_tail : forall f n, seqprod (S n) f = seqprod n f * f n.
-  Proof. unfold seqprod. intros; simpl. rewrite seqprodAux_rebase. ring. Qed.
+  Proof. unfold seqprod. intros; simpl. rewrite seqprodAux_rebase. sring. Qed.
   
   (** Prod a sequence of (S n) elements, equal to addition of head and Prod *)
   Lemma seqprodS_head : forall n f, seqprod (S n) f = f O * seqprod n (fun i => f (S i)).
@@ -398,7 +396,7 @@ Section seqsum_seqprod.
     rewrite seqprodAux_rebase with (a:=(f (S n) * 1)).
     rewrite <- !associative. rewrite <- IHn. simpl.
     rewrite seqprodAux_rebase.
-    rewrite seqprodAux_rebase with (a:=(f n * 1)). ring.
+    rewrite seqprodAux_rebase with (a:=(f n * 1)). sring.
   Qed.
 
   (** Product of a sequence which every element is one get one. *)
@@ -406,7 +404,7 @@ Section seqsum_seqprod.
       (forall i, i < n -> f i = 1) -> seqprod n f = 1.
   Proof.
     unfold seqprod. induction n; simpl; intros. auto.
-    rewrite seqprodAux_rebase. rewrite IHn; auto. rewrite H; auto. ring.
+    rewrite seqprodAux_rebase. rewrite IHn; auto. rewrite H; auto. sring.
   Qed.
 
   (** Two sequences are equal, imply the prod are equal. *)
@@ -423,8 +421,8 @@ Section seqsum_seqprod.
   Proof.
     induction n; intros. lia.
     rewrite seqprodS_tail. bdestruct (i =? n).
-    - subst. rewrite seqprod_eq1. ring. intros. apply H1; lia.
-    - rewrite IHn with (a:=a)(i:=i); auto; try lia. rewrite H1; auto. ring.
+    - subst. rewrite seqprod_eq1. sring. intros. apply H1; lia.
+    - rewrite IHn with (a:=a)(i:=i); auto; try lia. rewrite H1; auto. sring.
   Qed.
 
   (** Prod the m+n elements equal to plus of two parts.
@@ -434,9 +432,9 @@ Section seqsum_seqprod.
   Proof.
     (* induction on `n` is simpler than on `m` *)
     intros. induction n.
-    - rewrite seqprod_len0. rewrite Nat.add_0_r. ring.
+    - rewrite seqprod_len0. rewrite Nat.add_0_r. sring.
     - replace (m + S n)%nat with (S (m + n))%nat; auto.
-      rewrite !seqprodS_tail. rewrite IHn. ring.
+      rewrite !seqprodS_tail. rewrite IHn. sring.
   Qed.
 
   (** Prod the m+1+n elements equal to product of three parts.
@@ -449,33 +447,39 @@ Section seqsum_seqprod.
     - f_equal. lia.
     - apply seqprod_eq; intros. f_equal. lia.
   Qed.
-  
-  (** Scalar multiplication of the prod of a sequence (simple form). *)
-  Lemma seqprod_cmul_l : forall (n : nat) (f : nat -> tA) (k : tA) (j : nat),
-      j < n ->
-      k * seqprod n f =
-        seqprod n (fun i => if i =? j then (k * f i) else f i).
-  Proof.
-    induction n; intros; simpl. lia.
-    rewrite !seqprodS_tail. ring_simplify.
-    bdestruct (j =? n).
-    - subst.
-      rewrite Nat.eqb_refl. pose aringMulAMonoid. amonoid.
-      apply seqprod_eq; intros.
-      bdestruct (i =? n); auto; lia.
-    - rewrite <- IHn; try lia. f_equal.
-      bdestruct (n =? j); auto. subst; easy.
-  Qed.
 
-  (** Scalar multiplication of the prod of a sequence (simple form). *)
-  Lemma seqprod_cmul_r : forall (n : nat) (f : nat -> tA) (k : tA) (j : nat),
-      j < n ->
-      seqprod n f * k =
-        seqprod n (fun i => if i =? j then (f i * k) else f i).
-  Proof.
-    intros. rewrite commutative. rewrite seqprod_cmul_l with (j:=j); auto.
-    apply seqprod_eq; intros. bdestruct (i =? j); ring.
-  Qed.
+  (* If the Amul is commutative *)
+  Section Amul_Comm.
+    Context {HMulComm : Commutative Amul}.
+
+    (** Scalar multiplication of the prod of a sequence (simple form). *)
+    Lemma seqprod_scal_l : forall (n : nat) (f : nat -> tA) (k : tA) (j : nat),
+        j < n ->
+        k * seqprod n f =
+          seqprod n (fun i => if i =? j then (k * f i) else f i).
+    Proof.
+      induction n; intros; simpl. lia.
+      rewrite !seqprodS_tail. sring.
+      bdestruct (j =? n).
+      - subst.
+        rewrite Nat.eqb_refl. pose aringMulAMonoid. amonoid.
+        rewrite commutative. f_equal.
+        apply seqprod_eq; intros.
+        bdestruct (i =? n); auto; lia.
+      - rewrite <- IHn; try lia. f_equal.
+        bdestruct (n =? j); auto. subst; easy.
+    Qed.
+
+    (** Scalar multiplication of the prod of a sequence (simple form). *)
+    Lemma seqprod_scal_r : forall (n : nat) (f : nat -> tA) (k : tA) (j : nat),
+        j < n ->
+        seqprod n f * k =
+          seqprod n (fun i => if i =? j then (f i * k) else f i).
+    Proof.
+      intros. rewrite commutative. rewrite seqprod_scal_l with (j:=j); auto.
+      apply seqprod_eq; intros. bdestruct (i =? j); auto. apply commutative.
+    Qed.
+  End Amul_Comm.
   
 End seqsum_seqprod.
 
@@ -484,35 +488,35 @@ Section seqsum_ext.
 
   Context `{HAMonoidA : AMonoid}.
   Context `{HAMonoidB : AMonoid tB Badd Bzero}.
-  Context (cmul : tA -> tB -> tB).
-  Infix "*" := cmul.
+  Context (scal : tA -> tB -> tB).
+  Infix "*" := scal.
 
   (** a * ∑(bi) = a*(b1+b2+...) = a*b1+a*b2+... = ∑(a*bi) *)
   Section form1.
-    Context (cmul_zero_keep : forall a : tA, cmul a Bzero = Bzero).
-    Context (cmul_badd : forall (a : tA) (b1 b2 : tB),
+    Context (scal_zero_keep : forall a : tA, scal a Bzero = Bzero).
+    Context (scal_badd : forall (a : tA) (b1 b2 : tB),
                 a * (Badd b1 b2) = Badd (a * b1) (a * b2)).
-    Lemma seqsum_cmul_l_ext : forall {n} (a : tA) (f : nat -> tB),
+    Lemma seqsum_scal_l_ext : forall {n} (a : tA) (f : nat -> tB),
         a * (@seqsum _ Badd Bzero n f) = @seqsum _ Badd Bzero n (fun i => a * f i).
     Proof.
       induction n; intros; simpl; auto. unfold seqsum in *.
       rewrite (seqsumAux_rebase _ f). rewrite (seqsumAux_rebase _ (fun i => a * f i)).
-      rewrite cmul_badd. rewrite IHn. amonoid.
+      rewrite scal_badd. rewrite IHn. amonoid.
     Qed.
   End form1.
   
   (** ∑(ai) * b = (a1+a2+a3)*b = a1*b+a2*b+a3*b = ∑(ai*b) *)
   Section form2.
-    Context (cmul_zero_keep : forall b : tB, cmul Azero b = Bzero).
-    Context (cmul_aadd : forall (a1 a2 : tA) (b : tB),
+    Context (scal_zero_keep : forall b : tB, scal Azero b = Bzero).
+    Context (scal_aadd : forall (a1 a2 : tA) (b : tB),
                 (Aadd a1 a2) * b = Badd (a1 * b) (a2 * b)).
-    Lemma seqsum_cmul_r_ext : forall {n} (b : tB) (f : nat -> tA),
+    Lemma seqsum_scal_r_ext : forall {n} (b : tB) (f : nat -> tA),
         (@seqsum _ Aadd Azero n f) * b = @seqsum _ Badd Bzero n (fun i => f i * b).
     Proof.
       induction n; intros; simpl; auto. unfold seqsum in *.
       rewrite (seqsumAux_rebase _ f). rewrite (seqsumAux_rebase _ (fun i => f i * b)).
-      rewrite !cmul_aadd. rewrite IHn. amonoid.
-      rewrite cmul_zero_keep. amonoid.
+      rewrite !scal_aadd. rewrite IHn. amonoid.
+      rewrite scal_zero_keep. amonoid.
     Qed.
   End form2.
   
@@ -635,10 +639,10 @@ Section seqsum_more.
       + rewrite (commutative (seqsum n (fun i => (G i)²))).
         apply seqsum_Mul2_le_PlusSqr.
       + rewrite !associative. f_equal.
-        rewrite seqsum_cmul_r. apply seqsum_eq; intros.
+        rewrite seqsum_scal_r. apply seqsum_eq; intros.
         rewrite HeqF, HeqG. ring.
-      + rewrite seqsum_cmul_l. apply seqsum_eq; intros. rewrite HeqF. ring.
-      + rewrite seqsum_cmul_l. apply seqsum_eq; intros. rewrite HeqG. ring.
+      + rewrite seqsum_scal_l. apply seqsum_eq; intros. rewrite HeqF. ring.
+      + rewrite seqsum_scal_l. apply seqsum_eq; intros. rewrite HeqG. ring.
   Qed.
   
 End seqsum_more.
@@ -806,7 +810,7 @@ Section seqsumb.
   
   
   (** Scalar multiplication of the sum of a sequence. *)
-  Lemma seqsumb_cmul : forall k (f g : nat -> tA) (lo n : nat),
+  Lemma seqsumb_scal : forall k (f g : nat -> tA) (lo n : nat),
        (forall i, i < n -> f (lo+i)%nat = k * g (lo+i)%nat) ->
       seqsumb f lo n = k * seqsumb g lo n.
   Proof.

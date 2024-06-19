@@ -90,8 +90,8 @@ Section mdet.
 
   Notation vadd := (@vadd _ Aadd).
   Infix "+" := vadd : vec_scope.
-  Notation vcmul := (@vcmul _ Amul).
-  Infix "c*" := vcmul : vec_scope.
+  Notation vscal := (@vscal _ Amul).
+  Infix "s*" := vscal : vec_scope.
 
   Notation smat n := (smat tA n).
   Notation mmul := (@mmul _ Aadd 0 Amul).
@@ -208,7 +208,7 @@ Section mdet.
   (** Property 2 : | M with x*row(M,i) | = x * |M| *)
   Lemma mdet_row_scale : forall {n} (M1 M2 : smat n) (i : 'I_n) (x : tA),
       (forall j, j <> i -> M1.[j] = M2.[j]) ->
-      (M1.[i] = x c* M2.[i])%V -> |M1| = (x * |M2|)%A.
+      (M1.[i] = x s* M2.[i])%V -> |M1| = (x * |M2|)%A.
   Proof.
     intros. unfold mdet.
     rewrite fold_left_map.
@@ -216,7 +216,7 @@ Section mdet.
     f_equal; try ring. apply map_ext_in; intros.
     assert (seqprod n (fun i0 : nat => m2f 0 M1 i0 (nth i0 a O)) =
               (x * seqprod n (fun i0 : nat => m2f 0 M2 i0 (nth i0 a O)))%A).
-    - rewrite seqprod_cmul_l with (j:=i); [|fin].
+    - rewrite seqprod_scal_l with (j:=i); [|fin].
       apply seqprod_eq; intros.
       assert (i0 < n) as Hi by lia.
       assert (nth i0 a O < n) as Hj. apply perm_index_lt; auto.
@@ -415,8 +415,8 @@ Section mdet.
     Qed.
     
     (* Property 6: 两行成比例，行列式的值为 0 *)
-    Lemma mdet_row_cmul : forall {n} (M : smat n) (i j : 'I_n) (x : tA),
-        i <> j -> M.[i] = (x c* M.[j])%A -> |M| = 0.
+    Lemma mdet_row_scal : forall {n} (M : smat n) (i j : 'I_n) (x : tA),
+        i <> j -> M.[i] = (x s* M.[j])%A -> |M| = 0.
     Proof.
       intros. rewrite (mdet_row_scale M (vset M i M.[j]) i x).
       - pose proof (mdet_row_vset_eq0 M i j H). rewrite H1. ring.
@@ -426,11 +426,11 @@ Section mdet.
     Qed.
 
     (* When i-th row is replaced with (x * j-th row) (i <> j), |M| = 0 *)
-    Corollary mdet_row_vset_cmul_eq0 : forall {n} (M : smat n) (i j : 'I_n) x,
-        i <> j -> |vset M i (x c* M j)| = 0.
+    Corollary mdet_row_vset_scal_eq0 : forall {n} (M : smat n) (i j : 'I_n) x,
+        i <> j -> |vset M i (x s* M j)| = 0.
     Proof.
       intros.
-      pose proof (mdet_row_cmul (vset M i (x c* M j)) i j x H).
+      pose proof (mdet_row_scal (vset M i (x s* M j)) i j x H).
       rewrite vnth_vset_eq, vnth_vset_neq in H0; auto.
     Qed.
     
@@ -438,12 +438,12 @@ Section mdet.
     Lemma mdet_row_addRow : forall {n} (M1 M2 : smat n) (i j : 'I_n) (x : tA),
         i <> j ->
         (forall k, k <> i -> M1.[k] = M2.[k]) ->
-        M1.[i] = (M2.[i] + x c*M2.[j])%V -> |M1| = |M2|.
+        M1.[i] = (M2.[i] + x s*M2.[j])%V -> |M1| = |M2|.
     Proof.
       intros.
-      pose proof (mdet_row_add M2 (vset M2 i (x c* M2.[j])) M1 i).
+      pose proof (mdet_row_add M2 (vset M2 i (x s* M2.[j])) M1 i).
       rewrite H2; auto.
-      - rewrite (mdet_row_vset_cmul_eq0); auto. ring.
+      - rewrite (mdet_row_vset_scal_eq0); auto. ring.
       - intros k Hk. rewrite H0; auto. split; auto.
         rewrite vnth_vset_neq; auto.
       - rewrite vnth_vset_eq. auto.
@@ -944,8 +944,8 @@ Section madj.
 
   Notation smat n := (smat tA n).
   Notation mat1 := (@mat1 _ 0 1).
-  Notation mcmul := (@mcmul _ Amul).
-  Infix "c*" := mcmul : mat_scope.
+  Notation mscal := (@mscal _ Amul).
+  Infix "s*" := mscal : mat_scope.
   Notation mmul := (@mmul _ Aadd 0 Amul).
   Infix "*" := mmul : mat_scope.
   Notation mmulv := (@mmulv _ Aadd 0 Amul).
@@ -994,7 +994,7 @@ Section madj.
   (* Proof. intros. rewrite <- mtrans_madj, mtrans_mtrans. auto. Qed. *)
 
   (** M * (M\A) = |M| * I *)
-  Lemma mmul_madj_r : forall {n} (M : smat n), M * M\A = |M| c* mat1.
+  Lemma mmul_madj_r : forall {n} (M : smat n), M * M\A = |M| s* mat1.
   Proof.
     intros. apply meq_iff_mnth; intros.
     unfold madj. destruct n. fin.
@@ -1002,14 +1002,14 @@ Section madj.
     destruct (i ??= j) as [E|E].
     - fin2nat. subst.
       rewrite vdot_mcofactor_row_same_eq_det.
-      rewrite mnth_mcmul. rewrite mnth_mat1_same; auto. ring.
+      rewrite mnth_mscal. rewrite mnth_mat1_same; auto. ring.
     - fin2nat.
       rewrite (vdot_mcofactor_row_diff_eq0 M i j); auto.
-      rewrite mnth_mcmul. rewrite mnth_mat1_diff; auto. ring.
+      rewrite mnth_mscal. rewrite mnth_mat1_diff; auto. ring.
   Qed.
 
   (** (M\A) * M = |M| * I *)
-  Lemma mmul_madj_l : forall {n} (M : smat n), M\A * M = |M| c* mat1.
+  Lemma mmul_madj_l : forall {n} (M : smat n), M\A * M = |M| s* mat1.
   Proof.
     intros. apply meq_iff_mnth; intros.
     unfold madj. destruct n. fin.
@@ -1017,45 +1017,45 @@ Section madj.
     destruct (i ??= j) as [E|E].
     - fin2nat. subst.
       rewrite vdot_mcofactor_col_same_eq_det.
-      rewrite mnth_mcmul. rewrite mnth_mat1_same; auto. ring.
+      rewrite mnth_mscal. rewrite mnth_mat1_same; auto. ring.
     - fin2nat.
       rewrite (vdot_mcofactor_col_diff_eq0 M j i); auto.
-      rewrite mnth_mcmul. rewrite mnth_mat1_diff; auto. ring.
+      rewrite mnth_mscal. rewrite mnth_mat1_diff; auto. ring.
   Qed.
   
   (** (/|M| .* M\A) * M = mat1 *)
-  Lemma mmul_det_cmul_adj_l : forall {n} (M : smat n),
-  |M| <> 0 -> (/|M| c* M\A) * M = mat1.
+  Lemma mmul_det_scal_adj_l : forall {n} (M : smat n),
+  |M| <> 0 -> (/|M| s* M\A) * M = mat1.
   Proof.
-    intros. rewrite mmul_mcmul_l. rewrite mmul_madj_l. rewrite mcmul_assoc.
-    rewrite field_mulInvL; auto. apply mcmul_1_l.
+    intros. rewrite mmul_mscal_l. rewrite mmul_madj_l. rewrite mscal_assoc.
+    rewrite field_mulInvL; auto. apply mscal_1_l.
   Qed.
 
   (** M * (/|M| .* M\A) = mat1 *)
-  Lemma mmul_det_cmul_adj_r : forall {n} (M : smat n),
-  |M| <> 0 -> M * (/|M| c* M\A) = mat1.
+  Lemma mmul_det_scal_adj_r : forall {n} (M : smat n),
+  |M| <> 0 -> M * (/|M| s* M\A) = mat1.
   Proof.
-    intros. rewrite mmul_mcmul_r. rewrite mmul_madj_r. rewrite mcmul_assoc.
-    rewrite field_mulInvL; auto. apply mcmul_1_l.
+    intros. rewrite mmul_mscal_r. rewrite mmul_madj_r. rewrite mscal_assoc.
+    rewrite field_mulInvL; auto. apply mscal_1_l.
   Qed.  
 
   (** |M| <> 0 -> (exists N : smat n, N * M = mat1) *)
   Lemma mdet_neq0_imply_mmul_eq1_l : forall {n} (M : smat n),
   |M| <> 0 -> (exists N : smat n, N * M = mat1).
-  Proof. intros. exists (/|M| c* M\A). apply mmul_det_cmul_adj_l. auto. Qed.
+  Proof. intros. exists (/|M| s* M\A). apply mmul_det_scal_adj_l. auto. Qed.
 
   (** |M| <> 0 -> (exists N : smat n, M * N = mat1) *)
   Lemma mdet_neq0_imply_mmul_eq1_r : forall {n} (M : smat n),
   |M| <> 0 -> (exists N : smat n, M * N = mat1).
-  Proof. intros. exists (/|M| c* M\A). apply mmul_det_cmul_adj_r. auto. Qed.
+  Proof. intros. exists (/|M| s* M\A). apply mmul_det_scal_adj_r. auto. Qed.
 
   (** |M| <> 0 -> (exists N : smat n, N * M = mat1 /\ M * N = mat1) *)
   Lemma mdet_neq0_imply_mmul_eq1 : forall {n} (M : smat n),
   |M| <> 0 -> (exists N : smat n, N * M = mat1 /\ M * N = mat1).
   Proof.
-    intros. exists (/|M| c* M\A). split.
-    apply mmul_det_cmul_adj_l. auto.
-    apply mmul_det_cmul_adj_r. auto.
+    intros. exists (/|M| s* M\A). split.
+    apply mmul_det_scal_adj_l. auto.
+    apply mmul_det_scal_adj_r. auto.
   Qed.
 
 
@@ -1076,10 +1076,10 @@ Section madj.
     rewrite vnth_mmulv. unfold vdot. unfold vmap2.
     rewrite vsum_eq with (b:=fun j => (/|A| * (A.[i].[j] * |C j|))%A).
     2:{ intros. field. auto. }
-    rewrite <- vsum_cmul_l.
+    rewrite <- vsum_scal_l.
     rewrite vsum_eq
       with (b:=fun j => (vsum (fun k => A.[i].[j] * (b.[k] * mcofactor A k j)))%A).
-    2:{ intros j. rewrite <- vsum_cmul_l. f_equal.
+    2:{ intros j. rewrite <- vsum_scal_l. f_equal.
         rewrite <- (mdetExCol_eq_mdet _ j). unfold mdetExCol.
         apply vsum_eq; intros k. rewrite HeqC.
         rewrite mnth_msetc_same; auto. f_equal.
@@ -1090,7 +1090,7 @@ Section madj.
     rewrite vsum_vsum.
     rewrite vsum_eq
       with (b:=fun k=> (b.[k] * vsum (fun j=> A.[i].[j] * mcofactor A k j))%A).
-    2:{ intros j. rewrite vsum_cmul_l. apply vsum_eq; intros k. ring. }
+    2:{ intros j. rewrite vsum_scal_l. apply vsum_eq; intros k. ring. }
     (* `vsum` has only one value when k = i *)
     rewrite vsum_unique with (i:=i) (x:=(|A| * b.[i])%A).
     - field; auto.

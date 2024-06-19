@@ -179,28 +179,30 @@ Hint Resolve Radd_AMonoid Rmul_AMonoid : R.
 
 #[export] Instance Radd_Group : Group Rplus 0 Ropp.
 Proof. constructor; auto with R. Qed.
-
 Hint Resolve Radd_Group : R.
 
 (** AGroup *)
 
 #[export] Instance Radd_AGroup : AGroup Rplus 0 Ropp.
 Proof. constructor; auto with R. Qed.
-
 Hint Resolve Radd_AGroup : R.
+
+(** SRing *)
+
+#[export] Instance R_SRing : SRing Rplus 0 Rmult 1.
+Proof. constructor; auto with R; intros; ring. Qed.
+Hint Resolve R_SRing : R.
 
 (** Ring *)
 
 #[export] Instance R_Ring : Ring Rplus 0 Ropp Rmult 1.
 Proof. constructor; auto with R. Qed.
-
 Hint Resolve R_Ring : R.
 
 (** ARing *)
 
 #[export] Instance R_ARing : ARing Rplus 0 Ropp Rmult 1.
 Proof. constructor; auto with R. Qed.
-
 Hint Resolve R_ARing : R.
 
 (** Field *)
@@ -328,6 +330,9 @@ Module RingElementTypeR <: RingElementType.
   Infix "*" := Amul : A_scope.
   Notation "- a" := (Aopp a) : A_scope.
   Infix "-" := Asub : A_scope.
+
+  #[export] Instance SRing : SRing Aadd Azero Amul Aone.
+  Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
 
   #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
   Proof. repeat constructor; autounfold with tA; intros; ring. Qed.

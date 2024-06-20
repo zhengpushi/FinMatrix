@@ -26,7 +26,8 @@ Require Export Matrix.
 Generalizable Variable tA Aadd Azero Aopp Amul Aone Ainv.
 
 (** fold_left f (map g l) a = fold_left (fun x y => f x (g y)) l a *)
-Lemma fold_left_map : forall {tA tB} (l : list tB) (f : tA -> tA -> tA) (g : tB -> tA) a,
+Lemma fold_left_map :
+  forall {tA tB} (l : list tB) (f : tA -> tA -> tA) (g : tB -> tA) a,
     fold_left f (map g l) a = fold_left (fun x y => f x (g y)) l a.
 Proof.
   intros tA tB l. induction l; intros; simpl. auto.
@@ -34,7 +35,8 @@ Proof.
 Qed.
 
 (** fold_right f a (map g l) = fold_right (fun x y => f (g x) y) a l *)
-Lemma fold_right_map : forall {tA tB} (l : list tB) (f : tA -> tA -> tA) (g : tB -> tA) a,
+Lemma fold_right_map :
+  forall {tA tB} (l : list tB) (f : tA -> tA -> tA) (g : tB -> tA) a,
     fold_right f a (map g l) = fold_right (fun x y => f (g x) y) a l.
 Proof.
   intros tA tB l. induction l; intros; simpl. auto.
@@ -55,7 +57,6 @@ Section GaussElim.
   Infix "*" := Amul : A_scope.
   Notation "/ a" := (Ainv a) : A_scope.
   Infix "/" := (fun a b => a * / b) : A_scope.
-  Notation Aeqb := (@Acmpb _ (@eq tA) _).
   
   Notation mat r c := (mat tA r c).
   Notation smat n := (smat tA n).

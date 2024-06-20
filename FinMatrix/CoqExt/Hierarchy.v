@@ -213,30 +213,30 @@ Section Instances.
 
 End Instances.
 
-(** ** Extra Theories *)
-Section Dec_theory.
+(* (** ** Extra Theories *) *)
+(* Section Dec_theory. *)
 
-  Context `(HDec: Dec).
+(*   Context `(HDec: Dec). *)
 
-  (** Tips: these theories are useful for R type *)
+(*   (** Tips: these theories are useful for R type *) *)
   
-  (** Calculate equality to boolean, with the help of equality decidability *)
-  Definition Acmpb (a b : tA) : bool := if dec Acmp a b then true else false.
+(*   (** Calculate equality to boolean, with the help of equality decidability *) *)
+(*   Definition Acmpb (a b : tA) : bool := if dec Acmp a b then true else false. *)
 
-  (** Acmpb is true iff Acmp hold. *)
-  Lemma Acmpb_true : forall a b, Acmpb a b = true <-> Acmp a b.
-  Proof.
-    intros. unfold Acmpb. destruct dec; split; intros; auto. easy.
-  Qed.
+(*   (** Acmpb is true iff Acmp hold. *) *)
+(*   Lemma Acmpb_true : forall a b, Acmpb a b = true <-> Acmp a b. *)
+(*   Proof. *)
+(*     intros. unfold Acmpb. destruct dec; split; intros; auto. easy. *)
+(*   Qed. *)
   
-  (** Acmpb is false iff Acmp not hold *)
-  Lemma Acmpb_false : forall a b, Acmpb a b = false <-> ~(Acmp a b).
-  Proof. intros. rewrite <- Acmpb_true. split; solve_bool. Qed.
+(*   (** Acmpb is false iff Acmp not hold *) *)
+(*   Lemma Acmpb_false : forall a b, Acmpb a b = false <-> ~(Acmp a b). *)
+(*   Proof. intros. rewrite <- Acmpb_true. split; solve_bool. Qed. *)
 
-  Lemma Acmp_reflect : forall a b : tA, reflect (Acmp a b) (Acmpb a b).
-  Proof. intros. unfold Acmpb. destruct (dec Acmp a b); constructor; auto. Qed.
+(*   Lemma Acmp_reflect : forall a b : tA, reflect (Acmp a b) (Acmpb a b). *)
+(*   Proof. intros. unfold Acmpb. destruct (dec Acmp a b); constructor; auto. Qed. *)
 
-End Dec_theory.
+(* End Dec_theory. *)
 
 (** ** Examples *)
 

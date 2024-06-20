@@ -16,61 +16,71 @@ Require Export RExtBase RExtStruct.
 (* ######################################################################### *)
 (** * Reqb,Rleb,Rltb: Boolean comparison of R *)
 
-Definition Reqb (r1 r2 : R) : bool := Acmpb Req_Dec r1 r2.
-Definition Rleb (r1 r2 : R) : bool := Acmpb Rle_Dec r1 r2.
-Definition Rltb (r1 r2 : R) : bool := Acmpb Rlt_Dec r1 r2.
+Definition Reqb (r1 r2 : R) : bool := if Req_dec_T r1 r2 then true else false.
+Definition Rleb (r1 r2 : R) : bool := if Rle_lt_dec r1 r2 then true else false.
+Definition Rltb (r1 r2 : R) : bool := if Rlt_le_dec r1 r2 then true else false.
 Infix "=?"  := Reqb : R_scope.
+Notation "x >? y"  := (Rltb y x) : R_scope.
+Notation "x >=? y" := (Rleb y x) : R_scope.
 Infix "<=?" := Rleb : R_scope.
 Infix "<?"  := Rltb : R_scope.
-Infix ">?"  := (fun x y => y <? x) : R_scope.
-Infix ">=?" := (fun x y => y <=? x) : R_scope.
-
-Lemma Reqb_true : forall x y, x =? y = true <-> x = y.
-Proof. apply Acmpb_true. Qed.
-
-Lemma Reqb_false : forall x y, x =? y = false <-> x <> y.
-Proof. apply Acmpb_false. Qed.
     
 Lemma Reqb_reflect : forall x y, reflect (x = y) (x =? y).
-Proof.
-  intros. unfold Reqb,Acmpb. destruct dec; constructor; auto.
-Qed.
+Proof. intros. unfold Reqb. destruct Req_dec_T; constructor; auto. Qed.
 #[export] Hint Resolve Reqb_reflect : bdestruct.
 
-Lemma Reqb_refl : forall r, r =? r = true.
-Proof. intros. unfold Reqb,Acmpb. destruct dec; auto. Qed.
-
-Lemma Reqb_comm : forall r1 r2, (r1 =? r2) = (r2 =? r1).
-Proof. intros. unfold Reqb,Acmpb. destruct dec,dec; auto. lra. Qed.
-
-Lemma Reqb_trans : forall r1 r2 r3, r1 =? r2 = true ->
-  r2 =? r3 = true -> r1 =? r3 = true.
-Proof. intros. unfold Reqb,Acmpb in *. destruct dec,dec,dec; auto. lra. Qed.
-
 Lemma Rltb_reflect : forall x y, reflect (x < y) (x <? y).
-Proof. intros. unfold Rltb,Acmpb in *. destruct dec; auto; constructor; lra. Qed.
+Proof. intros. unfold Rltb. destruct Rlt_le_dec; constructor; lra. Qed.
 #[export] Hint Resolve Rltb_reflect : bdestruct.
 
 Lemma Rleb_reflect : forall x y, reflect (x <= y) (x <=? y).
-Proof. intros. unfold Rleb,Acmpb in *. destruct dec; auto; constructor; lra. Qed.
+Proof. intros. unfold Rleb. destruct Rle_lt_dec; constructor; lra. Qed.
 #[export] Hint Resolve Rleb_reflect : bdestruct.
+
+(** Automaticaly destruct boolean operation of R type *)
+Ltac autoRbool :=
+  repeat
+    match goal with
+    | [H:context [?x =? ?y] |- _] => bdestruct (x =? y)
+    | [H:context [?x <? ?y] |- _] => bdestruct (x <? y)
+    | [H:context [?x <=? ?y] |- _] => bdestruct (x <=? y)
+    | |- context [?x =? ?y] => bdestruct (x =? y)
+    | |- context [?x <? ?y] => bdestruct (x <? y)
+    | |- context [?x <=? ?y] => bdestruct (x <=? y)
+    end.
+
+Lemma Reqb_true : forall x y, x =? y = true <-> x = y.
+Proof. intros. autoRbool; lra. Qed.
+
+Lemma Reqb_false : forall x y, x =? y = false <-> x <> y.
+Proof. intros. autoRbool; lra. Qed.
+
+Lemma Reqb_refl : forall r, r =? r = true.
+Proof. intros. autoRbool; lra. Qed.
+
+Lemma Reqb_comm : forall r1 r2, (r1 =? r2) = (r2 =? r1).
+Proof. intros. autoRbool; lra. Qed.
+
+Lemma Reqb_trans : forall r1 r2 r3, r1 =? r2 = true ->
+  r2 =? r3 = true -> r1 =? r3 = true.
+Proof. intros. autoRbool; lra. Qed.
 
 (* x <=? x = true *)
 Lemma Rleb_refl : forall x : R, x <=? x = true.
-Proof. intros. bdestruct (x <=? x); auto; lra. Qed.
+Proof. intros. autoRbool; lra. Qed.
 
 (* (x <=? - y) = (-x >=? y) *)
 Lemma Rleb_opp_r : forall x y : R, (x <=? - y) = (- x >=? y).
-Proof. intros. bdestruct (x <=? -y); bdestruct (-x >=? y); lra. Qed.
+Proof. intros. autoRbool; lra. Qed.
 
 (* (- x <=? y) = (x >=? - y) *)
 Lemma Rleb_opp_l : forall x y : R, (- x <=? y) = (x >=? - y).
-Proof. intros. bdestruct (- x <=? y); bdestruct (x >=? -y); lra. Qed.
+Proof. intros. autoRbool; lra. Qed.
 
 (** (a - b <? 0) = (0 <? b - a) *)
 Lemma Rminus_ltb0_comm : forall a b : R, (a - b <? 0) = (0 <? b - a).
-Proof. intros. unfold Rltb,Acmpb. destruct dec,dec; auto; lra. Qed.
+Proof. intros. autoRbool; lra. Qed.
   
 (** (a - b >? 0) = (0 >? b - a) *)
 Lemma Rminus_gtb0_comm : forall a b : R, (a - b >? 0) = (0 >? b - a).
-Proof. intros. unfold Rltb,Acmpb. destruct dec,dec; auto; lra. Qed.
+Proof. intros. autoRbool; lra. Qed.

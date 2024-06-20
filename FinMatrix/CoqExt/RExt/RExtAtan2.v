@@ -76,28 +76,20 @@ Definition atan2 (y x : R) : R :=
       else - PI / 2             (* x = 0, y < 0 *)
 .
 
-
-(** Automaticaly destruct `dec` *)
-Ltac destruct_dec :=
-  repeat
-    match goal with
-    | |- context [dec ?cmp _ _] => destruct (dec cmp)
-    end.
-
 Fact atan2_Xgt0 : forall y x, x > 0 -> atan2 y x = atan (y/x).
-Proof. intros. unfold atan2,Rltb,Rleb,Acmpb. destruct_dec; lra. Qed.
+Proof. intros. unfold atan2. autoRbool; ra. Qed.
 
 Fact atan2_Xlt0_Yge0 : forall y x, x < 0 -> y >= 0 -> atan2 y x = (atan (y/x) + PI)%R.
-Proof. intros. unfold atan2,Rltb,Rleb,Acmpb. destruct_dec; lra. Qed.
+Proof. intros. unfold atan2. autoRbool; lra. Qed.
 
 Fact atan2_Xlt0_Ylt0 : forall y x, x < 0 -> y < 0 -> atan2 y x = (atan (y/x) - PI)%R.
-Proof. intros. unfold atan2,Rltb,Rleb,Acmpb. destruct_dec; lra. Qed.
+Proof. intros. unfold atan2. autoRbool; lra. Qed.
 
 Fact atan2_X0_Yge0 : forall y x, x = 0 -> y >= 0 -> atan2 y x = PI/2.
-Proof. intros. unfold atan2,Rltb,Rleb,Acmpb. destruct_dec; lra. Qed.
+Proof. intros. unfold atan2. autoRbool; lra. Qed.
 
 Fact atan2_X0_Ylt0 : forall y x, x = 0 -> y < 0 -> atan2 y x = - PI/2.
-Proof. intros. unfold atan2,Rltb,Rleb,Acmpb. destruct_dec; lra. Qed.
+Proof. intros. unfold atan2. autoRbool; lra. Qed.
 
 (** - PI < atan2 y x <= PI *)
 Lemma atan2_bound : forall y x, - PI < atan2 y x <= PI.

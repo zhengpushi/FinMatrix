@@ -4140,7 +4140,7 @@ Section search.
     Lemma list_min_pos_spec : forall {tA} (A0 : tA) (cmp : tA -> tA -> bool) (l : list tA),
         let min_pos :=  list_min_pos A0 cmp l in
         let min_val := nth min_pos l A0 in
-        Forall (fun a => negb (cmp a min_val)) l.
+        Forall (fun a => cmp a min_val = false) l.
     Proof.
       intros tA A0 cmp l. simpl. induction l; constructor.
     Abort.

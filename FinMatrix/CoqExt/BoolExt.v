@@ -80,3 +80,34 @@ Ltac solve_bool :=
   (* b <> true |- b = false *)
   | |- ?b <> true -> ?b = false => intros; apply not_true_is_false; auto
   end.
+
+
+(* ######################################################################### *)
+(** * bool to Prop *)
+
+(* (** bool to Prop *) *)
+(* Definition is_true (b : bool) : Prop := b = true. *)
+(* Coercion is_true : bool >-> Sortclass. *)
+
+(* (* Note that Coq.Bool.Bool.Is_true is another implementation, and I argue that it is  *)
+(*    a bit complex *) *)
+(* (* Print Is_true. (* Is_true = fun b : bool => if b then True else False *) *)
+(*      : bool -> Prop *) *)
+
+(* Lemma is_true_and_iff : forall b1 b2 : bool, *)
+(*     is_true b1 /\ is_true b2 <-> is_true (b1 && b2). *)
+(* Proof. destruct b1,b2; intros; split; intros; auto; try easy. Qed. *)
+
+(* Lemma is_true_or_iff : forall b1 b2 : bool, *)
+(*     is_true b1 \/ is_true b2 <-> is_true (b1 || b2). *)
+(* Proof. *)
+(*   destruct b1,b2; intros; split; intros; auto; try easy. *)
+(*   simpl. unfold is_true in *. destruct H; auto. *)
+(* Qed. *)
+
+(* (** use reflect to connect bool and proposition equality *) *)
+(* Example eqnP (n m : nat) : reflect (n = m) (Nat.eqb n m). *)
+(* Proof. *)
+(*   revert m. induction n; intros [|m]; simpl; try constructor; auto. *)
+(*   destruct IHn with m; subst; constructor; auto. *)
+(* Qed. *)

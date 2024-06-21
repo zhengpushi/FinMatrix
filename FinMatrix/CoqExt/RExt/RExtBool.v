@@ -41,12 +41,18 @@ Proof. intros. unfold Rleb. destruct Rle_lt_dec; constructor; lra. Qed.
 Ltac autoRbool :=
   repeat
     match goal with
-    | [H:context [?x =? ?y] |- _] => bdestruct (x =? y)
-    | [H:context [?x <? ?y] |- _] => bdestruct (x <? y)
-    | [H:context [?x <=? ?y] |- _] => bdestruct (x <=? y)
+    | H:context [?x =? ?y] |- _ => bdestruct (x =? y)
+    | H:context [?x <? ?y] |- _ => bdestruct (x <? y)
+    | H:context [?x <=? ?y] |- _ => bdestruct (x <=? y)
     | |- context [?x =? ?y] => bdestruct (x =? y)
     | |- context [?x <? ?y] => bdestruct (x <? y)
     | |- context [?x <=? ?y] => bdestruct (x <=? y)
+    | H:context [Req_dec_T  ?x ?y] |- _ => destruct (Req_dec_T  x y)
+    | H:context [Rlt_le_dec ?x ?y] |- _ => destruct (Rlt_le_dec x y)
+    | H:context [Rle_lt_dec ?x ?y] |- _ => destruct (Rle_lt_dec x y)
+    | |- context [Req_dec_T  ?x ?y] => destruct (Req_dec_T  x y)
+    | |- context [Rlt_le_dec ?x ?y] => destruct (Rlt_le_dec x y)
+    | |- context [Rle_lt_dec ?x ?y] => destruct (Rle_lt_dec x y)
     end.
 
 Lemma Reqb_true : forall x y, x =? y = true <-> x = y.

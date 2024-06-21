@@ -54,18 +54,39 @@ Lemma Rpower_neq0 x y : x <> 0 -> Rpower x y <> 0.
 Proof.
 Abort.
 
-Lemma Rpower_1_eq : forall x, 0 < x -> Rpower x 1 = x.
+Lemma Rpower_1 : forall x, 0 < x -> Rpower x 1 = x.
 Proof. intros. rewrite Rpower_1; auto. Qed.
 
-Lemma Rpower_n1_eq : forall x, Rpower x (-1) = (/ x)%R.
+Lemma Rpower_n1 : forall x, Rpower x (-1) = (/ x)%R.
 Admitted.
 
-Lemma Rpower_2_eq : forall x, Rpower x 2 = x * x.
+Lemma Rpower_2 : forall x, Rpower x 2 = x * x.
 Admitted.
 
-Lemma Rpower_3_eq : forall x, Rpower x 3 = x * x * x.
+Lemma Rpower_3 : forall x, Rpower x 3 = x * x * x.
 Admitted.
 
-Lemma Rpower_1_2_eq : forall x, Rpower x (1/2) = sqrt x.
+Lemma Rpower_inv2 : forall x, Rpower x (/2) = sqrt x.
 Admitted.
 
+(* Note, the condition "0 < b" is too strong!! *)
+Lemma Rpower_inv3 : forall a b : R, 0 < b -> b ^ 3 = a -> Rpower a (/3) = b.
+Proof.
+  intros. rewrite <- H0. rewrite <- Rpower_pow; try lra.
+  rewrite Rpower_mult. rewrite <- Rpower_1; auto. f_equal. cbv. lra.
+Qed.
+
+Lemma Rpower_inv4 : forall a b : R, 0 < b -> b ^ 4 = a -> Rpower a (/4) = b.
+Proof.
+  intros. rewrite <- H0. rewrite <- Rpower_pow; try lra.
+  rewrite Rpower_mult. rewrite <- Rpower_1; auto. f_equal. cbv. lra.
+Qed.
+
+Lemma Rpower_invn : forall (n : nat) (a b : R),
+    (0 < n)%nat -> 0 < b -> b ^ n = a -> Rpower a (/ (IZR (Z.of_nat n))) = b.
+Proof.
+  intros. rewrite <- H1. rewrite <- Rpower_pow; try lra.
+  rewrite Rpower_mult. rewrite <- Rpower_1; auto. f_equal.
+  rewrite <- INR_IZR_INZ. apply Rmult_inv_r.
+  apply Rgt_not_eq. apply lt_0_INR. auto.
+Qed.

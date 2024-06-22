@@ -42,6 +42,11 @@ Require Export RExtBase RExtBool RExtPlus RExtOpp RExtMult RExtInv RExtSqr RExtA
 
 (** *** About sqrt with 0 *)
 
+(** sqrt R0 = 0 *)
+Lemma sqrt_R0 : sqrt R0 = 0.
+Proof. rewrite R0_eq_0. ra. Qed.
+#[export] Hint Rewrite sqrt_R0 : R.
+
 (** r = 0 -> sqrt r = 0 *)
 Lemma sqrt_0_eq0 : forall r, r = 0 -> sqrt r = 0.
 Proof. intros. rewrite H. ra. Qed.
@@ -99,10 +104,10 @@ Proof. ra. Qed.
 
 (** *** About sqrt with 1 *)
 
-(** sqrt 1 = 1 *)
-Lemma sqrt_1 : sqrt 1 = 1.
-Proof. apply Rsqr_inj; ra. Qed.
-#[export] Hint Rewrite sqrt_1 : R.
+(** sqrt R1 = 1 *)
+Lemma sqrt_R1 : sqrt R1 = 1.
+Proof. rewrite R1_eq_1. ra. Qed.
+#[export] Hint Rewrite sqrt_R1 : R.
 
 (** sqrt x = 1 -> x = 1 *)
 Lemma sqrt_eq1_imply_eq1 : forall (x : R), sqrt x = 1 -> x = 1.

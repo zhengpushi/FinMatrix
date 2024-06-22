@@ -54,7 +54,7 @@ Proof. intros. apply (proj2 (Rlt_0_minus a b)); auto. Qed.
 
 (** 0 < r -> 0 < 1 / r *)
 Lemma Rinv1_gt0 : forall r : R, 0 < r -> 0 < 1 / r.
-Proof. ra. unfold Rdiv; ra. Qed.
+Proof. ra. Qed.
 #[export] Hint Resolve Rinv1_gt0 : R.
 
 (** 0 <= a -> b < 0 -> a / b <= 0 *)

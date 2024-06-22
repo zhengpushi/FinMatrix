@@ -15,6 +15,19 @@
 Require Export Extraction.
 Require Import Reals.
 
+(* the command provided by std library will generate warning *)
+(* Require Import extraction.ExtrOcamlBasic.
+Require Import extraction.ExtrOcamlNatInt.
+Require Import extraction.ExtrOcamlZInt. *)
+
+
+(* some inductive datatypes *)
+Extract Inductive bool => "bool" [ "true" "false" ].
+Extract Inductive sumbool => "bool" [ "true" "false" ].
+Extract Inductive nat => "int" [ "0" "Int.succ" ] 
+  "(fun fO fS n -> if n=0 then fO () else fS (n-1))".
+
+
 (* constant - Real number and operations *)
 Extract Constant R => float.
 

@@ -23,6 +23,8 @@ Require Export RExtBase.
   Rmult_0_r           (* r * 0 = 0 *)
   Rmult_1_l           (* 1 * r = r *)
   Rmult_1_r           (* r * 1 = r *)
+  Rdiv_1_l            (* 1 / r = / r *)
+  Rdiv_1_r            (* r / 1 = r *)
   : R.
 
 #[export] Hint Resolve

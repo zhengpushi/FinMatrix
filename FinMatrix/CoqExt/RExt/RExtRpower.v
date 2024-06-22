@@ -54,6 +54,9 @@ Lemma Rpower_neq0 x y : x <> 0 -> Rpower x y <> 0.
 Proof.
 Abort.
 
+Lemma Rpower_gt0 : forall x y, 0 < Rpower x y.
+Proof. intros. lazy [Rpower]. apply exp_pos. Qed.
+
 Lemma Rpower_1 : forall x, 0 < x -> Rpower x 1 = x.
 Proof. intros. rewrite Rpower_1; auto. Qed.
 
@@ -89,4 +92,21 @@ Proof.
   rewrite Rpower_mult. rewrite <- Rpower_1; auto. f_equal.
   rewrite <- INR_IZR_INZ. apply Rmult_inv_r.
   apply Rgt_not_eq. apply lt_0_INR. auto.
+Qed.
+
+(** Rpower (powerRZ r z) (/ IZR z) = r *)
+Lemma Rpower_powerRZ_inv : forall (r : R) (z : Z),
+    (z <> 0)%Z -> 0 < r -> Rpower (powerRZ r z) (/ IZR z) = r.
+Proof.
+  intros. rewrite powerRZ_Rpower; auto.
+  rewrite Rpower_mult. rewrite Rmult_inv_r. ra. apply not_0_IZR. auto.
+Qed.
+
+(** powerRZ (Rpower r (/ IZR z)) z = r *)
+Lemma powerRZ_Rpower_inv : forall (r : R) (z : Z),
+    (z <> 0)%Z -> 0 < r -> powerRZ (Rpower r (/ IZR z)) z = r.
+Proof.
+  intros. rewrite powerRZ_Rpower.
+  - rewrite Rpower_mult. rewrite Rmult_inv_l. ra. apply not_0_IZR. auto.
+  - apply Rpower_gt0.
 Qed.

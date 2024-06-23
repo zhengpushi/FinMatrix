@@ -18,8 +18,6 @@ Linear Algebra As an Introduction to Abstract Mathematics
  *)
 
 Require Export Hierarchy.
-(* Require Export Matrix. *)
-(* Require Export MatrixInv. *)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -34,7 +32,6 @@ Declare Scope VectorSpace_scope.
 Delimit Scope VectorSpace_scope with VS.
 
 Open Scope A_scope.
-(* Open Scope vec_scope. *)
 Open Scope VectorSpace_scope.
 
 (* ===================================================================== *)

@@ -7,20 +7,33 @@
   author    : Zhengpu Shi
   date      : 2024.01
 
+  reference :
+  1. 丘维声《高等代数》，第2版，清华大学出版社，2019
+
   remark    :
-  1. 向量空间是线性空间的具体情形。其元素形如 @vec A c。
-  (1) 若A为实数，称为 real vector space
-  (2) 若A为复数，称为 complex vector space
+  1. contents
+  * Linearly combination 线性组合
+  * leqs (linear equation) 线性方程组
+  * lrep (linearly representable) 线性表示
+  * lreps 向量组可由向量组“线性表示(线性表出)”
+  * vsequiv (Equivalent vectors) 等价向量组，若二者能够互相线性标出
+  * lspan 由向量组生成(张成)的子空间
+  * ldep (linear depenent) 线性相关
+  * lindep (linear indepenent) 线性无关
+  * lmis (maximal linearly independent system) 极大线性无关组
+  * vectroSpace 向量空间，是线性空间的具体情形。其元素形如 @vec A c。
+    (1) 若A为实数，称为 real vector space
+    (2) 若A为复数，称为 complex vector space
  *)
 
 
 Require Import LinearSpace.
-Require Import Vector.
+Require Import Matrix.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 
-Generalizable Variable A Aadd Azero Aopp Amul Aone Ainv Ale Alt Altb Aleb a2r.
+Generalizable Variable tA Aadd Azero Aopp Amul Aone Ainv Ale Alt Altb Aleb a2r.
 
 Open Scope A_scope.
 Open Scope vec_scope.
@@ -45,8 +58,8 @@ Section lcomb.
   Notation "- v" := (vopp v) : vec_scope.
   Notation vsub a b := (a + - b).
   Notation "a - b" := ((a + (-b))%V) : vec_scope.
-  Notation vcmul := (@vcmul _ Amul _).
-  Infix "\.*" := vcmul : vec_scope.
+  Notation vscal := (@vscal _ Amul _).
+  Infix "s*" := vscal : vec_scope.
   Notation vdot := (@vdot _ Aadd Azero Amul).
 
   Infix "+" := Vadd : VectorSpace_scope.
@@ -54,25 +67,25 @@ Section lcomb.
   Notation "- v" := (Vopp v) : VectorSpace_scope.
   Notation Vsub u v := (u + -v).
   Infix "-" := Vsub : VectorSpace_scope.
-  Infix "\.*" := Vcmul : VectorSpace_scope.
+  Infix "s*" := Vscal : VectorSpace_scope.
   Notation vsum := (@vsum _ Vadd 0 _).
   
   (** Linear combination of v1,v2, ..., vn by coefficients c1,c2, ..., cn *)
-  Definition lcomb {n} (cs : @vec A n) (vs : @vec V n) : V :=
-    vsum (vmap2 Vcmul cs vs).
+  Definition lcomb {n} (cs : @vec tA n) (vs : @vec V n) : V :=
+    vsum (vmap2 Vscal cs vs).
 
   (** 0 * v1 + 0 * v2 + ... + 0 * vn = 0 *)
   Lemma lcomb_coef_0 : forall {n} (vs : @vec V n), lcomb vzero vs = 0.
   Proof.
     intros. unfold lcomb. apply vsum_eq0. intros. rewrite vnth_vmap2.
-    rewrite vnth_vzero. rewrite vs_vcmul_0_l. auto.
+    rewrite vnth_vzero. rewrite vs_vscal_0_l. auto.
   Qed.
 
   (** c1 * 0 + c2 * 0 + ... + cn * 0 = 0 *)
-  Lemma lcomb_vec_0 : forall {n} (cs : @vec A n), lcomb cs (@Vector.vzero _ Vzero _) = 0.
+  Lemma lcomb_vec_0 : forall {n} (cs : @vec tA n), lcomb cs (@Vector.vzero _ Vzero _) = 0.
   Proof.
     intros. unfold lcomb. apply vsum_eq0. intros. rewrite vnth_vmap2.
-    rewrite vnth_vzero. rewrite vs_vcmul_0_r. auto.
+    rewrite vnth_vzero. rewrite vs_vscal_0_r. auto.
   Qed.
 
   (** (c1 + c2) * v = c1 * v + c2 * v *)
@@ -80,7 +93,7 @@ Section lcomb.
       lcomb (c1 + c2)%V vs = lcomb c1 vs + lcomb c2 vs.
   Proof.
     intros. unfold lcomb. rewrite vsum_add. apply vsum_eq; intros.
-    rewrite !vnth_vmap2. rewrite vs_vcmul_aadd. auto.
+    rewrite !vnth_vmap2. rewrite vnth_vadd. rewrite vs_vscal_aadd. auto.
   Qed.
 
   (** (- c) * v = - (c * v) *)
@@ -88,7 +101,7 @@ Section lcomb.
       lcomb (- c)%V vs = - (lcomb c vs).
   Proof.
     intros. unfold lcomb. rewrite vsum_opp. apply vsum_eq; intros.
-    rewrite !vnth_vmap2. rewrite vnth_vopp. rewrite vs_vcmul_opp. auto.
+    rewrite !vnth_vmap2. rewrite vnth_vopp. rewrite vs_vscal_opp. auto.
   Qed.
 
   (** (c1 - c2) * v = c1 * v - c2 * v *)
@@ -99,14 +112,14 @@ Section lcomb.
   Qed.
 
   (** (a .* c) .* v = a .* (c .* v) *)
-  Lemma lcomb_coef_cmul : forall {n} (vs : @vec V n) a c,
-      lcomb (a \.* c)%V vs = a \.* (lcomb c vs).
+  Lemma lcomb_coef_scal : forall {n} (vs : @vec V n) a c,
+      lcomb (a s* c)%V vs = a s* (lcomb c vs).
   Proof.
-    intros. unfold lcomb. rewrite vsum_cmul_l_ext.
-    - apply vsum_eq; intros. rewrite !vnth_vmap2. rewrite vnth_vcmul.
-      apply vs_vcmul_assoc.
-    - intros. apply vs_vcmul_0_r.
-    - intros. apply vs_vcmul_vadd.
+    intros. unfold lcomb. rewrite vsum_scal_l_ext.
+    - apply vsum_eq; intros. rewrite !vnth_vmap2. rewrite vnth_vscal.
+      apply vs_vscal_assoc.
+    - intros. apply vs_vscal_0_r.
+    - intros. apply vs_vscal_vadd.
   Qed.
 
   (** (veye i) * v = v $ i *)
@@ -114,15 +127,15 @@ Section lcomb.
       lcomb (veye Azero Aone i) vs = vs.[i].
   Proof.
     intros. unfold lcomb. apply vsum_unique with (i:=i).
-    - rewrite vnth_vmap2. rewrite vnth_veye_eq. apply vs_vcmul_1_l.
-    - intros. rewrite vnth_vmap2. rewrite vnth_veye_neq; auto. apply vs_vcmul_0_l.
+    - rewrite vnth_vmap2. rewrite vnth_veye_eq. apply vs_vscal_1_l.
+    - intros. rewrite vnth_vmap2. rewrite vnth_veye_neq; auto. apply vs_vscal_0_l.
   Qed.
 
   (** (insert c i ci) * vs = c * (remove vs i) + ci * (vs.i) *)
   Lemma lcomb_coef_vinsert :
-    forall {n} (c : @vec A n) (vs : @vec V (S n)) (i : fin (S n)) (ci : A),
+    forall {n} (c : @vec tA n) (vs : @vec V (S n)) (i : fin (S n)) (ci : tA),
       lcomb (vinsert c i ci) vs =
-        Vadd (lcomb c (vremove vs i)) (Vcmul ci vs.[i]).
+        Vadd (lcomb c (vremove vs i)) (Vscal ci vs.[i]).
   Proof.
     intros. unfold lcomb.
     rewrite (vmap2_vinsert_l (Azero:=Azero)(Bzero:=Vzero)(Czero:=Vzero)).
@@ -131,34 +144,37 @@ Section lcomb.
     
   (** (insert c i 0) * vs = c * (remove vs i) *)
   Lemma lcomb_coef_vinsert_0 :
-    forall {n} (c : @vec A n) (vs : @vec V (S n)) (i : fin (S n)),
+    forall {n} (c : @vec tA n) (vs : @vec V (S n)) (i : fin (S n)),
       lcomb (vinsert c i Azero) vs = lcomb c (vremove vs i).
   Proof.
-    intros. rewrite lcomb_coef_vinsert. rewrite vs_vcmul_0_l at 1. monoid.
+    intros. rewrite lcomb_coef_vinsert. rewrite vs_vscal_0_l at 1.
+    rewrite vs_vadd_0_r. auto.
   Qed.
 
   (** (insert c i 0) * vs = (insert c i (-1)) * vs + vs.i *)
   Lemma lcomb_coef_vinsert_neg1 :
-    forall {n} (c : @vec A n) (vs : @vec V (S n)) (i : fin (S n)),
+    forall {n} (c : @vec tA n) (vs : @vec V (S n)) (i : fin (S n)),
       lcomb (vinsert c i Azero) vs =
-        Vadd (lcomb (vinsert c i (Aopp Aone)) vs) (vs$i).
+        Vadd (lcomb (vinsert c i (Aopp Aone)) vs) (vs i).
   Proof.
     intros. rewrite !lcomb_coef_vinsert. rewrite associative. f_equal.
-    replace (vs i) with (Aone \.* vs i) at 3 by apply vs_vcmul_1_l.
-    rewrite <- vs_vcmul_aadd. f_equal. group.
+    replace (vs i) with (Aone s* vs i) at 3 by apply vs_vscal_1_l.
+    rewrite <- vs_vscal_aadd. f_equal. field.
   Qed.
 
   (** (vset cs i a) * vs = cs * vs + (a - cs $ i) * (vs $ i) *)
   Lemma lcomb_coef_vset :
-    forall {n} (cs : @vec A n) (vs : @vec V n) (i : fin n) (a : A),
-      lcomb (vset cs i a) vs = lcomb cs vs + (a - cs $ i)%A \.* (vs $ i).
+    forall {n} (cs : @vec tA n) (vs : @vec V n) (i : fin n) (a : tA),
+      lcomb (vset cs i a) vs = lcomb cs vs + (a - cs i)%A s* (vs i).
   Proof.
     intros. unfold lcomb.
-    replace ((a - cs$i)%A \.* vs$i)
-      with (vsum (vset (@Vector.vzero _ Vzero n) i ((a - cs$i)%A \.* vs i))).
-    - apply vsum_add. intros j. rewrite !vnth_vmap2. destruct (i ??= j).
-      + rewrite e. rewrite !vnth_vset_eq. rewrite <- vs_vcmul_aadd. f_equal. ring.
-      + rewrite !vnth_vset_neq; auto. rewrite vnth_vzero. monoid.
+    replace ((a - cs i)%A s* vs i)
+      with (vsum (vset (@Vector.vzero _ Vzero n) i ((a - cs i)%A s* vs i))).
+    - rewrite vsum_add. f_equal.
+      apply veq_iff_vnth. intros j. rewrite !vnth_vmap2. destruct (i ??= j).
+      + fin2nat. rewrite !vnth_vset_eq. rewrite <- vs_vscal_aadd. f_equal. ring.
+      + fin2nat. rewrite !vnth_vset_neq; auto. rewrite vnth_vzero.
+        rewrite vs_vadd_0_r. auto.
     - apply vsum_unique with (i:=i).
       + rewrite vnth_vset_eq. auto.
       + intros. rewrite vnth_vset_neq; auto.
@@ -166,107 +182,103 @@ Section lcomb.
 
   (** cs * (vset vs i u) = cs * vs + (cs $ i) * (u - vs $ i) *)
   Lemma lcomb_vec_vset :
-    forall {n} (cs : @vec A n) (vs : @vec V n) (i : fin n) (u : V),
-      lcomb cs (vset vs i u) = lcomb cs vs + (cs $ i) \.* (u - vs $ i).
+    forall {n} (cs : @vec tA n) (vs : @vec V n) (i : fin n) (u : V),
+      lcomb cs (vset vs i u) = lcomb cs vs + (cs i) s* (u - vs i).
   Proof.
     intros. unfold lcomb.
-    replace (cs$i \.* (u - vs$i))
-      with (vsum (vset (@Vector.vzero _ Vzero n) i (cs$i \.* (u - vs$i)))).
-    - apply vsum_add. intros j. rewrite !vnth_vmap2. destruct (i ??= j).
-      + rewrite e. rewrite !vnth_vset_eq. rewrite <- vs_vcmul_vadd. f_equal.
-        rewrite commutative. rewrite associative. rewrite inverseLeft. monoid.
-      + rewrite !vnth_vset_neq; auto. rewrite vnth_vzero. monoid.
+    replace (cs i s* (u - vs i))
+      with (vsum (vset (@Vector.vzero _ Vzero n) i (cs i s* (u - vs i)))).
+    - rewrite vsum_add. f_equal. apply veq_iff_vnth. intros j.
+      rewrite !vnth_vmap2. destruct (i ??= j).
+      + fin2nat. rewrite !vnth_vset_eq. rewrite <- vs_vscal_vadd. f_equal.
+        rewrite commutative. rewrite associative. rewrite inverseLeft.
+        rewrite vs_vadd_0_r; auto.
+      + fin2nat. rewrite !vnth_vset_neq; auto. rewrite vnth_vzero. 
+        rewrite vs_vadd_0_r; auto.
     - apply vsum_unique with (i:=i).
       + rewrite vnth_vset_eq. auto.
       + intros. rewrite vnth_vset_neq; auto.
   Qed.
 
   (** lcomb (vremove cs i) (vremove vs i) = (lcomb cs vs) - (cs.i * vs.i) *)
-  Lemma lcomb_vremove_vremove : forall {n} (cs : @vec A (S n)) (vs : @vec V (S n)) i,
-      lcomb (vremove cs i) (vremove vs i) = (lcomb cs vs) - (cs$i \.* vs$i).
+  Lemma lcomb_vremove_vremove : forall {n} (cs : @vec tA (S n)) (vs : @vec V (S n)) i,
+      lcomb (vremove cs i) (vremove vs i) = (lcomb cs vs) - (cs i s* vs i).
   Proof.
     intros. unfold lcomb. rewrite (@vmap2_vremove_vremove _ _ _ Azero Vzero Vzero).
     rewrite vsum_vremove. auto.
   Qed.
   
   (** lcomb (vconsH c cs) vs = c * (vhead vs) + (lcomb cs (vremoveH vs)) *)
-  Lemma lcomb_coef_vconsH : forall {n} (cs : @vec A n) (vs : @vec V (S n)) (c : A),
-      lcomb (vconsH c cs) vs = c \.* (vhead vs) + lcomb cs (vremoveH vs).
+  Lemma lcomb_coef_vconsH : forall {n} (cs : @vec tA n) (vs : @vec V (S n)) (c : tA),
+      lcomb (vconsH c cs) vs = c s* (vhead vs) + lcomb cs (vremoveH vs).
   Proof.
     intros. unfold lcomb. rewrite vsumS_head. f_equal.
-    - rewrite vnth_vmap2. f_equal. rewrite vhead_eq. f_equal. apply sig_eq_iff; auto.
+    - rewrite vnth_vmap2. f_equal. rewrite vhead_eq. f_equal. fin.
     - apply vsum_eq; intros i. rewrite !vnth_vmap2. f_equal.
-      erewrite vnth_vconsH_gt0. rewrite fin2PredRangePred_fin2SuccRangeSucc. auto.
-      Unshelve. rewrite fin2nat_fin2SuccRangeSucc. lia.
+      erewrite vnth_vconsH_gt0. fin. Unshelve. fin.
   Qed.
   
   (** lcomb (vconsT cs c) vs = (lcomb cs (vremoveT vs)) + c * (vtail vs) *)
-  Lemma lcomb_coef_vconsT : forall {n} (cs : @vec A n) (vs : @vec V (S n)) (c : A),
-      lcomb (vconsT cs c) vs = lcomb cs (vremoveT vs) + c \.* (vtail vs).
+  Lemma lcomb_coef_vconsT : forall {n} (cs : @vec tA n) (vs : @vec V (S n)) (c : tA),
+      lcomb (vconsT cs c) vs = lcomb cs (vremoveT vs) + c s* (vtail vs).
   Proof.
     intros. unfold lcomb. rewrite vsumS_tail. f_equal.
     - apply vsum_eq; intros i. rewrite !vnth_vmap2. f_equal.
-      erewrite vnth_vconsT_lt. f_equal. apply fin2PredRange_fin2SuccRange.
+      erewrite vnth_vconsT_lt. fin.
     - rewrite vnth_vmap2. f_equal.
       rewrite vnth_vconsT_n; auto. rewrite fin2nat_nat2finS; auto.
-      Unshelve. rewrite fin2nat_fin2SuccRange. apply fin2nat_lt.
+      Unshelve. fin.
   Qed.
 
   (** lcomb cs (vconsT vs u) = (lcomb (vremoveT cs) vs) + (vtail cs) * u *)
-  Lemma lcomb_vec_vconsT : forall {n} (cs : @vec A (S n)) (vs : @vec V n) (u : V),
-      lcomb cs (vconsT vs u) = lcomb (vremoveT cs) vs + (vtail cs) \.* u.
+  Lemma lcomb_vec_vconsT : forall {n} (cs : @vec tA (S n)) (vs : @vec V n) (u : V),
+      lcomb cs (vconsT vs u) = lcomb (vremoveT cs) vs + (vtail cs) s* u.
   Proof.
     intros. unfold lcomb. rewrite vsumS_tail. f_equal.
     - apply vsum_eq; intros i. rewrite !vnth_vmap2. f_equal.
-      erewrite vnth_vconsT_lt. f_equal. apply fin2PredRange_fin2SuccRange.
+      erewrite vnth_vconsT_lt. fin.
     - rewrite vnth_vmap2. f_equal.
-      rewrite vnth_vconsT_n; auto. rewrite fin2nat_nat2finS; auto.
-      Unshelve. rewrite fin2nat_fin2SuccRange. apply fin2nat_lt.
+      rewrite vnth_vconsT_n; auto. fin. Unshelve. fin.
   Qed.
 
   (** lcomb cs (vconsH u vs) = (vhead cs) * u + (lcomb (vremoveH cs) vs) *)
-  Lemma lcomb_vec_vconsH : forall {n} (cs : @vec A (S n)) (vs : @vec V n) (u : V),
-      lcomb cs (vconsH u vs) = (vhead cs) \.* u + lcomb (vremoveH cs) vs.
+  Lemma lcomb_vec_vconsH : forall {n} (cs : @vec tA (S n)) (vs : @vec V n) (u : V),
+      lcomb cs (vconsH u vs) = (vhead cs) s* u + lcomb (vremoveH cs) vs.
   Proof.
     intros. unfold lcomb. rewrite vsumS_head. f_equal.
-    - rewrite vnth_vmap2. f_equal. rewrite vhead_eq. f_equal. apply sig_eq_iff; auto.
+    - rewrite vnth_vmap2. f_equal. rewrite vhead_eq. fin.
     - apply vsum_eq; intros i. rewrite !vnth_vmap2. f_equal.
-      erewrite vnth_vconsH_gt0. f_equal. apply fin2PredRangePred_fin2SuccRangeSucc.
-      Unshelve. rewrite fin2nat_fin2SuccRangeSucc. lia.
+      erewrite vnth_vconsH_gt0. fin. Unshelve. fin.
   Qed.
 
   (** lcomb (vconsT cs c) (vconsT vs v) = (lcomb cs vs) + c * v *)
-  Lemma lcomb_vconsT_vconsT : forall {n} (cs : @vec A n) (vs : @vec V n) c v,
-      lcomb (vconsT cs c) (vconsT vs v) = lcomb cs vs + c \.* v.
+  Lemma lcomb_vconsT_vconsT : forall {n} (cs : @vec tA n) (vs : @vec V n) c v,
+      lcomb (vconsT cs c) (vconsT vs v) = lcomb cs vs + c s* v.
   Proof.
     intros. unfold lcomb. rewrite vsumS_tail. f_equal.
-    - apply vsum_eq; intros i. rewrite !vnth_vmap2. erewrite !vnth_vconsT_lt.
-      rewrite !fin2PredRange_fin2SuccRange. auto.
+    - apply vsum_eq; intros i. rewrite !vnth_vmap2. erewrite !vnth_vconsT_lt. fin.
     - rewrite vnth_vmap2. erewrite !vnth_vconsT_n; auto.
       all: rewrite fin2nat_nat2finS; auto.
-      Unshelve. rewrite fin2nat_fin2SuccRange. apply fin2nat_lt.
-      rewrite fin2nat_fin2SuccRange. apply fin2nat_lt.
+      Unshelve. fin. fin.
   Qed.
 
   (** lcomb (vconsH c cs) (vconsH v vs) = c * v + (lcomb cs vs) *)
-  Lemma lcomb_vconsH_vconsH : forall {n} (cs : @vec A n) (vs : @vec V n) c v,
-      lcomb (vconsH c cs) (vconsH v vs) = c \.* v + lcomb cs vs.
+  Lemma lcomb_vconsH_vconsH : forall {n} (cs : @vec tA n) (vs : @vec V n) c v,
+      lcomb (vconsH c cs) (vconsH v vs) = c s* v + lcomb cs vs.
   Proof.
     intros. unfold lcomb. rewrite vsumS_head. f_equal.
-    apply vsum_eq; intros i. rewrite !vnth_vmap2. erewrite !vnth_vconsH_gt0.
-    rewrite !fin2PredRangePred_fin2SuccRangeSucc. auto.
-    Unshelve. rewrite fin2nat_fin2SuccRangeSucc. lia.
-    rewrite fin2nat_fin2SuccRangeSucc. lia.
+    apply vsum_eq; intros i. rewrite !vnth_vmap2. erewrite !vnth_vconsH_gt0. fin.
+    Unshelve. fin. fin.
   Qed.
 
   (** lcomb (vapp cs ds) (vapp us vs) = (lcomb cs us) + (lcomb ds vs) *)
-  Lemma lcomb_vapp_vapp : forall {n m} (cs : @vec A n) (ds : @vec A m)
+  Lemma lcomb_vapp_vapp : forall {n m} (cs : @vec tA n) (ds : @vec tA m)
                             (us : @vec V n) (vs : @vec V m),
       lcomb (vapp cs ds) (vapp us vs) = (lcomb cs us) + (lcomb ds vs).
   Proof.
     intros. unfold lcomb. rewrite vmap2_vapp_vapp.
-    remember (vmap2 Vcmul cs us) as u.
-    remember (vmap2 Vcmul ds vs) as v.
+    remember (vmap2 Vscal cs us) as u.
+    remember (vmap2 Vscal ds vs) as v.
     apply vsum_vapp.
   Qed.
 
@@ -279,24 +291,25 @@ Section lcomb.
              = (u1D11+u2D21+u3D31)v1 + (u1D12+u2D22+u3D32)v2
      u*(D*v) = u1 <row(D,1),v> + u2 <row(D,2),v> + u3 <row(D,3),v>
              = u1(D11v1+D12v2)+u2(D21v1+D22v2)+u3(D31v1+D32v2) *)
-  Lemma lcomb_assoc : forall {r c} (u : @vec A c) (D : @vec (@vec A r) c) (v : @vec V r),
+  Lemma lcomb_assoc : forall {r c} (u : @vec tA c) (D : @vec (@vec tA r) c) (v : @vec V r),
       lcomb (fun j => vdot u (fun i => D i j)) v = lcomb u (fun i : fin c => lcomb (D i) v).
   Proof.
     intros. unfold lcomb, vdot, vmap2.
-    pose proof (vsum_vsum_exchg c r (fun i j => Vcmul (Amul (u i) (D i j)) (v j))).
+    pose proof (vsum_vsum c r (fun i j => Vscal (Amul (u i) (D i j)) (v j))).
     match goal with
     | H: ?a1 = ?a2 |- ?b1 = ?b2 => replace b1 with a2; [replace b2 with a1|]; auto
     end.
-    - f_equal. extensionality i. apply vsum_cmul_extX; intros.
-      apply vs_vcmul_0_r. apply vs_vcmul_vadd. apply vs_vcmul_assoc.
-    - f_equal. extensionality i. apply vsum_cmul_extV; intros; auto.
-      apply vs_vcmul_0_l. apply vs_vcmul_aadd.
+    - f_equal. extensionality i. rewrite vsum_scal_l_ext; intros; auto.
+      f_equal. extensionality j. rewrite vs_vscal_assoc. auto.
+      apply vs_vscal_0_r. apply vs_vscal_vadd.
+    - f_equal. extensionality i. rewrite vsum_scal_r_ext; intros; auto.
+      apply vs_vscal_0_l. apply vs_vscal_aadd.
   Qed.
 
   (** (∃ ds, vs = fun i => lcomb ds.i vs) -> (∀ i, ∃ cs, lcomb cs vs = vs.i) *)
   Lemma lcomb_any_ex_imply_all_ex : forall {r s} (us : @vec V r) (vs : @vec V s),
-      (exists ds : @vec (@vec A r) s, vs = fun i => lcomb (ds$i) us) ->
-      (forall i : fin s, exists cs : @vec A r, lcomb cs us = vs i).
+      (exists ds : @vec (@vec tA r) s, vs = fun i => lcomb (ds i) us) ->
+      (forall i : fin s, exists cs : @vec tA r, lcomb cs us = vs i).
   Proof. intros. destruct H as [d H]. rewrite H. exists (d i); auto. Qed.
 
   (* Tips, this proof is tricky:
@@ -305,8 +318,8 @@ Section lcomb.
    *)
   (** (∀ i, ∃ cs, lcomb cs us = vs.i) -> (∃ ds, vs = fun i => lcomb ds.i us) *)
   Lemma lcomb_all_ex_imply_any_ex : forall {r s} (us : @vec V r) (vs : @vec V s),
-      (forall i : fin s, exists cs : @vec A r, lcomb cs us = vs i) ->
-        (exists ds : @vec (@vec A r) s, vs = fun i => lcomb (ds$i) us).
+      (forall i : fin s, exists cs : @vec tA r, lcomb cs us = vs i) ->
+        (exists ds : @vec (@vec tA r) s, vs = fun i => lcomb (ds i) us).
   Proof.
     intros. generalize dependent s. induction s; intros.
     - exists (@mkvec0 _ (@Vector.vzero _ Azero r)). apply v0eq.
@@ -314,7 +327,7 @@ Section lcomb.
       assert (exists cs : vec r, vhead vs = lcomb cs us).
       { specialize (H fin0). destruct H as [cs H]. exists cs. rewrite H. auto. }
       assert (forall i : fin s, exists cs : vec r, lcomb cs us = vremoveH vs i).
-      { intros. specialize (H (fin2SuccRangeSucc i)). destruct H as [cs H].
+      { intros. specialize (H (fSuccRangeS i)). destruct H as [cs H].
         exists cs. rewrite H. auto. }
       destruct H0 as [c0 H0].
       specialize (IHs (vremoveH vs) H1). destruct IHs as [c1 IHs].
@@ -322,7 +335,7 @@ Section lcomb.
       exists (fun i : fin (S s) =>
            match (fin2nat i ??= 0)%nat with
            | left _ => c0
-           | right n => c1 (fin2PredRangePred i (neq_0_lt_stt (fin2nat i) n))
+           | right n => c1 (fPredRangeP i (neq_0_lt_stt (fin2nat i) n))
            end).
       apply veq_iff_vnth. intros. destruct (_??=_)%nat; auto.
   Qed.
@@ -330,15 +343,16 @@ Section lcomb.
 End lcomb.
 
 
+(* ======================================================================= *)
 (** ** linear equation *)
 Section leqs.
   Context `{HVectorSpace : VectorSpace}.
-  Notation lcomb := (@lcomb _ _ Vadd Vzero Vcmul).
+  Notation lcomb := (@lcomb _ _ Vadd Vzero Vscal).
 
   (* 含有 s 个方程的 n 元线性方程组。
      其中，a称为系数，x称为未知量，b称为常数项。*)
   Record leqs {n s : nat} := {
-      leqs_a : @vec (@vec A n) s;
+      leqs_a : @vec (@vec tA n) s;
       leqs_b : @vec V s
     }.
 
@@ -390,11 +404,11 @@ Section lrep.
   (* Notation Vsub u v := (u + -v). *)
   (* Infix "-" := Vsub : VectorSpace_scope. *)
   (* Notation vsum := (@vsum _ Vadd 0 _). *)
-  Notation lcomb := (@lcomb _ _ Vadd Vzero Vcmul).
+  Notation lcomb := (@lcomb _ _ Vadd Vzero Vscal).
 
   (* 向量 u 可由向量组 vs 线性表示 *)
   Definition lrep {n} (vs : @vec V n) (u : V) : Prop :=
-    exists (cs : @vec A n), lcomb cs vs = u.
+    exists (cs : @vec tA n), lcomb cs vs = u.
 
   (* 向量 u 不能由向量组 vs 线性表示 *)
   Definition nolrep {n} (vs : @vec V n) (u : V) := (~ (lrep vs u)).
@@ -425,8 +439,8 @@ Section lreps.
   (* Notation Vsub u v := (u + -v). *)
   (* Infix "-" := Vsub : VectorSpace_scope. *)
   (* Notation vsum := (@vsum _ Vadd 0 _). *)
-  Notation lcomb := (@lcomb _ _ Vadd Vzero Vcmul).
-  Notation lrep := (@lrep _ _ Vadd Vzero Vcmul).
+  Notation lcomb := (@lcomb _ _ Vadd Vzero Vscal).
+  Notation lrep := (@lrep _ _ Vadd Vzero Vscal).
 
   (* 向量组 vs 可线性表示向量组 us *)
   Definition lreps {r s} (vs : @vec V s) (us : @vec V r) : Prop :=
@@ -471,7 +485,7 @@ End lreps.
 (** ** Equivalent vectors *)
 Section vsequiv.
   Context `{HVectorSpace : VectorSpace}.
-  Notation lreps := (@lreps _ _ Vadd Vzero Vcmul).
+  Notation lreps := (@lreps _ _ Vadd Vzero Vscal).
 
   (** Two vector systems `us` and `vs` are equivalent *)
   Definition vsequiv {r s} (us : @vec V r) (vs : @vec V s) : Prop :=
@@ -500,7 +514,7 @@ End vsequiv.
 (** ** Span (由向量组生成(张成)的子空间 *)
 Section lspan.
   Context `{HVectorSpace : VectorSpace}.
-  Notation lrep := (@lrep _ _ Vadd Vzero Vcmul).
+  Notation lrep := (@lrep _ _ Vadd Vzero Vscal).
 
   Instance lspan_Struct {n} (vs : @vec V n) : SubSpaceStruct (lrep vs).
   Proof.
@@ -511,11 +525,12 @@ Section lspan.
       exists (@vadd _ Aadd _ c c0). apply lcomb_coef_add.
     - intros. pose proof v.prf; simpl in *.
       destruct H as [c H]. rewrite <- H.
-      exists (@vcmul _ Amul _ a c). apply lcomb_coef_cmul.
+      exists (@vscal _ Amul _ a c).
+      apply lcomb_coef_scal.
   Qed.
 
   (** 由向量组 vs 张成的子空间，记作 <vs> 或 <v1,v2,...,vn> *)
-  #[export] Instance lspan {n} (vs : @vec V n) : VectorSpace Hadd Hzero Hopp Hcmul :=
+  #[export] Instance lspan {n} (vs : @vec V n) : VectorSpace Hadd Hzero Hopp Hscal :=
     makeSubSpace (lspan_Struct vs).
 End lspan.
 
@@ -527,7 +542,7 @@ End lspan.
 (** ** Linear Dependent, Linear Independent *)
 Section ldep.
   Context `{HVectorSpace : VectorSpace}.
-  Context {AeqDec : Dec (@eq A)}.
+  Context {AeqDec : Dec (@eq tA)}.
   Context {VeqDec : Dec (@eq V)}.
 
   Notation "- a" := (Aopp a) : A_scope.
@@ -540,18 +555,22 @@ Section ldep.
   Infix "+" := Vadd : VectorSpace_scope.
   Notation "0" := Vzero : VectorSpace_scope.
   Notation vzero := (vzero Azero).
-  Notation vsub := (@vsub _ Aadd Aopp).
-  Infix "-" := vsub : vec_scope.
-  Notation lcomb := (@lcomb _ _ Vadd Vzero Vcmul).
-  Notation lrep := (@lrep _ _ Vadd Vzero Vcmul).
-  Notation nolrep := (@nolrep _ _ Vadd Vzero Vcmul).
-  Notation lreps := (@lreps _ _ Vadd Vzero Vcmul).
-  Notation nolreps := (@nolreps _ _ _ Vadd Vzero Vcmul).
+  Notation vadd := (@vadd _ Aadd).
+  Infix "+" := vadd : vec_scope.
+  Notation vopp := (@vopp _ Aopp).
+  Notation "- v" := (vopp v) : vec_scope.
+  Notation vsub a b := (a + - b).
+  Notation "a - b" := ((a + (-b))%V) : vec_scope.
+  Notation lcomb := (@lcomb _ _ Vadd Vzero Vscal).
+  Notation lrep := (@lrep _ _ Vadd Vzero Vscal).
+  Notation nolrep := (@nolrep _ _ Vadd Vzero Vscal).
+  Notation lreps := (@lreps _ _ Vadd Vzero Vscal).
+  Notation nolreps := (@nolreps _ _ _ Vadd Vzero Vscal).
 
   (** Vectors {v1, v2, ..., vn} are linearly dependent *)
   (* 存在不全为0的系数，使得线性组合等于零向量 *)
   Definition ldep {n} (vs : @vec V n) : Prop :=
-    exists (cs : @vec A n), cs <> vzero /\ lcomb cs vs = 0.
+    exists (cs : @vec tA n), cs <> vzero /\ lcomb cs vs = 0.
 
   (* Vectors v1, v2, ..., vn are linearly independent *)
   Definition lindep {n} (vs : @vec V n) : Prop := ~(ldep vs).
@@ -588,7 +607,7 @@ Section ldep.
   Qed.
 
   (** 包含零向量的向量组，必定线性相关 *)
-  Lemma ldep_if_contain_0 : forall {n} (vs : @vec V n), (exists i, vs $ i = Vzero) -> ldep vs.
+  Lemma ldep_if_contain_0 : forall {n} (vs : @vec V n), (exists i, vs i = Vzero) -> ldep vs.
   Proof.
     intros. destruct H as [i H]. hnf. exists (veye Azero Aone i). split.
     - apply veye_neq0. apply field_1_neq_0.
@@ -597,7 +616,7 @@ Section ldep.
   
   (** 线性无关的向量组，必不含零向量 *)
   Lemma lindep_then_all_not0 : forall {n} (vs : @vec V n),
-      lindep vs -> forall i, vs $ i <> Vzero.
+      lindep vs -> forall i, vs i <> Vzero.
   Proof.
     intros n vs H. apply not_ex_all_not. intro. apply ldep_if_contain_0 in H0; auto.
   Qed.
@@ -606,11 +625,11 @@ Section ldep.
   Lemma ldep_vec1_iff_eq0 : forall (vs : @vec V 1), ldep vs <-> vs = (fun i => Vzero).
   Proof.
     intros. split; intros.
-    - unfold ldep in H. destruct H as [c [H H']]. cbv in H'.
-      rewrite vs_vadd_0_l in H'. apply vs_vcmul_eq0_imply_k0_or_v0 in H'. destruct H'.
-      + rewrite v1eq_iff in H. erewrite nat2finS_eq in H. cbv in H.
-        apply H in H0. easy.
-      + apply v1eq_iff. erewrite nat2finS_eq; auto. apply H0.
+    - unfold ldep in H. destruct H as [c [H H']].
+      v2e c. apply v1neq_iff in H. cbv in H. cbv in H'.
+      rewrite vs_vadd_0_r in H'.
+      eapply vs_vscal_eq0_imply_k0_or_v0 in H'. destruct H'; try easy.
+      apply v1eq_iff. erewrite nat2finS_eq; auto. apply H0.
     - apply ldep_if_contain_0. exists (nat2finS 0). rewrite H. auto.
   Qed.
   
@@ -632,7 +651,8 @@ Section ldep.
     (* c1v1+c2v2+...+cnvn=0 |- du+d1v1+...+dnvn = 0 *)
     exists (vconsH Azero cs). split.
     - apply vconsH_neq0_iff. auto.
-    - rewrite lcomb_vconsH_vconsH. rewrite H0. monoid. apply vs_vcmul_0_l.
+    - rewrite lcomb_vconsH_vconsH. rewrite H0. rewrite vs_vadd_0_r.
+      apply vs_vscal_0_l.
   Qed.
 
   (** vs线性相关，则{vs,u}线性相关 *)
@@ -643,7 +663,8 @@ Section ldep.
     (* c1v1+c2v2+...+cnvn=0 |- d1v1+d2v2+...+dnvn+duvu = 0 *)
     exists (vconsT cs Azero). split.
     - apply vconsT_neq0_iff. auto.
-    - rewrite lcomb_vconsT_vconsT. rewrite H0. monoid. apply vs_vcmul_0_l.
+    - rewrite lcomb_vconsT_vconsT. rewrite H0. rewrite vs_vadd_0_l.
+      apply vs_vscal_0_l.
   Qed.
   
   (** {u,vs}线性无关，则vs线性无关 *)
@@ -671,7 +692,7 @@ Section ldep.
   Lemma vremoveT_ldep_imply_ldep : forall {n} (vs : @vec V (S n)),
       ldep (vremoveT vs) -> ldep vs.
   Proof.
-    intros. rewrite <- (vconsT_vremoveT_vtail vs (Azero:=Vzero)).
+    intros. rewrite <- (vconsT_vremoveT_vtail vs).
     apply ldep_imply_vconsT_ldep. auto.
   Qed.
 
@@ -699,7 +720,8 @@ Section ldep.
     (* c1u1+...+cnun=0 |- e1u1+...+enun + f1v1+...+fmfm = 0 *)
     exists (vapp cs (@Vector.vzero _ Azero m)). split.
     - rewrite vapp_eq0_iff. apply or_not_and. auto.
-    - rewrite lcomb_vapp_vapp. rewrite H0. rewrite lcomb_coef_0. monoid.
+    - rewrite lcomb_vapp_vapp. rewrite H0. rewrite lcomb_coef_0.
+      apply vs_vadd_0_r.
   Qed.
 
   (** vs线性相关，则{us,vs}线性相关 *)
@@ -710,7 +732,8 @@ Section ldep.
     (* d1v1+...+dnvn=0 |- e1u1+...+enun + f1v1+...+fmfm = 0 *)
     exists (vapp (@Vector.vzero _ Azero n) ds). split.
     - rewrite vapp_eq0_iff. apply or_not_and. auto.
-    - rewrite lcomb_vapp_vapp. rewrite H0. rewrite lcomb_coef_0. monoid.
+    - rewrite lcomb_vapp_vapp. rewrite H0. rewrite lcomb_coef_0.
+      apply vs_vadd_0_r.
   Qed.
 
   (** {us,vs}线性无关，则us线性无关 *)
@@ -757,20 +780,21 @@ Section ldep.
   
   (** 线性相关 <-> 其中至少有一个向量可以由其余向量线性表示 *)
   Lemma ldep_iff_exist_lrep : forall {n} (vs : @vec V (S n)),
-      ldep vs <-> exists i, lrep (vremove vs i) (vs $ i).
+      ldep vs <-> exists i, lrep (vremove vs i) (vs i).
   Proof.
     intros. unfold ldep,lrep. split; intros.
     - destruct H as [c [H H1]]. apply vneq_iff_exist_vnth_neq in H.
       destruct H as [i H]. exists i.
       (* c1v1+c2v2+civi=0 -> d1v1+d2v2=vi. So, d:=(-c1/ci,-c2/ci) *)
-      exists (vmap (fun x => Aopp x / (c$i)) (vremove c i)).
+      exists (vmap (fun x => Aopp x / (c i)) (vremove c i)).
       rewrite (@vmap_vremove _ _ Azero Azero). rewrite lcomb_vremove_vremove.
-      rewrite vnth_vmap. rewrite !vs_vcmul_opp at 1. rewrite group_opp_opp.
-      rewrite field_mulInvR; auto. rewrite vs_vcmul_1_l at 1.
-      replace (vmap (fun x => - x / c i) c) with (vcmul (Amul:=Amul) (- (/ c i)) c).
-      + rewrite lcomb_coef_cmul. rewrite H1. rewrite vs_vcmul_0_r at 1. monoid.
-      + apply veq_iff_vnth; intros j. rewrite vnth_vcmul, vnth_vmap.
-        rewrite !ring_mul_opp_l at 1. f_equal. amonoid.
+      rewrite vnth_vmap. rewrite !vs_vscal_opp at 1. rewrite group_opp_opp.
+      rewrite field_mulInvR; auto. rewrite vs_vscal_1_l at 1.
+      replace (vmap (fun x => - x / c i)%A c) with (vscal (Amul:=Amul) (- (/ c i))%A c).
+      + rewrite lcomb_coef_scal. rewrite H1. rewrite vs_vscal_0_r at 1.
+        apply vs_vadd_0_l.
+      + apply veq_iff_vnth; intros j. rewrite vnth_vscal, vnth_vmap.
+        rewrite !ring_mul_opp_l at 1. f_equal. apply commutative.
     - destruct H as [i [c H]].
       (* c := (c1,c2,..,c(i-1),-1,c(i+1),...,cn) *)
       exists (vinsert c i (Aopp Aone)). split.
@@ -783,7 +807,7 @@ Section ldep.
 
   (** 线性无关 <-> 其中每一个向量都不能由其余向量线性表示 *)
   Lemma lindep_iff_none_lrep : forall {n} (vs : @vec V (S n)),
-      lindep vs <-> forall i, ~ (lrep (vremove vs i) (vs $ i)).
+      lindep vs <-> forall i, ~ (lrep (vremove vs i) (vs i)).
   Proof.
     intros. unfold lindep. rewrite ldep_iff_exist_lrep. split; intro.
     apply not_ex_all_not; auto. apply all_not_not_ex; auto.
@@ -795,10 +819,10 @@ Section ldep.
   Proof.
    intros. unfold lrep,ldep in *. destruct H as [cs H].
    (* c1v1+civi=u |- d1v1+divi+dnu = 0, So, d:=(c1,ci,-1) *)
-   exists (vconsT cs (-(1))). split.
+   exists (vconsT cs (-(1))%A). split.
    - rewrite vconsT_eq0_iff. apply or_not_and. right. apply field_neg1_neq_0.
    - rewrite lcomb_vconsT_vconsT. rewrite H.
-     rewrite vs_vcmul_opp1. apply vs_vadd_vopp_r.
+     rewrite vs_vscal_opp1. apply vs_vadd_vopp_r.
   Qed.
 
   (** 向量u可以由vs线性表示，则{u,vs}线性相关 *)
@@ -807,10 +831,10 @@ Section ldep.
   Proof.
    intros. unfold lrep,ldep in *. destruct H as [cs H].
    (* c1v1+civi=u |- d1u+d2v2+divi = 0, So, d:=(-1,c2,ci) *)
-   exists (vconsH (-(1)) cs). split.
+   exists (vconsH (-(1))%A cs). split.
    - rewrite vconsH_eq0_iff. apply or_not_and. left. apply field_neg1_neq_0.
    - rewrite lcomb_vconsH_vconsH. rewrite H.
-     rewrite vs_vcmul_opp1 at 1. apply vs_vadd_vopp_l.
+     rewrite vs_vscal_opp1 at 1. apply vs_vadd_vopp_l.
   Qed.
   
   (** 设向量组vs线性无关，向量组{vs,u}线性相关，则向量u可由vs线性表示 *)
@@ -825,14 +849,14 @@ Section ldep.
       exists (vremoveT cs). split.
       + apply vremoveT_neq0_if; auto.
       + rewrite lcomb_vec_vconsT in H1. rewrite H2 in H1.
-        rewrite vs_vcmul_0_l in H1 at 1. rewrite vs_vadd_0_r in H1. auto.
+        rewrite vs_vscal_0_l in H1 at 1. rewrite vs_vadd_0_r in H1. auto.
     - (* 从而，u = (-c1/cn)*v1 + (-c2/cn)*v2 + ... *)
-      hnf. exists (vcmul (Amul:=Amul) (- / vtail cs) (vremoveT cs)).
-      rewrite lcomb_coef_cmul. rewrite lcomb_vec_vconsT in H1.
-      remember (lcomb (vremoveT cs) vs) as v1. rewrite vs_vcmul_opp.
-      apply group_opp_uniq_r in H1. rewrite <- H1. rewrite vs_vcmul_vopp.
-      rewrite group_opp_opp. rewrite <- vs_vcmul_assoc.
-      rewrite field_mulInvL; auto. apply vs_vcmul_1_l.
+      hnf. exists (vscal (Amul:=Amul) (- / vtail cs)%A (vremoveT cs)).
+      rewrite lcomb_coef_scal. rewrite lcomb_vec_vconsT in H1.
+      remember (lcomb (vremoveT cs) vs) as v1. rewrite vs_vscal_opp.
+      apply group_opp_uniq_r in H1. rewrite <- H1. rewrite vs_vscal_vopp.
+      rewrite group_opp_opp. rewrite <- vs_vscal_assoc.
+      rewrite field_mulInvL; auto. apply vs_vscal_1_l.
   Qed.
   
   (** 设向量组vs线性无关，向量组{u,vs}线性相关，则向量u可由vs线性表示 *)
@@ -847,13 +871,13 @@ Section ldep.
       exists (vremoveH cs). split.
       + apply vremoveH_neq0_if; auto.
       + rewrite lcomb_vec_vconsH in H1. rewrite H2 in H1.
-        rewrite vs_vcmul_0_l in H1 at 1. rewrite vs_vadd_0_l in H1. auto.
+        rewrite vs_vscal_0_l in H1 at 1. rewrite vs_vadd_0_l in H1. auto.
     - (* 从而，u = (-c1/c1)*v1 + (-c2/c1)*v2 + ... *)
-      hnf. exists (vcmul (Amul:=Amul) (- / vhead cs) (vremoveH cs)).
-      rewrite lcomb_coef_cmul. rewrite lcomb_vec_vconsH in H1.
-      remember (lcomb (vremoveH cs) vs) as v1. rewrite vs_vcmul_opp.
-      rewrite <- vs_vcmul_vopp. apply group_opp_uniq_r in H1. rewrite H1.
-      rewrite <- vs_vcmul_assoc. rewrite field_mulInvL; auto. apply vs_vcmul_1_l.
+      hnf. exists (vscal (Amul:=Amul) (- / vhead cs)%A (vremoveH cs)).
+      rewrite lcomb_coef_scal. rewrite lcomb_vec_vconsH in H1.
+      remember (lcomb (vremoveH cs) vs) as v1. rewrite vs_vscal_opp.
+      rewrite <- vs_vscal_vopp. apply group_opp_uniq_r in H1. rewrite H1.
+      rewrite <- vs_vscal_assoc. rewrite field_mulInvL; auto. apply vs_vscal_1_l.
   Qed.
   
   (** 设向量组vs线性无关，则：向量u可由vs线性表示，当且仅当，向量组{vs,u}线性相关 *)
@@ -914,36 +938,37 @@ Section ldep.
   (** p90, 例7，替换定理：
       设向量组v1,...,vn线性无关，u=c1v1+...+cnvn。若ci<>0，则用u替换vi后得到的
       向量组v1,...,v(i-1),u,v(i+1),...,vn也线性相关 *)
-  Lemma lindep_subst : forall {n} (vs : @vec V n) (cs : @vec A n) (i : fin n),
-      lindep vs -> cs $ i <> Azero -> lindep (vset vs i (lcomb cs vs)).
+  Lemma lindep_subst : forall {n} (vs : @vec V n) (cs : @vec tA n) (i : fin n),
+      lindep vs -> cs i <> Azero -> lindep (vset vs i (lcomb cs vs)).
   Proof.
     intros. unfold lindep, ldep in *. intro. destruct H. destruct H1 as [ds [H1 H2]].
     (* Let cs=c1,c2,...,cn; ds=d1,d2,...,dn. That is,
        d1v1+d2v2+...+di(c1v1+c2v2+...+cnvn) + ... + dnvn = 0
        ---------------------------------------------------------------------
        cs' := {d1,d2,...,d(i-1),0,d(i+1),...,dn} + di*{c1,c2,...,cn} *)
-    exists (vadd (Aadd:=Aadd) (vset ds i Azero) (vcmul (Amul:=Amul) (ds $ i) cs)). split.
+    exists (vadd (vset ds i Azero) (vscal (Amul:=Amul) (ds i) cs)). split.
     - apply vneq_iff_exist_vnth_neq in H1. destruct H1 as [j H1].
       apply vneq_iff_exist_vnth_neq.
       destruct (i ??= j).
       + (* if i = j, then: 0 + ds.i*cs.i <> 0 *)
-        rewrite <- e in *.
+        fin2nat. rewrite <- e in *.
         exists i. rewrite vnth_vadd. rewrite vnth_vset_eq. rewrite identityLeft.
-        rewrite vnth_vcmul. rewrite vnth_vzero in *.
+        rewrite vnth_vscal. rewrite vnth_vzero in *.
         apply field_mul_neq0_iff; auto.
       + (* if i <> j, case (ds.i =? 0) *)
-        destruct (Aeqdec (ds$i) Azero).
+        fin2nat. destruct (Aeqdec (ds i) Azero).
         * (* if ds.i = 0, ds.j <> 0, then: ds.j + 0 <> 0 *)
-          exists j. rewrite e. rewrite vcmul_0_l. rewrite vadd_0_r.
+          exists j. rewrite e. rewrite vscal_0_l. rewrite vadd_0_r.
           rewrite vnth_vset_neq; auto.
         * (* if ds.i <> 0, then: 0 + ds.i*cs.i <> 0 *)
-          exists i. rewrite vnth_vadd. rewrite vnth_vset_eq. rewrite vnth_vcmul.
-          monoid. apply field_mul_neq0_iff; auto.
+          exists i. rewrite vnth_vadd. rewrite vnth_vset_eq. rewrite vnth_vscal.
+          rewrite identityLeft. apply field_mul_neq0_iff; auto.
     - rewrite <- H2 at 2.
-      rewrite lcomb_coef_add. rewrite lcomb_coef_cmul. rewrite lcomb_coef_vset.
-      rewrite lcomb_vec_vset. rewrite vs_vcmul_vadd. asemigroup.
-      rewrite vs_vcmul_aadd. rewrite vs_vcmul_vopp. rewrite vs_vcmul_opp at 1.
-      rewrite vs_vcmul_0_l at 1. amonoid.
+      rewrite lcomb_coef_add. rewrite lcomb_coef_scal. rewrite lcomb_coef_vset.
+      rewrite lcomb_vec_vset. rewrite vs_vscal_vadd.
+      rewrite associative. f_equal. rewrite commutative. f_equal.
+      rewrite vs_vscal_aadd. rewrite vs_vscal_vopp at 1. rewrite vs_vscal_opp at 1.
+      rewrite vs_vscal_0_l at 1. apply vs_vadd_0_l.
   Qed.
 
   (* p95, 引理1，设向量组v1,v2,...,vr可由向量组u1,u2,...,us线性表出，
@@ -957,7 +982,7 @@ Section ldep.
       assert (r > s). lia.
       pose proof (IHr (vremoveH vs)).
       assert (forall i, lrep us (vremoveH vs i)).
-      { intro. specialize (H (fin2SuccRangeSucc i)). auto. }
+      { intro. specialize (H (fSuccRangeS i)). auto. }
       specialize (H2 H3 H1).
       apply vremoveH_ldep_imply_ldep; auto. }
     - subst. clear IHr H0.
@@ -1007,14 +1032,14 @@ End ldep.
 (** ** Maximal linearly independent system 极大线性无关组 *)
 Section lmis.
   Context `{HVectorSpace : VectorSpace}.
-  Context {AeqDec : Dec (@eq A)}.
+  Context {AeqDec : Dec (@eq tA)}.
   Context {VeqDec : Dec (@eq V)}.
-  Notation lcomb := (@lcomb _ _ Vadd Vzero Vcmul).
-  Notation lrep := (@lrep _ _ Vadd Vzero Vcmul).
-  Notation lreps := (@lreps _ _ Vadd Vzero Vcmul).
-  Notation ldep := (@ldep _ Azero _ Vadd Vzero Vcmul).
-  Notation lindep := (@lindep _ Azero _ Vadd Vzero Vcmul).
-  Notation vsequiv := (@vsequiv _ _ Vadd Vzero Vcmul).
+  Notation lcomb := (@lcomb _ _ Vadd Vzero Vscal).
+  Notation lrep := (@lrep _ _ Vadd Vzero Vscal).
+  Notation lreps := (@lreps _ _ Vadd Vzero Vscal).
+  Notation ldep := (@ldep _ Azero _ Vadd Vzero Vscal).
+  Notation lindep := (@lindep _ Azero _ Vadd Vzero Vscal).
+  Notation vsequiv := (@vsequiv _ _ Vadd Vzero Vscal).
 
   (** 向量组 ms 是向量组 vs 的极大线性无关组 *)
   Definition lmis {n s} (vs : @vec V n) (ms : @vec V s) : Prop :=
@@ -1061,9 +1086,9 @@ End lmis.
 (** ** Basis *)
 Section lbasis.
   Context `{HVectorSpace : VectorSpace}.
-  Notation lcomb := (@lcomb _ _ Vadd Vzero Vcmul).
-  Notation lindep := (@lindep _ Azero _ Vadd Vzero Vcmul).
-  Notation lspan := (@lspan _ _ Vadd Vzero Vcmul).
+  Notation lcomb := (@lcomb _ _ Vadd Vzero Vscal).
+  Notation lindep := (@lindep _ Azero _ Vadd Vzero Vscal).
+  Notation lspan := (@lspan _ _ Vadd Vzero Vscal).
 
   (** Elements v1,v2,...,vn of V are said to consistute a basis of V *)
   Definition lbasis {n} (vs : @vec V n) : Prop :=
@@ -1074,7 +1099,7 @@ Section lbasis.
       uniquely determined scalars c1, c2, . . . , cn such that
       u = c1v1 + c2v2 + · · · + cnvn  *)
   Theorem lbasis_if_unique_cs : forall {n} (vs : @vec V n),
-      lbasis vs <-> forall u : V, exists! (cs : @vec A n), lcomb cs vs = u.
+      lbasis vs <-> forall u : V, exists! (cs : @vec tA n), lcomb cs vs = u.
   Proof.
     intros. split; intros.
     - hnf in H. destruct H as [H H']. hnf in H'. specialize (H' u).
@@ -1094,19 +1119,19 @@ End lbasis.
 
 (** ** Linear Transformations *)
 Section ltrans.
-  Context `{HField : Field A Aadd Azero Aopp Amul Aone Ainv}.
-  Context `(HV : @VectorSpace A Aadd Azero Aopp Amul Aone Ainv HField
-                   V Vadd Vzero Vopp Vcmul).
-  Context `(HW : @VectorSpace A Aadd Azero Aopp Amul Aone Ainv HField
-                   W Wadd Wzero Wopp Wcmul).
+  Context `{HField : Field tA Aadd Azero Aopp Amul Aone Ainv}.
+  Context `(HV : @VectorSpace tA Aadd Azero Aopp Amul Aone Ainv HField
+                   V Vadd Vzero Vopp Vscal).
+  Context `(HW : @VectorSpace tA Aadd Azero Aopp Amul Aone Ainv HField
+                   W Wadd Wzero Wopp Wscal).
   Notation Vsub u v := (Vadd u (Vopp v)).
   Notation Wsub u v := (Wadd u (Wopp v)).
 
-  (* Let V and W be linear spaces over some field K. A function T : V → W is said 
+  (* Let V and W be linear spaces over some field K. tA function T : V → W is said 
      to be a linear transformation if T (u + v) = T (u) + T (v) and T (cv) = cT (v) 
      for all elements u and v of V and for all elements c of K. *)
   Definition ltrans (T : V -> W) : Prop :=
-    (forall u v, T (Vadd u v) = Wadd (T u) (T v)) /\ (forall v c, T (Vcmul c v) = Wcmul c (T v)).
+    (forall u v, T (Vadd u v) = Wadd (T u) (T v)) /\ (forall v c, T (Vscal c v) = Wscal c (T v)).
 
   (** ltrans T -> T(u + v) = T(u) + T(v) *)
   Lemma ltrans_add : forall (T : V -> W),
@@ -1114,8 +1139,8 @@ Section ltrans.
   Proof. intros. hnf in H. destruct H; auto. Qed.
 
   (** ltrans T -> T(a * v) = a * T(v) *)
-  Lemma ltrans_cmul : forall (T : V -> W),
-      ltrans T -> forall a v, T (Vcmul a v) = Wcmul a (T v).
+  Lemma ltrans_scal : forall (T : V -> W),
+      ltrans T -> forall a v, T (Vscal a v) = Wscal a (T v).
   Proof. intros. hnf in H. destruct H; auto. Qed.
 
   (** ltrans T -> T(- v) = - T(v) *)
@@ -1123,7 +1148,7 @@ Section ltrans.
       ltrans T -> forall v, T (Vopp v) = Wopp (T v).
   Proof.
     intros. hnf in H. destruct H; auto.
-    rewrite <- !vs_vcmul_opp1. rewrite H0. rewrite vs_vcmul_opp1. auto.
+    rewrite <- !vs_vscal_opp1. rewrite H0. rewrite vs_vscal_opp1. auto.
   Qed.
 
   (** ltrans T -> T(u - v) = T(u) - T(v) *)
@@ -1144,19 +1169,19 @@ Section ltrans.
   (** T (c1v1 + c2v2 + · · · + cnvn) 
       = T (c1v1) + T (c2v2) + · · · + T (cnvn)
       = c1w1 + c2w2 + · · · + cnwn *)
-  Lemma ltrans_linear : forall {n} (T : V -> W) (cs : @vec A n)
+  Lemma ltrans_linear : forall {n} (T : V -> W) (cs : @vec tA n)
                            (v : @vec V n) (w : @vec W n),
       ltrans T -> (forall i, w$i = T(v$i)) ->
-      T (lcomb (Vadd:=Vadd)(Vzero:=Vzero)(Vcmul:=Vcmul) cs v) =
-        lcomb (Vadd:=Wadd)(Vzero:=Wzero)(Vcmul:=Wcmul) cs w.
+      T (lcomb (Vadd:=Vadd)(Vzero:=Vzero)(Vscal:=Vscal) cs v) =
+        lcomb (Vadd:=Wadd)(Vzero:=Wzero)(Vscal:=Wscal) cs w.
   Proof.
     intros. unfold lcomb.
     apply eq_trans with
-      (vsum (Aadd:=Wadd)(Azero:=Wzero) (vmap T (vmap2 Vcmul cs v))).
+      (vsum (Aadd:=Wadd)(Azero:=Wzero) (vmap T (vmap2 Vscal cs v))).
     - rewrite <- (vsum_vmap (Aadd:=Vadd)(Azero:=Vzero)); auto.
       apply ltrans_zero; auto. apply ltrans_add; auto.
     - apply vsum_eq; intros. rewrite !vnth_vmap, !vnth_vmap2.
-      rewrite ltrans_cmul; auto. rewrite H0. auto.
+      rewrite ltrans_scal; auto. rewrite H0. auto.
   Qed.
   
 End ltrans.
@@ -1170,61 +1195,64 @@ End ltrans.
 
 (** Vector forms a linear space (called `Vector Space`) *)
 Section vectorSpace.
-  Context `{HField : Field A Aadd Azero Aopp Amul Aone Ainv}.
+  Context `{HField : Field tA Aadd Azero Aopp Amul Aone Ainv}.
   
   Notation vzero := (vzero Azero).
   Notation vadd := (@vadd _ Aadd).
   Notation vopp := (@vopp _ Aopp).
-  Notation vcmul := (@vcmul _ Amul).
+  Notation vscal := (@vscal _ Amul).
   
   #[export] Instance vectorSpace {n : nat} :
-    VectorSpace (V:=vec n) vadd vzero vopp vcmul.
+    VectorSpace (V:=vec n) vadd vzero vopp vscal.
   Proof.
     constructor; try apply vadd_AGroup; intros.
-    apply vcmul_1_l. rewrite vcmul_assoc; auto.
-    apply vcmul_add. apply vcmul_vadd.
+    apply vscal_1_l. rewrite vscal_assoc; auto.
+    apply vscal_add. apply vscal_vadd.
   Qed.
 
 End vectorSpace.
-Arguments vectorSpace {A Aadd Azero Aopp Amul Aone Ainv} HField {n}.
+Arguments vectorSpace {tA Aadd Azero Aopp Amul Aone Ainv} HField {n}.
 
 Section props.
-  Context `{HField : Field A Aadd Azero Aopp Amul Aone Ainv}.
+  Context `{HField : Field tA Aadd Azero Aopp Amul Aone Ainv}.
   Notation vectorSpace := (vectorSpace HField).
 
   Notation vzero := (vzero Azero).
   Notation vadd := (@vadd _ Aadd).
+  Infix "+" := vadd : vec_scope.
   Notation vopp := (@vopp _ Aopp).
-  Notation vsub := (@vsub _ Aadd Aopp).
-  Notation vcmul := (@vcmul _ Amul).
+  Notation "- v" := (vopp v) : vec_scope.
+  Notation vsub a b := (a + - b).
+  Notation "a - b" := ((a + (-b))%V) : vec_scope.
+  Notation vscal := (@vscal _ Amul).
   Notation vsum := (@vsum _ Aadd Azero).
   Notation "0" := Azero : A_scope.
   Notation "1" := Aone : A_scope.
-  Notation lcomb := (@lcomb _ _ vadd vzero vcmul).
-  Notation lrep := (@lrep _ _ vadd vzero vcmul).
-  Notation ldep := (@ldep _ Azero _ vadd vzero vcmul).
-  Notation lindep := (@lindep _ Azero _ vadd vzero vcmul).
+  Notation lcomb := (@lcomb _ _ vadd vzero vscal).
+  Notation lrep := (@lrep _ _ vadd vzero vscal).
+  Notation ldep := (@ldep _ Azero _ vadd vzero vscal).
+  Notation lindep := (@lindep _ Azero _ vadd vzero vscal).
 
   (** (lcomb cs vs).i = ∑(vmap2 Amul cs (vcol vs i)) *)
-  Lemma vnth_lcomb : forall {n r} (cs : @vec A r) (vs : @mat A r n) (i : fin n),
-      (lcomb cs vs) $ i = vsum (vmap2 Amul cs (mcol vs i)).
+  Lemma vnth_lcomb : forall {n r} (cs : @vec tA r) (vs : mat tA r n) (i : fin n),
+      (lcomb cs vs) i = vsum (vmap2 Amul cs (mcol vs i)).
   Proof. intros. unfold lcomb. rewrite vnth_vsum. auto. Qed.
 
   (** lcomb over vectors from `vmap2 vapp us vs` *)
   Lemma lcomb_vec_vmap2_vapp :
-    forall (m n r : nat) (cs : @vec A r)
-      (us : @mat A r m) (vs : @mat A r n) (i : fin (m + n)),
+    forall (m n r : nat) (cs : @vec tA r)
+      (us : @mat tA r m) (vs : @mat tA r n) (i : fin (m + n)),
       lcomb cs (vmap2 vapp us vs) i = vapp (lcomb cs us) (lcomb cs vs) i.
   Proof.
     intros. rewrite vnth_lcomb. destruct (fin2nat i ??< m).
-    - rewrite vnth_vapp_L with (H:=l). unfold lcomb.
+    - rewrite vnth_vapp_l with (H:=l). unfold lcomb.
       rewrite vnth_vsum. apply vsum_eq; intros j.
-      rewrite !vnth_vmap2. rewrite !vnth_vcmul. f_equal. rewrite !vnth_mcol.
-      rewrite vnth_vmap2. rewrite vnth_vapp_L with (H:=l); auto.
-    - assert (m <= fin2nat i). lia. rewrite vnth_vapp_R with (H:=H). unfold lcomb.
+      rewrite !vnth_vmap2. rewrite !vnth_vscal. f_equal. rewrite !vnth_mcol.
+      rewrite vnth_vmap2. rewrite vnth_vapp_l with (H:=l); auto.
+    - assert (m <= fin2nat i). lia. rewrite vnth_vapp_r with (H:=H). unfold lcomb.
       rewrite vnth_vsum. apply vsum_eq; intros j.
-      rewrite !vnth_vmap2. rewrite !vnth_vcmul. f_equal. rewrite !vnth_mcol.
-      rewrite vnth_vmap2. rewrite vnth_vapp_R with (H:=H). auto.
+      rewrite !vnth_vmap2. rewrite !vnth_vscal. f_equal. rewrite !vnth_mcol.
+      rewrite vnth_vmap2. rewrite vnth_vapp_r with (H:=H). auto.
   Qed.
 
   (** F^n的下述子集U是一个子空间 U = {(a1,...,ak,0,...,0) | ai ∈ F, 1 <= k < n } *)
@@ -1235,20 +1263,20 @@ Section props.
     Instance topKWithZero_SubSpaceStruct
       : SubSpaceStruct
           (fun v => forall (i:fin n),
-               if (fin2nat i ??> k)%nat then v$i = Azero else True).
+               if (fin2nat i ??> k)%nat then v i = Azero else True).
     Proof.
       constructor; intros.
       - destruct (_??<_); auto.
       - destruct (_??<_); auto. rewrite vnth_vadd.
         pose proof (u.prf). pose proof (v.prf). simpl in *.
         specialize (H i). specialize (H0 i).
-        destruct (_??<_) in H,H0; try lia. rewrite H,H0. monoid.
-      - destruct (_??<_); auto. rewrite vnth_vcmul.
+        destruct (_??<_) in H,H0; try lia. rewrite H,H0. apply identityLeft.
+      - destruct (_??<_); auto. rewrite vnth_vscal.
         pose proof (v.prf). simpl in *. specialize (H i).
         destruct (_??<_) in H; try lia. rewrite H. apply ring_mul_0_r.
     Qed.
 
-    #[export] Instance topKWithZero_SubSpace : VectorSpace Hadd Hzero Hopp Hcmul :=
+    #[export] Instance topKWithZero_SubSpace : VectorSpace Hadd Hzero Hopp Hscal :=
       makeSubSpace topKWithZero_SubSpaceStruct.
   End topKWithZero_SubSpace.
 
@@ -1259,20 +1287,20 @@ Section props.
     Instance oddWithZero_SubSpaceStruct
       : SubSpaceStruct
           (fun v => forall (i : fin n),
-               if ((fin2nat i mod 2) ??= 0)%nat then v$i = Azero else True).
+               if ((fin2nat i mod 2) ??= 0)%nat then v i = Azero else True).
     Proof.
       constructor; intros.
       - destruct (_??=_)%nat; auto.
       - destruct (_??=_)%nat; auto. rewrite vnth_vadd.
         pose proof (u.prf). pose proof (v.prf). hnf in H,H0.
         specialize (H i). specialize (H0 i).
-        destruct (_??=_)%nat in H,H0; try lia. rewrite H,H0. monoid.
-      - destruct (_??=_)%nat; auto. rewrite vnth_vcmul.
+        destruct (_??=_)%nat in H,H0; try lia. rewrite H,H0. apply identityLeft.
+      - destruct (_??=_)%nat; auto. rewrite vnth_vscal.
         pose proof (v.prf). hnf in H. specialize (H i).
         destruct (_??=_)%nat in H; try lia. rewrite H. apply ring_mul_0_r.
     Qed.
 
-    #[export] Instance oddWithZero_SubSpace : VectorSpace Hadd Hzero Hopp Hcmul :=
+    #[export] Instance oddWithZero_SubSpace : VectorSpace Hadd Hzero Hopp Hscal :=
       makeSubSpace oddWithZero_SubSpaceStruct.
   End oddWithZero_SubSpace.
 
@@ -1299,7 +1327,7 @@ Section props.
     
     (** 在每个向量头部都加入数个元素后保持线性无关 *)
     Lemma lindep_extend_head :
-      forall {m n r} (us : @vec (@vec A m) r) (vs : @vec (@vec A n) r),
+      forall {m n r} (us : @vec (@vec tA m) r) (vs : @vec (@vec tA n) r),
         lindep vs -> lindep (vmap2 vapp us vs).
     Proof.
       intros. unfold lindep, ldep in *. intro. destruct H.
@@ -1307,14 +1335,14 @@ Section props.
       rewrite veq_iff_vnth. rewrite veq_iff_vnth in H0. intros.
       specialize (H0 (fin2AddRangeAddL i)).
       rewrite vnth_vzero in *. rewrite <- H0 at 2.
-      rewrite lcomb_vec_vmap2_vapp. erewrite vnth_vapp_R.
+      rewrite lcomb_vec_vmap2_vapp. erewrite vnth_vapp_r.
       rewrite fin2AddRangeAddL'_fin2AddRangeAddL. auto.
       Unshelve. rewrite fin2nat_fin2AddRangeAddL. lia.
     Qed.
 
     (** 在每个向量尾部都加入数个元素后保持线性无关 *)
     Lemma lindep_extend_tail :
-      forall {m n r} (us : @vec (@vec A m) r) (vs : @vec (@vec A n) r),
+      forall {m n r} (us : @vec (@vec tA m) r) (vs : @vec (@vec tA n) r),
         lindep us -> lindep (vmap2 vapp us vs).
     Proof.
       intros. unfold lindep, ldep in *. intro. destruct H.
@@ -1322,29 +1350,29 @@ Section props.
       rewrite veq_iff_vnth. rewrite veq_iff_vnth in H0. intros.
       specialize (H0 (fin2AddRangeR i)).
       rewrite vnth_vzero in *. rewrite <- H0 at 2.
-      rewrite lcomb_vec_vmap2_vapp. erewrite vnth_vapp_L.
+      rewrite lcomb_vec_vmap2_vapp. erewrite vnth_vapp_l.
       rewrite fin2AddRangeR'_fin2AddRangeR. auto.
       Unshelve. rewrite fin2nat_fin2AddRangeR. apply fin2nat_lt.
     Qed.
 
     (** 对每个向量都插入1个元素后保持线性无关 *)
     Lemma lindep_extend_insert :
-      forall {n r} (vs : @vec (@vec A n) r) (i : fin (S n)) (a : A),
+      forall {n r} (vs : @vec (@vec tA n) r) (i : fin (S n)) (a : tA),
         lindep vs -> lindep (vmap (fun v => vinsert v i a) vs).
     Proof.
       intros. unfold lindep, ldep in *. intro. destruct H.
       destruct H0 as [cs [H H0]]. exists cs. split; intros; auto.
       rewrite veq_iff_vnth. intros j. rewrite veq_iff_vnth in H0.
       destruct (fin2nat j ??< fin2nat i).
-      - specialize (H0 (fin2SuccRange j)).
+      - specialize (H0 (fSuccRange j)).
         rewrite vnth_vzero in *. rewrite <- H0 at 2. rewrite !vnth_lcomb.
         apply vsum_eq; intros k. rewrite !vnth_vmap2. f_equal. unfold mcol.
-        rewrite !vnth_vmap. rewrite (@vnth_vinsert_lt _ Azero) with (j:=j); auto.
-      - specialize (H0 (fin2SuccRangeSucc j)).
+        rewrite !vnth_vmap. erewrite vnth_vinsert_lt. fin.
+      - specialize (H0 (fSuccRangeS j)).
         rewrite vnth_vzero in *. rewrite <- H0 at 2. rewrite !vnth_lcomb.
         apply vsum_eq; intros k. rewrite !vnth_vmap2. f_equal. unfold mcol.
-        rewrite !vnth_vmap. rewrite (@vnth_vinsert_gt _ Azero) with (j:=j); auto.
-        lia. apply fin2nat_lt.
+        rewrite !vnth_vmap. erewrite vnth_vinsert_gt; fin.
+        Unshelve. all: fin.
     Qed.
 
   End lindep_extend.
@@ -1353,7 +1381,7 @@ Section props.
   Section ldep_shorten.
     
     (** 在每个向量头部都去掉数个元素后保持线性相关 *)
-    Lemma ldep_shorten_head : forall {m n r} (vs : @vec (@vec A (m + n)) r),
+    Lemma ldep_shorten_head : forall {m n r} (vs : @vec (@vec tA (m + n)) r),
         ldep vs -> ldep (vmap vtailN vs).
     Proof.
       intros. unfold ldep in *. destruct H as [cs [H H0]]. exists cs. split; auto.
@@ -1364,7 +1392,7 @@ Section props.
     Qed.
     
     (** 在每个向量尾部都去掉数个元素后保持线性相关 *)
-    Lemma ldep_shorten_tail : forall {m n r} (vs : @vec (@vec A (m + n)) r),
+    Lemma ldep_shorten_tail : forall {m n r} (vs : @vec (@vec tA (m + n)) r),
         ldep vs -> ldep (vmap vheadN vs).
     Proof.
       intros. unfold ldep in *. destruct H as [cs [H H0]]. exists cs. split; auto.
@@ -1376,25 +1404,25 @@ Section props.
 
     (** 对每个向量都删除1个元素后保持线性相关 *)
     Lemma ldep_shorten_delete :
-      forall {n r} (vs : @vec (@vec A (S n)) r) (i : fin (S n)) (a : A),
+      forall {n r} (vs : @vec (@vec tA (S n)) r) (i : fin (S n)) (a : tA),
         ldep vs -> ldep (vmap (fun v => vremove v i) vs).
     Proof.
       intros. unfold ldep in *. destruct H as [cs [H H0]]. exists cs. split; intros; auto.
       rewrite veq_iff_vnth. intros j. rewrite veq_iff_vnth in H0.
       destruct (fin2nat j ??< fin2nat i).
-      - specialize (H0 (fin2SuccRange j)).
+      - specialize (H0 (fSuccRange j)).
         rewrite vnth_vzero in *. rewrite <- H0 at 2. rewrite !vnth_lcomb.
         apply vsum_eq; intros k. f_equal. apply veq_iff_vnth; intros s.
         rewrite !vnth_mcol. rewrite !vnth_vmap.
-        rewrite (@vnth_vremove_lt _ Azero); auto. erewrite nth_v2f. f_equal.
-        apply fin2nat_imply_nat2fin. rewrite fin2nat_fin2SuccRange. auto.
-      - specialize (H0 (fin2SuccRangeSucc j)).
+        rewrite (@vnth_vremove_lt _ Azero); auto. erewrite nth_v2f. fin.
+        apply fin2nat_imply_nat2fin. fin.
+      - specialize (H0 (fSuccRangeS j)).
         rewrite vnth_vzero in *. rewrite <- H0 at 2. rewrite !vnth_lcomb.
         apply vsum_eq; intros k. f_equal. apply veq_iff_vnth; intros s.
         rewrite !vnth_mcol. rewrite !vnth_vmap.
         rewrite (@vnth_vremove_ge _ Azero); auto; try lia.
         + erewrite nth_v2f. f_equal. apply fin2nat_imply_nat2fin.
-          rewrite fin2nat_fin2SuccRangeSucc. auto.
+          rewrite fin2nat_fSuccRangeS. auto.
         + apply fin2nat_lt.
           Unshelve. pose proof (fin2nat_lt j). lia.
           pose proof (fin2nat_lt j). lia.
@@ -1405,12 +1433,12 @@ Section props.
   
   (** F^n中的s个向量中的每一个都在这个向量组张成的线性空间中。
       即，vi ∈ <v1,v2,...,vs>, 1<=i<=s, vi∈F^n *)
-  Lemma in_lspan : forall {n s} (vs : @vec (@vec A n) s) i,
-      Hbelong (ss := lspan_Struct vs) (vs $ i).
+  Lemma in_lspan : forall {n s} (vs : @vec (@vec tA n) s) i,
+      Hbelong (ss := lspan_Struct vs) (vs i).
   Proof. intros. hnf. apply lrep_in. Qed.
   
   (** 在F^n中，任意向量都能由n个线性无关的向量来线性表示 *)
-  Lemma lindep_imply_lrep_any : forall {n} (vs : @vec (@vec A n) n) (u : @vec A n),
+  Lemma lindep_imply_lrep_any : forall {n} (vs : @vec (@vec tA n) n) (u : @vec tA n),
       lindep vs -> lrep vs u.
   Proof.
     intros.
@@ -1420,7 +1448,7 @@ Section props.
   Admitted.
   
   (** 在F^n中，任意n+1个向量都线性相关 *)
-  Lemma ldep_Sn : forall {n} (vs : @vec (@vec A n) (S n)), ldep vs.
+  Lemma ldep_Sn : forall {n} (vs : @vec (@vec tA n) (S n)), ldep vs.
   Proof.
     (* 丘老师的证明：
        考虑齐次线性方程组 x1v1+x2v2+...+x(n-1)v(n-1)=0，
@@ -1431,7 +1459,7 @@ Section props.
        (1). 若线性相关，则这n+1个向量是线性相关的；
        (2). 若线性无关，则第n+1个向量可由前n个向量线性表示，于是这n+1个向量线性相关。*)
     intros.
-    rewrite <- (vconsT_vremoveT_vtail vs (Azero:=vzero)).
+    rewrite <- vconsT_vremoveT_vtail.
     assert ({ldep (vremoveT vs)} + {~ (ldep (vremoveT vs))}).
     (* 此可判定性也许无法证明，因为涉及到存在量词 *) admit.
     destruct H.
@@ -1462,8 +1490,9 @@ Section props.
       rewrite vnth_vsum.
       (* v1(1,0,0).i + v2(0,1,0).i + v3(0,0,1).i = v.i *)
       apply vsum_unique with (i:=i).
-      - rewrite vnth_vmap2. rewrite vnth_vcmul. rewrite vnth_veyes_eq. amonoid.
-      - intros. rewrite vnth_vmap2. rewrite vnth_vcmul.
+      - rewrite vnth_vmap2. rewrite vnth_vscal. rewrite vnth_veyes_eq.
+        apply identityRight.
+      - intros. rewrite vnth_vmap2. rewrite vnth_vscal.
         rewrite vnth_veyes_neq; auto. apply ring_mul_0_r.
     Qed.
     
@@ -1502,11 +1531,11 @@ End props.
 (*
 Section examples.
   Import VectorR.
-  Notation vlcomb := (@vlcomb _ _ vadd vzero vcmul).
-  Notation vldep := (@vldep _ Azero _ vadd vzero vcmul).
-  Notation vlindep := (@vlindep _ Azero _ vadd vzero vcmul).
-  Notation vspan := (@vspan _ _ vadd vzero vcmul).
-  Notation vbasis := (@vbasis _ Azero _ vadd vzero vcmul).
+  Notation vlcomb := (@vlcomb _ _ vadd vzero vscal).
+  Notation vldep := (@vldep _ Azero _ vadd vzero vscal).
+  Notation vlindep := (@vlindep _ Azero _ vadd vzero vscal).
+  Notation vspan := (@vspan _ _ vadd vzero vscal).
+  Notation vbasis := (@vbasis _ Azero _ vadd vzero vscal).
 
   (* Example for "linearly dependent" *)
   Section ex1.

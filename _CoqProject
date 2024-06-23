@@ -78,4 +78,4 @@ FinMatrix/Matrix/MatrixQc.v
 FinMatrix/Matrix/MatrixR.v
 FinMatrix/Matrix/MatrixC.v
 FinMatrix/Matrix/MatrixRFun.v
-# FinMatrix/Matrix/VectorSpace.v
+FinMatrix/Matrix/VectorSpace.v

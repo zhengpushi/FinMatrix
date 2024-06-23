@@ -1,6 +1,6 @@
 (* 
    purpose  : example usage for FinMatrix
-   author   : ZhengPu Shi
+   author   : Zhengpu Shi
    date     : 2024.04.26
  *)
 

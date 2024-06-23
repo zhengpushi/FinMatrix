@@ -1,10 +1,10 @@
 (*
-  Copyright 2024 ZhengPu Shi
+  Copyright 2024 Zhengpu Shi
   This file is part of FinMatrix. It is distributed under the MIT
   "expat license". You should have recieved a LICENSE file with it.
 
   purpose   : Extension for list
-  author    : ZhengPu Shi
+  author    : Zhengpu Shi
   date      : 2021.12
   
   remark    :
@@ -17,16 +17,16 @@
      
   
   history   :
-  1. 2021.12, by ZhengPu Shi.
+  1. 2021.12, by Zhengpu Shi.
      first version
 
-  2. 2022.05, by ZhengPu Shi.
+  2. 2022.05, by Zhengpu Shi.
      split big file into small modules
 
-  3. 2022.10, by ZhengPu Shi
+  3. 2022.10, by Zhengpu Shi
      Setoid version
 
-  4. 2023.11, by ZhengPu Shi
+  4. 2023.11, by Zhengpu Shi
      Leibniz Equality version
  *)
 

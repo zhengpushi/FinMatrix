@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2024 ZhengPu Shi
+# Copyright 2024 Zhengpu Shi
 # This file is part of FinMatrix. It is distributed under the MIT
 # "expat license". You should have recieved a LICENSE file with it.
 

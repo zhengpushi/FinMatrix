@@ -1,6 +1,6 @@
 (* 
    purpose  : examples for a paper (deadline at 2024/05/22)
-   author   : ZhengPu Shi
+   author   : Zhengpu Shi
    date     : 2024.05.20
  *)
 

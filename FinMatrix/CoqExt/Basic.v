@@ -150,11 +150,22 @@ Reserved Notation "V .3"       (at level 25, format "V .3").
 Reserved Notation "V .4"       (at level 25, format "V .4").
 
 (* For 2-/3-/4-D vector *)
-Reserved Notation "V .x"       (at level 25, format "V .x").      (* v[1] *)
-Reserved Notation "V .y"       (at level 25, format "V .y").
-Reserved Notation "V .z"       (at level 25, format "V .z").
+(* Reserved Notation "V .x"       (at level 25, format "V .x").      (* v[1] *) *)
+(* Reserved Notation "V .y"       (at level 25, format "V .y"). *)
+(* Reserved Notation "V .z"       (at level 25, format "V .z"). *)
 (* the "w" component has two conventions, we won't use it *)
 (* Reserved Notation "V .w"       (at level 25, format "V .w"). *)
+
+(* Note, the above notations are convenients and friendly, but there has a problem:
+   If we have module and any identifier is "x/y/z", then an error will occur 
+   when accessing this identifier. For example:
+   << 
+Module A.
+  Definition x := 1.
+End A.
+Check A.x.
+   >>
+   Thus, we disabled the global reservation. Instead, we use then locally. *)
 
 Reserved Notation "M .11"      (at level 25, format "M .11").     (* m[1,1] *)
 Reserved Notation "M .12"      (at level 25, format "M .12").

@@ -174,7 +174,9 @@ Proof. intros. assert (0 < cos r); ra. apply cos_gt_0; ra. Qed.
 #[export] Hint Resolve cos_neg0 : R.
 
 (** *** 特殊三角函数值 *)
-Fact sin_0 : sin 0 = 0. Admitted.
+
+Fact sin_0 : sin 0 = 0. Proof. apply sin_0. Qed.
+Fact sin_R0 : sin R0 = 0. Proof. apply sin_0. Qed.
 Fact sin_PI6 : sin (PI / 6) = 1 / 2. Admitted.
 Fact sin_PI4 : sin (PI / 4) = (sqrt 2) / 2. Admitted.
 Fact sin_PI3 : sin (PI / 3) = (sqrt 3) / 2. Admitted.
@@ -186,7 +188,13 @@ Fact sin_PI : sin PI = 0. Admitted.
 Fact sin_3PI2 : sin (3 * PI / 2) = -1. Admitted.
 Fact sin_2PI : sin (2 * PI) = 0. Admitted.
 
-Fact cos_0 : cos 0 = 1. Admitted.
+Hint Rewrite
+  sin_0 sin_R0 sin_PI6 sin_PI4 sin_PI3 sin_PI2 sin_2PI3 sin_3PI4 sin_5PI6
+  sin_PI sin_3PI2 sin_2PI
+  : R.
+
+Fact cos_0 : cos 0 = 1. Proof. apply cos_0. Qed.
+Fact cos_R0 : cos R0 = 1. Proof. apply cos_0. Qed.
 Fact cos_PI6 : cos (PI / 6) = (sqrt 3) / 2. Admitted.
 Fact cos_PI4 : cos (PI / 4) = (sqrt 2) / 2. Admitted.
 Fact cos_PI3 : cos (PI / 3) = 1 / 2. Admitted.
@@ -197,6 +205,11 @@ Fact cos_5PI6 : cos (5 * PI / 6) = - (sqrt 3) / 2. Admitted.
 Fact cos_PI : cos PI = -1. Admitted.
 Fact cos_3PI2 : cos (3 * PI / 2) = 0. Admitted.
 Fact cos_2PI : cos (2 * PI) = 1. Admitted.
+
+Hint Rewrite
+  cos_0 cos_R0 cos_PI6 cos_PI4 cos_PI3 cos_PI2 cos_2PI3 cos_3PI4 cos_5PI6
+  cos_PI cos_3PI2 cos_2PI
+  : R.
 
 (** *** 诱导公式 *)
 Fact sin_PI2_sub : forall x, sin (PI/2 - x) = cos x. Admitted.

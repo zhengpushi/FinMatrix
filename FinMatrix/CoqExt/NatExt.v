@@ -27,21 +27,21 @@ Hint Resolve Nat.add_wd Nat.mul_wd : nat.
 
 (** Decidable *)
 
-#[export] Instance nat_eq_Dec : Dec (@eq nat).
+Instance nat_eq_Dec : Dec (@eq nat).
 Proof. constructor. apply Nat.eq_dec. Defined.
 
-#[export] Instance nat_lt_Dec : Dec lt.
+Instance nat_lt_Dec : Dec lt.
 Proof. constructor. intros. destruct (Compare_dec.lt_dec a b); auto. Defined.
 
-#[export] Instance nat_le_Dec : Dec le.
+Instance nat_le_Dec : Dec le.
 Proof. constructor. intros. destruct (le_lt_dec a b); auto. right. lia. Defined.
 
 (** Associative *)
 
-#[export] Instance natAdd_Assoc : Associative Nat.add.
+Instance natAdd_Assoc : Associative Nat.add.
 Proof. constructor; intros; ring. Qed.
 
-#[export] Instance natMul_Assoc : Associative Nat.mul.
+Instance natMul_Assoc : Associative Nat.mul.
 Proof. constructor; intros; ring. Qed.
 
 Hint Resolve natAdd_Assoc natMul_Assoc : nat.
@@ -54,10 +54,10 @@ Proof. apply associative. Qed.
 
 (** Commutative *)
 
-#[export] Instance natAdd_Comm : Commutative Nat.add.
+Instance natAdd_Comm : Commutative Nat.add.
 Proof. constructor; intros; ring. Qed.
 
-#[export] Instance natMul_Comm : Commutative Nat.mul.
+Instance natMul_Comm : Commutative Nat.mul.
 Proof. constructor; intros; ring. Qed.
 
 Hint Resolve natAdd_Comm natMul_Comm : nat.
@@ -69,16 +69,16 @@ Goal forall a b : nat, (a * b = b * a)%nat.
 Proof. apply commutative. Qed.
 
 (** Identity Left/Right *)
-#[export] Instance natAdd_IdL : IdentityLeft Nat.add 0.
+Instance natAdd_IdL : IdentityLeft Nat.add 0.
 Proof. constructor; intros; ring. Qed.
 
-#[export] Instance natAdd_IdR : IdentityRight Nat.add 0.
+Instance natAdd_IdR : IdentityRight Nat.add 0.
 Proof. constructor; intros; ring. Qed.
 
-#[export] Instance natMul_IdL : IdentityLeft Nat.mul 1.
+Instance natMul_IdL : IdentityLeft Nat.mul 1.
 Proof. constructor; intros; ring. Qed.
 
-#[export] Instance natMul_IdR : IdentityRight Nat.mul 1.
+Instance natMul_IdR : IdentityRight Nat.mul 1.
 Proof. constructor; intros; ring. Qed.
 
 Hint Resolve
@@ -89,20 +89,20 @@ Hint Resolve
 
 (** Distributive *)
 
-#[export] Instance natMul_add_DistrL : DistrLeft Nat.add Nat.mul.
+Instance natMul_add_DistrL : DistrLeft Nat.add Nat.mul.
 Proof. constructor; intros; ring. Qed.
 
-#[export] Instance natMul_add_DistrR : DistrRight Nat.add Nat.mul.
+Instance natMul_add_DistrR : DistrRight Nat.add Nat.mul.
 Proof. constructor; intros; ring. Qed.
 
 Hint Resolve natMul_add_DistrL natMul_add_DistrR : nat.
 
 (** Semigroup *)
 
-#[export] Instance natAdd_SGroup : SGroup Nat.add.
+Instance natAdd_SGroup : SGroup Nat.add.
 Proof. constructor; auto with nat. Qed.
 
-#[export] Instance natMul_SGroup : SGroup Nat.mul.
+Instance natMul_SGroup : SGroup Nat.mul.
 Proof. constructor; auto with nat. Qed.
 
 Hint Resolve
@@ -112,10 +112,10 @@ Hint Resolve
 
 (** Abelian semigroup *)
 
-#[export] Instance natAdd_ASGroup : ASGroup Nat.add.
+Instance natAdd_ASGroup : ASGroup Nat.add.
 Proof. constructor; auto with nat. Qed.
 
-#[export] Instance natMul_ASGroup : ASGroup Nat.mul.
+Instance natMul_ASGroup : ASGroup Nat.mul.
 Proof. constructor; auto with nat. Qed.
 
 Hint Resolve
@@ -129,27 +129,27 @@ Proof. intros. pose proof natAdd_ASGroup. asgroup. Qed.
 
 (** Monoid *)
   
-#[export] Instance natAdd_Monoid : Monoid Nat.add 0.
+Instance natAdd_Monoid : Monoid Nat.add 0.
 Proof. constructor; auto with nat. Qed.
 Hint Resolve natAdd_Monoid : nat.
 
-#[export] Instance natMul_Monoid : Monoid Nat.mul 1.
+Instance natMul_Monoid : Monoid Nat.mul 1.
 Proof. constructor; auto with nat. Qed.
 Hint Resolve natMul_Monoid : nat.
 
 (** Abelian monoid *)
   
-#[export] Instance natAdd_AMonoid : AMonoid Nat.add 0.
+Instance natAdd_AMonoid : AMonoid Nat.add 0.
 Proof. constructor; auto with nat. Qed.
 Hint Resolve natAdd_AMonoid : nat.
   
-#[export] Instance natMul_AMonoid : AMonoid Nat.mul 1.
+Instance natMul_AMonoid : AMonoid Nat.mul 1.
 Proof. constructor; auto with nat. Qed.
 Hint Resolve natMul_AMonoid : nat.
 
 (** SRing *)
 
-#[export] Instance nat_SRing : SRing Nat.add 0 Nat.mul 1.
+Instance nat_SRing : SRing Nat.add 0 Nat.mul 1.
 Proof. constructor; auto with nat. Qed.
 Hint Resolve nat_SRing : nat.
 
@@ -157,7 +157,7 @@ Hint Resolve nat_SRing : nat.
 (** Order *)
 
 (** (<, <=, <?, <=?) is an Order *)
-#[export] Instance nat_Order : Order lt le.
+Instance nat_Order : Order lt le.
 Proof.
   constructor; intros; try lia; auto with nat.
   destruct (lt_eq_lt_dec a b) as [[H|H]|H]; auto.
@@ -190,7 +190,7 @@ Module OrderedElementTypeNat <: OrderedElementType.
   Definition Ale := Nat.le.
   Hint Unfold Ale Alt : tA.
 
-  #[export] Instance Order : Order Alt Ale.
+  Instance Order : Order Alt Ale.
   Proof. apply nat_Order. Qed.
 End OrderedElementTypeNat.
 
@@ -202,7 +202,7 @@ Module MonoidElementTypeNat <: MonoidElementType.
 
   Infix "+" := Aadd : A_scope.
 
-  #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
+  Instance Aadd_AMonoid : AMonoid Aadd Azero.
   Proof. intros. repeat constructor; intros; autounfold with tA; ring. Qed.
 End MonoidElementTypeNat.
 
@@ -354,7 +354,7 @@ Lemma nat_leb_reflect : forall x y, reflect (x <= y) (x <=? y).
 Proof. intros x y. apply iff_reflect. symmetry. apply Nat.leb_le. Defined.
 
 (* These lemmas are automatically used. *)
-#[export] Hint Resolve nat_eqb_reflect nat_ltb_reflect nat_leb_reflect : bdestruct.
+Hint Resolve nat_eqb_reflect nat_ltb_reflect nat_leb_reflect : bdestruct.
 
 (** This tactic makes quick, easy-to-read work of our running example. *)
 Example reflect_example2: forall a, (if a <? 5 then a else 2) < 6.

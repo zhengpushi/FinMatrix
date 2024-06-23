@@ -16,7 +16,7 @@ Require Export RExtBase.
 (* ======================================================================= *)
 (** ** Basic automation *)
 
-#[export] Hint Rewrite
+Hint Rewrite
   Rplus_0_l           (* 0 + r = r *)
   Rplus_0_r           (* r + 0 = r *)
   Rmult_0_l           (* 0 * r = 0 *)
@@ -27,7 +27,7 @@ Require Export RExtBase.
   Rdiv_1_r            (* r / 1 = r *)
   : R.
 
-#[export] Hint Resolve
+Hint Resolve
   Rmult_lt_0_compat   (* 0 < r1 -> 0 < r2 -> 0 < r1 * r2 *)
   : R.
 

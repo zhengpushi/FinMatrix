@@ -151,10 +151,10 @@ Hint Resolve
 
 (** Associative *)
 
-#[export] Instance fadd_Assoc : Associative fadd.
+Instance fadd_Assoc : Associative fadd.
 Proof. constructor; intros. feq. Qed.
 
-#[export] Instance fmul_Assoc : Associative fmul.
+Instance fmul_Assoc : Associative fmul.
 Proof. constructor; intros. feq. Qed.
 
 Hint Resolve
@@ -164,10 +164,10 @@ Hint Resolve
 
 (** Commutative *)
 
-#[export] Instance fadd_Comm : Commutative fadd.
+Instance fadd_Comm : Commutative fadd.
 Proof. constructor; intros. feq. Qed.
 
-#[export] Instance fmul_Comm : Commutative fmul.
+Instance fmul_Comm : Commutative fmul.
 Proof. constructor; intros. feq. Qed.
 
 Hint Resolve
@@ -176,16 +176,16 @@ Hint Resolve
   : RFun.
 
 (** Identity Left/Right *)
-#[export] Instance fadd_IdL : IdentityLeft fadd fzero.
+Instance fadd_IdL : IdentityLeft fadd fzero.
 Proof. constructor; intros. feq. Qed.
 
-#[export] Instance fadd_IdR : IdentityRight fadd fzero.
+Instance fadd_IdR : IdentityRight fadd fzero.
 Proof. constructor; intros. feq. Qed.
 
-#[export] Instance fmul_IdL : IdentityLeft fmul fone.
+Instance fmul_IdL : IdentityLeft fmul fone.
 Proof. constructor; intros. feq. Qed.
 
-#[export] Instance fmul_IdR : IdentityRight fmul fone.
+Instance fmul_IdR : IdentityRight fmul fone.
 Proof. constructor; intros. feq. Qed.
 
 Hint Resolve
@@ -195,20 +195,20 @@ Hint Resolve
 
 (** Inverse Left/Right *)
 
-#[export] Instance fadd_InvL : InverseLeft fadd fzero fopp.
+Instance fadd_InvL : InverseLeft fadd fzero fopp.
 Proof. constructor; intros. feq. Qed.
 
-#[export] Instance fadd_InvR : InverseRight fadd fzero fopp.
+Instance fadd_InvR : InverseRight fadd fzero fopp.
 Proof. constructor; intros. feq. Qed.
 
 Hint Resolve fadd_InvL fadd_InvR : RFun.
 
 (** Distributive *)
 
-#[export] Instance fmul_add_DistrL : DistrLeft fadd fmul.
+Instance fmul_add_DistrL : DistrLeft fadd fmul.
 Proof. constructor; intros. feq. Qed.
 
-#[export] Instance fmul_add_DistrR : DistrRight fadd fmul.
+Instance fmul_add_DistrR : DistrRight fadd fmul.
 Proof. constructor; intros. feq. Qed.
 
 Hint Resolve
@@ -218,10 +218,10 @@ Hint Resolve
 
 (** Semigroup *)
 
-#[export] Instance fadd_SGroup : SGroup fadd.
+Instance fadd_SGroup : SGroup fadd.
 Proof. constructor; auto with RFun. Qed.
 
-#[export] Instance fmul_SGroup : SGroup fmul.
+Instance fmul_SGroup : SGroup fmul.
 Proof. constructor; auto with RFun. Qed.
 
 Hint Resolve
@@ -231,10 +231,10 @@ Hint Resolve
 
 (** Abelian semigroup *)
 
-#[export] Instance fadd_ASGroup : ASGroup fadd.
+Instance fadd_ASGroup : ASGroup fadd.
 Proof. constructor; auto with RFun. Qed.
 
-#[export] Instance fmul_ASGroup : ASGroup fmul.
+Instance fmul_ASGroup : ASGroup fmul.
 Proof. constructor; auto with RFun. Qed.
 
 Hint Resolve
@@ -247,10 +247,10 @@ Proof. intros. pose proof fadd_ASGroup. asgroup. Abort.
 
 (** Monoid *)
   
-#[export] Instance fadd_Monoid : Monoid fadd fzero.
+Instance fadd_Monoid : Monoid fadd fzero.
 Proof. constructor; auto with RFun. Qed.
 
-#[export] Instance fmul_Monoid : Monoid fmul fone.
+Instance fmul_Monoid : Monoid fmul fone.
 Proof. constructor; auto with RFun. Qed.
 
 Hint Resolve
@@ -260,41 +260,41 @@ Hint Resolve
 
 (** Abelian monoid *)
   
-#[export] Instance fadd_AMonoid : AMonoid fadd fzero.
+Instance fadd_AMonoid : AMonoid fadd fzero.
 Proof. constructor; auto with RFun. Qed.
   
-#[export] Instance fmul_AMonoid : AMonoid fmul fone.
+Instance fmul_AMonoid : AMonoid fmul fone.
 Proof. constructor; auto with RFun. Qed.
 
 Hint Resolve fadd_AMonoid fmul_AMonoid : RFun.
 
 (** Group *)
 
-#[export] Instance fadd_Group : Group fadd fzero fopp.
+Instance fadd_Group : Group fadd fzero fopp.
 Proof. constructor; auto with RFun. Qed.
 Hint Resolve fadd_Group : RFun.
 
 (** AGroup *)
 
-#[export] Instance fadd_AGroup : AGroup fadd fzero fopp.
+Instance fadd_AGroup : AGroup fadd fzero fopp.
 Proof. constructor; auto with RFun. Qed.
 Hint Resolve fadd_AGroup : RFun.
 
 (** SRing *)
 
-#[export] Instance RFun_SRing : SRing fadd fzero fmul fone.
+Instance RFun_SRing : SRing fadd fzero fmul fone.
 Proof. constructor; auto with RFun. all: feq. Qed.
 Hint Resolve RFun_SRing : RFun.
 
 (** Ring *)
 
-#[export] Instance RFun_Ring : Ring fadd fzero fopp fmul fone.
+Instance RFun_Ring : Ring fadd fzero fopp fmul fone.
 Proof. constructor; auto with RFun. Qed.
 Hint Resolve RFun_Ring : RFun.
 
 (** ARing *)
 
-#[export] Instance RFun_ARing : ARing fadd fzero fopp fmul fone.
+Instance RFun_ARing : ARing fadd fzero fopp fmul fone.
 Proof. constructor; auto with RFun. Qed.
 
 Hint Resolve RFun_ARing : RFun.
@@ -308,7 +308,7 @@ End test.
 
 (** Field *)
 
-#[export] Instance RFun_Field : Field fadd fzero fopp fmul fone finv.
+Instance RFun_Field : Field fadd fzero fopp fmul fone finv.
 Proof.
   constructor; auto with RFun.
   2:{ intro. cbv in H.
@@ -348,7 +348,7 @@ Module MonoidElementTypeRFun <: MonoidElementType.
   
   Infix "+" := Aadd : A_scope.
 
-  #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
+  Instance Aadd_AMonoid : AMonoid Aadd Azero.
   Proof. intros. repeat constructor; intros; autounfold with tA; ring. Qed.
 End MonoidElementTypeRFun.
 
@@ -365,10 +365,10 @@ Module RingElementTypeRFun <: RingElementType.
   Notation "- a" := (Aopp a) : A_scope.
   Infix "-" := Asub : A_scope.
 
-  #[export] Instance SRing : SRing Aadd Azero Amul Aone.
+  Instance SRing : SRing Aadd Azero Amul Aone.
   Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
   
-  #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
+  Instance ARing : ARing Aadd Azero Aopp Amul Aone.
   Proof.
     repeat constructor; intros;  autounfold with tA;
       apply functional_extensionality; intros; cbv; ring.

@@ -16,7 +16,7 @@ Require Export RExtBase.
 (* ======================================================================= *)
 (** ** Basic automation *)
 
-#[export] Hint Rewrite
+Hint Rewrite
   exp_0               (* exp 0 = 1 *)
   : R.
 

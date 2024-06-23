@@ -25,7 +25,7 @@ Require Export RExtBase.
 (* ======================================================================= *)
 (** ** Basic automation *)
 
-#[export] Hint Rewrite
+Hint Rewrite
   Rpower_O            (* Rpower x 0 = 1 *)
   Rpower_1            (* power x 1 = x *) 
   : R.

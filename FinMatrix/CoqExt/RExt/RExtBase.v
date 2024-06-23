@@ -19,7 +19,7 @@ Open Scope R_scope.
 (* ======================================================================= *)
 (** ** Basic automation *)
 
-#[export] Hint Unfold
+Hint Unfold
   Rminus        (* a - b = a + - b *)
   Rdiv          (* a / b = a * / b *)
   (* Rsqr          (* r² = r * r *) *)
@@ -31,7 +31,7 @@ Open Scope R_scope.
   up
 .
 
-#[export] Hint Resolve
+Hint Resolve
   Rlt_0_1             (* 0 < 1 *)
   PI_RGT_0            (* PI > 0 *)
   Rabs_pos            (* 0 <= |x| *)
@@ -68,18 +68,18 @@ Ltac ra :=
 Lemma R0_eq_0 : R0 = 0.
 Proof. auto. Qed.
 (* Note, DONT DO IT, instead, we provide boh theories for R0 and 0 *)
-(* #[export] Hint Rewrite R0_eq_0 : R. *)
+(* Hint Rewrite R0_eq_0 : R. *)
 
 (** R1 = 1 *)
 Lemma R1_eq_1 : R1 = 1.
 Proof. auto. Qed.
 (* Note, DONT DO IT, instead, we provide boh theories for R1 and 1 *)
-(* #[export] Hint Rewrite R1_eq_1 : R. *)
+(* Hint Rewrite R1_eq_1 : R. *)
 
 (** 0 <> 1 *)
 Lemma zero_neq_1 : 0 <> 1.
 Proof. lra. Qed.
-#[export] Hint Resolve R1_eq_1 : R.
+Hint Resolve R1_eq_1 : R.
 
 (** a * b = a -> a = 0 \/ (a <> 0 /\ b = 1) *)
 Lemma Rmult_ab_eq_a_imply : forall a b, a * b = a -> a = 0 \/ (a <> 0 /\ b = 1).

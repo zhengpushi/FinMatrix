@@ -17,7 +17,7 @@ Require Export RExtBase RExtBool RExtMult RExtAbs RExtLt.
 (* ======================================================================= *)
 (** ** Basic automation *)
 
-(* #[export] Hint Rewrite *)
+(* Hint Rewrite *)
 (*   : R. *)
 
 

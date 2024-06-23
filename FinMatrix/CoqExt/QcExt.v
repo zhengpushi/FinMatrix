@@ -109,16 +109,16 @@ Hint Resolve
 
 (** Decidable *)
 
-#[export] Instance Qc_eq_Dec : Dec (@eq Qc).
+Instance Qc_eq_Dec : Dec (@eq Qc).
 Proof. constructor. apply Qc_eq_dec. Defined.
 
-#[export] Instance Qc_lt_Dec : Dec Qclt.
+Instance Qc_lt_Dec : Dec Qclt.
 Proof.
   constructor. intros. destruct (Qclt_le_dec a b); auto.
   right. intro. apply Qcle_not_lt in q. easy.
 Defined.
 
-#[export] Instance Qc_le_Dec : Dec Qcle.
+Instance Qc_le_Dec : Dec Qcle.
 Proof.
   constructor. intros. destruct (Qclt_le_dec b a); auto.
   right. intro. apply Qcle_not_lt in H. easy.
@@ -126,36 +126,36 @@ Defined.
 
 (** Associative *)
 
-#[export] Instance Qcadd_Assoc : Associative Qcplus.
+Instance Qcadd_Assoc : Associative Qcplus.
 Proof. constructor; intros; field. Qed.
 
-#[export] Instance Qcmul_Assoc : Associative Qcmult.
+Instance Qcmul_Assoc : Associative Qcmult.
 Proof. constructor; intros; field. Qed.
 
 Hint Resolve Qcadd_Assoc Qcmul_Assoc : Qc.
 
 (** Commutative *)
 
-#[export] Instance Qcadd_Comm : Commutative Qcplus.
+Instance Qcadd_Comm : Commutative Qcplus.
 Proof. constructor; intros; field. Qed.
 
-#[export] Instance Qcmul_Comm : Commutative Qcmult.
+Instance Qcmul_Comm : Commutative Qcmult.
 Proof. constructor; intros; field. Qed.
 
 Hint Resolve Qcadd_Comm Qcmul_Comm : Qc.
 
 (** Identity Left/Right *)
 
-#[export] Instance Qcadd_IdL : IdentityLeft Qcplus 0.
+Instance Qcadd_IdL : IdentityLeft Qcplus 0.
 Proof. constructor; intros; field. Qed.
 
-#[export] Instance Qcadd_IdR : IdentityRight Qcplus 0.
+Instance Qcadd_IdR : IdentityRight Qcplus 0.
 Proof. constructor; intros; field. Qed.
 
-#[export] Instance Qcmul_IdL : IdentityLeft Qcmult 1.
+Instance Qcmul_IdL : IdentityLeft Qcmult 1.
 Proof. constructor; intros; field. Qed.
 
-#[export] Instance Qcmul_IdR : IdentityRight Qcmult 1.
+Instance Qcmul_IdR : IdentityRight Qcmult 1.
 Proof. constructor; intros; field. Qed.
 
 Hint Resolve
@@ -164,20 +164,20 @@ Hint Resolve
 
 (** Inverse Left/Right *)
 
-#[export] Instance Qcadd_InvL : InverseLeft Qcplus 0 Qcopp.
+Instance Qcadd_InvL : InverseLeft Qcplus 0 Qcopp.
 Proof. constructor; intros; ring. Qed.
 
-#[export] Instance Qcadd_InvR : InverseRight Qcplus 0 Qcopp.
+Instance Qcadd_InvR : InverseRight Qcplus 0 Qcopp.
 Proof. constructor; intros; ring. Qed.
 
 Hint Resolve Qcadd_InvL Qcadd_InvR : Qc.
 
 (** Distributive *)
 
-#[export] Instance Qcmul_add_DistrL : DistrLeft Qcplus Qcmult.
+Instance Qcmul_add_DistrL : DistrLeft Qcplus Qcmult.
 Proof. constructor; intros; field. Qed.
 
-#[export] Instance Qcmul_add_DistrR : DistrRight Qcplus Qcmult.
+Instance Qcmul_add_DistrR : DistrRight Qcplus Qcmult.
 Proof. constructor; intros; field. Qed.
 
 Hint Resolve
@@ -187,10 +187,10 @@ Hint Resolve
 
 (** Semigroup *)
 
-#[export] Instance Qcadd_SGroup : SGroup Qcplus.
+Instance Qcadd_SGroup : SGroup Qcplus.
 Proof. constructor; auto with Qc. Qed.
 
-#[export] Instance Qcmul_SGroup : SGroup Qcmult.
+Instance Qcmul_SGroup : SGroup Qcmult.
 Proof. constructor; auto with Qc. Qed.
 
 Hint Resolve
@@ -200,10 +200,10 @@ Hint Resolve
 
 (** Abelian semigroup *)
 
-#[export] Instance Qcadd_ASGroup : ASGroup Qcplus.
+Instance Qcadd_ASGroup : ASGroup Qcplus.
 Proof. constructor; auto with Qc. Qed.
 
-#[export] Instance Qcmul_ASGroup : ASGroup Qcmult.
+Instance Qcmul_ASGroup : ASGroup Qcmult.
 Proof. constructor; auto with Qc. Qed.
 
 Hint Resolve
@@ -213,10 +213,10 @@ Hint Resolve
 
 (** Monoid *)
   
-#[export] Instance Qcadd_Monoid : Monoid Qcplus 0.
+Instance Qcadd_Monoid : Monoid Qcplus 0.
 Proof. constructor; auto with Qc. Qed.
 
-#[export] Instance Qcmul_Monoid : Monoid Qcmult 1.
+Instance Qcmul_Monoid : Monoid Qcmult 1.
 Proof. constructor; auto with Qc. Qed.
 
 Hint Resolve
@@ -226,48 +226,48 @@ Hint Resolve
 
 (** Abelian monoid *)
   
-#[export] Instance Qcadd_AMonoid : AMonoid Qcplus 0.
+Instance Qcadd_AMonoid : AMonoid Qcplus 0.
 Proof. constructor; auto with Qc. Qed.
   
-#[export] Instance Qcmul_AMonoid : AMonoid Qcmult 1.
+Instance Qcmul_AMonoid : AMonoid Qcmult 1.
 Proof. constructor; auto with Qc. Qed.
 
 Hint Resolve Qcadd_AMonoid Qcmul_AMonoid : Qc.
 
 (** Group *)
 
-#[export] Instance Qcadd_Group : Group Qcplus 0 Qcopp.
+Instance Qcadd_Group : Group Qcplus 0 Qcopp.
 Proof. constructor; auto with Qc. Qed.
 Hint Resolve Qcadd_Group : Qc.
 
 (** AGroup *)
 
-#[export] Instance Qcadd_AGroup : AGroup Qcplus 0 Qcopp.
+Instance Qcadd_AGroup : AGroup Qcplus 0 Qcopp.
 Proof. constructor; auto with Qc. Qed.
 Hint Resolve Qcadd_AGroup : Qc.
 
 (** SRing *)
 
-#[export] Instance Qc_SRing : SRing Qcplus 0 Qcmult 1.
+Instance Qc_SRing : SRing Qcplus 0 Qcmult 1.
 Proof. constructor; auto with Qc; intros; ring. Qed.
 Hint Resolve Qc_SRing : Qc.
 
 (** Ring *)
 
-#[export] Instance Qc_Ring : Ring Qcplus 0 Qcopp Qcmult 1.
+Instance Qc_Ring : Ring Qcplus 0 Qcopp Qcmult 1.
 Proof. constructor; auto with Qc. Qed.
 Hint Resolve Qc_Ring : Qc.
 
 (** ARing *)
 
-#[export] Instance Qc_ARing : ARing Qcplus 0 Qcopp Qcmult 1.
+Instance Qc_ARing : ARing Qcplus 0 Qcopp Qcmult 1.
 Proof. constructor; auto with Qc. Qed.
 
 Hint Resolve Qc_ARing : Qc.
 
 (** Field *)
 
-#[export] Instance Qc_Field : Field Qcplus 0 Qcopp Qcmult 1 Qcinv.
+Instance Qc_Field : Field Qcplus 0 Qcopp Qcmult 1 Qcinv.
 Proof.
   constructor; auto with Qc.
   - intros. field; auto.
@@ -278,7 +278,7 @@ Hint Resolve Qc_Field : Qc.
 
 (** Order *)
 
-#[export] Instance Qc_Order : Order Qclt Qcle.
+Instance Qc_Order : Order Qclt Qcle.
 Proof.
   constructor; intros; try lia; auto with Qc; auto with qarith.
   - intro. apply Qclt_not_eq in H. easy.
@@ -291,7 +291,7 @@ Qed.
 
 Hint Resolve Qc_Order : Qc.
 
-#[export] Instance Qc_OrderedARing :
+Instance Qc_OrderedARing :
   OrderedARing Qcplus 0 Qcopp Qcmult 1 Qclt Qcle.
 Proof.
   constructor; auto with Qc.
@@ -301,7 +301,7 @@ Qed.
 
 Hint Resolve Qc_OrderedARing : Qc.
 
-#[export] Instance Qc_OrderedField :
+Instance Qc_OrderedField :
   OrderedField Qcplus 0 Qcopp Qcmult 1 Qcinv Qclt Qcle.
 Proof. constructor; auto with Qc. Qed.
 
@@ -325,7 +325,7 @@ Hint Resolve Qc_OrderedField : Qc.
 (*   apply Qclt_not_le; auto. *)
 (* Qed. *)
 
-(* #[export] Instance Qc_Order : Order Qclt Qcle. *)
+(* Instance Qc_Order : Order Qclt Qcle. *)
 (* Proof. *)
 (*   constructor; intros; auto with Qc. ? *)
 (*   - split; intros. apply Qcle_lt_or_eq; auto. destruct H. *)
@@ -364,7 +364,7 @@ Module OrderedElementTypeQc <: OrderedElementType.
   Definition Ale := Qcle.
   Hint Unfold Ale Alt : tA.
 
-  #[export] Instance Order : Order Alt Ale.
+  Instance Order : Order Alt Ale.
   Proof. apply Qc_Order. Qed.
 End OrderedElementTypeQc.
 
@@ -376,7 +376,7 @@ Module MonoidElementTypeQc <: MonoidElementType.
   
   Infix "+" := Aadd : A_scope.
 
-  #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
+  Instance Aadd_AMonoid : AMonoid Aadd Azero.
   Proof. intros. repeat constructor; intros; autounfold with tA; ring. Qed.
 End MonoidElementTypeQc.
 
@@ -393,10 +393,10 @@ Module RingElementTypeQc <: RingElementType.
   Notation "- a" := (Aopp a) : A_scope.
   Infix "-" := Asub : A_scope.
 
-  #[export] Instance SRing : SRing Aadd Azero Amul Aone.
+  Instance SRing : SRing Aadd Azero Amul Aone.
   Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
   
-  #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
+  Instance ARing : ARing Aadd Azero Aopp Amul Aone.
   Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
   
   Add Ring Ring_inst : (make_ring_theory ARing).
@@ -409,10 +409,10 @@ Module OrderedRingElementTypeQc <: OrderedRingElementType.
   Definition Alt := Qclt.
   Hint Unfold Ale Alt : tA.
   
-  #[export] Instance Order : Order Alt Ale.
+  Instance Order : Order Alt Ale.
   Proof. apply OrderedElementTypeQc.Order. Qed.
   
-  #[export] Instance OrderedARing
+  Instance OrderedARing
     : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
   Proof.
     constructor. apply ARing. apply Order.
@@ -432,7 +432,7 @@ Module FieldElementTypeQc <: FieldElementType.
   Lemma Aone_neq_Azero : Aone <> Azero.
   Proof. intro. cbv in *. inv H. Qed.
   
-  #[export] Instance Field : Field Aadd Azero Aopp Amul Aone Ainv.
+  Instance Field : Field Aadd Azero Aopp Amul Aone Ainv.
   Proof.
     constructor. apply ARing.
     intros. autounfold with tA. field. auto.
@@ -449,14 +449,14 @@ Module OrderedFieldElementTypeQc <: OrderedFieldElementType.
   Definition Alt := Qclt.
   Hint Unfold Ale Alt : tA.
 
-  #[export] Instance Order : Order Alt Ale.
+  Instance Order : Order Alt Ale.
   Proof. apply OrderedElementTypeQc.Order. Qed.
   
-  #[export] Instance OrderedARing
+  Instance OrderedARing
     : OrderedARing Aadd Azero Aopp Amul Aone Alt Ale.
   Proof. apply OrderedRingElementTypeQc.OrderedARing. Qed.
   
-  #[export] Instance OrderedAField
+  Instance OrderedAField
     : OrderedField Aadd Azero Aopp Amul Aone Ainv Alt Ale.
   Proof. constructor. apply Field. apply OrderedRingElementTypeQc.OrderedARing. Qed.
   

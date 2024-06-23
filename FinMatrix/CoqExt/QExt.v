@@ -25,23 +25,23 @@ Hint Resolve
 
 (** Decidable *)
 
-#[export] Instance Qeq_Dec : Dec Qeq.
+Instance Qeq_Dec : Dec Qeq.
 Proof. constructor. intros. apply Qeq_dec. Defined.
 
-#[export] Instance Q_eq_Dec : Dec (@eq Q).
+Instance Q_eq_Dec : Dec (@eq Q).
 Proof.
   constructor. intros. destruct a as [p1 q1], b as [p2 q2].
   destruct (Aeqdec p1 p2), (Aeqdec q1 q2); subst; auto.
   all: right; intro; inversion H; easy.
 Defined.
 
-#[export] Instance Q_le_Dec : Dec Qle.
+Instance Q_le_Dec : Dec Qle.
 Proof.
   constructor. intros. destruct (Qlt_le_dec b a); auto.
   right. intro. apply Qle_not_lt in H. easy.
 Defined.
 
-#[export] Instance Q_lt_Dec : Dec Qlt.
+Instance Q_lt_Dec : Dec Qlt.
 Proof.
   constructor. intros. destruct (Qlt_le_dec a b); auto.
   right. intro. apply Qle_not_lt in q. easy.
@@ -67,7 +67,7 @@ End ElementTypeQ.
 (*   Definition Ale := Qle. *)
 (*   Hint Unfold Ale Alt : tA. *)
 
-(*   #[export] Instance Order : Order Alt Ale. *)
+(*   Instance Order : Order Alt Ale. *)
 (*   Proof. *)
 (*     constructor; intros; autounfold with tA in *; try lia. *)
 (*   Abort. *)

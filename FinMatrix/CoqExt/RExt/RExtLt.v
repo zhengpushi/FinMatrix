@@ -15,7 +15,7 @@ Require Export RExtBase RExtSqr RExtAbs.
 (* ======================================================================= *)
 (** ** Basic automation *)
 
-#[export] Hint Resolve
+Hint Resolve
   Rlt_gt                (* a < b -> b > a *)
   Rgt_lt                (* a > b -> b < a *)
   Rle_ge                (* a <= b -> b >= a *)
@@ -34,68 +34,80 @@ Require Export RExtBase RExtSqr RExtAbs.
 (* ======================================================================= *)
 (** ** Additional properties *)
 
+(** *** Basic logic relations *)
+
+(** 0 < r -> r <> 0 *)
+Lemma Rgt0_neq0 : forall r : R, 0 < r -> r <> 0.
+Proof. intros. lra. Qed.
+Hint Resolve Rgt0_neq0 : R.
+
+(** r < 0 -> r <> 0 *)
+Lemma Rlt0_neq0 : forall r : R, r < 0 -> r <> 0.
+Proof. intros. lra. Qed.
+Hint Resolve Rlt0_neq0 : R.
+
 (** *** For arithmetic operations  *)
 
 (** 0 <= 1 *)
 Lemma zero_le_1 : 0 <= 1.
 Proof. ra. Qed.
-#[export] Hint Resolve zero_le_1 : R.
+Hint Resolve zero_le_1 : R.
 
 (** a <> b -> a <= b -> a < b *)
 Lemma Rneq_le_lt : forall a b, a <> b -> a <= b -> a < b.
 Proof. ra. Qed.
-#[export] Hint Resolve Rneq_le_lt : R.
+Hint Resolve Rneq_le_lt : R.
 
 (** a < b -> 0 < b - a *)
 (* Note, Rlt_Rminus is deprecated since 8.19 *)
 Lemma Rlt_Rminus : forall a b : R, a < b -> 0 < b - a.
 Proof. intros. apply (proj2 (Rlt_0_minus a b)); auto. Qed.
-#[export] Hint Resolve Rlt_Rminus : R.
+Hint Resolve Rlt_Rminus : R.
 
 (** 0 < r -> 0 < 1 / r *)
 Lemma Rinv1_gt0 : forall r : R, 0 < r -> 0 < 1 / r.
 Proof. ra. Qed.
-#[export] Hint Resolve Rinv1_gt0 : R.
+Hint Resolve Rinv1_gt0 : R.
 
 (** 0 <= a -> b < 0 -> a / b <= 0 *)
 Lemma Rdiv_ge0_lt0_le0 : forall a b : R, 0 <= a -> b < 0 -> a / b <= 0.
 Proof. ra. assert (/b < 0); ra. Qed.
-#[export] Hint Resolve Rdiv_ge0_lt0_le0 : R.
+Hint Resolve Rdiv_ge0_lt0_le0 : R.
 
 (** a < 0 -> b < 0 -> 0 < a / b *)
 Lemma Rdiv_gt0_compat_neg : forall a b : R, a < 0 -> b < 0 -> 0 < a / b.
 Proof. ra. assert (/b < 0); ra. Qed.
-#[export] Hint Resolve Rdiv_gt0_compat_neg : R.
+Hint Resolve Rdiv_gt0_compat_neg : R.
 
 (** 0 <= a -> 0 < b -> 0 <= a / b *)
 Lemma Rdiv_ge0_compat : forall a b : R, 0 <= a -> 0 < b -> 0 <= a / b.
 Proof. ra. assert (0 < /b); ra. Qed.
-#[export] Hint Resolve Rdiv_ge0_compat : R.
+Hint Resolve Rdiv_ge0_compat : R.
 
 (** 0 < a -> b < 0 -> a / b < 0 *)
 Lemma Rdiv_lt_0_compat_l : forall a b : R, 0 < a -> b < 0 -> a / b < 0.
 Proof. intros. unfold Rdiv. assert (/b < 0); ra. Qed.
-#[export] Hint Resolve Rdiv_lt_0_compat_l : R.
+Hint Resolve Rdiv_lt_0_compat_l : R.
 
 (** a < 0 -> 0 < b -> a / b < 0 *)
 Lemma Rdiv_lt_0_compat_r : forall a b : R, a < 0 -> 0 < b -> a / b < 0.
 Proof. intros. unfold Rdiv. assert (/b > 0); ra. Qed.
-#[export] Hint Resolve Rdiv_lt_0_compat_r : R.
+Hint Resolve Rdiv_lt_0_compat_r : R.
 
 (** 0 <= a² + b² *)
 Lemma Rplus2_sqr_ge0 : forall a b : R, 0 <= a² + b².
 Proof. ra. Qed.
-#[export] Hint Resolve Rplus2_sqr_ge0 : R.
+Hint Resolve Rplus2_sqr_ge0 : R.
 
 (** a² + b² <> 0 -> 0 < a² + b² *)
 Lemma Rplus2_sqr_neq0_imply_gt0 : forall a b : R, a² + b² <> 0 -> 0 < a² + b².
 Proof. ra. Qed.
-#[export] Hint Resolve Rplus2_sqr_neq0_imply_gt0 : R.
+Hint Resolve Rplus2_sqr_neq0_imply_gt0 : R.
 
 (** 0 < a² + b² -> a² + b² <> 0 *)
 Lemma Rplus2_sqr_neq0_if_gt0 : forall a b : R, 0 < a² + b² -> a² + b² <> 0.
 Proof. ra. Qed.
-#[export] Hint Resolve Rplus2_sqr_neq0_if_gt0 : R.
+Hint Resolve Rplus2_sqr_neq0_if_gt0 : R.
 
 (** a² + b² <> 0 <-> 0 < a² + b² *)
 Lemma Rplus2_sqr_neq0_iff_gt0 : forall a b : R, a² + b² <> 0 <-> 0 < a² + b².
@@ -104,17 +116,17 @@ Proof. ra. Qed.
 (** 2 * a * b <= a² + b² *)
 Lemma R_neq1 : forall a b : R, 2 * a * b <= a² + b².
 Proof. intros. apply Rge_le. apply Rminus_ge. rewrite <- Rsqr_minus. ra. Qed.
-#[export] Hint Resolve R_neq1 : R.
+Hint Resolve R_neq1 : R.
 
 (** 0 < a² + b² -> (a <> 0 \/ b <> 0) *)
 Lemma Rplus2_sqr_gt0_imply : forall a b : R, 0 < a² + b² -> (a <> 0 \/ b <> 0).
 Proof. ra. Qed.
-#[export] Hint Resolve Rplus2_sqr_gt0_imply : R.
+Hint Resolve Rplus2_sqr_gt0_imply : R.
 
 (** (a <> 0 \/ b <> 0) -> 0 < a² + b² *)
 Lemma Rplus2_sqr_gt0_if : forall a b : R, (a <> 0 \/ b <> 0) -> 0 < a² + b².
 Proof. ra. Qed.
-#[export] Hint Resolve Rplus2_sqr_gt0_if : R.
+Hint Resolve Rplus2_sqr_gt0_if : R.
 
 (** 0 < a² + b² <-> (a <> 0 \/ b <> 0) *)
 Lemma Rplus2_sqr_gt0 : forall a b : R, 0 < a² + b² <-> (a <> 0 \/ b <> 0).
@@ -123,12 +135,12 @@ Proof. ra. Qed.
 (** a <> 0 -> 0 < a² + b² *)
 Lemma Rplus2_sqr_gt0_l : forall a b, a <> 0 -> 0 < a² + b².
 Proof. ra. Qed.
-#[export] Hint Resolve Rplus2_sqr_gt0_l : R.
+Hint Resolve Rplus2_sqr_gt0_l : R.
 
 (** b <> 0 -> 0 < a² + b² *)
 Lemma Rplus2_sqr_gt0_r : forall a b, b <> 0 -> 0 < a² + b².
 Proof. ra. Qed.
-#[export] Hint Resolve Rplus2_sqr_gt0_r : R.
+Hint Resolve Rplus2_sqr_gt0_r : R.
 
 (** (a * c + b * d)² <= (a² + b²) * (c² + d²) *)
 Lemma Rsqr_mult_le : forall a b c d : R, (a * c + b * d)² <= (a² + b²) * (c² + d²).
@@ -149,7 +161,7 @@ Proof.
   ra. apply (Rmult_lt_compat_l b) in H0; auto.
   replace (b * (a * /b)) with a in H0; auto. ra.
 Qed.
-#[export] Hint Resolve Rdiv_le_imply_Rmul_gt : R.
+Hint Resolve Rdiv_le_imply_Rmul_gt : R.
 
 (** b > 0 -> a < b * c -> a * / b < c *)
 Lemma Rmul_gt_imply_Rdiv_le a b c : b > 0 -> a < b * c -> a * / b < c.
@@ -158,13 +170,13 @@ Proof.
   replace (/b * a) with (a / b) in *; ra.
   replace (/b * (b * c)) with c in *; ra.
 Qed.
-#[export] Hint Resolve Rmul_gt_imply_Rdiv_le : R.
+Hint Resolve Rmul_gt_imply_Rdiv_le : R.
 
 (** 0 < a -> 0 < b -> 0 < c -> a < b * c -> a / b < c *)
 Lemma Rdiv_lt_gt0_gt0_gt0 : forall a b c : R,
     0 < a -> 0 < b -> 0 < c -> a < b * c -> a / b < c.
 Proof. ra. unfold Rdiv; ra. Qed.
-#[export] Hint Resolve Rdiv_lt_gt0_gt0_gt0 : R.
+Hint Resolve Rdiv_lt_gt0_gt0_gt0 : R.
 
 (** 0 <= a -> 0 < b -> a <= b -> a / b <= 1 *)
 Lemma Rdiv_le_1 : forall x y : R, 0 <= x -> 0 < y -> x <= y -> x / y <= 1.
@@ -307,7 +319,7 @@ Notation PI_ub := 3.14159266.
 Notation PI_lb := 3.14159265.
 Axiom PI_ub_axiom : PI < PI_ub.
 Axiom PI_lb_axiom : PI_lb < PI.
-#[export] Hint Resolve PI_ub_axiom PI_lb_axiom : R.
+Hint Resolve PI_ub_axiom PI_lb_axiom : R.
 
 (** PI_lb < PI < PI_ub *)
 Lemma PI_bound : PI_lb < PI < PI_ub.

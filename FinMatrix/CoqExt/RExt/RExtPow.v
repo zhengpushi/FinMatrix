@@ -13,7 +13,7 @@
 Require Export RExtBase RExtSqr.
 
 
-#[export] Hint Rewrite
+Hint Rewrite
   pow1                (* 1 ^ n = 1 *)
   pow_O               (* x ^ 0 = 1 *)
   pow_1               (* x ^ 1 = x *)

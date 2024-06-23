@@ -27,15 +27,15 @@ Infix "<?"  := Rltb : R_scope.
     
 Lemma Reqb_reflect : forall x y, reflect (x = y) (x =? y).
 Proof. intros. unfold Reqb. destruct Req_dec_T; constructor; auto. Qed.
-#[export] Hint Resolve Reqb_reflect : bdestruct.
+Hint Resolve Reqb_reflect : bdestruct.
 
 Lemma Rltb_reflect : forall x y, reflect (x < y) (x <? y).
 Proof. intros. unfold Rltb. destruct Rlt_le_dec; constructor; lra. Qed.
-#[export] Hint Resolve Rltb_reflect : bdestruct.
+Hint Resolve Rltb_reflect : bdestruct.
 
 Lemma Rleb_reflect : forall x y, reflect (x <= y) (x <=? y).
 Proof. intros. unfold Rleb. destruct Rle_lt_dec; constructor; lra. Qed.
-#[export] Hint Resolve Rleb_reflect : bdestruct.
+Hint Resolve Rleb_reflect : bdestruct.
 
 (** Automaticaly destruct boolean operation of R type *)
 Ltac autoRbool :=

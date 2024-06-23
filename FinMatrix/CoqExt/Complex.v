@@ -47,7 +47,7 @@ Lemma Cexist_rep_complex : forall a b : R, exists x : C, x = a +i b.
 Proof. intros. exists (a +i b). auto. Qed.
 
 (** Equality of complex is decidable *)
-#[export] Instance Ceq_Dec : Dec (@eq C).
+Instance Ceq_Dec : Dec (@eq C).
 Proof.
   constructor. intros (a1,b1) (a2,b2).
   destruct (Aeqdec a1 a2), (Aeqdec b1 b2); subst.
@@ -72,7 +72,7 @@ Lemma C1_neq_C0 : C1 <> C0.
 Proof.
   intro H. apply (proj1 (Ceq_iff _ _)) in H. simpl in *. destruct H; auto with R.
 Qed.
-#[export] Hint Resolve C1_neq_C0 : C.
+Hint Resolve C1_neq_C0 : C.
 
 
 (* ======================================================================= *)
@@ -163,19 +163,19 @@ Proof. unfold Cnorm. rewrite Rsqr_sqrt; auto. apply Cnorm2_ge0. Qed.
 (** | 0 | = 0 *)
 Lemma Cnorm_C0 : |C0| = R0.
 Proof. cbv. autorewrite with R. ra. Qed.
-#[export] Hint Rewrite Cnorm_C0 : C.
+Hint Rewrite Cnorm_C0 : C.
 
 (** z = C0 -> | z | = 0 *)
 Lemma Cnorm0_if_C0 : forall z : C, z = C0 -> | z | = 0.
 Proof. ca. rewrite H. ca. Qed.
-#[export] Hint Resolve Cnorm0_if_C0 : C.
+Hint Resolve Cnorm0_if_C0 : C.
 
 (** | z | = 0 -> z = C0 *)
 Lemma Cnorm0_imply_C0 : forall z : C, | z | = 0 -> z = C0.
 Proof.
   ca. apply Rsqrt_plus_sqr_eq0_iff in H. simpl in H. destruct H. subst. auto.
 Qed.
-#[export] Hint Resolve Cnorm0_imply_C0 : C.
+Hint Resolve Cnorm0_imply_C0 : C.
 
 (** z = C0 <-> | z | = 0 *)
 Lemma Cnorm0_iff_C0 : forall z : C, z = C0 <-> | z | = R0.
@@ -184,7 +184,7 @@ Proof. ca. Qed.
 (** 0 <= | z | *)
 Lemma Cnorm_ge0 : forall z : C, 0 <= | z |%C.
 Proof. ca. unfold Cnorm. ca. Qed.
-#[export] Hint Resolve Cnorm_ge0 : C.
+Hint Resolve Cnorm_ge0 : C.
 
 (** z <> C0 -> 0 < | z | *)
 Lemma Cnorm_gt0_if_neq0 : forall z : C, z <> C0 -> 0 < | z |%C.
@@ -193,31 +193,31 @@ Proof.
   destruct (Cnorm_ge0 z); auto.
   apply eq_sym, Cnorm0_iff_C0 in H0. easy.
 Qed.
-#[export] Hint Resolve Cnorm_gt0_if_neq0 : C.
+Hint Resolve Cnorm_gt0_if_neq0 : C.
 
 (** z <> C0 -> | z | <> 0 *)
 Lemma Cnorm_neq0_if_neq0 : forall z : C, z <> C0 -> | z | <> 0.
 Proof. ca. Qed.
-#[export] Hint Resolve Cnorm_neq0_if_neq0 : C.
+Hint Resolve Cnorm_neq0_if_neq0 : C.
 
 (** | z | <> 0 -> z <> C0 *)
 Lemma Cnorm_neq0_imply_neq0 : forall z : C, | z | <> 0 -> z <> C0.
 Proof. ca. Qed.
-#[export] Hint Resolve Cnorm_neq0_imply_neq0 : C.
+Hint Resolve Cnorm_neq0_imply_neq0 : C.
 
 (** | a +i 0 | = | a | *)
 Lemma Cnorm_Cre_simpl : forall (a : R), | a +i 0 | = | a |%R.
 Proof.
   intros; unfold Cnorm, Cnorm2; simpl. ca.
 Qed.
-#[export] Hint Rewrite Cnorm_Cre_simpl : C.
+Hint Rewrite Cnorm_Cre_simpl : C.
 
 (** | 0 +i b | = | b | *)
 Lemma Cnorm_Cim_simpl : forall (b : R), | 0 +i b | = | b |%R.
 Proof.
   intros; unfold Cnorm, Cnorm2; simpl. ca.
 Qed.
-#[export] Hint Rewrite Cnorm_Cim_simpl : C.
+Hint Rewrite Cnorm_Cim_simpl : C.
 
 (** | a +i b | = | b +i a | *)
 Lemma Cnorm_comm : forall (a b : R), | a +i b | = | b +i a |.
@@ -230,29 +230,29 @@ Lemma Cnorm_gt0_imply_neq0 : forall z : C, 0 < | z |%C -> z <> C0.
 Proof.
   intros. destruct (Aeqdec z C0); auto. subst. rewrite Cnorm_C0 in H. lra.
 Qed.
-#[export] Hint Resolve Cnorm_gt0_imply_neq0 : C.
+Hint Resolve Cnorm_gt0_imply_neq0 : C.
 
 (** | R2C a | = | a | *)
 Lemma Cnorm_R2C_Rabs : forall a : R, |R2C a| = | a |%R.
 Proof. intros. unfold R2C. ca. Qed.
-#[export] Hint Rewrite Cnorm_R2C_Rabs : C.
+Hint Rewrite Cnorm_R2C_Rabs : C.
 
 (** | | z | | = | z |, that is: | R2C (| z |) | = | z | *)
 Lemma Cnorm_norm : forall z : C, | R2C (| z |%C) | = | z |.
 Proof.
   ca. apply Rabs_right. apply Rle_ge. ca.
 Qed.
-#[export] Hint Rewrite Cnorm_norm : C.
+Hint Rewrite Cnorm_norm : C.
 
 (** | 1 | = 1 *)
 Lemma Cnorm_C1 : | C1 | = 1.
 Proof. unfold C1. ca. Qed.
-#[export] Hint Rewrite Cnorm_C1 : C.
+Hint Rewrite Cnorm_C1 : C.
 
 (** Rabs | z | = | z | *)
 Lemma Rabs_Cnorm : forall z : C, | | z |%C |%R = | z |.
 Proof. intro z; apply Rabs_right; apply Rle_ge; apply Cnorm_ge0. Qed.
-#[export] Hint Rewrite Rabs_Cnorm : C.
+Hint Rewrite Rabs_Cnorm : C.
 
 (** | a | <= | a +i b | *)
 Lemma Cre_le_Cnorm : forall z : C, | z.a | <= | z |%C.
@@ -305,12 +305,12 @@ Proof. Ceq. Qed.
 Lemma Cadd_0_r : forall z : C, z + C0 = z.
 Proof. Ceq. Qed.
 
-#[export] Hint Rewrite
+Hint Rewrite
   Cre_add Cim_add
   Cadd_0_l Cadd_0_r
   : C.
 
-#[export] Hint Resolve
+Hint Resolve
   Cadd_comm
   Cadd_assoc
   : C.
@@ -341,7 +341,7 @@ Proof. Ceq. Qed.
 Lemma Cnorm_opp : forall z : C, | -z| = | z |.
 Proof. Csimpl. unfold Copp; simpl. cbv. f_equal. ring. Qed.
 
-#[export] Hint Rewrite
+Hint Rewrite
   Cre_opp Cim_opp Copp_opp
   Cadd_opp_l Cadd_opp_r
   : C.
@@ -374,7 +374,7 @@ Proof. Csimpl. cbv; f_equal; ring. Qed.
 
 Infix "-" := Csub : C_scope.
 
-#[export] Hint Rewrite
+Hint Rewrite
   Copp_add_distr
   Copp_sub_distr
   : C.
@@ -1252,10 +1252,10 @@ Hint Resolve
 
 (** Associative *)
 
-#[export] Instance Cadd_Assoc : Associative Cadd.
+Instance Cadd_Assoc : Associative Cadd.
 Proof. constructor; intros; field. Qed.
 
-#[export] Instance Cmul_Assoc : Associative Cmul.
+Instance Cmul_Assoc : Associative Cmul.
 Proof. constructor; intros; field. Qed.
 
 Hint Resolve
@@ -1265,25 +1265,25 @@ Hint Resolve
 
 (** Commutative *)
 
-#[export] Instance Cadd_Comm : Commutative Cadd.
+Instance Cadd_Comm : Commutative Cadd.
 Proof. constructor; intros; field. Qed.
 
-#[export] Instance Cmul_Comm : Commutative Cmul.
+Instance Cmul_Comm : Commutative Cmul.
 Proof. constructor; intros; field. Qed.
 
 Hint Resolve Cadd_Comm Cmul_Comm : C.
 
 (** Identity Left/Right *)
-#[export] Instance Cadd_IdL : IdentityLeft Cadd C0.
+Instance Cadd_IdL : IdentityLeft Cadd C0.
 Proof. constructor. intros. field. Qed.
 
-#[export] Instance Cadd_IdR : IdentityRight Cadd C0.
+Instance Cadd_IdR : IdentityRight Cadd C0.
 Proof. constructor; intros; field. Qed.
 
-#[export] Instance Cmul_IdL : IdentityLeft Cmul C1.
+Instance Cmul_IdL : IdentityLeft Cmul C1.
 Proof. constructor; intros; field. Qed.
 
-#[export] Instance Cmul_IdR : IdentityRight Cmul C1.
+Instance Cmul_IdR : IdentityRight Cmul C1.
 Proof. constructor; intros; field. Qed.
 
 Hint Resolve
@@ -1295,20 +1295,20 @@ Hint Resolve
 
 (** Inverse Left/Right *)
 
-#[export] Instance Cadd_InvL : InverseLeft Cadd C0 Copp.
+Instance Cadd_InvL : InverseLeft Cadd C0 Copp.
 Proof. constructor; intros; ring. Qed.
 
-#[export] Instance Cadd_InvC : InverseRight Cadd C0 Copp.
+Instance Cadd_InvC : InverseRight Cadd C0 Copp.
 Proof. constructor; intros; ring. Qed.
 
 Hint Resolve Cadd_InvL Cadd_InvC : C.
 
 (** Distributive *)
 
-#[export] Instance Cmul_add_DistrL : DistrLeft Cadd Cmul.
+Instance Cmul_add_DistrL : DistrLeft Cadd Cmul.
 Proof. constructor; intros; field. Qed.
 
-#[export] Instance Cmul_add_DistrR : DistrRight Cadd Cmul.
+Instance Cmul_add_DistrR : DistrRight Cadd Cmul.
 Proof. constructor; intros; field. Qed.
 
 Hint Resolve
@@ -1318,10 +1318,10 @@ Hint Resolve
 
 (** Semigroup *)
 
-#[export] Instance Cadd_SGroup : SGroup Cadd.
+Instance Cadd_SGroup : SGroup Cadd.
 Proof. constructor; auto with C. Qed.
 
-#[export] Instance Cmul_SGroup : SGroup Cmul.
+Instance Cmul_SGroup : SGroup Cmul.
 Proof. constructor; auto with C. Qed.
 
 Hint Resolve
@@ -1331,10 +1331,10 @@ Hint Resolve
 
 (** Abelian semigroup *)
 
-#[export] Instance Cadd_ASGroup : ASGroup Cadd.
+Instance Cadd_ASGroup : ASGroup Cadd.
 Proof. constructor; auto with C. Qed.
 
-#[export] Instance Cmul_ASGroup : ASGroup Cmul.
+Instance Cmul_ASGroup : ASGroup Cmul.
 Proof. constructor; auto with C. Qed.
 
 Hint Resolve
@@ -1344,10 +1344,10 @@ Hint Resolve
 
 (** Monoid *)
   
-#[export] Instance Cadd_Monoid : Monoid Cadd C0.
+Instance Cadd_Monoid : Monoid Cadd C0.
 Proof. constructor; auto with C. Qed.
 
-#[export] Instance Cmul_Monoid : Monoid Cmul C1.
+Instance Cmul_Monoid : Monoid Cmul C1.
 Proof. constructor; auto with C. Qed.
 
 Hint Resolve
@@ -1357,47 +1357,47 @@ Hint Resolve
 
 (** Abelian monoid *)
   
-#[export] Instance Cadd_AMonoid : AMonoid Cadd C0.
+Instance Cadd_AMonoid : AMonoid Cadd C0.
 Proof. constructor; auto with C. Qed.
   
-#[export] Instance Cmul_AMonoid : AMonoid Cmul C1.
+Instance Cmul_AMonoid : AMonoid Cmul C1.
 Proof. constructor; auto with C. Qed.
 
 Hint Resolve Cadd_AMonoid Cmul_AMonoid : C.
 
 (** Group *)
 
-#[export] Instance Cadd_Group : Group Cadd C0 Copp.
+Instance Cadd_Group : Group Cadd C0 Copp.
 Proof. constructor; auto with C. Qed.
 Hint Resolve Cadd_Group : C.
 
 (** AGroup *)
 
-#[export] Instance Cadd_AGroup : AGroup Cadd C0 Copp.
+Instance Cadd_AGroup : AGroup Cadd C0 Copp.
 Proof. constructor; auto with C. Qed.
 Hint Resolve Cadd_AGroup : C.
 
 (** SRing *)
 
-#[export] Instance C_SRing : SRing Cadd C0 Cmul C1.
+Instance C_SRing : SRing Cadd C0 Cmul C1.
 Proof. constructor; auto with C. all: Ceq. Qed.
 Hint Resolve C_SRing : C.
 
 (** Ring *)
 
-#[export] Instance C_Ring : Ring Cadd C0 Copp Cmul C1.
+Instance C_Ring : Ring Cadd C0 Copp Cmul C1.
 Proof. constructor; auto with C. Qed.
 Hint Resolve C_Ring : C.
 
 (** ARing *)
 
-#[export] Instance C_ARing : ARing Cadd C0 Copp Cmul C1.
+Instance C_ARing : ARing Cadd C0 Copp Cmul C1.
 Proof. constructor; auto with C. Qed.
 Hint Resolve C_ARing : C.
 
 (** Field *)
 
-#[export] Instance C_Field : Field Cadd C0 Copp Cmul C1 Cinv.
+Instance C_Field : Field Cadd C0 Copp Cmul C1 Cinv.
 Proof. constructor; auto with C. Qed.
 
 
@@ -1425,7 +1425,7 @@ Module MonoidElementTypeC <: MonoidElementType.
   
   Infix "+" := Aadd : A_scope.
 
-  #[export] Instance Aadd_AMonoid : AMonoid Aadd Azero.
+  Instance Aadd_AMonoid : AMonoid Aadd Azero.
   Proof. intros. repeat constructor; intros; autounfold with tA; ring. Qed.
 End MonoidElementTypeC.
 
@@ -1442,10 +1442,10 @@ Module RingElementTypeC <: RingElementType.
   Notation "- a" := (Aopp a) : A_scope.
   Infix "-" := Asub : A_scope.
 
-  #[export] Instance SRing : SRing Aadd Azero Amul Aone.
+  Instance SRing : SRing Aadd Azero Amul Aone.
   Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
 
-  #[export] Instance ARing : ARing Aadd Azero Aopp Amul Aone.
+  Instance ARing : ARing Aadd Azero Aopp Amul Aone.
   Proof. repeat constructor; autounfold with tA; intros; ring. Qed.
   
   Add Ring Ring_inst : (make_ring_theory ARing).
@@ -1462,7 +1462,7 @@ Module FieldElementTypeC <: FieldElementType.
   Lemma Aone_neq_Azero : Aone <> Azero.
   Proof. cbv in *. auto with C. Qed.
   
-  #[export] Instance Field : Field Aadd Azero Aopp Amul Aone Ainv.
+  Instance Field : Field Aadd Azero Aopp Amul Aone Ainv.
   Proof.
     constructor. apply ARing. intros.
     autounfold with tA. field. auto.

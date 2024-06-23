@@ -20,7 +20,7 @@ Require Export RExtBase RExtPlus RExtMult RExtSqr RExtOpp RExtInv RExtBool.
 (* ======================================================================= *)
 (** ** Basic automation *)
 
-#[export] Hint Rewrite
+Hint Rewrite
   (* sin,cos *)
   sin_0         (* sin 0 = 0 *)
   cos_0         (* cos 0 = 1 *)
@@ -56,7 +56,7 @@ Require Export RExtBase RExtPlus RExtMult RExtSqr RExtOpp RExtInv RExtBool.
 (* asin_sin      (* - (PI/2) < x < PI/2 -> asin (sin x) = x *) *)
 (* acos_cos      (* 0 <= x <= PI -> acos (cos x) = x *) *)
 
-#[export] Hint Resolve
+Hint Resolve
   PI2_RGT_0      (* 0 < PI / 2 *)
   _PI2_RLT_0     (* - (PI / 2) < 0 *)
   : R.
@@ -117,27 +117,27 @@ Proof. ra. Qed.
 (** sin (r - PI) = - (sin r) *)
 Lemma sin_sub_PI : forall r, sin (r - PI) = - (sin r).
 Proof. ra. Qed.
-#[export] Hint Rewrite sin_sub_PI : R.
+Hint Rewrite sin_sub_PI : R.
 
 (** cos (r - PI) = - (cos r) *)
 Lemma cos_sub_PI : forall r, cos (r - PI) = - (cos r).
 Proof. ra. Qed.
-#[export] Hint Rewrite cos_sub_PI : R.
+Hint Rewrite cos_sub_PI : R.
 
 (**  sin (- (PI/2)) = -1 *)
 Lemma sin_PI2_neg : sin (- (PI/2)) = -1.
 Proof. ra. Qed.
-#[export] Hint Rewrite sin_PI2_neg : R.
+Hint Rewrite sin_PI2_neg : R.
 
 (** cos (- (PI/2)) = 0 *)
 Lemma cos_PI2_neg : cos (- (PI/2)) = 0.
 Proof. ra. Qed.
-#[export] Hint Rewrite cos_PI2_neg : R.
+Hint Rewrite cos_PI2_neg : R.
 
 (** (cos x)² + (sin x)² = 1 *)
 Lemma cos2_sin2 : forall x : R, (cos x)² + (sin x)² = 1.
 Proof. intros. rewrite Rplus_comm. ra. Qed.
-#[export] Hint Rewrite cos2_sin2 : R.
+Hint Rewrite cos2_sin2 : R.
 
 (* Simplify equations such as:
 
@@ -163,7 +163,7 @@ Section x_sin2_x_cos2.
   Lemma x_cos2_plus_sin2_x : a * (cos x)² + (sin x)² * a = a. rewrite cos2; ra. Qed.
   Lemma cos2_x_plus_sin2_x : (cos x)² * a + (sin x)² * a = a. rewrite cos2; ra. Qed.
 End x_sin2_x_cos2.
-#[export] Hint Rewrite
+Hint Rewrite
   x_sin2_plus_x_cos2 sin2_x_plus_x_cos2 x_sin2_plus_cos2_x sin2_x_plus_cos2_x
   x_cos2_plus_x_sin2 cos2_x_plus_x_sin2 x_cos2_plus_sin2_x cos2_x_plus_sin2_x
   : R.
@@ -171,7 +171,7 @@ End x_sin2_x_cos2.
 (** - PI / 2 < r -> r < PI / 2 -> cos r <> 0 *)
 Lemma cos_neg0 : forall r : R, - PI / 2 < r -> r < PI / 2 -> cos r <> 0.
 Proof. intros. assert (0 < cos r); ra. apply cos_gt_0; ra. Qed.
-#[export] Hint Resolve cos_neg0 : R.
+Hint Resolve cos_neg0 : R.
 
 (** *** 特殊三角函数值 *)
 
@@ -361,7 +361,7 @@ Fact cot_3PI2 : cot (3 * PI / 2) = 0. Admitted.
 (** sin r / cos r = tan r *)
 Lemma tan_rw : forall r : R, sin r / cos r = tan r.
 Proof. auto. Qed.
-#[export] Hint Rewrite tan_rw : R.
+Hint Rewrite tan_rw : R.
 
 (** *** 缺失了的函数 *)
 Parameter acot : R -> R.
@@ -377,7 +377,7 @@ Fact tan_3PI2_add : forall x, tan (3 * PI / 2 + x) = - cot x. Admitted.
 Fact tan_3PI2_sub : forall x, tan (3 * PI / 2 - x) = cot x. Admitted.
 Fact tan_2PI_add : forall x, tan (2 * PI + x) = tan x. Admitted.
 
-#[export] Hint Rewrite
+Hint Rewrite
   tan_PI2_sub
   tan_PI2_add
   tan_PI_add
@@ -397,7 +397,7 @@ Fact cot_3PI2_add : forall x, cot (3 * PI / 2 + x) = - tan x. Admitted.
 Fact cot_3PI2_sub : forall x, cot (3 * PI / 2 - x) = tan x. Admitted.
 Fact cot_2PI_add : forall x, cot (2 * PI + x) = cot x. Admitted.
 
-#[export] Hint Rewrite
+Hint Rewrite
   cot_PI2_sub
   cot_PI2_add
   cot_PI_add
@@ -445,7 +445,7 @@ Fact acos_sqrt2_2 : acos ((sqrt 2) / 2) = PI / 4. Admitted.
 Fact acos_sqrt3_2 : acos ((sqrt 3) / 2) = PI / 2. Admitted.
 (* Fact acos_1 : acos 1 = 0. Admitted. *)
 Fact acos_neg1 : acos (-1) = PI. Admitted.
-#[export] Hint Rewrite
+Hint Rewrite
   acos_neg1
   : R.
 

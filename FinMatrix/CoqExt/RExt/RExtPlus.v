@@ -16,12 +16,12 @@ Require Export RExtBase.
 (* ======================================================================= *)
 (** ** Basic automation *)
 
-#[export] Hint Rewrite
+Hint Rewrite
   Rplus_0_l           (* 0 + r = r *)
   Rplus_0_r           (* r + 0 = r *)
   : R.
 
-(* #[export] Hint Resolve *)
+(* Hint Resolve *)
 (*   : R. *)
 
 
@@ -31,7 +31,7 @@ Require Export RExtBase.
 (** a = 0 -> b = 0 -> a + b = 0 *)
 Lemma Rplus_eq0_if_both0 : forall a b : R, a = 0 -> b = 0 -> a + b = 0.
 Proof. intros. subst. lra. Qed.
-#[export] Hint Resolve Rplus_eq0_if_both0 : R.
+Hint Resolve Rplus_eq0_if_both0 : R.
 
 (** 0 <= a -> 0 <= b -> a + b = 0 -> b = 0 *)
 Lemma Rplus_eq_0_r : forall a b : R, 0 <= a -> 0 <= b -> a + b = 0 -> b = 0.

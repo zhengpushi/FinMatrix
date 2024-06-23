@@ -16,7 +16,7 @@ Require Export RExtBase.
 (* ======================================================================= *)
 (** ** Basic automation *)
 
-#[export] Hint Rewrite
+Hint Rewrite
   Ropp_0              (* - 0 = 0 *)
   Rminus_0_r          (* r - 0 = r *)
   Ropp_involutive     (* - - r = r *)
@@ -36,32 +36,32 @@ Require Export RExtBase.
 (** r1 - (- r2) = r1 + r2 *)
 Lemma Rsub_opp r1 r2 : r1 - (- r2) = r1 + r2.
 Proof. ra. Qed.
-#[export] Hint Rewrite Rsub_opp : R.
+Hint Rewrite Rsub_opp : R.
 
 (** (- r)² = r² *)
 Lemma Rsqr_opp : forall r : R, (- r)² = r².
 Proof. intros. rewrite <- Rsqr_neg. auto. Qed.
-#[export] Hint Rewrite Rsqr_opp : R.
+Hint Rewrite Rsqr_opp : R.
 
 (** - ((- r) * r) = r² *)
 Lemma Ropp_Rmul_Ropp_l : forall (r : R), - ((- r) * r) = r².
 Proof. intros. cbv. ring. Qed.
-#[export] Hint Rewrite Ropp_Rmul_Ropp_l : R.
+Hint Rewrite Ropp_Rmul_Ropp_l : R.
 
 (** - (r * (- r)) = r² *)
 Lemma Ropp_Rmul_Ropp_r : forall (r : R), - (r * (- r)) = r².
 Proof. intros. cbv. ring. Qed.
-#[export] Hint Rewrite Ropp_Rmul_Ropp_r : R.
+Hint Rewrite Ropp_Rmul_Ropp_r : R.
 
 (** (- 1) * r = - r *)
 Lemma Rmult_neg1_l : forall r : R, (- 1) * r = - r.
 Proof. intros. lra. Qed.
-#[export] Hint Rewrite Rmult_neg1_l : R.
+Hint Rewrite Rmult_neg1_l : R.
 
 (** r * (- 1) = - r *)
 Lemma Rmult_neg1_r : forall r : R, r * (- 1) = - r.
 Proof. intros. lra. Qed.
-#[export] Hint Rewrite Rmult_neg1_r : R.
+Hint Rewrite Rmult_neg1_r : R.
 
 (* ======================================================================= *)
 (** ** Extra automation *)

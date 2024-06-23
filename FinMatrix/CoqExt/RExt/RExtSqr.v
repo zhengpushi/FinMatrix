@@ -41,13 +41,13 @@ Require Export RExtBool RExtPlus RExtMult.
 (* ======================================================================= *)
 (** ** Basic automation *)
 
-#[export] Hint Rewrite
+Hint Rewrite
   Rsqr_0              (* 0² = 0 *)
   Rsqr_1              (* 1² = 1 *)
   Rsqr_mult           (* (x * y)² = x² * y² *)
   : R.
 
-#[export] Hint Resolve
+Hint Resolve
   Rle_0_sqr           (* 0 <= r² *)
   Rsqr_pos_lt         (* x <> 0 -> 0 < x² *)
   Rplus_sqr_eq_0      (* r1² + r2² = 0 -> r1 = 0 /\ r2 = 0 *)
@@ -61,17 +61,17 @@ Require Export RExtBool RExtPlus RExtMult.
 Lemma xx_Rsqr x : x * x = x².
 Proof. auto. Qed.
 (* We prefer x², except when using ring or field tactic. *)
-#[export] Hint Rewrite xx_Rsqr : R.
+Hint Rewrite xx_Rsqr : R.
 
 (** r ^ 2 = r² *)
 Lemma Rpow2_Rsqr r : r ^ 2 = r².
 Proof. unfold Rsqr. ring. Qed.
-#[export] Hint Rewrite Rpow2_Rsqr : R.
+Hint Rewrite Rpow2_Rsqr : R.
 
 (** r ^ 4 = (r²)² *)
 Lemma Rpow4_Rsqr_Rsqr r : r ^ 4 = r²².
 Proof. unfold Rsqr. ring. Qed.
-#[export] Hint Rewrite Rpow4_Rsqr_Rsqr : R.
+Hint Rewrite Rpow4_Rsqr_Rsqr : R.
 
 (** r ^ 4 = (r ^ 2) ^ 2 *)
 Lemma Rpow4_Rsqr_Rsqr' : forall r : R, r ^ 4 = (r ^ 2) ^ 2.
@@ -97,12 +97,12 @@ Qed.
 (** 0 <= r * r *)
 Lemma Rsqr_ge0 : forall r, 0 <= r * r.
 Proof. ra. Qed.
-#[export] Hint Resolve Rsqr_ge0 : R.
+Hint Resolve Rsqr_ge0 : R.
 
 (** r <> 0 -> r² <> 0 *)
 Lemma Rsqr_neq0_if : forall r, r <> 0 -> r² <> 0.
 Proof. ra. Qed.
-#[export] Hint Resolve Rsqr_neq0_if : R.
+Hint Resolve Rsqr_neq0_if : R.
 
 
 (* ======================================================================= *)
@@ -111,12 +111,12 @@ Proof. ra. Qed.
 (** R0² = 0 *)
 Lemma Rsqr_R0 : R0² = 0.
 Proof. rewrite <- Rsqr_0. auto. Qed.
-#[export] Hint Rewrite Rsqr_R0 : R.
+Hint Rewrite Rsqr_R0 : R.
 
 (** (R1)² = 1 *)
 Lemma Rsqr_R1 : (R1)² = 1.
 Proof. ra. Qed.
-#[export] Hint Rewrite Rsqr_R1 : R.
+Hint Rewrite Rsqr_R1 : R.
 
 (* -------------------------------------------- *)
 (** *** r1² + r2² *)
@@ -124,12 +124,12 @@ Proof. ra. Qed.
 (** r1² + r2² = 0 -> r1 = 0 /\ r2 = 0 *)
 Lemma Rplus2_sqr_eq0_imply : forall r1 r2, r1² + r2² = 0 -> r1 = 0 /\ r2 = 0.
 Proof. ra. Qed.
-#[export] Hint Resolve Rplus2_sqr_eq0_imply : R.
+Hint Resolve Rplus2_sqr_eq0_imply : R.
 
 (** r1 = 0 /\ r2 = 0 -> r1² + r2² = 0 *)
 Lemma Rplus2_sqr_eq0_if : forall r1 r2, r1 = 0 /\ r2 = 0 -> r1² + r2² = 0.
 Proof. ra. Qed.
-#[export] Hint Resolve Rplus2_sqr_eq0_if : R.
+Hint Resolve Rplus2_sqr_eq0_if : R.
 
 (** r1 = 0 /\ r2 = 0 <-> r1² + r2² = 0 *)
 Lemma Rplus2_sqr_eq0 : forall r1 r2, r1 = 0 /\ r2 = 0 <-> r1² + r2² = 0.
@@ -139,22 +139,22 @@ Proof. ra. Qed.
 (** r1² + r2² = 0 -> r1 = 0 *)
 Lemma Rplus2_sqr_eq0_l : forall r1 r2, r1² + r2² = 0 -> r1 = 0.
 Proof. ra.  Qed.
-#[export] Hint Resolve Rplus2_sqr_eq0_l : R.
+Hint Resolve Rplus2_sqr_eq0_l : R.
 
 (** r1² + r2² = 0 -> r2 = 0 *)
 Lemma Rplus2_sqr_eq0_r : forall r1 r2, r1² + r2² = 0 -> r2 = 0.
 Proof. ra. Qed.
-#[export] Hint Resolve Rplus2_sqr_eq0_r : R.
+Hint Resolve Rplus2_sqr_eq0_r : R.
 
 (** r1² + r2² <> 0 -> r1 <> 0 \/ r2 <> 0 *)
 Lemma Rplus2_sqr_neq0_imply : forall r1 r2, r1² + r2² <> 0 -> r1 <> 0 \/ r2 <> 0.
 Proof. intros. rewrite <- Rplus2_sqr_eq0 in H. tauto. Qed.
-#[export] Hint Resolve Rplus2_sqr_neq0_imply : R.
+Hint Resolve Rplus2_sqr_neq0_imply : R.
 
 (** r1 <> 0 \/ r2 <> 0 -> r1² + r2² <> 0 *)
 Lemma Rplus2_sqr_neq0_if : forall r1 r2, r1 <> 0 \/ r2 <> 0 -> r1² + r2² <> 0.
 Proof. intros. rewrite <- Rplus2_sqr_eq0. tauto. Qed.
-#[export] Hint Resolve Rplus2_sqr_neq0_if : R.
+Hint Resolve Rplus2_sqr_neq0_if : R.
 
 (** r1 <> 0 \/ r2 <> 0 <-> r1² + r2² <> 0 *)
 Lemma Rplus2_sqr_neq0 : forall r1 r2, r1² + r2² <> 0 <-> r1 <> 0 \/ r2 <> 0.

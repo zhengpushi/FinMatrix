@@ -189,10 +189,8 @@ Reserved Notation "M &2"       (at level 25, format "M &2").
 Reserved Notation "M &3"       (at level 25, format "M &3").
 Reserved Notation "M &4"       (at level 25, format "M &4").
 
-
 (* this level is consistent with coq.ssr.ssrbool.v *)
 (* Notation "~~ b" := (negb b) (at level 35, right associativity) : bool_scope. *)
-
 
 (* fix Bellet behavior, caused by Mathcomp.ssreflect.ssreflect.v *)
 #[export] Set Bullet Behavior "Strict Subproofs".
@@ -256,43 +254,6 @@ Ltac simp_proper :=
   [ try eauto with bdestruct
   | destruct H as [H|H]].
 
-(* (* 使用所有上下文中的等式 *) *)
-(* Ltac rw := *)
-(*   (* 只进行有限次，因为这些策略没有消除上下文的假设，可能产生循环 *) *)
-(*   do 5 *)
-(*     (match goal with *)
-(*      (* a = b |- a = c ==> b = c *) *)
-(*      | [H : ?a = ?b |- ?a = ?c] => rewrite H *)
-(*      (* a = b |- c = a ==> c = b *) *)
-(*      | [H : ?a = ?b |- ?c = ?a] => rewrite H *)
-(*      (* a = b |- c = b ==> c = a *) *)
-(*      | [H : ?a = ?b |- ?c = ?b] => rewrite <- H *)
-(*      (* a = b |- b = c ==> a = c *) *)
-(*      | [H : ?a = ?b |- ?b = ?c] => rewrite <- H *)
-(*      end; *)
-(*      auto). *)
-
-(* (* 自动化简常用命题逻辑形式 *) *)
-(* Ltac simp := *)
-(*   repeat *)
-(*     (match goal with *)
-(*      | [H : ?P |- ?P] => exact H *)
-(*      | [|- True] => constructor *)
-(*      | [H : False |- _] => destruct H *)
-                             
-(*      | [|- _ /\ _ ] => constructor *)
-(*      | [|- _ -> _] => intro *)
-(*      | [|- _ <-> _ ] => split; intros *)
-(*      | [H : _ /\ _ |- _] => destruct H *)
-(*      | [H : _ \/ _ |- _] => destruct H *)
-
-(*      (* | [H1 : ?P -> ?Q, H2 : ?P |- _] => pose proof (H1 H2) *) *)
-                                           
-(*      | [H : ?a = ?b |- _ ]  => try progress (rewrite H) *)
-(*      | [H : ?a <> ?b |- False]   => destruct H *)
-(*      end; *)
-(*      auto). *)
-
 
 (** simplify the logic expressions *)
 Ltac logic :=
@@ -306,7 +267,7 @@ Ltac logic :=
      (* simplify it *)
      | [|- _ /\ _ ] => constructor
      | [|- _ -> _] => intro
-     | [|- not _ ] => intro
+     (* | [|- not _ ] => intro *)
      | [|- _ <-> _ ] => split; intros
      | [H : _ /\ _ |- _] => destruct H
      | [H : _ \/ _ |- _] => destruct H

@@ -16,7 +16,6 @@
  *)
 
 Require Export RExt.
-Require Export FuncExt.
 
 Declare Scope RFun_scope.
 Delimit Scope RFun_scope with F.

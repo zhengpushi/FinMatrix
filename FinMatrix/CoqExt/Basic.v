@@ -215,31 +215,28 @@ Ltac copy H :=
   clear HCeq.
 
 (* simplify the equality of two list *)
-#[global] Ltac list_eq :=
+Ltac list_eq :=
   repeat match goal with
     | |- cons ?h1 ?t1 = cons ?h2 ?t2 => f_equal
     | [H: cons _ _ = cons _ _ |- _] => inversion H; clear H
     end.
 
 (* repeat split *)
-#[global] Ltac ssplit := 
+Ltac ssplit := 
   repeat 
   match goal with
   | |- _ /\ _ => split
   end.
 
 (** inversion and subst *)
-#[global] Ltac inv H :=
-  inversion H; clear H; subst.
+Ltac inv H := inversion H; clear H; subst.
 
 (** first step of the proof of Proper *)
-#[global] Ltac simp_proper :=
+Ltac simp_proper :=
   unfold Proper; unfold respectful.
 
-(** Use this tactic, the proposition of a comparision relation and the sumbool 
-    comparison are connected. 
-    We must first register the desired reflection to "bdestruct" database to
-    take effect. *)
+(** destruct by sumbool comparison procedure. Note that we should register 
+    the reflect reflection to "bdestruct" database first. *)
 
 (* (* original version, which has additional support for natural number *) *)
 (* Ltac bdestruct X := *)
@@ -258,54 +255,86 @@ Ltac copy H :=
   assert (H: reflect e X); subst e;
   [ try eauto with bdestruct
   | destruct H as [H|H]].
-(* [ | try first [apply not_lt in H | apply not_le in H]]]. *)
 
-(* 使用所有上下文中的等式 *)
-Ltac rw :=
-  (* 只进行有限次，因为这些策略没有消除上下文的假设，可能产生循环 *)
-  do 5
-    (match goal with
-     (* a = b |- a = c ==> b = c *)
-     | [H : ?a = ?b |- ?a = ?c] => rewrite H
-     (* a = b |- c = a ==> c = b *)
-     | [H : ?a = ?b |- ?c = ?a] => rewrite H
-     (* a = b |- c = b ==> c = a *)
-     | [H : ?a = ?b |- ?c = ?b] => rewrite <- H
-     (* a = b |- b = c ==> a = c *)
-     | [H : ?a = ?b |- ?b = ?c] => rewrite <- H
-     end;
-     auto).
+(* (* 使用所有上下文中的等式 *) *)
+(* Ltac rw := *)
+(*   (* 只进行有限次，因为这些策略没有消除上下文的假设，可能产生循环 *) *)
+(*   do 5 *)
+(*     (match goal with *)
+(*      (* a = b |- a = c ==> b = c *) *)
+(*      | [H : ?a = ?b |- ?a = ?c] => rewrite H *)
+(*      (* a = b |- c = a ==> c = b *) *)
+(*      | [H : ?a = ?b |- ?c = ?a] => rewrite H *)
+(*      (* a = b |- c = b ==> c = a *) *)
+(*      | [H : ?a = ?b |- ?c = ?b] => rewrite <- H *)
+(*      (* a = b |- b = c ==> a = c *) *)
+(*      | [H : ?a = ?b |- ?b = ?c] => rewrite <- H *)
+(*      end; *)
+(*      auto). *)
 
-(* 自动化简常用命题逻辑形式 *)
-Ltac simp :=
+(* (* 自动化简常用命题逻辑形式 *) *)
+(* Ltac simp := *)
+(*   repeat *)
+(*     (match goal with *)
+(*      | [H : ?P |- ?P] => exact H *)
+(*      | [|- True] => constructor *)
+(*      | [H : False |- _] => destruct H *)
+                             
+(*      | [|- _ /\ _ ] => constructor *)
+(*      | [|- _ -> _] => intro *)
+(*      | [|- _ <-> _ ] => split; intros *)
+(*      | [H : _ /\ _ |- _] => destruct H *)
+(*      | [H : _ \/ _ |- _] => destruct H *)
+
+(*      (* | [H1 : ?P -> ?Q, H2 : ?P |- _] => pose proof (H1 H2) *) *)
+                                           
+(*      | [H : ?a = ?b |- _ ]  => try progress (rewrite H) *)
+(*      | [H : ?a <> ?b |- False]   => destruct H *)
+(*      end; *)
+(*      auto). *)
+
+
+(** simplify the logic expressions *)
+Ltac logic :=
   repeat
     (match goal with
+     (* solve it *)
      | [H : ?P |- ?P] => exact H
      | [|- True] => constructor
      | [H : False |- _] => destruct H
-                             
+
+     (* simplify it *)
      | [|- _ /\ _ ] => constructor
      | [|- _ -> _] => intro
+     | [|- not _ ] => intro
      | [|- _ <-> _ ] => split; intros
      | [H : _ /\ _ |- _] => destruct H
      | [H : _ \/ _ |- _] => destruct H
 
+     (* rewriting *)
      (* | [H1 : ?P -> ?Q, H2 : ?P |- _] => pose proof (H1 H2) *)
-                                           
-     | [H : ?a = ?b |- _ ]  => try progress (rewrite H)
+     (* | [H : ?a = ?b |- _ ]  => try progress (rewrite H) *)
      | [H : ?a <> ?b |- False]   => destruct H
      end;
-     auto).
+     try congruence).
 
-Section example.
-  Context {tA : Type}.
-  
-  (* a = b = c = d = e *)
-  Goal forall a b c d e f g : tA, a = b -> c = b -> d = c -> e = d -> a = e.
-  Proof.
-    simp. rw.
-  Qed.
-End example.
+(** Solve simple logic about "bool" *)
+Ltac autoBool :=
+  repeat
+    let H := fresh "H" in 
+    match goal with
+    (* b = false <-> b <> true *)
+    | |- ?b = false <-> ?b <> true => split
+    (* b = true <-> b <> false *)
+    | |- ?b = false <-> ?b <> true => split
+    (* b = false -> b <> true *)
+    | H: ?b = false |- ?b <> true => rewrite H
+    (* b <> true -> b = false *)
+    | H: ?b <> true |- ?b = false => apply not_true_is_false
+    (* a && b = true |- _ ==> a = true, b = true |- _ *)
+    | H: ?a && ?b = true |- _ => apply andb_prop in H
+    end;
+    logic.
 
 
 (* ######################################################################### *)

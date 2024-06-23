@@ -1118,7 +1118,7 @@ Section Examples.
   Notation "0" := Azero : A_scope.
 
   Goal forall a b c : tA, a + (0 + b + c + 0) = 0 + c + (b + a + 0) + 0.
-  Proof. simp. amonoid. Qed.
+  Proof. logic. amonoid. Qed.
 End Examples.
 
 
@@ -1195,15 +1195,15 @@ Section example.
 
   (* `group_basic` can finish "monoid" tasks *)
   Goal forall a b c : tA, a + 0 = 0 + a -> (a + b) + 0 + c = 0 + a + 0 + (b + 0 + c).
-  Proof. simp. group_basic. Qed.
+  Proof. logic. group_basic. Qed.
 
   (* `group_basic` can do `group inv` tasks *)
   Goal forall a b c d e : tA, c + -c + - d + d = e -> - a + a + b + - b = e.
-  Proof. simp. group_basic. Qed.
+  Proof. logic. group_basic. Qed.
 
   (* group inverse with associativity *)
   Goal forall a b : tA, -a + (a + b) = b.
-  Proof. simp. group_basic. Qed.
+  Proof. logic. group_basic. Qed.
 
 End example.
 

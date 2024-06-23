@@ -1373,15 +1373,15 @@ Section malg.
 
     (** - M = N <-> M = - N *)
     Lemma mopp_exchange : forall {r c} (M N : mat r c), - M = N <-> M = - N.
-    Proof. intros. pose proof (madd_AGroup r c). simp; agroup. Qed.
+    Proof. intros. pose proof (madd_AGroup r c). split; intros; agroup. Qed.
 
     (** - (mat0) = mat0 *)
     Lemma mopp_mat0 : forall {r c:nat}, - (@Matrix.mat0 _ 0 r c) = mat0.
-    Proof. intros. pose proof (madd_AGroup r c). simp; agroup. Qed.
+    Proof. intros. pose proof (madd_AGroup r c). agroup. Qed.
 
     (** - (m1 + m2) = (-m1) + (-m2) *)
     Lemma mopp_madd : forall {r c : nat} (M N : mat r c), - (M + N) = (- M) + (- N).
-    Proof. intros. pose proof (madd_AGroup r c). simp; agroup. Qed.
+    Proof. intros. pose proof (madd_AGroup r c). agroup. Qed.
 
     (** (- M)\T = - (M\T) *)
     Lemma mtrans_mopp : forall {r c} (M : mat r c), (- M)\T = - (M\T).

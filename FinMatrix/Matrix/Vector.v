@@ -888,7 +888,7 @@ Section vinsert.
   Lemma vinsert_eq0_iff {AeqDec : Dec (@eq tA)} : forall {n} (a : @vec tA n) i x,
       vinsert a i x = vzero <-> (a = vzero /\ x = Azero).
   Proof.
-    simp.
+    logic.
     - apply vinsert_eq0_imply_v0 in H; auto.
     - apply vinsert_eq0_imply_x0 in H; auto.
     - subst. apply vinsert_vzero_eq0.

@@ -2071,16 +2071,6 @@ End SO3_keep_v3cross.
 (* A useful property involving rotations and skew-symmetric matrices *)
 (* reference: Modern Robotics, KEVIN M. LYNCH, 2017. page 75, Proposition 3.8  *)
 
-(* (** Convert a vector to its corresponding skew-symmetric matrix *) *)
-(* Definition skew3 (a : vec 3) : mat 3 3 := *)
-(*   l2m [[0;    -a.3; a.2 ]; *)
-(*        [a.3;  0;    -a.1]; *)
-(*        [-a.2; a.1;  0   ]]%R. *)
-(* Notation "`| a |x" := (skew3 a) : vec_scope. *)
-
-(* Lemma skew3 : (skew3 a) i j *)
-  
-
 (** M * [a] * M^T = [M *v ω], where, M\in SO(3), a\in R^3 *)
 Lemma SO3_skew3_eq : forall (M : smat 3) (a : vec 3),
     SOnP M -> M * `|a|x * (M\T) = `|M *v a|x.

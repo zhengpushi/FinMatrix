@@ -1111,6 +1111,20 @@ Section vremoveH_vremoveT.
   Lemma vnth_vremoveH : forall {n} (a : @vec tA (S n)) (i : 'I_n),
       (vremoveH a).[i] = a.[fSuccRangeS i].
   Proof. intros. unfold vremoveH. auto. Qed.
+
+  (** v1.1 = v2.1 -> vremoveH v1 = vremoveH v2 -> v1 = v2 *)
+  Lemma vremoveH_inj : forall n (v1 v2 : @vec tA (S n)),
+      v1.1 = v2.1 -> vremoveH v1 = vremoveH v2 -> v1 = v2.
+  Proof.
+    intros. apply veq_iff_vnth; intros. rewrite veq_iff_vnth in H0.
+    bdestruct (i =? 0).
+    - replace (v1.1) with (v1 fin0) in H. replace (v2.1) with (v2 fin0) in H.
+      replace (v1 i) with (v1 fin0). replace (v2 i) with (v2 fin0).
+      all: fin. all: destruct i; fin.
+    - assert (0 < i) by fin.
+      specialize (H0 (fPredRangeP i H2)).
+      rewrite !vnth_vremoveH in H0. fin.
+  Qed.
   
   (** a <> 0 -> vhead a = 0 -> vremoveH a <> 0 *)
   Lemma vremoveH_neq0_if : forall {n} (a : @vec tA (S n)),
@@ -1151,6 +1165,17 @@ Section vremoveH_vremoveT.
   Lemma vnth_vremoveT : forall {n} (a : @vec tA (S n)) (i : 'I_n),
       (vremoveT a).[i] = a.[fSuccRange i].
   Proof. intros. unfold vremoveT. auto. Qed.
+
+  (** vremoveT v1 = vremoveT v2 -> v1 #n = v2 #n -> v1 = v2 *)
+  Lemma vremoveT_inj : forall n (v1 v2 : @vec tA (S n)),
+      vremoveT v1 = vremoveT v2 -> v1 #n = v2 #n -> v1 = v2.
+  Proof.
+    intros. apply veq_iff_vnth; intros. rewrite veq_iff_vnth in H.
+    bdestruct (i =? n).
+    - replace (v1 i) with (v1 #n). replace (v2 i) with (v2 #n). all: fin.
+    - assert (i < n) by fin.
+      specialize (H (fPredRange i H2)). rewrite !vnth_vremoveT in H. fin.
+  Qed.
   
   (** v <> 0 -> vtail v = 0 -> vremoveT v <> 0 *)
   Lemma vremoveT_neq0_if : forall {n} (a : @vec tA (S n)),
@@ -1297,6 +1322,17 @@ Section vconsH_vconsT.
     intros. unfold vconsH. fin.
   Qed.
 
+  (** [x; v1] = [x; a2] -> x1 = x2 /\ v1 = v2 *)
+  Lemma vconsH_inj : forall n x1 x2 (v1 v2 : @vec tA n),
+      vconsH x1 v1 = vconsH x2 v2 -> x1 = x2 /\ v1 = v2.
+  Proof.
+    intros. rewrite veq_iff_vnth in H. split.
+    - specialize (H fin0). auto.
+    - apply veq_iff_vnth. intros. specialize (H (fSuccRangeS i)).
+      erewrite !vnth_vconsH_gt0 in H. fin.
+      Unshelve. all: fin.
+  Qed.
+
   (** [x; a] = 0 <-> x = 0 /\ v = 0 *)
   Lemma vconsH_eq0_iff : forall {n} x (a : @vec tA n),
       vconsH x a = vzero <-> x = Azero /\ a = vzero.
@@ -1376,6 +1412,17 @@ Section vconsH_vconsT.
   Lemma vnth_vconsT_lt : forall {n} x (a : @vec tA n) (i : 'I_(S n)) (H: i < n),
       (vconsT a x).[i] = a (fPredRange i H).
   Proof. intros. unfold vconsT. fin. Qed.
+
+  (** [v1; x] = [a2; x] -> v1 = v2 /\ x1 = x2 *)
+  Lemma vconsT_inj : forall n (v1 v2 : @vec tA n) x1 x2,
+      vconsT v1 x1 = vconsT v2 x2 -> v1 = v2 /\ x1 = x2.
+  Proof.
+    intros. rewrite veq_iff_vnth in H. split.
+    - apply veq_iff_vnth. intros. specialize (H (fSuccRange i)).
+      erewrite !vnth_vconsT_lt in H. fin.
+    - specialize (H #n). rewrite !vnth_vconsT_n in H; auto.
+      Unshelve. all: fin.
+  Qed.
 
   (** [a; x] = 0 <-> a = 0 /\ x = 0*)
   Lemma vconsT_eq0_iff : forall {n} (a : @vec tA n) x,

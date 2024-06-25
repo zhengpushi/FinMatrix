@@ -852,7 +852,7 @@ Proof.
     rewrite Rabs_right; ra.
   - bdestruct (a =? 0); subst.
     + bdestruct (b >? 0).
-      * rewrite Carg_xeq0_ygt0; ra. symmetry. ra.
+      * rewrite Carg_xeq0_ygt0; ra.
       * apply Cneq_iff in H; simpl in H. assert (b < 0) by ra.
         rewrite Carg_xeq0_ylt0; ra. symmetry. ra.
     + bdestruct (b >=? 0).

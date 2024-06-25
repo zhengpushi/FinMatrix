@@ -431,6 +431,11 @@ Module BasicMatrixTheory (E : ElementType).
   Lemma vnth_vremoveH : forall {n} (a : vec (S n)) (i : 'I_n),
       (vremoveH a).[i] = a.[fSuccRangeS i].
   Proof. intros. apply vnth_vremoveH; auto. Qed.
+
+  (** v1.1 = v2.1 -> vremoveH v1 = vremoveH v2 -> v1 = v2 *)
+  Lemma vremoveH_inj : forall n (v1 v2 : vec (S n)),
+      v1.1 = v2.1 -> vremoveH v1 = vremoveH v2 -> v1 = v2.
+  Proof. intros. apply vremoveH_inj; auto. Qed.
   
   (** a <> 0 -> vhead a = 0 -> vremoveH a <> 0 *)
   Lemma vremoveH_neq0_if : forall {n} (a : vec (S n)),
@@ -451,6 +456,11 @@ Module BasicMatrixTheory (E : ElementType).
   Lemma vnth_vremoveT : forall {n} (a : vec (S n)) (i : 'I_n),
       (vremoveT a).[i] = a.[fSuccRange i].
   Proof. intros. apply vnth_vremoveT; auto. Qed.
+
+  (** vremoveT v1 = vremoveT v2 -> v1 #n = v2 #n -> v1 = v2 *)
+  Lemma vremoveT_inj : forall n (v1 v2 : vec (S n)),
+      vremoveT v1 = vremoveT v2 -> v1 #n = v2 #n -> v1 = v2.
+  Proof. intros. apply vremoveT_inj; auto. Qed.
   
   (** v <> 0 -> vtail v = 0 -> vremoveT v <> 0 *)
   Lemma vremoveT_neq0_if : forall {n} (a : vec (S n)),
@@ -530,6 +540,11 @@ Module BasicMatrixTheory (E : ElementType).
       (vconsH x a).[i] = a.[fPredRangeP i H].
   Proof. intros. apply vnth_vconsH_gt0; auto. Qed.
 
+  (** [x; v1] = [x; a2] -> x1 = x2 /\ v1 = v2 *)
+  Lemma vconsH_inj : forall n x1 x2 (v1 v2 : vec n),
+      vconsH x1 v1 = vconsH x2 v2 -> x1 = x2 /\ v1 = v2.
+  Proof. intros. apply vconsH_inj; auto. Qed.
+
   (** [x; a] = 0 <-> x = 0 /\ v = 0 *)
   Lemma vconsH_eq0_iff : forall {n} x (a : vec n),
       vconsH x a = vzero <-> x = 0 /\ a = vzero.
@@ -576,6 +591,11 @@ Module BasicMatrixTheory (E : ElementType).
   Lemma vnth_vconsT_lt : forall {n} x (a : vec n) (i : 'I_(S n)) (H: i < n),
       (vconsT a x).[i] = a (fPredRange i H).
   Proof. intros. apply vnth_vconsT_lt; auto. Qed.
+
+  (** [v1; x] = [a2; x] -> v1 = v2 /\ x1 = x2 *)
+  Lemma vconsT_inj : forall n (v1 v2 : vec n) x1 x2,
+      vconsT v1 x1 = vconsT v2 x2 -> v1 = v2 /\ x1 = x2.
+  Proof. intros. apply vconsT_inj; auto. Qed.
 
   (** [a; x] = 0 <-> a = 0 /\ x = 0*)
   Lemma vconsT_eq0_iff : forall {n} (a : vec n) x,

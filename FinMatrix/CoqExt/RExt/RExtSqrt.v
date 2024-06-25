@@ -119,6 +119,20 @@ Proof.
 Qed.
 Hint Resolve sqrt_eq1_imply_eq1 : R.
 
+(* ToDo: last lemma cannot solve this goal, it is just a symmetry works *)
+Section problem.
+  Goal forall a1 a2, sqrt (a1² + a2²) = R1 -> R1 = a1² + a2².
+  Proof. intros. ra. symmetry. ra. Abort.
+End problem.
+
+(* Thus, we added another lemma *)
+
+(** sqrt x = 1 -> 1 = x *)
+Lemma sqrt_eq1_imply_eq1_sym : forall (x : R), sqrt x = 1 -> 1 = x.
+Proof. symmetry. ra. Qed.
+Hint Resolve sqrt_eq1_imply_eq1_sym : R.
+
+
 (** x = 1 -> sqrt x = 1 *)
 Lemma sqrt_eq1_if_eq1 : forall (x : R), x = 1 -> sqrt x = 1.
 Proof. ra. subst; ra. Qed.

@@ -1468,8 +1468,9 @@ Module MonoidMatrixTheory (E : MonoidElementType).
   Infix "+" := vadd : vec_scope.
 
   (** (a + b).i = a.i + b.i *)
-  Lemma vnth_vadd : forall {n} (a b : vec n) i, (a + b).[i] = (a.[i] + b.[i])%A.
+  Lemma vnth_vadd : forall n (a b : vec n) i, (a + b).[i] = (a.[i] + b.[i])%A.
   Proof. intros. apply vnth_vadd. Qed.
+  Hint Rewrite vnth_vadd : vec.
 
   (** (a + b) + c = a + (b + c) *)
   Lemma vadd_assoc : forall {n} (a b c : vec n), (a + b) + c = a + (b + c).
@@ -2061,20 +2062,24 @@ Module RingMatrixTheory (E : RingElementType).
   Proof. intros. apply mscal_mconscT. Qed.
 
   (** 0 .* M = mat0 *)
-  Lemma mscal_0_l : forall {r c} (M : mat r c), 0 s* M = mat0.
+  Lemma mscal_0_l : forall r c (M : mat r c), 0 s* M = mat0.
   Proof. intros. apply mscal_0_l. Qed.
+  Hint Rewrite mscal_0_l : vec.
 
   (** x .* mat0 = mat0 *)
-  Lemma mscal_0_r : forall {r c} x, x s* (@mat0 r c) = mat0.
+  Lemma mscal_0_r : forall r c x, x s* (@mat0 r c) = mat0.
   Proof. intros. apply mscal_0_r. Qed.
+  Hint Rewrite mscal_0_r : vec.
 
   (** 1 .* M = M *)
-  Lemma mscal_1_l : forall {r c} (M : mat r c), 1 s* M = M.
+  Lemma mscal_1_l : forall r c (M : mat r c), 1 s* M = M.
   Proof. intros. apply mscal_1_l. Qed.
+  Hint Rewrite mscal_1_l : vec.
 
   (** x .* mat1 = mdiag([a,a,...]) *)
-  Lemma mscal_1_r : forall {n} x, x s* mat1 = mdiagMk (vrepeat n x).
+  Lemma mscal_1_r : forall n x, x s* mat1 = mdiagMk (vrepeat n x).
   Proof. intros. apply mscal_1_r. Qed.
+  Hint Rewrite mscal_1_r : vec.
 
   (** x .* (y .* M) = (x * y) .* M *)
   Lemma mscal_assoc : forall {r c} (x y : tA) (M : mat r c),

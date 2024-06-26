@@ -56,3 +56,8 @@ Proof.
   intros. replace a with (a * 1)%R in H0 at 2 by lra.
   apply Rmult_eq_reg_l in H0; auto.
 Qed.
+
+(** c <> 0 -> a * c = b -> a = b / c *)
+Lemma Rmult_imply_Rdiv : forall a b c : R, c <> 0 -> a * c = b -> a = b / c.
+Proof. intros. rewrite <- H0. field. auto. Qed.
+

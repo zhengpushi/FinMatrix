@@ -1405,6 +1405,10 @@ Proof. intros. meq; ra. Qed.
 Lemma skew3_vopp : forall a, `| - a |x = (- (`| a |x))%M.
 Proof. intros. meq; ra. Qed.
 
+(** `|x s* v|x = (x s* `|v|x)%M *)
+Lemma skew3_vscal : forall (v : vec 3) (x : R), `|x s* v|x = (x s* `|v|x)%M.
+Proof. intros. meq; ra. Qed.
+
 (** (`| -a |x)\T = `| a |x *)
 Lemma mtrans_skew3_vopp : forall a, (`| - a |x)\T = `| a |x.
 Proof. intros. meq; ra. Qed.

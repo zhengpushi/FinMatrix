@@ -1653,6 +1653,16 @@ Module RingMatrixTheory (E : RingElementType).
       x s* (y s* a) = (x * y)%A s* a.
   Proof. intros. apply vscal_assoc. Qed.
 
+  (** x s* (vconsH a v) = vconsH (x * a) (x s* v) *)
+  Lemma vscal_vconsH : forall {n} a (v : vec n) x,
+      x s* (vconsH a v) = vconsH (x * a) (x s* v).
+  Proof. intros. apply vscal_vconsH. Qed.
+  
+  (** x s* (vconsT v a) = vconsT (x s* v) (x * a) *)
+  Lemma vscal_vconsT : forall {n} (v : vec n) a x,
+      x s* (vconsT v a) = vconsT (x s* v) (x * a).
+  Proof. intros. apply vscal_vconsT. Qed.
+
   (** x .* (y .* a) = y .* (x .* a) *)
   Lemma vscal_perm : forall {n} (x y : tA) (a : vec n),
       x s* (y s* a) = y s* (x s* a).
@@ -2029,6 +2039,26 @@ Module RingMatrixTheory (E : RingElementType).
   Lemma cv2v_mscal : forall {n} (x : tA) (M : cvec n),
       cv2v (x s* M) = (x s* (cv2v M))%V.
   Proof. intros. apply cv2v_mscal. Qed.
+
+  (** x s* (mconsrH v A) = mconsrH (x s* v)%V (x s* A) *)
+  Lemma mscal_mconsrH : forall {r c} (v : vec c) (A : mat r c) x,
+      x s* (mconsrH v A) = mconsrH (x s* v)%V (x s* A).
+  Proof. intros. apply mscal_mconsrH. Qed.
+
+  (** x s* (mconsrT A v) = mconsrT (x s* A) (x s* v)%V *)
+  Lemma mscal_mconsrT : forall {r c} (A : mat r c) (v : vec c) x,
+      x s* (mconsrT A v) = mconsrT (x s* A) (x s* v)%V.
+  Proof. intros. apply mscal_mconsrT. Qed.
+
+  (** x s* (mconscH v A) = mconscH (x s* v)%V (x s* A) *)
+  Lemma mscal_mconscH : forall {r c} (v : vec r) (A : mat r c) x,
+      x s* (mconscH v A) = mconscH (x s* v)%V (x s* A).
+  Proof. intros. apply mscal_mconscH. Qed.
+
+  (** x s* (mconscT A v) = mconscT (x s* A) (x s* v)%V *)
+  Lemma mscal_mconscT : forall {r c} (A : mat r c) (v : vec r) x,
+      x s* (mconscT A v) = mconscT (x s* A) (x s* v)%V.
+  Proof. intros. apply mscal_mconscT. Qed.
 
   (** 0 .* M = mat0 *)
   Lemma mscal_0_l : forall {r c} (M : mat r c), 0 s* M = mat0.

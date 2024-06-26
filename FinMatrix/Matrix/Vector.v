@@ -2456,6 +2456,24 @@ Section vscal.
       x s* (y s* a) = (x * y)%A s* a.
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
 
+  (** x s* (vconsH a v) = vconsH (x * a) (x s* v) *)
+  Lemma vscal_vconsH : forall {n} a (v : vec n) x,
+      x s* (vconsH a v) = vconsH (x * a) (x s* v).
+  Proof.
+    intros. apply veq_iff_vnth; intros. rewrite vnth_vscal. bdestruct (i =? 0).
+    - rewrite !vnth_vconsH_0; auto. all: destruct i; fin.
+    - erewrite !vnth_vconsH_gt0; auto. rewrite vnth_vscal. fin. Unshelve. fin.
+  Qed.
+  
+  (** x s* (vconsT v a) = vconsT (x s* v) (x * a) *)
+  Lemma vscal_vconsT : forall {n} (v : vec n) a x,
+      x s* (vconsT v a) = vconsT (x s* v) (x * a).
+  Proof.
+    intros. apply veq_iff_vnth; intros. rewrite vnth_vscal. bdestruct (i =? n).
+    - rewrite !vnth_vconsT_n; auto.
+    - erewrite !vnth_vconsT_lt; auto. rewrite vnth_vscal. fin. Unshelve. fin.
+  Qed.
+
   (** x .* (y .* a) = y .* (x .* a) *)
   Lemma vscal_perm : forall {n} (a : vec n) x y,
       x s* (y s* a) = y s* (x s* a).

@@ -774,7 +774,7 @@ Definition mconscT {tA r c} (M : mat tA r c) (a : @vec tA r) : mat tA r (S c) :=
   @vmap2 (vec c) tA (vec (S c)) r vconsT M a.
 #[export] Hint Unfold mconscT : vec.
 
-Lemma vnth_mconscH : forall tA r c (M : mat tA (S r) c) (a : vec (S r)) (i : 'I_(S r)),
+Lemma vnth_mconscH : forall tA r c (M : mat tA r c) (a : vec r) (i : 'I_r),
     (mconscH a M).[i] = vconsH (a.[i]) (M.[i]).
 Proof. auto. Qed.
 #[export] Hint Rewrite vnth_mconscH : vec.
@@ -1587,14 +1587,51 @@ Section malg.
     Proof. intros. auto. Qed.
 
     (** (a * M)[i,j] = a * M[i,j] *)
-    Lemma mnth_mscal : forall {r c} (M : mat r c) a i j,
+    Lemma mnth_mscal : forall r c (M : mat r c) a i j,
         (a s* M).[i].[j] = a * (M.[i].[j]).
     Proof. intros. unfold mscal. rewrite !vnth_vmap. auto. Qed.
+    Hint Rewrite mnth_mscal : vec.
 
     Lemma cv2v_mscal : forall {n} (x : tA) (a : cvec tA n),
         cv2v (x s* a) = (x s* (cv2v a))%V.
     Proof. intros. apply veq_iff_vnth; intros. cbv. auto. Qed.
 
+    (** x s* (mconsrH v A) = mconsrH (x s* v)%V (x s* A) *)
+    Lemma mscal_mconsrH : forall {r c} (v : vec c) (A : mat r c) x,
+        x s* (mconsrH v A) = mconsrH (x s* v)%V (x s* A).
+    Proof.
+      intros. apply meq_iff_mnth; intros. rewrite mnth_mscal.
+      unfold mconsrH. bdestruct (i =? 0).
+      - rewrite !vnth_vconsH_0; auto. all: destruct i; fin.
+      - erewrite !vnth_vconsH_gt0. easy. Unshelve. fin.
+    Qed.
+
+    (** x s* (mconsrT A v) = mconsrT (x s* A) (x s* v)%V *)
+    Lemma mscal_mconsrT : forall {r c} (A : mat r c) (v : vec c) x,
+        x s* (mconsrT A v) = mconsrT (x s* A) (x s* v)%V.
+    Proof.
+      intros. apply meq_iff_mnth; intros. auto_vec. bdestruct (i =? r).
+      - rewrite !vnth_vconsT_n; auto.
+      - erewrite !vnth_vconsT_lt. easy. Unshelve. fin.
+    Qed.
+
+    (** x s* (mconscH v A) = mconscH (x s* v)%V (x s* A) *)
+    Lemma mscal_mconscH : forall {r c} (v : vec r) (A : mat r c) x,
+        x s* (mconscH v A) = mconscH (x s* v)%V (x s* A).
+    Proof.
+      intros. apply meq_iff_mnth; intros. auto_vec. bdestruct (j =? 0).
+      - rewrite !vnth_vconsH_0; auto. all: destruct j; fin.
+      - erewrite !vnth_vconsH_gt0. easy. Unshelve. fin.
+    Qed.
+
+    (** x s* (mconscT A v) = mconscT (x s* A) (x s* v)%V *)
+    Lemma mscal_mconscT : forall {r c} (A : mat r c) (v : vec r) x,
+        x s* (mconscT A v) = mconscT (x s* A) (x s* v)%V.
+    Proof.
+      intros. apply meq_iff_mnth; intros. auto_vec. bdestruct (j =? c).
+      - rewrite !vnth_vconsT_n; auto.
+      - erewrite !vnth_vconsT_lt. easy. Unshelve. fin.
+    Qed.
 
     (** a * (b * M) = (a * b) * M *)
     Lemma mscal_assoc : forall {r c} (M : mat r c) a b,

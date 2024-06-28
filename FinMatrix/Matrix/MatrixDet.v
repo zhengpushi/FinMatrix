@@ -592,7 +592,6 @@ Section mdetEx.
   
   Notation mat r c := (mat tA r c).
   Notation smat n := (smat tA n).
-  Notation mat0 := (@mat0 _ 0).
   Notation madd := (@madd _ Aadd).
   Infix "+" := madd : mat_scope.
   Notation mdet := (@mdet _ Aadd 0 Aopp Amul 1).

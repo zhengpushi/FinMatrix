@@ -166,6 +166,10 @@ End exercise_forall_exist_not.
 (* ======================================================================= *)
 (** ** Properties for function *)
 
+(** The application result is equal *)
+Lemma fun_app : forall {A B} (f : A -> B) (a b : A), a = b -> f a = f b .
+Proof. intros. subst; auto. Qed.
+
 (** Two functions are equal, iff extensional equal *)
 Lemma feq_iff : forall {A} (f g : A -> A), f = g <-> (forall x, f x = g x).
 Proof. intros. split; intros; subst; auto. extensionality x; auto. Qed.

@@ -2028,7 +2028,7 @@ Section malg.
       - intros. rewrite vnth_vmap2. rewrite mnth_mat1_diff; auto. ring.
     Qed.
 
-    (** (x .* M) *v a = x .* (M *v a) *)
+    (** (x s* M) *v a = x s* (M *v a) *)
     Lemma mmulv_mscal : forall {r c} (x : tA) (M : mat r c) (a : vec c), 
         (x s* M) *v a = (x s* (M *v a))%V.
     Proof.
@@ -2037,7 +2037,7 @@ Section malg.
       rewrite vdot_vscal_l. auto.
     Qed.
     
-    (** M *v (x .* v) = x .* (M *v a) *)
+    (** M *v (x s* v) = x s* (M *v a) *)
     Lemma mmulv_vscal : forall {r c} (x : tA) (M : mat r c) (a : vec c), 
         M *v (x s* a)%V = (x s* (M *v a))%V.
     Proof.
@@ -2215,7 +2215,7 @@ Section malg.
         rewrite mnth_mat1_diff; auto. ring.
     Qed.
 
-    (** a v* (x .* M) = x .* (a v* M) *)
+    (** a v* (x s* M) = x s* (a v* M) *)
     Lemma mvmul_mscal : forall {r c} (a : vec r) (x : tA) (M : mat r c), 
         a v* (x s* M) = (x s* (a v* M))%V.
     Proof.
@@ -2224,7 +2224,7 @@ Section malg.
       rewrite mcol_mscal. rewrite vdot_vscal_r. auto.
     Qed.
     
-    (** (x .* a) v* M  = x .* (a v* M) *)
+    (** (x s* a) v* M  = x s* (a v* M) *)
     Lemma mvmul_vscal : forall {r c} (a : vec r) (x : tA) (M : mat r c), 
         (x s* a)%V v* M = (x s* (a v* M))%V.
     Proof.
@@ -2313,7 +2313,7 @@ Section malg.
   (** *** Properties when equipped with `Dec` *)
   Section with_Dec.
     
-    (** (M <> 0 /\ N <> 0 /\ x .* M = N) -> x <> 0 *)
+    (** (M <> 0 /\ N <> 0 /\ x s* M = N) -> x <> 0 *)
     Lemma mscal_eq_imply_not_x0 : forall {r c} (M N : mat r c) x,
         M <> mat0 -> N <> mat0 -> x s* M = N -> x <> 0.
     Proof.
@@ -2329,6 +2329,24 @@ Section malg.
   
   (** *** Properties when equipped with `Field` *)
   Section with_Field.
+
+    (** x s* A = x s* B -> x <> 0 -> A = B *)
+    Lemma mscal_eq_reg_l : forall {r c} x (A B : mat r c),
+        x s* A = x s* B -> x <> Azero -> A = B.
+    Proof.
+      intros. rewrite meq_iff_mnth in *. intros i j. specialize (H i j).
+      rewrite !mnth_mscal in H. apply field_mul_cancel_l in H; auto.
+    Qed.
+    
+    (** x s* A = y * A -> A <> mat0 -> x = y *)
+    Lemma mscal_eq_reg_r : forall {r c} x y (A : mat r c), 
+        x s* A = y s* A -> A <> mat0 -> x = y.
+    Proof.
+      intros. destruct (Aeqdec x y); auto. rewrite veq_iff_vnth in *.
+      destruct H0. intros i. specialize (H i). rewrite !vnth_mscal in H.
+      destruct (Aeqdec (A i) vzero); auto.
+      apply vscal_eq_reg_r in H; try easy.
+    Qed.
   
     (** x * M = 0 -> (x = 0) \/ (M = 0) *)
     Lemma mscal_eq0_imply_x0_or_m0 : forall {r c} (M : mat r c) x,

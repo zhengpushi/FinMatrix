@@ -2447,11 +2447,11 @@ Section vscal.
   Definition vscal {n : nat} (x : tA) (a : vec n) : vec n := vmap (fun y => Amul x y) a.
   Infix "s*" := vscal : vec_scope.
 
-  (** (x .* a).i = x * a.i *)
+  (** (x s* a).i = x * a.i *)
   Lemma vnth_vscal : forall n (a : vec n) x i, (x s* a).[i] = x * (a.[i]).
   Proof. intros. cbv. auto. Qed.
 
-  (** x .* (y .* a) = (x * y) .* a *)
+  (** x s* (y s* a) = (x * y) s* a *)
   Lemma vscal_assoc : forall {n} (a : vec n) x y,
       x s* (y s* a) = (x * y)%A s* a.
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
@@ -2474,55 +2474,55 @@ Section vscal.
     - erewrite !vnth_vconsT_lt; auto. rewrite vnth_vscal. fin. Unshelve. fin.
   Qed.
 
-  (** x .* (y .* a) = y .* (x .* a) *)
+  (** x s* (y s* a) = y s* (x s* a) *)
   Lemma vscal_perm : forall {n} (a : vec n) x y,
       x s* (y s* a) = y s* (x s* a).
   Proof. intros. rewrite !vscal_assoc. f_equal. ring. Qed.
   
-  (** (x + y) .* a = (x .* a) + (y .* a) *)
+  (** (x + y) s* a = (x s* a) + (y s* a) *)
   Lemma vscal_add : forall {n} x y (a : vec n),
       (x + y)%A s* a = (x s* a) + (y s* a).
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
 
-  (** x .* (a + b) = (x .* a) + (x .* b) *)
+  (** x s* (a + b) = (x s* a) + (x s* b) *)
   Lemma vscal_vadd : forall {n} x (a b : vec n),
       x s* (a + b) = (x s* a) + (x s* b).
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
 
-  (** 0 .* a = vzero *)
+  (** 0 s* a = vzero *)
   Lemma vscal_0_l : forall n (a : vec n), Azero s* a = vzero.
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
   Hint Rewrite vscal_0_l : vec.
 
-  (** a .* vzero = vzero *)
+  (** a s* vzero = vzero *)
   Lemma vscal_0_r : forall n a, a s* vzero = (@Vector.vzero _ Azero n).
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
   Hint Rewrite vscal_0_r : vec.
   
-  (** 1 .* a = a *)
+  (** 1 s* a = a *)
   Lemma vscal_1_l : forall {n} (a : vec n), Aone s* a = a.
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
   
-  (** - 1 .* a = - a *)
+  (** - 1 s* a = - a *)
   Lemma vscal_neg1_l : forall {n} (a : vec n), (- Aone)%A s* a = - a.
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
   
-  (** (- x) .* a = - (x .* a) *)
+  (** (- x) s* a = - (x s* a) *)
   Lemma vscal_opp : forall {n} x (a : vec n), (- x)%A s* a = - (x s* a).
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
 
   (* Tips: this proof shows a proof by computation, due to the Fin-Function 
      model. *)
-  (** x .* (- a) = - (x .* a) *)
+  (** x s* (- a) = - (x s* a) *)
   Lemma vscal_vopp : forall {n} x (a : vec n), x s* (- a) = - (x s* a).
   Proof. intros. apply veq_iff_vnth; intros. cbv. ring. Qed.
 
   (* Tips: this proof shows a proof by derivation *)
-  (** (- x) .* (- a) = x .* a *)
+  (** (- x) s* (- a) = x s* a *)
   Lemma vscal_opp_vopp : forall {n} x (a : vec n), (- x)%A s* (- a) = x s* a.
   Proof. intros. rewrite vscal_vopp, vscal_opp. rewrite vopp_vopp. auto. Qed.
 
-  (** x .* (a - b) = (x .* a) - (x .* b) *)
+  (** x s* (a - b) = (x s* a) - (x s* b) *)
   Lemma vscal_vsub : forall {n} x (a b : vec n), x s* (a - b) = (x s* a) - (x s* b).
   Proof. intros. rewrite vscal_vadd. rewrite vscal_vopp. auto. Qed.
   
@@ -2530,7 +2530,7 @@ Section vscal.
   Section AeqDec.
     Context {AeqDec : Dec (@eq tA)}.
 
-    (** a <> 0 -> b <> 0 -> x .* a = b -> x <> 0 *)
+    (** a <> 0 -> b <> 0 -> x s* a = b -> x <> 0 *)
     Lemma vscal_eq_imply_x_neq0 : forall {n} x (a b : vec n),
         a <> vzero -> b <> vzero -> x s* a = b -> x <> Azero.
     Proof.
@@ -2544,7 +2544,7 @@ Section vscal.
     Context {AeqDec : Dec (@eq tA)}.
     Context `{HField : Field tA Aadd Azero Aopp Amul Aone Ainv}.
     
-    (** x .* a = 0 -> (x = 0) \/ (a = 0) *)
+    (** x s* a = 0 -> (x = 0) \/ (a = 0) *)
     Lemma vscal_eq0_imply_x0_or_v0 : forall {n} x (a : vec n),
         x s* a = vzero -> (x = Azero) \/ (a = vzero).
     Proof.
@@ -2553,12 +2553,12 @@ Section vscal.
       cbv in H. cbv. apply field_mul_eq0_iff in H; auto. tauto.
     Qed.
 
-    (** x .* a = 0 -> a <> 0 -> x = 0 *)
+    (** x s* a = 0 -> a <> 0 -> x = 0 *)
     Corollary vscal_eq0_imply_x0 : forall {n} x (a : vec n),
         x s* a = vzero -> a <> vzero -> x = Azero.
     Proof. intros. apply (vscal_eq0_imply_x0_or_v0 x a) in H; tauto. Qed.
 
-    (** x .* a = 0 -> x <> 0 -> a = 0 *)
+    (** x s* a = 0 -> x <> 0 -> a = 0 *)
     Corollary vscal_eq0_imply_v0 : forall {n} x (a : vec n),
         x s* a = vzero -> x <> Azero -> a = vzero.
     Proof. intros. apply (vscal_eq0_imply_x0_or_v0 x a) in H; tauto. Qed.
@@ -2568,7 +2568,7 @@ Section vscal.
         x <> Azero -> a <> vzero -> x s* a <> vzero.
     Proof. intros. intro. apply vscal_eq0_imply_x0_or_v0 in H1; tauto. Qed.
     
-    (** x .* a = a -> x = 1 \/ a = 0 *)
+    (** x s* a = a -> x = 1 \/ a = 0 *)
     Lemma vscal_same_imply_x1_or_v0 : forall {n} x (a : vec n),
         x s* a = a -> (x = Aone) \/ (a = vzero).
     Proof.
@@ -2577,24 +2577,24 @@ Section vscal.
       cbv in H. cbv. apply field_mul_eq_imply_a1_or_b0 in H; auto. tauto.
     Qed.
     
-    (** x = 1 \/ a = 0 -> x .* a = a *)
+    (** x = 1 \/ a = 0 -> x s* a = a *)
     Lemma vscal_same_if_x1_or_v0 : forall {n} x (a : vec n),
         (x = Aone \/ a = vzero) -> x s* a = a.
     Proof.
       intros. destruct H; subst. apply vscal_1_l; auto. apply vscal_0_r; auto.
     Qed.
     
-    (** x .* a = a -> a <> 0 -> x = 1 *)
+    (** x s* a = a -> a <> 0 -> x = 1 *)
     Corollary vscal_same_imply_x1 : forall {n} x (a : vec n),
         x s* a = a -> a <> vzero -> x = Aone.
     Proof. intros. apply (vscal_same_imply_x1_or_v0 x a) in H; tauto. Qed.
     
-    (** x .* a = a -> x <> 1 -> a = 0 *)
+    (** x s* a = a -> x <> 1 -> a = 0 *)
     Corollary vscal_same_imply_v0 : forall {n} x (a : vec n),
         x s* a = a -> x <> Aone -> a = vzero.
     Proof. intros. apply (vscal_same_imply_x1_or_v0 x a) in H; tauto. Qed.
 
-    (** x .* a = y .* a -> (x = y \/ a = 0) *)
+    (** x s* a = y s* a -> (x = y \/ a = 0) *)
     Lemma vscal_sameV_imply_eqX_or_v0 : forall {n} x y (a : vec n), 
         x s* a = y s* a -> (x = y \/ a = vzero).
     Proof.
@@ -2603,14 +2603,22 @@ Section vscal.
       destruct (Aeqdec (a i) Azero); auto. apply field_mul_cancel_r in H; tauto.
     Qed.
 
-    (** x .* a = y * a -> a <> 0 -> x = y *)
-    Corollary vscal_sameV_imply_eqX : forall {n} x y (a : vec n), 
-        x s* a = y s* a -> a <> vzero -> x = y.
-    Proof. intros. apply vscal_sameV_imply_eqX_or_v0 in H; tauto. Qed.
-
-    (** x .* a  = y .* a -> x <> y -> a = 0 *)
+    (** x s* a  = y s* a -> x <> y -> a = 0 *)
     Corollary vscal_sameV_imply_v0 : forall {n} x y (a : vec n), 
         x s* a = y s* a -> x <> y -> a = vzero.
+    Proof. intros. apply vscal_sameV_imply_eqX_or_v0 in H; tauto. Qed.
+
+    (** x s* a = x s* b -> x <> 0 -> a = b *)
+    Lemma vscal_eq_reg_l : forall {n} x (a b : vec n),
+        x s* a = x s* b -> x <> Azero -> a = b.
+    Proof.
+      intros. rewrite veq_iff_vnth in *. intros i. specialize (H i).
+      rewrite !vnth_vscal in H. apply field_mul_cancel_l in H; auto.
+    Qed.
+    
+    (** x s* a = y * a -> a <> vzero -> x = y *)
+    Lemma vscal_eq_reg_r : forall {n} x y (a : vec n), 
+        x s* a = y s* a -> a <> vzero -> x = y.
     Proof. intros. apply vscal_sameV_imply_eqX_or_v0 in H; tauto. Qed.
   End Dec_Field.
 End vscal.
@@ -2667,7 +2675,7 @@ Section vdot.
     rewrite vnth_vadd. sring.
   Qed.
 
-  (** <x .* a, b> = x .* <a, b> *)
+  (** <x s* a, b> = x s* <a, b> *)
   Lemma vdot_vscal_l : forall {n} (a b : vec n) x, <x s* a, b> = x * <a, b>.
   Proof.
     intros. unfold vdot. rewrite vsum_scal_l; intros.
@@ -2681,7 +2689,7 @@ Section vdot.
     Lemma vdot_comm : forall {n} (a b : vec n), <a, b> = <b, a>.
     Proof. intros. apply vsum_eq; intros. unfold vmap2. apply commutative. Qed.
 
-    (** <a, x .* b> = x .* <a, b> *)
+    (** <a, x s* b> = x s* <a, b> *)
     Lemma vdot_vscal_r : forall {n} (a b : vec n) x, <a, x s* b> = x * <a, b>.
     Proof.
       intros. unfold vdot. rewrite vsum_scal_l; intros.
@@ -3013,7 +3021,7 @@ Section vlen.
       intros. unfold vlen. f_equal. f_equal. rewrite vdot_vopp_l,vdot_vopp_r. ring.
     Qed.
 
-    (** ||x .* a|| = |x| * ||a|| *)
+    (** ||x s* a|| = |x| * ||a|| *)
     Lemma vlen_vscal : forall n x (a : vec n), ||x s* a|| = ((a2r (|x|))%A * ||a||)%R.
     Proof.
       intros. unfold vlen.
@@ -3259,7 +3267,7 @@ Section vorth.
     Context {AeqDec : Dec (@eq tA)}.
     Context `{HField : Field tA Aadd Azero Aopp Amul Aone Ainv}.
     
-    (** (x .* a) _|_ b <-> a _|_ b *)
+    (** (x s* a) _|_ b <-> a _|_ b *)
     Lemma vorth_vscal_l : forall {n} x (a b : vec n),
         x <> Azero -> ((x s* a) _|_ b <-> a _|_ b).
     Proof.
@@ -3268,7 +3276,7 @@ Section vorth.
       - rewrite H0. ring.
     Qed.
     
-    (** a _|_ (x .* b) <-> a _|_ b *)
+    (** a _|_ (x s* b) <-> a _|_ b *)
     Lemma vorth_vscal_r : forall {n} x (a b : vec n),
         x <> Azero -> (a _|_ (x s* b) <-> a _|_ b).
     Proof.
@@ -3320,7 +3328,7 @@ Section vproj.
     rewrite ring_mul_0_l; auto.
   Qed.
 
-  (** vunit b -> vproj a b = <a, b> .* b *)
+  (** vunit b -> vproj a b = <a, b> s* b *)
   Lemma vproj_vunit : forall {n} (a b : vec n), vunit b -> vproj a b = <a, b> s* b.
   Proof. intros. unfold vproj. f_equal. rewrite H. field. apply field_1_neq_0. Qed.
 
@@ -3336,7 +3344,7 @@ Section vproj.
       field. apply vdot_same_neq0_if_vnonzero; auto.
     Qed.
     
-    (** vproj (x .* a) b = x .* (vproj a b) *)
+    (** vproj (x s* a) b = x s* (vproj a b) *)
     Lemma vproj_vscal : forall {n} (a b : vec n) x,
         b <> vzero -> (vproj (x s* a) b = x s* (vproj a b))%V.
     Proof.
@@ -3431,7 +3439,7 @@ Section vperp.
       rewrite vproj_vadd; auto. agroup.
     Qed.
 
-    (** vperp (x .* a) b = x .* (vperp a b) *)
+    (** vperp (x s* a) b = x s* (vperp a b) *)
     Lemma vperp_vscal : forall {n} (x : tA) (a b : vec n),
         b <> vzero -> (vperp (x s* a) b = x s* (vperp a b))%V.
     Proof.
@@ -3557,16 +3565,16 @@ Section vcoll_vpara_vantipara.
       rewrite <- H24, <- H14. rewrite vscal_assoc. auto.
     Qed.
 
-    (** a // b => ∃! x, x <> 0 /\ x .* a = b *)
+    (** a // b => ∃! x, x <> 0 /\ x s* a = b *)
     Lemma vcoll_imply_uniqueX : forall {n} (a b : vec n),
         a // b -> (exists ! x, x <> 0 /\ x s* a = b).
     Proof.
       intros. destruct H as [H1 [H2 [x [H3 H4]]]]. exists x. split; auto.
       intros j [H5 H6]. rewrite <- H4 in H6.
-      apply vscal_sameV_imply_eqX in H6; auto.
+      apply vscal_eq_reg_r in H6; auto.
     Qed.
 
-    (** a // b -> (x .* a) // b *)
+    (** a // b -> (x s* a) // b *)
     Lemma vcoll_vscal_l : forall {n} x (a b : vec n),
         x <> 0 -> a // b -> x s* a // b.
     Proof.
@@ -3621,13 +3629,13 @@ Section vcoll_vpara_vantipara.
       rewrite <- H24, <- H14. rewrite vscal_assoc. auto.
     Qed.
 
-    (** a //+ b => ∃! x, 0 < x /\ x .* a = b *)
+    (** a //+ b => ∃! x, 0 < x /\ x s* a = b *)
     Lemma vpara_imply_uniqueX : forall {n} (a b : vec n),
         a //+ b -> (exists ! x, 0 < x /\ x s* a = b).
     Proof.
       intros. destruct H as [H1 [H2 [x [H3 H4]]]]. exists x. split; auto.
       intros j [H5 H6]. rewrite <- H4 in H6.
-      apply vscal_sameV_imply_eqX in H6; auto.
+      apply vscal_eq_reg_r in H6; auto.
     Qed.
 
     (** a //+ b -> (x s* a) //+ b *)
@@ -3691,16 +3699,16 @@ Section vcoll_vpara_vantipara.
       (* Note that, this is not true *)
     Abort.
 
-    (** a //- b => ∃! x, x < 0 /\ x .* a = b *)
+    (** a //- b => ∃! x, x < 0 /\ x s* a = b *)
     Lemma vantipara_imply_uniqueX : forall {n} (a b : vec n),
         a //- b -> (exists ! x, x < 0 /\ x s* a = b).
     Proof.
       intros. destruct H as [H1 [H2 [x [H3 H4]]]]. exists x. split; auto.
       intros j [H5 H6]. rewrite <- H4 in H6.
-      apply vscal_sameV_imply_eqX in H6; auto.
+      apply vscal_eq_reg_r in H6; auto.
     Qed.
 
-    (** a //- b -> (x .* a) //- b *)
+    (** a //- b -> (x s* a) //- b *)
     Lemma vantipara_vscal_l : forall {n} x (a b : vec n),
         0 < x -> a //- b -> x s* a //- b.
     Proof.
@@ -3714,7 +3722,7 @@ Section vcoll_vpara_vantipara.
           symmetry. apply lt_not_eq. auto.
     Qed.
 
-    (** a //- b -> a //- (x .* b) *)
+    (** a //- b -> a //- (x s* b) *)
     Lemma vantipara_vscal_r : forall {n} x (a b : vec n),
         0 < x -> a //- b -> a //- (x s* b).
     Proof.

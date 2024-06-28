@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.CoqExt.RExt.RExtInv</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBase.html#"><span class="id" title="library">RExtBase</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab338"></a><h2 class="section">Basic automation</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Hint Rewrite</span><br/>
+&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.RIneq.html#Rinv_1"><span class="id" title="lemma">Rinv_1</span></a>            <br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.RIneq.html#Rdiv_plus_distr"><span class="id" title="lemma">Rdiv_plus_distr</span></a>   <br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.R_sqr.html#Rsqr_div'"><span class="id" title="lemma">Rsqr_div'</span></a>         <br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.RIneq.html#Rdiv_mult_l_l"><span class="id" title="lemma">Rdiv_mult_l_l</span></a>     <br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.RIneq.html#Rdiv_mult_r_r"><span class="id" title="lemma">Rdiv_mult_r_r</span></a>     <br/>
+&nbsp;&nbsp;: <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Rewrite</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;- <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.RIneq.html#Rdiv_def"><span class="id" title="lemma">Rdiv_def</span></a>    <br/>
+&nbsp;&nbsp;: <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span><br/>
+&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;<span class="id" title="var">Rinv_neq_0_compat</span>   <br/>
+&nbsp;&nbsp;<span class="id" title="var">Rinv_0_lt_compat</span>    <br/>
+&nbsp;&nbsp;<span class="id" title="var">Rinv_lt_0_compat</span>    <br/>
+&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;<span class="id" title="var">Rdiv_lt_0_compat</span>    <br/>
+&nbsp;&nbsp;: <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab339"></a><h2 class="section">Additional properties</h2>
+
+<div class="paragraph"> </div>
+
+ / R1 = 1 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="Rinv_R1" class="idref" href="#Rinv_R1"><span class="id" title="lemma">Rinv_R1</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#2299a6ef56270a66cc1b95489d0f6e3a"><span class="id" title="notation">/</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.R1"><span class="id" title="axiom">R1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">ra</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Hint Rewrite</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#Rinv_R1"><span class="id" title="lemma">Rinv_R1</span></a> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+a / 1 = a 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="Rdiv_1" class="idref" href="#Rdiv_1"><span class="id" title="lemma">Rdiv_1</span></a> : <span class="id" title="keyword">forall</span> <a id="a:1" class="idref" href="#a:1"><span class="id" title="binder">a</span></a>, <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#a:1"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#3942bfc45fbeaeee49010b741755982b"><span class="id" title="notation">/</span></a> 1 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#a:1"><span class="id" title="variable">a</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">ra</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Hint Rewrite</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#Rdiv_1"><span class="id" title="lemma">Rdiv_1</span></a> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+0 / a = 0 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="Rdiv_0_eq0" class="idref" href="#Rdiv_0_eq0"><span class="id" title="lemma">Rdiv_0_eq0</span></a> : <span class="id" title="keyword">forall</span> <a id="a:2" class="idref" href="#a:2"><span class="id" title="binder">a</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.R"><span class="id" title="axiom">R</span></a>, <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#a:2"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#3942bfc45fbeaeee49010b741755982b"><span class="id" title="notation">/</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#a:2"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> 0.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">ra</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Hint Rewrite</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#Rdiv_0_eq0"><span class="id" title="lemma">Rdiv_0_eq0</span></a> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+(r1 * r2) * / (r1 * r3) = r2 * / r3  
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="Rinv_ab_simpl_a" class="idref" href="#Rinv_ab_simpl_a"><span class="id" title="lemma">Rinv_ab_simpl_a</span></a> : <span class="id" title="keyword">forall</span> <a id="r1:3" class="idref" href="#r1:3"><span class="id" title="binder">r1</span></a> <a id="r2:4" class="idref" href="#r2:4"><span class="id" title="binder">r2</span></a> <a id="r3:5" class="idref" href="#r3:5"><span class="id" title="binder">r3</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r1:3"><span class="id" title="variable">r1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r3:5"><span class="id" title="variable">r3</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">(</span></a><a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r1:3"><span class="id" title="variable">r1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">*</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r2:4"><span class="id" title="variable">r2</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">*</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#2299a6ef56270a66cc1b95489d0f6e3a"><span class="id" title="notation">/</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#2299a6ef56270a66cc1b95489d0f6e3a"><span class="id" title="notation">(</span></a><a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r1:3"><span class="id" title="variable">r1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">*</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r3:5"><span class="id" title="variable">r3</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#2299a6ef56270a66cc1b95489d0f6e3a"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r2:4"><span class="id" title="variable">r2</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">*</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#2299a6ef56270a66cc1b95489d0f6e3a"><span class="id" title="notation">/</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r3:5"><span class="id" title="variable">r3</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">ra</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Hint Rewrite</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#Rinv_ab_simpl_a"><span class="id" title="lemma">Rinv_ab_simpl_a</span></a> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+(r1 * r2) * / (r3 * r2) = r1 * / r3 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="Rinv_ab_simpl_b" class="idref" href="#Rinv_ab_simpl_b"><span class="id" title="lemma">Rinv_ab_simpl_b</span></a> : <span class="id" title="keyword">forall</span> <a id="r1:6" class="idref" href="#r1:6"><span class="id" title="binder">r1</span></a> <a id="r2:7" class="idref" href="#r2:7"><span class="id" title="binder">r2</span></a> <a id="r3:8" class="idref" href="#r3:8"><span class="id" title="binder">r3</span></a>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r2:7"><span class="id" title="variable">r2</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r3:8"><span class="id" title="variable">r3</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">(</span></a><a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r1:6"><span class="id" title="variable">r1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">*</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r2:7"><span class="id" title="variable">r2</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">*</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#2299a6ef56270a66cc1b95489d0f6e3a"><span class="id" title="notation">/</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#2299a6ef56270a66cc1b95489d0f6e3a"><span class="id" title="notation">(</span></a><a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r3:8"><span class="id" title="variable">r3</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">*</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r2:7"><span class="id" title="variable">r2</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#2299a6ef56270a66cc1b95489d0f6e3a"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r1:6"><span class="id" title="variable">r1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#e1dae7ed53bffa765009199d058dd327"><span class="id" title="notation">*</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#2299a6ef56270a66cc1b95489d0f6e3a"><span class="id" title="notation">/</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r3:8"><span class="id" title="variable">r3</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">ra</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Hint Rewrite</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#Rinv_ab_simpl_b"><span class="id" title="lemma">Rinv_ab_simpl_b</span></a> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+r &lt;&gt; 0 -&gt; 1 / r &lt;&gt; 0 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="Rdiv_1_neq_0_compat" class="idref" href="#Rdiv_1_neq_0_compat"><span class="id" title="lemma">Rdiv_1_neq_0_compat</span></a> : <span class="id" title="keyword">forall</span> <a id="r:9" class="idref" href="#r:9"><span class="id" title="binder">r</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.R"><span class="id" title="axiom">R</span></a>, <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r:9"><span class="id" title="variable">r</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> 1 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#3942bfc45fbeaeee49010b741755982b"><span class="id" title="notation">/</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtInv.html#r:9"><span class="id" title="variable">r</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> 0.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="var">ra</span>. <span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.RIneq.html#Rinv_neq_0_compat"><span class="id" title="lemma">Rinv_neq_0_compat</span></a> <span class="id" title="var">r</span> <span class="id" title="var">H</span>). <span class="id" title="var">ra</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Rdiv_1_neq_0_compat</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab340"></a><h2 class="section">Extra automation</h2>
+
+</div>
+<div class="code">
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,684 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.CoqExt.RExt.RExtStruct</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#"><span class="id" title="library">RExtCvt</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBase.html#"><span class="id" title="library">RExtBase</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab319"></a><h1 class="section">Algebraic Structures</h1>
+
+<div class="paragraph"> </div>
+
+ Qc has a A2R structure 
+</div>
+<div class="code">
+<span class="id" title="keyword">Instance</span> <a id="Qc_A2R" class="idref" href="#Qc_A2R"><span class="id" title="instance">Qc_A2R</span></a><br/>
+&nbsp;&nbsp;: <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#A2R"><span class="id" title="class">A2R</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.QArith.Qcanon.html#Qcplus"><span class="id" title="definition">Qcplus</span></a> (0%<span class="id" title="var">Qc</span>) <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.QArith.Qcanon.html#Qcopp"><span class="id" title="definition">Qcopp</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.QArith.Qcanon.html#Qcmult"><span class="id" title="definition">Qcmult</span></a> (1%<span class="id" title="var">Qc</span>) <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.QArith.Qcanon.html#Qcinv"><span class="id" title="definition">Qcinv</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.QArith.Qcanon.html#Qclt"><span class="id" title="definition">Qclt</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.QArith.Qcanon.html#Qcle"><span class="id" title="definition">Qcle</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R"><span class="id" title="definition">Qc2R</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R_add"><span class="id" title="lemma">Qc2R_add</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R_0"><span class="id" title="lemma">Qc2R_0</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R_opp"><span class="id" title="lemma">Qc2R_opp</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R_mul"><span class="id" title="lemma">Qc2R_mul</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R_1"><span class="id" title="lemma">Qc2R_1</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R_inv"><span class="id" title="lemma">Qc2R_inv</span></a>; <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#Qc_Order"><span class="id" title="instance">Qc_Order</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R_eq_iff"><span class="id" title="lemma">Qc2R_eq_iff</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R_lt_iff"><span class="id" title="lemma">Qc2R_lt_iff</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R_le_iff"><span class="id" title="lemma">Qc2R_le_iff</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+equality is equivalence relation: Equivalence eq 
+</div>
+<div class="code">
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">eq_equivalence</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+operations are well-defined. Eg: Proper (eq ==&gt; eq ==&gt; eq) Rplus 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="Radd_wd" class="idref" href="#Radd_wd"><span class="id" title="lemma">Radd_wd</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">intros</span>); <span class="id" title="tactic">subst</span>; <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="Ropp_wd" class="idref" href="#Ropp_wd"><span class="id" title="lemma">Ropp_wd</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Ropp"><span class="id" title="axiom">Ropp</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">intros</span>); <span class="id" title="tactic">subst</span>; <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="Rsub_wd" class="idref" href="#Rsub_wd"><span class="id" title="lemma">Rsub_wd</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rminus"><span class="id" title="definition">Rminus</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">intros</span>); <span class="id" title="tactic">subst</span>; <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="Rmul_wd" class="idref" href="#Rmul_wd"><span class="id" title="lemma">Rmul_wd</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">intros</span>); <span class="id" title="tactic">subst</span>; <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="Rinv_wd" class="idref" href="#Rinv_wd"><span class="id" title="lemma">Rinv_wd</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rinv"><span class="id" title="abbreviation">Rinv</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">intros</span>); <span class="id" title="tactic">subst</span>; <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a id="Rdiv_wd" class="idref" href="#Rdiv_wd"><span class="id" title="lemma">Rdiv_wd</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rdiv"><span class="id" title="definition">Rdiv</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">intros</span>); <span class="id" title="tactic">subst</span>; <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Radd_wd</span> <span class="id" title="var">Ropp_wd</span> <span class="id" title="var">Rsub_wd</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Rmul_wd</span> <span class="id" title="var">Rinv_wd</span> <span class="id" title="var">Rdiv_wd</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Decidable 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Req_Dec" class="idref" href="#Req_Dec"><span class="id" title="instance">Req_Dec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> (@<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.R"><span class="id" title="axiom">R</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.RIneq.html#Req_EM_T"><span class="id" title="abbreviation">Req_EM_T</span></a>. <span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Rle_Dec" class="idref" href="#Rle_Dec"><span class="id" title="instance">Rle_Dec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rle"><span class="id" title="definition">Rle</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">destruct</span> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.RIneq.html#Rle_lt_dec"><span class="id" title="lemma">Rle_lt_dec</span></a> <span class="id" title="var">a</span> <span class="id" title="var">b</span>); <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">right</span>; <span class="id" title="var">lra</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Rlt_Dec" class="idref" href="#Rlt_Dec"><span class="id" title="instance">Rlt_Dec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rlt"><span class="id" title="axiom">Rlt</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">destruct</span> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.RIneq.html#Rlt_le_dec"><span class="id" title="lemma">Rlt_le_dec</span></a> <span class="id" title="var">a</span> <span class="id" title="var">b</span>); <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">right</span>; <span class="id" title="var">lra</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Associative 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Radd_Assoc" class="idref" href="#Radd_Assoc"><span class="id" title="instance">Radd_Assoc</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Associative"><span class="id" title="class">Associative</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">field</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Rmul_Assoc" class="idref" href="#Rmul_Assoc"><span class="id" title="instance">Rmul_Assoc</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Associative"><span class="id" title="class">Associative</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">field</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Radd_Assoc</span> <span class="id" title="var">Rmul_Assoc</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Commutative 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Radd_Comm" class="idref" href="#Radd_Comm"><span class="id" title="instance">Radd_Comm</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Commutative"><span class="id" title="class">Commutative</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">field</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Rmul_Comm" class="idref" href="#Rmul_Comm"><span class="id" title="instance">Rmul_Comm</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Commutative"><span class="id" title="class">Commutative</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">field</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Radd_Comm</span> <span class="id" title="var">Rmul_Comm</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Identity Left/Right 
+</div>
+<div class="code">
+<span class="id" title="keyword">Instance</span> <a id="Radd_IdL" class="idref" href="#Radd_IdL"><span class="id" title="instance">Radd_IdL</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#IdentityLeft"><span class="id" title="class">IdentityLeft</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">field</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Radd_IdR" class="idref" href="#Radd_IdR"><span class="id" title="instance">Radd_IdR</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#IdentityRight"><span class="id" title="class">IdentityRight</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">field</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Rmul_IdL" class="idref" href="#Rmul_IdL"><span class="id" title="instance">Rmul_IdL</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#IdentityLeft"><span class="id" title="class">IdentityLeft</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">field</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Rmul_IdR" class="idref" href="#Rmul_IdR"><span class="id" title="instance">Rmul_IdR</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#IdentityRight"><span class="id" title="class">IdentityRight</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">field</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Radd_IdL</span> <span class="id" title="var">Radd_IdR</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Rmul_IdL</span> <span class="id" title="var">Rmul_IdR</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Inverse Left/Right 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Radd_InvL" class="idref" href="#Radd_InvL"><span class="id" title="instance">Radd_InvL</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#InverseLeft"><span class="id" title="class">InverseLeft</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Ropp"><span class="id" title="axiom">Ropp</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Radd_InvR" class="idref" href="#Radd_InvR"><span class="id" title="instance">Radd_InvR</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#InverseRight"><span class="id" title="class">InverseRight</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Ropp"><span class="id" title="axiom">Ropp</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Radd_InvL</span> <span class="id" title="var">Radd_InvR</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Distributive 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Rmul_add_DistrL" class="idref" href="#Rmul_add_DistrL"><span class="id" title="instance">Rmul_add_DistrL</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#DistrLeft"><span class="id" title="class">DistrLeft</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">field</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Rmul_add_DistrR" class="idref" href="#Rmul_add_DistrR"><span class="id" title="instance">Rmul_add_DistrR</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#DistrRight"><span class="id" title="class">DistrRight</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">field</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Rmul_add_DistrL</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Rmul_add_DistrR</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Semigroup 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Radd_SGroup" class="idref" href="#Radd_SGroup"><span class="id" title="instance">Radd_SGroup</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#SGroup"><span class="id" title="class">SGroup</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Rmul_SGroup" class="idref" href="#Rmul_SGroup"><span class="id" title="instance">Rmul_SGroup</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#SGroup"><span class="id" title="class">SGroup</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Radd_SGroup</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Rmul_SGroup</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Abelian semigroup 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Radd_ASGroup" class="idref" href="#Radd_ASGroup"><span class="id" title="instance">Radd_ASGroup</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#ASGroup"><span class="id" title="class">ASGroup</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Rmul_ASGroup" class="idref" href="#Rmul_ASGroup"><span class="id" title="instance">Rmul_ASGroup</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#ASGroup"><span class="id" title="class">ASGroup</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Radd_ASGroup</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Rmul_ASGroup</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Monoid 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Radd_Monoid" class="idref" href="#Radd_Monoid"><span class="id" title="instance">Radd_Monoid</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Monoid"><span class="id" title="class">Monoid</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Rmul_Monoid" class="idref" href="#Rmul_Monoid"><span class="id" title="instance">Rmul_Monoid</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Monoid"><span class="id" title="class">Monoid</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Radd_Monoid</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Rmul_Monoid</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Abelian monoid 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Radd_AMonoid" class="idref" href="#Radd_AMonoid"><span class="id" title="instance">Radd_AMonoid</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#AMonoid"><span class="id" title="class">AMonoid</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Rmul_AMonoid" class="idref" href="#Rmul_AMonoid"><span class="id" title="instance">Rmul_AMonoid</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#AMonoid"><span class="id" title="class">AMonoid</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Radd_AMonoid</span> <span class="id" title="var">Rmul_AMonoid</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Group 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Radd_Group" class="idref" href="#Radd_Group"><span class="id" title="instance">Radd_Group</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Group"><span class="id" title="class">Group</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Ropp"><span class="id" title="axiom">Ropp</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Radd_Group</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+AGroup 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="Radd_AGroup" class="idref" href="#Radd_AGroup"><span class="id" title="instance">Radd_AGroup</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#AGroup"><span class="id" title="class">AGroup</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Ropp"><span class="id" title="axiom">Ropp</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Radd_AGroup</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+SRing 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="R_SRing" class="idref" href="#R_SRing"><span class="id" title="instance">R_SRing</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#SRing"><span class="id" title="class">SRing</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">R_SRing</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Ring 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="R_Ring" class="idref" href="#R_Ring"><span class="id" title="instance">R_Ring</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Ring"><span class="id" title="class">Ring</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Ropp"><span class="id" title="axiom">Ropp</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">R_Ring</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+ARing 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="R_ARing" class="idref" href="#R_ARing"><span class="id" title="instance">R_ARing</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#ARing"><span class="id" title="class">ARing</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Ropp"><span class="id" title="axiom">Ropp</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a> 1.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">R_ARing</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Field 
+</div>
+<div class="code">
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">R1_neq_R0</span> : <span class="id" title="var">R</span>.<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">Rmult_inv_l</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="R_Field" class="idref" href="#R_Field"><span class="id" title="instance">R_Field</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Field"><span class="id" title="class">Field</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Ropp"><span class="id" title="axiom">Ropp</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a> 1 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rinv"><span class="id" title="abbreviation">Rinv</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">R_Field</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Order 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="R_Order" class="idref" href="#R_Order"><span class="id" title="instance">R_Order</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Order"><span class="id" title="class">Order</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rlt"><span class="id" title="axiom">Rlt</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rle"><span class="id" title="definition">Rle</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">try</span> <span class="id" title="var">lra</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#total_order_T"><span class="id" title="lemma">total_order_T</span></a> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">do</span> 2 (<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span>|]; <span class="id" title="tactic">auto</span>).<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">R_Order</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="R_OrderedARing" class="idref" href="#R_OrderedARing"><span class="id" title="instance">R_OrderedARing</span></a> :<br/>
+&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#OrderedARing"><span class="id" title="class">OrderedARing</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Ropp"><span class="id" title="axiom">Ropp</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a> 1 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rlt"><span class="id" title="axiom">Rlt</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rle"><span class="id" title="definition">Rle</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="tactic">intros</span>; <span class="id" title="var">lra</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">R_OrderedARing</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="R_OrderedField" class="idref" href="#R_OrderedField"><span class="id" title="instance">R_OrderedField</span></a> :<br/>
+&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#OrderedField"><span class="id" title="class">OrderedField</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Ropp"><span class="id" title="axiom">Ropp</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a> 1 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rinv"><span class="id" title="abbreviation">Rinv</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rlt"><span class="id" title="axiom">Rlt</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rle"><span class="id" title="definition">Rle</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">R_OrderedField</span> : <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <a id="R_A2R" class="idref" href="#R_A2R"><span class="id" title="instance">R_A2R</span></a><br/>
+&nbsp;&nbsp;: <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#A2R"><span class="id" title="class">A2R</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a> 0 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Ropp"><span class="id" title="axiom">Ropp</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a> 1 <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rinv"><span class="id" title="abbreviation">Rinv</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rlt"><span class="id" title="axiom">Rlt</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rle"><span class="id" title="definition">Rle</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Ranalysis1.html#id"><span class="id" title="definition">id</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Ranalysis1.html#id"><span class="id" title="definition">id</span></a>; <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">R</span>; <span class="id" title="tactic">try</span> <span class="id" title="var">easy</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab320"></a><h1 class="section">Instances for ElementType</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="NormedOrderedFieldElementTypeQc" class="idref" href="#NormedOrderedFieldElementTypeQc"><span class="id" title="module">NormedOrderedFieldElementTypeQc</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType"><span class="id" title="module">NormedOrderedFieldElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#OrderedFieldElementTypeQc"><span class="id" title="module">OrderedFieldElementTypeQc</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Reals.html#"><span class="id" title="module">Reals</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="NormedOrderedFieldElementTypeQc.a2r" class="idref" href="#NormedOrderedFieldElementTypeQc.a2r"><span class="id" title="definition">a2r</span></a> := <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R"><span class="id" title="definition">Qc2R</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="NormedOrderedFieldElementTypeQc.A2R" class="idref" href="#NormedOrderedFieldElementTypeQc.A2R"><span class="id" title="instance">A2R</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#A2R"><span class="id" title="class">A2R</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeQc.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeQc.Azero"><span class="id" title="definition">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeQc.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeQc.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeQc.Aone"><span class="id" title="definition">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeQc.Ainv"><span class="id" title="definition">Ainv</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeQc.Alt"><span class="id" title="definition">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeQc.Ale"><span class="id" title="definition">Ale</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeQc.a2r"><span class="id" title="definition">a2r</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#Qc_A2R"><span class="id" title="instance">Qc_A2R</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeQc"><span class="id" title="module">NormedOrderedFieldElementTypeQc</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="ElementTypeR" class="idref" href="#ElementTypeR"><span class="id" title="module">ElementTypeR</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementType"><span class="id" title="module">ElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="ElementTypeR.tA" class="idref" href="#ElementTypeR.tA"><span class="id" title="definition">tA</span></a> : <span class="id" title="keyword">Type</span> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.R"><span class="id" title="axiom">R</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="ElementTypeR.Azero" class="idref" href="#ElementTypeR.Azero"><span class="id" title="definition">Azero</span></a> : <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#ElementTypeR.tA"><span class="id" title="definition">tA</span></a> := 0.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#ElementTypeR.tA"><span class="id" title="definition">tA</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#ElementTypeR.Azero"><span class="id" title="definition">Azero</span></a> : <span class="id" title="var">tA</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="ElementTypeR.AeqDec" class="idref" href="#ElementTypeR.AeqDec"><span class="id" title="lemma">AeqDec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> (@<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#ElementTypeR.tA"><span class="id" title="definition">tA</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#Req_Dec"><span class="id" title="instance">Req_Dec</span></a>. <span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#ElementTypeR"><span class="id" title="module">ElementTypeR</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="test_ElementType" class="idref" href="#test_ElementType"><span class="id" title="module">test_ElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="FinMatrix.CoqExt.NatExt.html#ElementTypeNat"><span class="id" title="module">ElementTypeNat</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#ElementTypeR"><span class="id" title="module">ElementTypeR</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Import</span> <a id="test_ElementType.ElementTypeFunEx1" class="idref" href="#test_ElementType.ElementTypeFunEx1"><span class="id" title="module">ElementTypeFunEx1</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementTypeFun"><span class="id" title="module">ElementTypeFun</span></a> <a class="idref" href="FinMatrix.CoqExt.NatExt.html#ElementTypeNat"><span class="id" title="module">ElementTypeNat</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#ElementTypeR"><span class="id" title="module">ElementTypeR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="test_ElementType.f" class="idref" href="#test_ElementType.f"><span class="id" title="definition">f</span></a> : <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#test_ElementType.tA"><span class="id" title="definition">tA</span></a> := <span class="id" title="keyword">fun</span> <a id="i:1" class="idref" href="#i:1"><span class="id" title="binder">i</span></a> =&gt; <span class="id" title="keyword">match</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#i:1"><span class="id" title="variable">i</span></a> <span class="id" title="keyword">with</span> 0%<span class="id" title="var">nat</span> =&gt; 1 | 1%<span class="id" title="var">nat</span> =&gt; 2 | <span class="id" title="var">_</span> =&gt; 1 <span class="id" title="keyword">end</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="test_ElementType.g" class="idref" href="#test_ElementType.g"><span class="id" title="definition">g</span></a> : <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#test_ElementType.tA"><span class="id" title="definition">tA</span></a> := <span class="id" title="keyword">fun</span> <a id="i:3" class="idref" href="#i:3"><span class="id" title="binder">i</span></a> =&gt; <span class="id" title="keyword">match</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#i:3"><span class="id" title="variable">i</span></a> <span class="id" title="keyword">with</span> 1%<span class="id" title="var">nat</span> =&gt; 2 | <span class="id" title="var">_</span> =&gt; 1 <span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="test_ElementType.Unnamed_thm" class="idref" href="#test_ElementType.Unnamed_thm"><span class="id" title="definition">f</span></a> <a id="test_ElementType.Unnamed_thm" class="idref" href="#test_ElementType.Unnamed_thm"><span class="id" title="definition">=</span></a> <a id="test_ElementType.Unnamed_thm" class="idref" href="#test_ElementType.Unnamed_thm"><span class="id" title="definition">g</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">cbv</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#test_ElementType"><span class="id" title="module">test_ElementType</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="OrderedElementTypeR" class="idref" href="#OrderedElementTypeR"><span class="id" title="module">OrderedElementTypeR</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedElementType"><span class="id" title="module">OrderedElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#ElementTypeR"><span class="id" title="module">ElementTypeR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="OrderedElementTypeR.Alt" class="idref" href="#OrderedElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rlt"><span class="id" title="axiom">Rlt</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="OrderedElementTypeR.Ale" class="idref" href="#OrderedElementTypeR.Ale"><span class="id" title="definition">Ale</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rle"><span class="id" title="definition">Rle</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedElementTypeR.Ale"><span class="id" title="definition">Ale</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> : <span class="id" title="var">tA</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="OrderedElementTypeR.Order" class="idref" href="#OrderedElementTypeR.Order"><span class="id" title="instance">Order</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Order"><span class="id" title="class">Order</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedElementTypeR.Ale"><span class="id" title="definition">Ale</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#R_Order"><span class="id" title="instance">R_Order</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedElementTypeR"><span class="id" title="module">OrderedElementTypeR</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="MonoidElementTypeR" class="idref" href="#MonoidElementTypeR"><span class="id" title="module">MonoidElementTypeR</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType"><span class="id" title="module">MonoidElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#ElementTypeR"><span class="id" title="module">ElementTypeR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="MonoidElementTypeR.Aadd" class="idref" href="#MonoidElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rplus"><span class="id" title="axiom">Rplus</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#MonoidElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> : <span class="id" title="var">tA</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="01a04a27328fb0d6c0942e36a6ad3565" class="idref" href="#01a04a27328fb0d6c0942e36a6ad3565"><span class="id" title="notation">&quot;</span></a>+" := <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#MonoidElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="MonoidElementTypeR.Aadd_AMonoid" class="idref" href="#MonoidElementTypeR.Aadd_AMonoid"><span class="id" title="instance">Aadd_AMonoid</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#AMonoid"><span class="id" title="class">AMonoid</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#MonoidElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#MonoidElementTypeR.Azero"><span class="id" title="definition">Azero</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#MonoidElementTypeR"><span class="id" title="module">MonoidElementTypeR</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="test_MonoidElementType" class="idref" href="#test_MonoidElementType"><span class="id" title="module">test_MonoidElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#MonoidElementTypeQc"><span class="id" title="module">MonoidElementTypeQc</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#MonoidElementTypeR"><span class="id" title="module">MonoidElementTypeR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Import</span> <a id="test_MonoidElementType.MonoidElementTypeFunEx1" class="idref" href="#test_MonoidElementType.MonoidElementTypeFunEx1"><span class="id" title="module">MonoidElementTypeFunEx1</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun"><span class="id" title="module">MonoidElementTypeFun</span></a> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#MonoidElementTypeQc"><span class="id" title="module">MonoidElementTypeQc</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#MonoidElementTypeR"><span class="id" title="module">MonoidElementTypeR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="test_MonoidElementType.f" class="idref" href="#test_MonoidElementType.f"><span class="id" title="definition">f</span></a> : <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#test_MonoidElementType.tA"><span class="id" title="definition">tA</span></a> := <span class="id" title="keyword">fun</span> <a id="i:5" class="idref" href="#i:5"><span class="id" title="binder">i</span></a> =&gt; 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="test_MonoidElementType.g" class="idref" href="#test_MonoidElementType.g"><span class="id" title="definition">g</span></a> : <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#test_MonoidElementType.tA"><span class="id" title="definition">tA</span></a> := <span class="id" title="keyword">fun</span> <a id="i:6" class="idref" href="#i:6"><span class="id" title="binder">i</span></a> =&gt; 2.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="test_MonoidElementType.h" class="idref" href="#test_MonoidElementType.h"><span class="id" title="definition">h</span></a> : <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#test_MonoidElementType.tA"><span class="id" title="definition">tA</span></a> := <span class="id" title="keyword">fun</span> <a id="i:7" class="idref" href="#i:7"><span class="id" title="binder">i</span></a> =&gt; 3.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">f</span></a> <a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">+</span></a> <a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">g</span></a> <a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">+</span></a> <a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">h</span></a> <a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">=</span></a> <a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">f</span></a> <a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">+</span></a> <a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">(</span></a><a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">g</span></a> <a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">+</span></a> <a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">h</span></a><a id="test_MonoidElementType.Unnamed_thm" class="idref" href="#test_MonoidElementType.Unnamed_thm"><span class="id" title="definition">)</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">rewrite</span> <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#associative"><span class="id" title="method">associative</span></a>. <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#test_MonoidElementType"><span class="id" title="module">test_MonoidElementType</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="RingElementTypeR" class="idref" href="#RingElementTypeR"><span class="id" title="module">RingElementTypeR</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType"><span class="id" title="module">RingElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#MonoidElementTypeR"><span class="id" title="module">MonoidElementTypeR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="RingElementTypeR.Aone" class="idref" href="#RingElementTypeR.Aone"><span class="id" title="definition">Aone</span></a> : <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.tA"><span class="id" title="definition">tA</span></a> := 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="RingElementTypeR.Aopp" class="idref" href="#RingElementTypeR.Aopp"><span class="id" title="definition">Aopp</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Ropp"><span class="id" title="axiom">Ropp</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="RingElementTypeR.Amul" class="idref" href="#RingElementTypeR.Amul"><span class="id" title="definition">Amul</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rmult"><span class="id" title="axiom">Rmult</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Aone"><span class="id" title="definition">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Amul"><span class="id" title="definition">Amul</span></a> : <span class="id" title="var">tA</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="RingElementTypeR.Asub" class="idref" href="#RingElementTypeR.Asub"><span class="id" title="abbreviation">Asub</span></a> := (<span class="id" title="keyword">fun</span> <a id="x:8" class="idref" href="#x:8"><span class="id" title="binder">x</span></a> <a id="y:9" class="idref" href="#y:9"><span class="id" title="binder">y</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#x:8"><span class="id" title="variable">x</span></a> (<a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#y:9"><span class="id" title="variable">y</span></a>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="41e0c64ddac06c5e8a803809028dd125" class="idref" href="#41e0c64ddac06c5e8a803809028dd125"><span class="id" title="notation">&quot;</span></a>*" := <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Amul"><span class="id" title="definition">Amul</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="RingElementTypeR.::A_scope:'-'_x" class="idref" href="#RingElementTypeR.::A_scope:'-'_x"><span class="id" title="notation">&quot;</span></a>- a" := (<a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Aopp"><span class="id" title="definition">Aopp</span></a> <span class="id" title="var">a</span>) : <span class="id" title="var">A_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="RingElementTypeR.::A_scope:x_'-'_x" class="idref" href="#RingElementTypeR.::A_scope:x_'-'_x"><span class="id" title="notation">&quot;</span></a>-" := <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Asub"><span class="id" title="abbreviation">Asub</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="RingElementTypeR.SRing" class="idref" href="#RingElementTypeR.SRing"><span class="id" title="instance">SRing</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#SRing"><span class="id" title="class">SRing</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Azero"><span class="id" title="definition">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Aone"><span class="id" title="definition">Aone</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">constructor</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="RingElementTypeR.ARing" class="idref" href="#RingElementTypeR.ARing"><span class="id" title="instance">ARing</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#ARing"><span class="id" title="class">ARing</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Azero"><span class="id" title="definition">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR.Aone"><span class="id" title="definition">Aone</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">constructor</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">ring</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR"><span class="id" title="module">RingElementTypeR</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="test_RingElementType" class="idref" href="#test_RingElementType"><span class="id" title="module">test_RingElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#RingElementTypeQc"><span class="id" title="module">RingElementTypeQc</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR"><span class="id" title="module">RingElementTypeR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Import</span> <a id="test_RingElementType.RingElementTypeFunEx1" class="idref" href="#test_RingElementType.RingElementTypeFunEx1"><span class="id" title="module">RingElementTypeFunEx1</span></a> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun"><span class="id" title="module">RingElementTypeFun</span></a> <a class="idref" href="FinMatrix.CoqExt.QcExt.html#RingElementTypeQc"><span class="id" title="module">RingElementTypeQc</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR"><span class="id" title="module">RingElementTypeR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="test_RingElementType.f" class="idref" href="#test_RingElementType.f"><span class="id" title="definition">f</span></a> : <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#test_RingElementType.tA"><span class="id" title="definition">tA</span></a> := <span class="id" title="keyword">fun</span> <a id="i:10" class="idref" href="#i:10"><span class="id" title="binder">i</span></a>:<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.QArith.Qcanon.html#Qc"><span class="id" title="record">Qc</span></a> =&gt; (<a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R"><span class="id" title="definition">Qc2R</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#i:10"><span class="id" title="variable">i</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#3e57074ab0a6a36b253e873a1bdac6ad"><span class="id" title="notation">+</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.R1"><span class="id" title="axiom">R1</span></a>)%<span class="id" title="var">R</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="test_RingElementType.g" class="idref" href="#test_RingElementType.g"><span class="id" title="definition">g</span></a> : <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#test_RingElementType.tA"><span class="id" title="definition">tA</span></a> := <span class="id" title="keyword">fun</span> <a id="i:11" class="idref" href="#i:11"><span class="id" title="binder">i</span></a>:<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.QArith.Qcanon.html#Qc"><span class="id" title="record">Qc</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.RExt.RExtCvt.html#Qc2R"><span class="id" title="definition">Qc2R</span></a> (<a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#i:11"><span class="id" title="variable">i</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.QArith.Qcanon.html#bcb35a45c03ca54d544a65359f85b253"><span class="id" title="notation">+</span></a>1).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="test_RingElementType.Unnamed_thm" class="idref" href="#test_RingElementType.Unnamed_thm"><span class="id" title="definition">f</span></a> <a id="test_RingElementType.Unnamed_thm" class="idref" href="#test_RingElementType.Unnamed_thm"><span class="id" title="definition">=</span></a> <a id="test_RingElementType.Unnamed_thm" class="idref" href="#test_RingElementType.Unnamed_thm"><span class="id" title="definition">g</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#test_RingElementType"><span class="id" title="module">test_RingElementType</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="OrderedRingElementTypeR" class="idref" href="#OrderedRingElementTypeR"><span class="id" title="module">OrderedRingElementTypeR</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType"><span class="id" title="module">OrderedRingElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR"><span class="id" title="module">RingElementTypeR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="OrderedRingElementTypeR.Ale" class="idref" href="#OrderedRingElementTypeR.Ale"><span class="id" title="definition">Ale</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rle"><span class="id" title="definition">Rle</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="OrderedRingElementTypeR.Alt" class="idref" href="#OrderedRingElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rlt"><span class="id" title="axiom">Rlt</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.Ale"><span class="id" title="definition">Ale</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> : <span class="id" title="var">tA</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="OrderedRingElementTypeR.Order" class="idref" href="#OrderedRingElementTypeR.Order"><span class="id" title="instance">Order</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Order"><span class="id" title="class">Order</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.Ale"><span class="id" title="definition">Ale</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedElementTypeR.Order"><span class="id" title="instance">OrderedElementTypeR.Order</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="OrderedRingElementTypeR.OrderedARing" class="idref" href="#OrderedRingElementTypeR.OrderedARing"><span class="id" title="instance">OrderedARing</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#OrderedARing"><span class="id" title="class">OrderedARing</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.Azero"><span class="id" title="definition">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.Aone"><span class="id" title="definition">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.Ale"><span class="id" title="definition">Ale</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.ARing"><span class="id" title="instance">ARing</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.Order"><span class="id" title="instance">Order</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span> <span class="id" title="tactic">in</span> *. <span class="id" title="var">lra</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span> <span class="id" title="tactic">in</span> *. <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.RIneq.html#Rmult_lt_compat_r"><span class="id" title="lemma">Rmult_lt_compat_r</span></a>; <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="5bba0aec319193794db971204ca03b9b" class="idref" href="#5bba0aec319193794db971204ca03b9b"><span class="id" title="notation">&quot;</span></a>| a |" := (<a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Aabs"><span class="id" title="definition">Aabs</span></a> <span class="id" title="var">a</span>) : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR"><span class="id" title="module">OrderedRingElementTypeR</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="FieldElementTypeR" class="idref" href="#FieldElementTypeR"><span class="id" title="module">FieldElementTypeR</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType"><span class="id" title="module">FieldElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#RingElementTypeR"><span class="id" title="module">RingElementTypeR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="FieldElementTypeR.Ainv" class="idref" href="#FieldElementTypeR.Ainv"><span class="id" title="definition">Ainv</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rinv"><span class="id" title="abbreviation">Rinv</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.Ainv"><span class="id" title="definition">Ainv</span></a> : <span class="id" title="var">tA</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="FieldElementTypeR.Adiv" class="idref" href="#FieldElementTypeR.Adiv"><span class="id" title="abbreviation">Adiv</span></a> := (<span class="id" title="keyword">fun</span> <a id="x:12" class="idref" href="#x:12"><span class="id" title="binder">x</span></a> <a id="y:13" class="idref" href="#y:13"><span class="id" title="binder">y</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#x:12"><span class="id" title="variable">x</span></a> (<a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.Ainv"><span class="id" title="definition">Ainv</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#y:13"><span class="id" title="variable">y</span></a>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="FieldElementTypeR.Aone_neq_Azero" class="idref" href="#FieldElementTypeR.Aone_neq_Azero"><span class="id" title="lemma">Aone_neq_Azero</span></a> : <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.Aone"><span class="id" title="definition">Aone</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.Azero"><span class="id" title="definition">Azero</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">cbv</span> <span class="id" title="tactic">in</span> *. <span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">real</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="FieldElementTypeR.Field" class="idref" href="#FieldElementTypeR.Field"><span class="id" title="instance">Field</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Field"><span class="id" title="class">Field</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.Azero"><span class="id" title="definition">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.Aone"><span class="id" title="definition">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.Ainv"><span class="id" title="definition">Ainv</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.ARing"><span class="id" title="instance">ARing</span></a>. <span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span>. <span class="id" title="tactic">field</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR.Aone_neq_Azero"><span class="id" title="lemma">Aone_neq_Azero</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR"><span class="id" title="module">FieldElementTypeR</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="OrderedFieldElementTypeR" class="idref" href="#OrderedFieldElementTypeR"><span class="id" title="module">OrderedFieldElementTypeR</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType"><span class="id" title="module">OrderedFieldElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#FieldElementTypeR"><span class="id" title="module">FieldElementTypeR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="OrderedFieldElementTypeR.Ale" class="idref" href="#OrderedFieldElementTypeR.Ale"><span class="id" title="definition">Ale</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#Rle"><span class="id" title="definition">Rle</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="OrderedFieldElementTypeR.Alt" class="idref" href="#OrderedFieldElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.Rlt"><span class="id" title="axiom">Rlt</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Ale"><span class="id" title="definition">Ale</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> : <span class="id" title="var">tA</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="OrderedFieldElementTypeR.Order" class="idref" href="#OrderedFieldElementTypeR.Order"><span class="id" title="instance">Order</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Order"><span class="id" title="class">Order</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Ale"><span class="id" title="definition">Ale</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedElementTypeR.Order"><span class="id" title="instance">OrderedElementTypeR.Order</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="OrderedFieldElementTypeR.OrderedARing" class="idref" href="#OrderedFieldElementTypeR.OrderedARing"><span class="id" title="instance">OrderedARing</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#OrderedARing"><span class="id" title="class">OrderedARing</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Azero"><span class="id" title="definition">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Aone"><span class="id" title="definition">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Ale"><span class="id" title="definition">Ale</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.OrderedARing"><span class="id" title="instance">OrderedRingElementTypeR.OrderedARing</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="OrderedFieldElementTypeR.OrderedAField" class="idref" href="#OrderedFieldElementTypeR.OrderedAField"><span class="id" title="instance">OrderedAField</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#OrderedField"><span class="id" title="class">OrderedField</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Azero"><span class="id" title="definition">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Aone"><span class="id" title="definition">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Ainv"><span class="id" title="definition">Ainv</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Ale"><span class="id" title="definition">Ale</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR.Field"><span class="id" title="instance">Field</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedRingElementTypeR.OrderedARing"><span class="id" title="instance">OrderedRingElementTypeR.OrderedARing</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="d6e63761a20dcd03e1cf33bcb199de2e" class="idref" href="#d6e63761a20dcd03e1cf33bcb199de2e"><span class="id" title="notation">&quot;</span></a>| a |" := (<a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Aabs"><span class="id" title="definition">Aabs</span></a> <span class="id" title="var">a</span>) : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR"><span class="id" title="module">OrderedFieldElementTypeR</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="NormedOrderedFieldElementTypeR" class="idref" href="#NormedOrderedFieldElementTypeR"><span class="id" title="module">NormedOrderedFieldElementTypeR</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType"><span class="id" title="module">NormedOrderedFieldElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#OrderedFieldElementTypeR"><span class="id" title="module">OrderedFieldElementTypeR</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="NormedOrderedFieldElementTypeR.a2r" class="idref" href="#NormedOrderedFieldElementTypeR.a2r"><span class="id" title="definition">a2r</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Ranalysis1.html#id"><span class="id" title="definition">id</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <a id="NormedOrderedFieldElementTypeR.A2R" class="idref" href="#NormedOrderedFieldElementTypeR.A2R"><span class="id" title="instance">A2R</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#A2R"><span class="id" title="class">A2R</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeR.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeR.Azero"><span class="id" title="definition">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeR.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeR.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeR.Aone"><span class="id" title="definition">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeR.Ainv"><span class="id" title="definition">Ainv</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeR.Alt"><span class="id" title="definition">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeR.Ale"><span class="id" title="definition">Ale</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeR.a2r"><span class="id" title="definition">a2r</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#R_A2R"><span class="id" title="instance">R_A2R</span></a>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtStruct.html#NormedOrderedFieldElementTypeR"><span class="id" title="module">NormedOrderedFieldElementTypeR</span></a>.<br/>
+
+<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

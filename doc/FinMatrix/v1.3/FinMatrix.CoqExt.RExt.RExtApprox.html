@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.CoqExt.RExt.RExtApprox</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBase.html#"><span class="id" title="library">RExtBase</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtAbs.html#"><span class="id" title="library">RExtAbs</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#"><span class="id" title="library">RExtBool</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab367"></a><h1 class="section">Approximate of two real numbers</h1>
+
+<div class="paragraph"> </div>
+
+ r1 ≈ r2, that means |r1 - r2| &lt;= diff 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="Rapprox" class="idref" href="#Rapprox"><span class="id" title="definition">Rapprox</span></a> (<a id="r1:1" class="idref" href="#r1:1"><span class="id" title="binder">r1</span></a> <a id="r2:2" class="idref" href="#r2:2"><span class="id" title="binder">r2</span></a> <a id="diff:3" class="idref" href="#diff:3"><span class="id" title="binder">diff</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.R"><span class="id" title="axiom">R</span></a>) : <span class="id" title="keyword">Prop</span> := <a class="idref" href="FinMatrix.CoqExt.RExt.RExtAbs.html#bef9178b4e0b4b4928ec35c7e33158bd"><span class="id" title="notation">|</span></a><a class="idref" href="FinMatrix.CoqExt.RExt.RExtApprox.html#r1:1"><span class="id" title="variable">r1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#::R_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtApprox.html#r2:2"><span class="id" title="variable">r2</span></a><a class="idref" href="FinMatrix.CoqExt.RExt.RExtAbs.html#bef9178b4e0b4b4928ec35c7e33158bd"><span class="id" title="notation">|</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#77d341fe206b2891763e25999ffddca2"><span class="id" title="notation">&lt;=</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtApprox.html#diff:3"><span class="id" title="variable">diff</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+boolean version of approximate function 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="Rapproxb" class="idref" href="#Rapproxb"><span class="id" title="definition">Rapproxb</span></a> (<a id="r1:4" class="idref" href="#r1:4"><span class="id" title="binder">r1</span></a> <a id="r2:5" class="idref" href="#r2:5"><span class="id" title="binder">r2</span></a> <a id="diff:6" class="idref" href="#diff:6"><span class="id" title="binder">diff</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.R"><span class="id" title="axiom">R</span></a>) : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#bool"><span class="id" title="inductive">bool</span></a> := <a class="idref" href="FinMatrix.CoqExt.RExt.RExtAbs.html#bef9178b4e0b4b4928ec35c7e33158bd"><span class="id" title="notation">|</span></a><a class="idref" href="FinMatrix.CoqExt.RExt.RExtApprox.html#r1:4"><span class="id" title="variable">r1</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#::R_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtApprox.html#r2:5"><span class="id" title="variable">r2</span></a><a class="idref" href="FinMatrix.CoqExt.RExt.RExtAbs.html#bef9178b4e0b4b4928ec35c7e33158bd"><span class="id" title="notation">|</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtBool.html#67f531c9242028b65a62ee1c5eb0f88a"><span class="id" title="notation">&lt;=?</span></a> <a class="idref" href="FinMatrix.CoqExt.RExt.RExtApprox.html#diff:6"><span class="id" title="variable">diff</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

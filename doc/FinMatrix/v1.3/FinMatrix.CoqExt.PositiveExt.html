@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.CoqExt.PositiveExt</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Numbers.BinNums.html#"><span class="id" title="library">Numbers.BinNums</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.PArith.BinPos.html#"><span class="id" title="library">PArith.BinPos</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.NatExt.html#"><span class="id" title="library">NatExt</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">positive_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab289"></a><h1 class="section">Mathematical Structure</h1>
+
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="positive_eq_Dec" class="idref" href="#positive_eq_Dec"><span class="id" title="instance">positive_eq_Dec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.PArith.BinPos.html#Pos.eq"><span class="id" title="definition">Pos.eq</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.PArith.BinPos.html#Pos.eq_dec"><span class="id" title="axiom">Pos.eq_dec</span></a>. <span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="positive_le_Dec" class="idref" href="#positive_le_Dec"><span class="id" title="instance">positive_le_Dec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.PArith.BinPos.html#Pos.le"><span class="id" title="definition">Pos.le</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.PArith.BinPos.html#Pos.le"><span class="id" title="definition">Pos.le</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">a</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.PArith.BinPos.html#fbc6af1229e3e6e68a26eb624659ae2e"><span class="id" title="notation">?=</span></a> <span class="id" title="var">b</span>); <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">left</span>; <span class="id" title="var">easy</span>. <span class="id" title="tactic">left</span>; <span class="id" title="var">easy</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="positive_lt_Dec" class="idref" href="#positive_lt_Dec"><span class="id" title="instance">positive_lt_Dec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.PArith.BinPos.html#Pos.lt"><span class="id" title="definition">Pos.lt</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.PArith.BinPos.html#Pos.lt"><span class="id" title="definition">Pos.lt</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">a</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.PArith.BinPos.html#fbc6af1229e3e6e68a26eb624659ae2e"><span class="id" title="notation">?=</span></a> <span class="id" title="var">b</span>); <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">right</span>; <span class="id" title="var">easy</span>. <span class="id" title="tactic">right</span>; <span class="id" title="var">easy</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="test" class="idref" href="#test"><span class="id" title="section">test</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">forall</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="binder, definition"><span id="a:1" class="id">a</span></span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="binder, definition"><span id="b:2" class="id">b</span></span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">:</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">positive</span></a><a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">,</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">{</span></a><a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">=</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">b</span></a><a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">}</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">{</span></a><a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">&lt;&gt;</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">b</span></a><a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">}</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Aeqdec"><span class="id" title="definition">Aeqdec</span></a>. <span class="id" title="keyword">Abort</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.PositiveExt.html#test"><span class="id" title="section">test</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

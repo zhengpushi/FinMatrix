@@ -1,0 +1,480 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.CoqExt.ElementType</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#"><span class="id" title="library">Hierarchy</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab260"></a><h1 class="section">ElementType</h1>
+
+<div class="paragraph"> </div>
+
+ One type with decidable equality and zero element 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a id="ElementType" class="idref" href="#ElementType"><span class="id" title="module">ElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a id="ElementType.tA" class="idref" href="#ElementType.tA"><span class="id" title="axiom">tA</span></a> : <span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a id="ElementType.Azero" class="idref" href="#ElementType.Azero"><span class="id" title="axiom">Azero</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementType.tA"><span class="id" title="axiom">tA</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="ElementType.::A_scope:'0'" class="idref" href="#ElementType.::A_scope:'0'"><span class="id" title="notation">&quot;</span></a>0" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementType.Azero"><span class="id" title="axiom">Azero</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="ElementType.AeqDec" class="idref" href="#ElementType.AeqDec"><span class="id" title="axiom">AeqDec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> (@<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementType.tA"><span class="id" title="axiom">tA</span></a>).<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementType.AeqDec"><span class="id" title="axiom">AeqDec</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementType"><span class="id" title="module">ElementType</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab261"></a><h2 class="section">Instances</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="ElementTypeFun" class="idref" href="#ElementTypeFun"><span class="id" title="module">ElementTypeFun</span></a> (<span class="id" title="var">I</span> <span class="id" title="var">O</span> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementType"><span class="id" title="module">ElementType</span></a>) &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementType"><span class="id" title="module">ElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="ElementTypeFun.tA" class="idref" href="#ElementTypeFun.tA"><span class="id" title="definition">tA</span></a> : <span class="id" title="keyword">Type</span> := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#I.tA"><span class="id" title="axiom">I.tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O.tA"><span class="id" title="axiom">O.tA</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="ElementTypeFun.Azero" class="idref" href="#ElementTypeFun.Azero"><span class="id" title="definition">Azero</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementTypeFun.tA"><span class="id" title="definition">tA</span></a> := <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O.Azero"><span class="id" title="axiom">O.Azero</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementTypeFun.tA"><span class="id" title="definition">tA</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementTypeFun.Azero"><span class="id" title="definition">Azero</span></a> : <span class="id" title="var">tA</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="ElementTypeFun.AeqDec" class="idref" href="#ElementTypeFun.AeqDec"><span class="id" title="lemma">AeqDec</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Dec"><span class="id" title="class">Dec</span></a> (@<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementTypeFun.tA"><span class="id" title="definition">tA</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>. <span class="id" title="tactic">unfold</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementTypeFun.tA"><span class="id" title="definition">tA</span></a> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="var">Admitted</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementTypeFun"><span class="id" title="module">ElementTypeFun</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab262"></a><h1 class="section">OrderedElementType</h1>
+
+<div class="paragraph"> </div>
+
+ An extended `ElementType` equipped with order relation 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a id="OrderedElementType" class="idref" href="#OrderedElementType"><span class="id" title="module">OrderedElementType</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementType"><span class="id" title="module">ElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementType"><span class="id" title="module">ElementType</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a id="OrderedElementType.Alt" class="idref" href="#OrderedElementType.Alt"><span class="id" title="axiom">Alt</span></a> <a id="OrderedElementType.Ale" class="idref" href="#OrderedElementType.Ale"><span class="id" title="axiom">Ale</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="OrderedElementType.::A_scope:x_'&lt;'_x" class="idref" href="#OrderedElementType.::A_scope:x_'&lt;'_x"><span class="id" title="notation">&quot;</span></a>&lt;" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedElementType.Alt"><span class="id" title="axiom">Alt</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="83a73515d95d567ec218025617fcad42" class="idref" href="#83a73515d95d567ec218025617fcad42"><span class="id" title="notation">&quot;</span></a>&lt;=" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedElementType.Ale"><span class="id" title="axiom">Ale</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="OrderedElementType.Order" class="idref" href="#OrderedElementType.Order"><span class="id" title="axiom">Order</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Order"><span class="id" title="class">Order</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedElementType.Alt"><span class="id" title="axiom">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedElementType.Ale"><span class="id" title="axiom">Ale</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedElementType"><span class="id" title="module">OrderedElementType</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab263"></a><h1 class="section">Element with abelian-monoid structure</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab264"></a><h2 class="section">Type of Element with abelian-monoid structure</h2>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a id="MonoidElementType" class="idref" href="#MonoidElementType"><span class="id" title="module">MonoidElementType</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementType"><span class="id" title="module">ElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementType"><span class="id" title="module">ElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a id="MonoidElementType.Aadd" class="idref" href="#MonoidElementType.Aadd"><span class="id" title="axiom">Aadd</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType.tA"><span class="id" title="axiom">tA</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="0ead4e53baa4c2d0c121d8b53f9fbdfb" class="idref" href="#0ead4e53baa4c2d0c121d8b53f9fbdfb"><span class="id" title="notation">&quot;</span></a>+" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType.Aadd"><span class="id" title="axiom">Aadd</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="MonoidElementType.Aadd_AMonoid" class="idref" href="#MonoidElementType.Aadd_AMonoid"><span class="id" title="axiom">Aadd_AMonoid</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#AMonoid"><span class="id" title="class">AMonoid</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType.Aadd"><span class="id" title="axiom">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType.Azero"><span class="id" title="axiom">Azero</span></a>.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType.Aadd_AMonoid"><span class="id" title="axiom">Aadd_AMonoid</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType"><span class="id" title="module">MonoidElementType</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab265"></a><h2 class="section">Instances</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="MonoidElementTypeFun" class="idref" href="#MonoidElementTypeFun"><span class="id" title="module">MonoidElementTypeFun</span></a> (<span class="id" title="var">I</span> <span class="id" title="var">O</span> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType"><span class="id" title="module">MonoidElementType</span></a>) &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType"><span class="id" title="module">MonoidElementType</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> (<a class="idref" href="FinMatrix.CoqExt.ElementType.html#ElementTypeFun"><span class="id" title="module">ElementTypeFun</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#I"><span class="id" title="module">I</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O"><span class="id" title="module">O</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="MonoidElementTypeFun.Aadd" class="idref" href="#MonoidElementTypeFun.Aadd"><span class="id" title="definition">Aadd</span></a> (<a id="f:9" class="idref" href="#f:9"><span class="id" title="binder">f</span></a> <a id="g:10" class="idref" href="#g:10"><span class="id" title="binder">g</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.tA"><span class="id" title="definition">tA</span></a>) : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.tA"><span class="id" title="definition">tA</span></a> := <span class="id" title="keyword">fun</span> <a id="x:11" class="idref" href="#x:11"><span class="id" title="binder">x</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#I.tA"><span class="id" title="axiom">I.tA</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O.Aadd"><span class="id" title="axiom">O.Aadd</span></a> (<a class="idref" href="FinMatrix.CoqExt.ElementType.html#f:9"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#x:11"><span class="id" title="variable">x</span></a>) (<a class="idref" href="FinMatrix.CoqExt.ElementType.html#g:10"><span class="id" title="variable">g</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#x:11"><span class="id" title="variable">x</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd"><span class="id" title="definition">Aadd</span></a> : <span class="id" title="var">tA</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="4f39a35a1a4f6e2d6c59095fe70cffbb" class="idref" href="#4f39a35a1a4f6e2d6c59095fe70cffbb"><span class="id" title="notation">&quot;</span></a>+" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd"><span class="id" title="definition">Aadd</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="MonoidElementTypeFun.Aadd_Associative" class="idref" href="#MonoidElementTypeFun.Aadd_Associative"><span class="id" title="lemma">Aadd_Associative</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Associative"><span class="id" title="class">Associative</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd"><span class="id" title="definition">Aadd</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">extensionality</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O.Aadd_AMonoid"><span class="id" title="axiom">O.Aadd_AMonoid</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="MonoidElementTypeFun.Aadd_Commutative" class="idref" href="#MonoidElementTypeFun.Aadd_Commutative"><span class="id" title="lemma">Aadd_Commutative</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Commutative"><span class="id" title="class">Commutative</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd"><span class="id" title="definition">Aadd</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">extensionality</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O.Aadd_AMonoid"><span class="id" title="axiom">O.Aadd_AMonoid</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="MonoidElementTypeFun.Aadd_IdentityLeft" class="idref" href="#MonoidElementTypeFun.Aadd_IdentityLeft"><span class="id" title="lemma">Aadd_IdentityLeft</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#IdentityLeft"><span class="id" title="class">IdentityLeft</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Azero"><span class="id" title="definition">Azero</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">extensionality</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O.Aadd_AMonoid"><span class="id" title="axiom">O.Aadd_AMonoid</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="MonoidElementTypeFun.Aadd_IdentityRight" class="idref" href="#MonoidElementTypeFun.Aadd_IdentityRight"><span class="id" title="lemma">Aadd_IdentityRight</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#IdentityRight"><span class="id" title="class">IdentityRight</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Azero"><span class="id" title="definition">Azero</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">extensionality</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O.Aadd_AMonoid"><span class="id" title="axiom">O.Aadd_AMonoid</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="MonoidElementTypeFun.Aadd_AMonoid" class="idref" href="#MonoidElementTypeFun.Aadd_AMonoid"><span class="id" title="instance">Aadd_AMonoid</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#AMonoid"><span class="id" title="class">AMonoid</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Azero"><span class="id" title="definition">Azero</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd_Associative"><span class="id" title="lemma">Aadd_Associative</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd_IdentityLeft"><span class="id" title="lemma">Aadd_IdentityLeft</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd_IdentityRight"><span class="id" title="lemma">Aadd_IdentityRight</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd_Associative"><span class="id" title="lemma">Aadd_Associative</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd_Commutative"><span class="id" title="lemma">Aadd_Commutative</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd_Associative"><span class="id" title="lemma">Aadd_Associative</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun.Aadd_Commutative"><span class="id" title="lemma">Aadd_Commutative</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun"><span class="id" title="module">MonoidElementTypeFun</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab266"></a><h1 class="section">Element with abelian-ring structure</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab267"></a><h2 class="section">Type of Element with abelian-ring structure</h2>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a id="RingElementType" class="idref" href="#RingElementType"><span class="id" title="module">RingElementType</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType"><span class="id" title="module">MonoidElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementType"><span class="id" title="module">MonoidElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a id="RingElementType.Aone" class="idref" href="#RingElementType.Aone"><span class="id" title="axiom">Aone</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.tA"><span class="id" title="axiom">tA</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a id="RingElementType.Amul" class="idref" href="#RingElementType.Amul"><span class="id" title="axiom">Amul</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.tA"><span class="id" title="axiom">tA</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a id="RingElementType.Aopp" class="idref" href="#RingElementType.Aopp"><span class="id" title="axiom">Aopp</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.tA"><span class="id" title="axiom">tA</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="RingElementType.Asub" class="idref" href="#RingElementType.Asub"><span class="id" title="abbreviation">Asub</span></a> := (<span class="id" title="keyword">fun</span> <a id="x:15" class="idref" href="#x:15"><span class="id" title="binder">x</span></a> <a id="y:16" class="idref" href="#y:16"><span class="id" title="binder">y</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.Aadd"><span class="id" title="axiom">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#x:15"><span class="id" title="variable">x</span></a> (<a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.Aopp"><span class="id" title="axiom">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#y:16"><span class="id" title="variable">y</span></a>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="d791b8dac2c10a3e896c9cca5efa4541" class="idref" href="#d791b8dac2c10a3e896c9cca5efa4541"><span class="id" title="notation">&quot;</span></a>*" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.Amul"><span class="id" title="axiom">Amul</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="RingElementType.::A_scope:'1'" class="idref" href="#RingElementType.::A_scope:'1'"><span class="id" title="notation">&quot;</span></a>1" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.Aone"><span class="id" title="axiom">Aone</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="793bf58e6219a406c13761b3b1262a4e" class="idref" href="#793bf58e6219a406c13761b3b1262a4e"><span class="id" title="notation">&quot;</span></a>a ²" := (<span class="id" title="var">a</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#d791b8dac2c10a3e896c9cca5efa4541"><span class="id" title="notation">*</span></a> <span class="id" title="var">a</span>) : <span class="id" title="var">A_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="RingElementType.::A_scope:'-'_x" class="idref" href="#RingElementType.::A_scope:'-'_x"><span class="id" title="notation">&quot;</span></a>- a" := (<a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.Aopp"><span class="id" title="axiom">Aopp</span></a> <span class="id" title="var">a</span>) : <span class="id" title="var">A_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="RingElementType.::A_scope:x_'-'_x" class="idref" href="#RingElementType.::A_scope:x_'-'_x"><span class="id" title="notation">&quot;</span></a>-" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.Asub"><span class="id" title="abbreviation">Asub</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+SRing structure can be derived from the context 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="RingElementType.SRing" class="idref" href="#RingElementType.SRing"><span class="id" title="axiom">SRing</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#SRing"><span class="id" title="class">SRing</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.Aadd"><span class="id" title="axiom">Aadd</span></a> 0 <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.Amul"><span class="id" title="axiom">Amul</span></a> 1.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.SRing"><span class="id" title="axiom">SRing</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Ring structure can be derived from the context 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="RingElementType.ARing" class="idref" href="#RingElementType.ARing"><span class="id" title="axiom">ARing</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#ARing"><span class="id" title="class">ARing</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.Aadd"><span class="id" title="axiom">Aadd</span></a> 0 <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.Aopp"><span class="id" title="axiom">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.Amul"><span class="id" title="axiom">Amul</span></a> 1.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType.ARing"><span class="id" title="axiom">ARing</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType"><span class="id" title="module">RingElementType</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab268"></a><h2 class="section">Instances</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <a id="RingElementTypeFun" class="idref" href="#RingElementTypeFun"><span class="id" title="module">RingElementTypeFun</span></a> (<span class="id" title="var">I</span> <span class="id" title="var">O</span> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType"><span class="id" title="module">RingElementType</span></a>) &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType"><span class="id" title="module">RingElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Add</span> <span class="id" title="var">Ring</span> <span class="id" title="var">Ring_thy_inst_o</span> : (<a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#make_ring_theory"><span class="id" title="lemma">make_ring_theory</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O.ARing"><span class="id" title="axiom">O.ARing</span></a>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> (<a class="idref" href="FinMatrix.CoqExt.ElementType.html#MonoidElementTypeFun"><span class="id" title="module">MonoidElementTypeFun</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#I"><span class="id" title="module">I</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O"><span class="id" title="module">O</span></a>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="RingElementTypeFun.Aone" class="idref" href="#RingElementTypeFun.Aone"><span class="id" title="definition">Aone</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.tA"><span class="id" title="definition">tA</span></a> := <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O.Aone"><span class="id" title="axiom">O.Aone</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="RingElementTypeFun.Aopp" class="idref" href="#RingElementTypeFun.Aopp"><span class="id" title="definition">Aopp</span></a> (<a id="f:19" class="idref" href="#f:19"><span class="id" title="binder">f</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.tA"><span class="id" title="definition">tA</span></a>) : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.tA"><span class="id" title="definition">tA</span></a> := <span class="id" title="keyword">fun</span> <a id="x:20" class="idref" href="#x:20"><span class="id" title="binder">x</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#I.tA"><span class="id" title="axiom">I.tA</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O.Aopp"><span class="id" title="axiom">O.Aopp</span></a> (<a class="idref" href="FinMatrix.CoqExt.ElementType.html#f:19"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#x:20"><span class="id" title="variable">x</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <a id="RingElementTypeFun.Amul" class="idref" href="#RingElementTypeFun.Amul"><span class="id" title="definition">Amul</span></a> (<a id="f:21" class="idref" href="#f:21"><span class="id" title="binder">f</span></a> <a id="g:22" class="idref" href="#g:22"><span class="id" title="binder">g</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.tA"><span class="id" title="definition">tA</span></a>) : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.tA"><span class="id" title="definition">tA</span></a> := <span class="id" title="keyword">fun</span> <a id="x:23" class="idref" href="#x:23"><span class="id" title="binder">x</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#I.tA"><span class="id" title="axiom">I.tA</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.ElementType.html#O.Amul"><span class="id" title="axiom">O.Amul</span></a> (<a class="idref" href="FinMatrix.CoqExt.ElementType.html#f:21"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#x:23"><span class="id" title="variable">x</span></a>) (<a class="idref" href="FinMatrix.CoqExt.ElementType.html#g:22"><span class="id" title="variable">g</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#x:23"><span class="id" title="variable">x</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="RingElementTypeFun.Asub" class="idref" href="#RingElementTypeFun.Asub"><span class="id" title="abbreviation">Asub</span></a> := (<span class="id" title="keyword">fun</span> <a id="x:24" class="idref" href="#x:24"><span class="id" title="binder">x</span></a> <a id="y:25" class="idref" href="#y:25"><span class="id" title="binder">y</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#x:24"><span class="id" title="variable">x</span></a> (<a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#y:25"><span class="id" title="variable">y</span></a>)).<br/>
+
+<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="RingElementTypeFun.SRing" class="idref" href="#RingElementTypeFun.SRing"><span class="id" title="instance">SRing</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#SRing"><span class="id" title="class">SRing</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.Azero"><span class="id" title="definition">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.Aone"><span class="id" title="definition">Aone</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">constructor</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span>; <span class="id" title="tactic">intros</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Logic.FunctionalExtensionality.html#functional_extensionality"><span class="id" title="lemma">functional_extensionality</span></a>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">cbv</span>; <span class="id" title="tactic">ring</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <a id="RingElementTypeFun.ARing" class="idref" href="#RingElementTypeFun.ARing"><span class="id" title="instance">ARing</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#ARing"><span class="id" title="class">ARing</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.Aadd"><span class="id" title="definition">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.Azero"><span class="id" title="definition">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.Aopp"><span class="id" title="definition">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.Amul"><span class="id" title="definition">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.Aone"><span class="id" title="definition">Aone</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">constructor</span>; <span class="id" title="var">autounfold</span> <span class="id" title="keyword">with</span> <span class="id" title="var">tA</span>; <span class="id" title="tactic">intros</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Logic.FunctionalExtensionality.html#functional_extensionality"><span class="id" title="lemma">functional_extensionality</span></a>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">cbv</span>; <span class="id" title="tactic">ring</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Add</span> <span class="id" title="var">Ring</span> <span class="id" title="var">Ring_inst</span> : (<a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#make_ring_theory"><span class="id" title="lemma">make_ring_theory</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun.ARing"><span class="id" title="instance">ARing</span></a>).<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementTypeFun"><span class="id" title="module">RingElementTypeFun</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab269"></a><h1 class="section">Element with abelian-ring structure and ordered relation</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab270"></a><h2 class="section">Type of Element with ordered abelian-ring structure</h2>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a id="OrderedRingElementType" class="idref" href="#OrderedRingElementType"><span class="id" title="module">OrderedRingElementType</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType"><span class="id" title="module">RingElementType</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedElementType"><span class="id" title="module">OrderedElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType"><span class="id" title="module">RingElementType</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a id="OrderedRingElementType.Alt" class="idref" href="#OrderedRingElementType.Alt"><span class="id" title="axiom">Alt</span></a> <a id="OrderedRingElementType.Ale" class="idref" href="#OrderedRingElementType.Ale"><span class="id" title="axiom">Ale</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="OrderedRingElementType.::A_scope:x_'&lt;'_x" class="idref" href="#OrderedRingElementType.::A_scope:x_'&lt;'_x"><span class="id" title="notation">&quot;</span></a>&lt;" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.Alt"><span class="id" title="axiom">Alt</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="b8ae3bce8736dac5bd75ec16582c276b" class="idref" href="#b8ae3bce8736dac5bd75ec16582c276b"><span class="id" title="notation">&quot;</span></a>&lt;=" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.Ale"><span class="id" title="axiom">Ale</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="OrderedRingElementType.Order" class="idref" href="#OrderedRingElementType.Order"><span class="id" title="axiom">Order</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Order"><span class="id" title="class">Order</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.Alt"><span class="id" title="axiom">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.Ale"><span class="id" title="axiom">Ale</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="OrderedRingElementType.OrderedARing" class="idref" href="#OrderedRingElementType.OrderedARing"><span class="id" title="axiom">OrderedARing</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#OrderedARing"><span class="id" title="class">OrderedARing</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.Aadd"><span class="id" title="axiom">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.Azero"><span class="id" title="axiom">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.Aopp"><span class="id" title="axiom">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.Amul"><span class="id" title="axiom">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.Aone"><span class="id" title="axiom">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.Alt"><span class="id" title="axiom">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.Ale"><span class="id" title="axiom">Ale</span></a>.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType.OrderedARing"><span class="id" title="axiom">OrderedARing</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="151ed85b316c5d03f3a9fbaecb91fd1a" class="idref" href="#151ed85b316c5d03f3a9fbaecb91fd1a"><span class="id" title="notation">&quot;</span></a>| a |" := (<a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Aabs"><span class="id" title="definition">Aabs</span></a> <span class="id" title="var">a</span>) : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType"><span class="id" title="module">OrderedRingElementType</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab271"></a><h2 class="section">Instances</h2>
+
+</div>
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab272"></a><h1 class="section">Element with field structure</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab273"></a><h2 class="section">Type of Element with field structure</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a id="FieldElementType" class="idref" href="#FieldElementType"><span class="id" title="module">FieldElementType</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType"><span class="id" title="module">RingElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#RingElementType"><span class="id" title="module">RingElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a id="FieldElementType.Ainv" class="idref" href="#FieldElementType.Ainv"><span class="id" title="axiom">Ainv</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.tA"><span class="id" title="axiom">tA</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="FieldElementType.Adiv" class="idref" href="#FieldElementType.Adiv"><span class="id" title="abbreviation">Adiv</span></a> := (<span class="id" title="keyword">fun</span> <a id="x:31" class="idref" href="#x:31"><span class="id" title="binder">x</span></a> <a id="y:32" class="idref" href="#y:32"><span class="id" title="binder">y</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Amul"><span class="id" title="axiom">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#x:31"><span class="id" title="variable">x</span></a> (<a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Ainv"><span class="id" title="axiom">Ainv</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#y:32"><span class="id" title="variable">y</span></a>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="1362b1bdbe7ef891efe649a9736c66e6" class="idref" href="#1362b1bdbe7ef891efe649a9736c66e6"><span class="id" title="notation">&quot;</span></a>/ a" := (<a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Ainv"><span class="id" title="axiom">Ainv</span></a> <span class="id" title="var">a</span>) : <span class="id" title="var">A_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="7484f9a390f1af1448ae2e69da77cb00" class="idref" href="#7484f9a390f1af1448ae2e69da77cb00"><span class="id" title="notation">&quot;</span></a>/" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Adiv"><span class="id" title="abbreviation">Adiv</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+1 &lt;&gt; 0. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="FieldElementType.Aone_neq_Azero" class="idref" href="#FieldElementType.Aone_neq_Azero"><span class="id" title="axiom">Aone_neq_Azero</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Aone"><span class="id" title="axiom">Aone</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Azero"><span class="id" title="axiom">Azero</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="FieldElementType.Field" class="idref" href="#FieldElementType.Field"><span class="id" title="axiom">Field</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Field"><span class="id" title="class">Field</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Aadd"><span class="id" title="axiom">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Azero"><span class="id" title="axiom">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Aopp"><span class="id" title="axiom">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Amul"><span class="id" title="axiom">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Aone"><span class="id" title="axiom">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Ainv"><span class="id" title="axiom">Ainv</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType.Field"><span class="id" title="axiom">Field</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType"><span class="id" title="module">FieldElementType</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab274"></a><h2 class="section">Instances</h2>
+
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab275"></a><h1 class="section">Element with field structure and ordered relation</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab276"></a><h2 class="section">Type of Element with ordered field structure</h2>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a id="OrderedFieldElementType" class="idref" href="#OrderedFieldElementType"><span class="id" title="module">OrderedFieldElementType</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType"><span class="id" title="module">FieldElementType</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedRingElementType"><span class="id" title="module">OrderedRingElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#FieldElementType"><span class="id" title="module">FieldElementType</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a id="OrderedFieldElementType.Alt" class="idref" href="#OrderedFieldElementType.Alt"><span class="id" title="axiom">Alt</span></a> <a id="OrderedFieldElementType.Ale" class="idref" href="#OrderedFieldElementType.Ale"><span class="id" title="axiom">Ale</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="OrderedFieldElementType.::A_scope:x_'&lt;'_x" class="idref" href="#OrderedFieldElementType.::A_scope:x_'&lt;'_x"><span class="id" title="notation">&quot;</span></a>&lt;" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Alt"><span class="id" title="axiom">Alt</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="c15c170a21b282e8c58c21ea57da7488" class="idref" href="#c15c170a21b282e8c58c21ea57da7488"><span class="id" title="notation">&quot;</span></a>&lt;=" := <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Ale"><span class="id" title="axiom">Ale</span></a> : <span class="id" title="var">A_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="OrderedFieldElementType.Order" class="idref" href="#OrderedFieldElementType.Order"><span class="id" title="axiom">Order</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Order"><span class="id" title="class">Order</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Alt"><span class="id" title="axiom">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Ale"><span class="id" title="axiom">Ale</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="OrderedFieldElementType.OrderedARing" class="idref" href="#OrderedFieldElementType.OrderedARing"><span class="id" title="axiom">OrderedARing</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#OrderedARing"><span class="id" title="class">OrderedARing</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Aadd"><span class="id" title="axiom">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Azero"><span class="id" title="axiom">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Aopp"><span class="id" title="axiom">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Amul"><span class="id" title="axiom">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Aone"><span class="id" title="axiom">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Alt"><span class="id" title="axiom">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Ale"><span class="id" title="axiom">Ale</span></a>.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.OrderedARing"><span class="id" title="axiom">OrderedARing</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="OrderedFieldElementType.OrderedAField" class="idref" href="#OrderedFieldElementType.OrderedAField"><span class="id" title="axiom">OrderedAField</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#OrderedField"><span class="id" title="class">OrderedField</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Aadd"><span class="id" title="axiom">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Azero"><span class="id" title="axiom">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Aopp"><span class="id" title="axiom">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Amul"><span class="id" title="axiom">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Aone"><span class="id" title="axiom">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Ainv"><span class="id" title="axiom">Ainv</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Alt"><span class="id" title="axiom">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.Ale"><span class="id" title="axiom">Ale</span></a>.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType.OrderedAField"><span class="id" title="axiom">OrderedAField</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="3f762a93bc6553bd11b2fd6809e08994" class="idref" href="#3f762a93bc6553bd11b2fd6809e08994"><span class="id" title="notation">&quot;</span></a>| a |" := (<a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#Aabs"><span class="id" title="definition">Aabs</span></a> <span class="id" title="var">a</span>) : <span class="id" title="var">A_scope</span>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType"><span class="id" title="module">OrderedFieldElementType</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab277"></a><h2 class="section">Instances</h2>
+
+</div>
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab278"></a><h1 class="section">Element with field structure and ordered relation and normed</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab279"></a><h2 class="section">Type of Element with normed ordered field structure</h2>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <a id="NormedOrderedFieldElementType" class="idref" href="#NormedOrderedFieldElementType"><span class="id" title="module">NormedOrderedFieldElementType</span></a> &lt;: <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType"><span class="id" title="module">OrderedFieldElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#OrderedFieldElementType"><span class="id" title="module">OrderedFieldElementType</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Reals.html#"><span class="id" title="module">Reals</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <a id="NormedOrderedFieldElementType.a2r" class="idref" href="#NormedOrderedFieldElementType.a2r"><span class="id" title="axiom">a2r</span></a> : <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType.tA"><span class="id" title="axiom">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Reals.Rdefinitions.html#RbaseSymbolsImpl.R"><span class="id" title="axiom">R</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <a id="NormedOrderedFieldElementType.A2R" class="idref" href="#NormedOrderedFieldElementType.A2R"><span class="id" title="axiom">A2R</span></a> : <a class="idref" href="FinMatrix.CoqExt.Hierarchy.html#A2R"><span class="id" title="class">A2R</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType.Aadd"><span class="id" title="axiom">Aadd</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType.Azero"><span class="id" title="axiom">Azero</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType.Aopp"><span class="id" title="axiom">Aopp</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType.Amul"><span class="id" title="axiom">Amul</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType.Aone"><span class="id" title="axiom">Aone</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType.Ainv"><span class="id" title="axiom">Ainv</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType.Alt"><span class="id" title="axiom">Alt</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType.Ale"><span class="id" title="axiom">Ale</span></a> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType.a2r"><span class="id" title="axiom">a2r</span></a>.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType.A2R"><span class="id" title="axiom">A2R</span></a>.<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="FinMatrix.CoqExt.ElementType.html#NormedOrderedFieldElementType"><span class="id" title="module">NormedOrderedFieldElementType</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab280"></a><h2 class="section">Instances</h2>
+
+</div>
+<div class="code">
+
+<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">FinMatrix.CoqExt.Basic</h1>
+
+<div class="code">
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab10"></a><h1 class="section">Basic libraries</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Setoids.Setoid.html#"><span class="id" title="library">Coq.Setoids.Setoid</span></a>. <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#"><span class="id" title="library">Coq.Classes.Morphisms</span></a>. <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.SetoidTactics.html#"><span class="id" title="library">Coq.Classes.SetoidTactics</span></a>. <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Relations.Relations.html#"><span class="id" title="library">Coq.Relations.Relations</span></a>. <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Bool.Sumbool.html#"><span class="id" title="library">Coq.Bool.Sumbool</span></a>. <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Bool.Bool.html#"><span class="id" title="library">Coq.Bool.Bool</span></a>. <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.extraction.ExtrOcamlBasic.html#"><span class="id" title="library">ExtrOcamlBasic</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.extraction.ExtrOcamlNatInt.html#"><span class="id" title="library">ExtrOcamlNatInt</span></a> <a class="idref" href="FinMatrix.CoqExt.MyExtrOCamlR.html#"><span class="id" title="library">MyExtrOCamlR</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="FinMatrix.CoqExt.LogicExt.html#"><span class="id" title="library">LogicExt</span></a> <a class="idref" href="FinMatrix.CoqExt.BoolExt.html#"><span class="id" title="library">BoolExt</span></a> <a class="idref" href="FinMatrix.CoqExt.StrExt.html#"><span class="id" title="library">StrExt</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#"><span class="id" title="library">List</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab11"></a><h1 class="section">Reserved Notations</h1>
+
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Reserved Infix</span>    &quot;=?"     (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70). <span class="id" title="keyword">Reserved Infix</span>    &quot;&lt;?"     (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70). <span class="id" title="keyword">Reserved Infix</span>    &quot;&gt;?"     (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70). <span class="id" title="keyword">Reserved Infix</span>    &quot;&lt;=?"    (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70). <span class="id" title="keyword">Reserved Infix</span>    &quot;&gt;=?"    (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70). 
+<br/>
+<span class="id" title="keyword">Reserved Infix</span>    &quot;??="    (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70). <span class="id" title="keyword">Reserved Infix</span>    &quot;??&lt;"    (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70). <span class="id" title="keyword">Reserved Infix</span>    &quot;??&gt;"    (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70). <span class="id" title="keyword">Reserved Infix</span>    &quot;??&lt;="   (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70). <span class="id" title="keyword">Reserved Infix</span>    &quot;??&gt;="   (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70). 
+<br/>
+
+<br/>
+<span class="id" title="keyword">Reserved Infix</span>    &quot;+"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Infix</span>    &quot;-"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Infix</span>    &quot;*"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Infix</span>    &quot;/"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Notation</span> &quot;a ²"     (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 1). <span class="id" title="keyword">Reserved Infix</span>    &quot;s*"     (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Infix</span>    &quot;*s"     (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 38, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Infix</span>    &quot;*v"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 30, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Infix</span>    &quot;v*"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 28, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Infix</span>    &quot;⦿"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Infix</span>    &quot;\o"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>).<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;&lt; a , b &gt;" (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 60, <span class="id" title="var">a</span>, <span class="id" title="var">b</span> <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 55, <span class="id" title="var">format</span> "&lt; a , b &gt;"). <span class="id" title="keyword">Reserved Notation</span> &quot;|| v ||"   (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 60, <span class="id" title="var">v</span> <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 45, <span class="id" title="var">format</span> "|| v ||"). <span class="id" title="keyword">Reserved Infix</span>    &quot;\x"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Infix</span>    &quot;∘"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Notation</span> &quot;- a"     (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 35, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Notation</span> &quot;/ a"     (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 35, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Notation</span> &quot;M \T"    (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 32, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="var">format</span> "M \T"). <span class="id" title="keyword">Reserved Notation</span> &quot;M \A"    (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 15, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="var">format</span> "M \A"). <span class="id" title="keyword">Reserved Notation</span> &quot;M \-1"   (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 20, <span class="id" title="var">format</span> "M \-1"). <span class="id" title="keyword">Reserved Notation</span> &quot;M @ N"   (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 30, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Notation</span> &quot;'tr' M"  (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 33, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;'\sum' f" (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 10). <span class="id" title="keyword">Reserved Notation</span> &quot;'\prod' f" (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 10). 
+<br/>
+<span class="id" title="keyword">Reserved Infix</span> &quot;/_"         (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 60). <span class="id" title="keyword">Reserved Infix</span> &quot;/2_"        (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 60). 
+<br/>
+<span class="id" title="keyword">Reserved Infix</span> &quot;_|_"        (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50). <span class="id" title="keyword">Reserved Infix</span> &quot;//"         (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50). <span class="id" title="keyword">Reserved Infix</span> &quot;//+"        (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50). <span class="id" title="keyword">Reserved Infix</span> &quot;//-"        (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50). 
+<br/>
+<span class="id" title="keyword">Reserved Infix</span> &quot;+f"         (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Infix</span> &quot;-f"         (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Infix</span> &quot;*f"         (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Infix</span> &quot;/f"         (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Notation</span> &quot;-f g"    (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 35, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>). <span class="id" title="keyword">Reserved Notation</span> &quot;/f g"    (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 35, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>). 
+<br/>
+
+<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;| r |"   (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 30, <span class="id" title="var">r</span> <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "| r |"). 
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;v .[ i ]"<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 2, <span class="id" title="var">i</span> <span class="id" title="tactic">at</span> <span class="id" title="var">next</span> <span class="id" title="keyword">level</span>, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="var">format</span> "v .[ i ]").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;v .[ i &lt;- a ]"<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 2, <span class="id" title="var">i</span> <span class="id" title="tactic">at</span> <span class="id" title="var">next</span> <span class="id" title="keyword">level</span>, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="var">format</span> "v .[ i &lt;- a ]").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .[ i , j ]"<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 2, <span class="id" title="var">i</span>, <span class="id" title="var">j</span> <span class="id" title="tactic">at</span> <span class="id" title="var">next</span> <span class="id" title="keyword">level</span>, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="var">format</span> "M .[ i , j ]").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .[ i , j &lt;- a ]"<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 2, <span class="id" title="var">i</span>, <span class="id" title="var">j</span> <span class="id" title="tactic">at</span> <span class="id" title="var">next</span> <span class="id" title="keyword">level</span>, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="var">format</span> "M .[ i , j &lt;- a ]").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M &amp;[ i ]"<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 2, <span class="id" title="var">i</span> <span class="id" title="tactic">at</span> <span class="id" title="var">next</span> <span class="id" title="keyword">level</span>, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="var">format</span> "M &amp;[ i ]").<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;V .1"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "V .1"). <span class="id" title="keyword">Reserved Notation</span> &quot;V .2"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "V .2").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;V .3"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "V .3").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;V .4"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "V .4").<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .11"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .11"). <span class="id" title="keyword">Reserved Notation</span> &quot;M .12"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .12").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .13"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .13").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .14"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .14").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .21"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .21").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .22"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .22").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .23"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .23").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .24"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .24").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .31"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .31").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .32"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .32").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .33"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .33").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .34"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .34").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .41"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .41").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .42"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .42").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .43"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .43").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M .44"      (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M .44").<br/>
+
+<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M &amp;1"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M &amp;1"). <span class="id" title="keyword">Reserved Notation</span> &quot;M &amp;2"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M &amp;2").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M &amp;3"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M &amp;3").<br/>
+<span class="id" title="keyword">Reserved Notation</span> &quot;M &amp;4"       (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 25, <span class="id" title="var">format</span> "M &amp;4").<br/>
+
+<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Set</span> <span class="id" title="var">Bullet</span> <span class="id" title="var">Behavior</span> "Strict Subproofs".<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab12"></a><h1 class="section">Eliminate Warning.</h1>
+
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab13"></a><h1 class="section">Customized tactics</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">copy</span> <span class="id" title="var">H</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">HC</span> := <span class="id" title="tactic">fresh</span> "HC" <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">HCeq</span> := <span class="id" title="tactic">fresh</span> "HCeq" <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">remember</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> <span class="id" title="var">HC</span> <span class="id" title="var">eqn</span>: <span class="id" title="var">HCeq</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">clear</span> <span class="id" title="var">HCeq</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">list_eq</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| |- <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#cons"><span class="id" title="constructor">cons</span></a> ?<span class="id" title="var">h1</span> ?<span class="id" title="var">t1</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#cons"><span class="id" title="constructor">cons</span></a> ?<span class="id" title="var">h2</span> ?<span class="id" title="var">t2</span> =&gt; <span class="id" title="tactic">f_equal</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| [<span class="id" title="var">H</span>: <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#cons"><span class="id" title="constructor">cons</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#cons"><span class="id" title="constructor">cons</span></a> <span class="id" title="var">_</span> <span class="id" title="var">_</span> |- <span class="id" title="var">_</span>] =&gt; <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ssplit</span> := <br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| |- <span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"><span class="id" title="notation">/\</span></a> <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">split</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+inversion and subst 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">inv</span> <span class="id" title="var">H</span> := <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">subst</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+first step of the proof of Proper 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">simp_proper</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a>; <span class="id" title="tactic">unfold</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Classes.Morphisms.html#respectful"><span class="id" title="definition">respectful</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+destruct by sumbool comparison procedure. Note that we should register 
+    the reflect reflection to "bdestruct" database first. 
+</div>
+<div class="code">
+
+<br/>
+
+<br/>
+#[<span class="id" title="var">global</span>] <span class="id" title="keyword">Ltac</span> <span class="id" title="var">bdestruct</span> <span class="id" title="var">X</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">H</span> := <span class="id" title="tactic">fresh</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">e</span> := <span class="id" title="tactic">fresh</span> "e" <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">evar</span> (<span class="id" title="var">e</span>: <span class="id" title="keyword">Prop</span>);<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">H</span>: <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Bool.Bool.html#reflect"><span class="id" title="inductive">reflect</span></a> <span class="id" title="var">e</span> <span class="id" title="var">X</span>); <span class="id" title="tactic">subst</span> <span class="id" title="var">e</span>;<br/>
+&nbsp;&nbsp;[ <span class="id" title="tactic">try</span> <span class="id" title="tactic">eauto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">bdestruct</span><br/>
+&nbsp;&nbsp;| <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span>|<span class="id" title="var">H</span>]].<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+simplify the logic expressions 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">logic</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [<span class="id" title="var">H</span> : ?<span class="id" title="var">P</span> |- ?<span class="id" title="var">P</span>] =&gt; <span class="id" title="tactic">exact</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [|- <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#True"><span class="id" title="inductive">True</span></a>] =&gt; <span class="id" title="tactic">constructor</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [<span class="id" title="var">H</span> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#False"><span class="id" title="inductive">False</span></a> |- <span class="id" title="var">_</span>] =&gt; <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span><br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [|- <span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"><span class="id" title="notation">/\</span></a> <span class="id" title="var">_</span> ] =&gt; <span class="id" title="tactic">constructor</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [|- <span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="var">_</span>] =&gt; <span class="id" title="tactic">intro</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [|- <span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <span class="id" title="var">_</span> ] =&gt; <span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [<span class="id" title="var">H</span> : <span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#ba2b0e492d2b4675a0acf3ea92aabadd"><span class="id" title="notation">/\</span></a> <span class="id" title="var">_</span> |- <span class="id" title="var">_</span>] =&gt; <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [<span class="id" title="var">H</span> : <span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#f031fe1957c4a4a8e217aa46af2b4e25"><span class="id" title="notation">\/</span></a> <span class="id" title="var">_</span> |- <span class="id" title="var">_</span>] =&gt; <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span><br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [<span class="id" title="var">H</span> : ?<span class="id" title="var">a</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> ?<span class="id" title="var">b</span> |- <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#False"><span class="id" title="inductive">False</span></a>]   =&gt; <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="tactic">congruence</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Solve simple logic about "bool" 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">autoBool</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">H</span> := <span class="id" title="tactic">fresh</span> "H" <span class="id" title="tactic">in</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| |- ?<span class="id" title="var">b</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#false"><span class="id" title="constructor">false</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> ?<span class="id" title="var">b</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a> =&gt; <span class="id" title="tactic">split</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| |- ?<span class="id" title="var">b</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#false"><span class="id" title="constructor">false</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> ?<span class="id" title="var">b</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a> =&gt; <span class="id" title="tactic">split</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">H</span>: ?<span class="id" title="var">b</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#false"><span class="id" title="constructor">false</span></a> |- ?<span class="id" title="var">b</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a> =&gt; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">H</span>: ?<span class="id" title="var">b</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x"><span class="id" title="notation">&lt;&gt;</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a> |- ?<span class="id" title="var">b</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#false"><span class="id" title="constructor">false</span></a> =&gt; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Bool.Bool.html#not_true_is_false"><span class="id" title="lemma">not_true_is_false</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">H</span>: ?<span class="id" title="var">a</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#::bool_scope:x_'&amp;&amp;'_x"><span class="id" title="notation">&amp;&amp;</span></a> ?<span class="id" title="var">b</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a> |- <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#andb_prop"><span class="id" title="lemma">andb_prop</span></a> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">logic</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab14"></a><h1 class="section">Repeat executing an unary function</h1>
+
+<div class="paragraph"> </div>
+
+ execute an unary function multiply times with the initial value. 
+    Similiar to fold.
+    nexec a0 f n := f (f ... (f x) ...) 
+</div>
+<div class="code">
+<span class="id" title="keyword">Fixpoint</span> <a id="nexec" class="idref" href="#nexec"><span class="id" title="definition">nexec</span></a> {<a id="A:1" class="idref" href="#A:1"><span class="id" title="binder">A</span></a>:<span class="id" title="keyword">Type</span>} (<a id="a0:2" class="idref" href="#a0:2"><span class="id" title="binder">a0</span></a>:<a class="idref" href="FinMatrix.CoqExt.Basic.html#A:1"><span class="id" title="variable">A</span></a>) (<a id="f:3" class="idref" href="#f:3"><span class="id" title="binder">f</span></a>:<a class="idref" href="FinMatrix.CoqExt.Basic.html#A:1"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.Basic.html#A:1"><span class="id" title="variable">A</span></a>) (<a id="n:4" class="idref" href="#n:4"><span class="id" title="binder">n</span></a>:<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>) : <a class="idref" href="FinMatrix.CoqExt.Basic.html#A:1"><span class="id" title="variable">A</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="FinMatrix.CoqExt.Basic.html#n:4"><span class="id" title="variable">n</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#O"><span class="id" title="constructor">O</span></a> =&gt; <a class="idref" href="FinMatrix.CoqExt.Basic.html#a0:2"><span class="id" title="variable">a0</span></a><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#S"><span class="id" title="constructor">S</span></a> <span class="id" title="var">n'</span> =&gt; <a class="idref" href="FinMatrix.CoqExt.Basic.html#nexec:5"><span class="id" title="definition">nexec</span></a> (<a class="idref" href="FinMatrix.CoqExt.Basic.html#f:3"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#a0:2"><span class="id" title="variable">a0</span></a>) <a class="idref" href="FinMatrix.CoqExt.Basic.html#f:3"><span class="id" title="variable">f</span></a> <span class="id" title="var">n'</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+nexec rewriting 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="nexec_rw" class="idref" href="#nexec_rw"><span class="id" title="lemma">nexec_rw</span></a> : <span class="id" title="keyword">forall</span> (<a id="A:7" class="idref" href="#A:7"><span class="id" title="binder">A</span></a>:<span class="id" title="keyword">Type</span>) (<a id="a:8" class="idref" href="#a:8"><span class="id" title="binder">a</span></a>:<a class="idref" href="FinMatrix.CoqExt.Basic.html#A:7"><span class="id" title="variable">A</span></a>) (<a id="f:9" class="idref" href="#f:9"><span class="id" title="binder">f</span></a>:<a class="idref" href="FinMatrix.CoqExt.Basic.html#A:7"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.Basic.html#A:7"><span class="id" title="variable">A</span></a>) (<a id="n:10" class="idref" href="#n:10"><span class="id" title="binder">n</span></a>:<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>),<br/>
+&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.Basic.html#nexec"><span class="id" title="definition">nexec</span></a> (<a class="idref" href="FinMatrix.CoqExt.Basic.html#f:9"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#a:8"><span class="id" title="variable">a</span></a>) <a class="idref" href="FinMatrix.CoqExt.Basic.html#f:9"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#n:10"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#f:9"><span class="id" title="variable">f</span></a> (<a class="idref" href="FinMatrix.CoqExt.Basic.html#nexec"><span class="id" title="definition">nexec</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#a:8"><span class="id" title="variable">a</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#f:9"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#n:10"><span class="id" title="variable">n</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="var">revert</span> <span class="id" title="var">a</span>. <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Linear property of nexec 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="nexec_linear" class="idref" href="#nexec_linear"><span class="id" title="lemma">nexec_linear</span></a> : <span class="id" title="keyword">forall</span> (<a id="A:11" class="idref" href="#A:11"><span class="id" title="binder">A</span></a>:<span class="id" title="keyword">Type</span>) (<a id="a:12" class="idref" href="#a:12"><span class="id" title="binder">a</span></a>:<a class="idref" href="FinMatrix.CoqExt.Basic.html#A:11"><span class="id" title="variable">A</span></a>) (<a id="f:13" class="idref" href="#f:13"><span class="id" title="binder">f</span></a>:<a class="idref" href="FinMatrix.CoqExt.Basic.html#A:11"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.Basic.html#A:11"><span class="id" title="variable">A</span></a>) (<a id="g:14" class="idref" href="#g:14"><span class="id" title="binder">g</span></a>:<a class="idref" href="FinMatrix.CoqExt.Basic.html#A:11"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.Basic.html#A:11"><span class="id" title="variable">A</span></a>) (<a id="n:15" class="idref" href="#n:15"><span class="id" title="binder">n</span></a>:<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>)<br/>
+&nbsp;&nbsp;(<a id="H:17" class="idref" href="#H:17"><span class="id" title="binder">H</span></a>: <span class="id" title="keyword">forall</span> <a id="x:16" class="idref" href="#x:16"><span class="id" title="binder">x</span></a>:<a class="idref" href="FinMatrix.CoqExt.Basic.html#A:11"><span class="id" title="variable">A</span></a>, <a class="idref" href="FinMatrix.CoqExt.Basic.html#f:13"><span class="id" title="variable">f</span></a> (<a class="idref" href="FinMatrix.CoqExt.Basic.html#g:14"><span class="id" title="variable">g</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#x:16"><span class="id" title="variable">x</span></a>) <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#g:14"><span class="id" title="variable">g</span></a> (<a class="idref" href="FinMatrix.CoqExt.Basic.html#f:13"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#x:16"><span class="id" title="variable">x</span></a>)),<br/>
+&nbsp;&nbsp;<a class="idref" href="FinMatrix.CoqExt.Basic.html#nexec"><span class="id" title="definition">nexec</span></a> (<a class="idref" href="FinMatrix.CoqExt.Basic.html#g:14"><span class="id" title="variable">g</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#a:12"><span class="id" title="variable">a</span></a>) <a class="idref" href="FinMatrix.CoqExt.Basic.html#f:13"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#n:15"><span class="id" title="variable">n</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#g:14"><span class="id" title="variable">g</span></a> (<a class="idref" href="FinMatrix.CoqExt.Basic.html#nexec"><span class="id" title="definition">nexec</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#a:12"><span class="id" title="variable">a</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#f:13"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#n:15"><span class="id" title="variable">n</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="var">revert</span> <span class="id" title="var">a</span>. <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H</span>,<span class="id" title="var">IHn</span>. <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+map f (seq 0 (S n)) = map f (seq 0 n) + f n
+    So, a0 + f 0 + f 1 + ... + f n = (a0 + f 0 + ... + f (n-1)) + f n 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="fold_map_seq" class="idref" href="#fold_map_seq"><span class="id" title="lemma">fold_map_seq</span></a> : <span class="id" title="keyword">forall</span> (<a id="A:18" class="idref" href="#A:18"><span class="id" title="binder">A</span></a>:<span class="id" title="keyword">Type</span>) (<a id="f:19" class="idref" href="#f:19"><span class="id" title="binder">f</span></a>:<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.Basic.html#A:18"><span class="id" title="variable">A</span></a>) (<a id="g:20" class="idref" href="#g:20"><span class="id" title="binder">g</span></a>:<a class="idref" href="FinMatrix.CoqExt.Basic.html#A:18"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.Basic.html#A:18"><span class="id" title="variable">A</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a><a class="idref" href="FinMatrix.CoqExt.Basic.html#A:18"><span class="id" title="variable">A</span></a>) (<a id="a0:21" class="idref" href="#a0:21"><span class="id" title="binder">a0</span></a>:<a class="idref" href="FinMatrix.CoqExt.Basic.html#A:18"><span class="id" title="variable">A</span></a>) (<a id="n:22" class="idref" href="#n:22"><span class="id" title="binder">n</span></a>:<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>),<br/>
+&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#fold_left"><span class="id" title="definition">fold_left</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#g:20"><span class="id" title="variable">g</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#f:19"><span class="id" title="variable">f</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#seq"><span class="id" title="definition">seq</span></a> 0 (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#S"><span class="id" title="constructor">S</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#n:22"><span class="id" title="variable">n</span></a>))) <a class="idref" href="FinMatrix.CoqExt.Basic.html#a0:21"><span class="id" title="variable">a0</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#g:20"><span class="id" title="variable">g</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#fold_left"><span class="id" title="definition">fold_left</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#g:20"><span class="id" title="variable">g</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#map"><span class="id" title="definition">map</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#f:19"><span class="id" title="variable">f</span></a> (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#seq"><span class="id" title="definition">seq</span></a> 0 <a class="idref" href="FinMatrix.CoqExt.Basic.html#n:22"><span class="id" title="variable">n</span></a>)) <a class="idref" href="FinMatrix.CoqExt.Basic.html#a0:21"><span class="id" title="variable">a0</span></a>) (<a class="idref" href="FinMatrix.CoqExt.Basic.html#f:19"><span class="id" title="variable">f</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#n:22"><span class="id" title="variable">n</span></a>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#seq_S"><span class="id" title="lemma">seq_S</span></a>. &nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#map_app"><span class="id" title="lemma">map_app</span></a>. &nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Lists.List.html#fold_left_app"><span class="id" title="lemma">fold_left_app</span></a>. &nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab15"></a><h1 class="section">Extension for option type</h1>
+
+<div class="paragraph"> </div>
+
+ Convert option type to base type  
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <a id="option_get" class="idref" href="#option_get"><span class="id" title="definition">option_get</span></a> {<a id="tA:23" class="idref" href="#tA:23"><span class="id" title="binder">tA</span></a>} (<a id="o:24" class="idref" href="#o:24"><span class="id" title="binder">o</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#option"><span class="id" title="inductive">option</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#tA:23"><span class="id" title="variable">tA</span></a>) (<a id="def:25" class="idref" href="#def:25"><span class="id" title="binder">def</span></a> : <a class="idref" href="FinMatrix.CoqExt.Basic.html#tA:23"><span class="id" title="variable">tA</span></a>) : <a class="idref" href="FinMatrix.CoqExt.Basic.html#tA:23"><span class="id" title="variable">tA</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="FinMatrix.CoqExt.Basic.html#o:24"><span class="id" title="variable">o</span></a> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt; <a class="idref" href="FinMatrix.CoqExt.Basic.html#def:25"><span class="id" title="variable">def</span></a><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab16"></a><h1 class="section">Extension for sig type</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id=":::x_'.val'" class="idref" href="#:::x_'.val'"><span class="id" title="notation">&quot;</span></a>x '.val'" := (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#proj1_sig"><span class="id" title="definition">proj1_sig</span></a> <span class="id" title="var">x</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 1, <span class="id" title="var">format</span> "x '.val'").<br/>
+<span class="id" title="keyword">Notation</span> <a id=":::x_'.prf'" class="idref" href="#:::x_'.prf'"><span class="id" title="notation">&quot;</span></a>x '.prf'" := (<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#proj2_sig"><span class="id" title="definition">proj2_sig</span></a> <span class="id" title="var">x</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 1, <span class="id" title="var">format</span> "x '.prf'").<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+{a | P a} = {b | P b} &lt;-&gt; a = b 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="sig_eq_iff" class="idref" href="#sig_eq_iff"><span class="id" title="lemma">sig_eq_iff</span></a> : <span class="id" title="keyword">forall</span> {<a id="tA:27" class="idref" href="#tA:27"><span class="id" title="binder">tA</span></a>} {<a id="P:28" class="idref" href="#P:28"><span class="id" title="binder">P</span></a> : <a class="idref" href="FinMatrix.CoqExt.Basic.html#tA:27"><span class="id" title="variable">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>} <a id="a:29" class="idref" href="#a:29"><span class="id" title="binder">a</span></a> <a id="b:30" class="idref" href="#b:30"><span class="id" title="binder">b</span></a> (<a id="Ha:31" class="idref" href="#Ha:31"><span class="id" title="binder">Ha</span></a> : <a class="idref" href="FinMatrix.CoqExt.Basic.html#P:28"><span class="id" title="variable">P</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#a:29"><span class="id" title="variable">a</span></a>) (<a id="Hb:32" class="idref" href="#Hb:32"><span class="id" title="binder">Hb</span></a> : <a class="idref" href="FinMatrix.CoqExt.Basic.html#P:28"><span class="id" title="variable">P</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#b:30"><span class="id" title="variable">b</span></a>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">(</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#exist"><span class="id" title="constructor">exist</span></a> <span class="id" title="var">_</span> <a class="idref" href="FinMatrix.CoqExt.Basic.html#a:29"><span class="id" title="variable">a</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#Ha:31"><span class="id" title="variable">Ha</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#exist"><span class="id" title="constructor">exist</span></a> <span class="id" title="var">_</span> <a class="idref" href="FinMatrix.CoqExt.Basic.html#b:30"><span class="id" title="variable">b</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#Hb:32"><span class="id" title="variable">Hb</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">)</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;-&gt;'_x"><span class="id" title="notation">&lt;-&gt;</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#a:29"><span class="id" title="variable">a</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#b:30"><span class="id" title="variable">b</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">subst</span>. <span class="id" title="tactic">f_equal</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Logic.PropExtensionality.html#proof_irrelevance"><span class="id" title="lemma">proof_irrelevance</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+{a | P a}.val = a 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="sig_val" class="idref" href="#sig_val"><span class="id" title="lemma">sig_val</span></a> : <span class="id" title="keyword">forall</span> {<a id="tA:33" class="idref" href="#tA:33"><span class="id" title="binder">tA</span></a>} {<a id="P:34" class="idref" href="#P:34"><span class="id" title="binder">P</span></a> : <a class="idref" href="FinMatrix.CoqExt.Basic.html#tA:33"><span class="id" title="variable">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>} <a id="a:35" class="idref" href="#a:35"><span class="id" title="binder">a</span></a> (<a id="Ha:36" class="idref" href="#Ha:36"><span class="id" title="binder">Ha</span></a> : <a class="idref" href="FinMatrix.CoqExt.Basic.html#P:34"><span class="id" title="variable">P</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#a:35"><span class="id" title="variable">a</span></a>), <a class="idref" href="FinMatrix.CoqExt.Basic.html#:::x_'.val'"><span class="id" title="notation">(</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#exist"><span class="id" title="constructor">exist</span></a> <span class="id" title="var">_</span> <a class="idref" href="FinMatrix.CoqExt.Basic.html#a:35"><span class="id" title="variable">a</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#Ha:36"><span class="id" title="variable">Ha</span></a><a class="idref" href="FinMatrix.CoqExt.Basic.html#:::x_'.val'"><span class="id" title="notation">).</span></a><a class="idref" href="FinMatrix.CoqExt.Basic.html#:::x_'.val'"><span class="id" title="notation">val</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#a:35"><span class="id" title="variable">a</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+{a.val | P (a.val)} = a 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <a id="val_sig_eq" class="idref" href="#val_sig_eq"><span class="id" title="lemma">val_sig_eq</span></a> : <span class="id" title="keyword">forall</span> {<a id="tA:37" class="idref" href="#tA:37"><span class="id" title="binder">tA</span></a>} {<a id="P:38" class="idref" href="#P:38"><span class="id" title="binder">P</span></a> : <a class="idref" href="FinMatrix.CoqExt.Basic.html#tA:37"><span class="id" title="variable">tA</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <span class="id" title="keyword">Prop</span>} (<a id="a:40" class="idref" href="#a:40"><span class="id" title="binder">a</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#bc4528e836ab0e91ea7e942fb09e898f"><span class="id" title="notation">{</span></a><a id="x:39" class="idref" href="#x:39"><span class="id" title="binder">x</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#bc4528e836ab0e91ea7e942fb09e898f"><span class="id" title="notation">|</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#P:38"><span class="id" title="variable">P</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#x:39"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#bc4528e836ab0e91ea7e942fb09e898f"><span class="id" title="notation">}</span></a>) (<a id="H:41" class="idref" href="#H:41"><span class="id" title="binder">H</span></a> : <a class="idref" href="FinMatrix.CoqExt.Basic.html#P:38"><span class="id" title="variable">P</span></a> (<a class="idref" href="FinMatrix.CoqExt.Basic.html#a:40"><span class="id" title="variable">a.val</span></a>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Specif.html#exist"><span class="id" title="constructor">exist</span></a> <span class="id" title="var">_</span> (<a class="idref" href="FinMatrix.CoqExt.Basic.html#a:40"><span class="id" title="variable">a.val</span></a>) <a class="idref" href="FinMatrix.CoqExt.Basic.html#H:41"><span class="id" title="variable">H</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.18.0/stdlib//Coq.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="FinMatrix.CoqExt.Basic.html#a:40"><span class="id" title="variable">a</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <a class="idref" href="FinMatrix.CoqExt.Basic.html#sig_eq_iff"><span class="id" title="lemma">sig_eq_iff</span></a>; <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab17"></a><h1 class="section">Usually used scopes</h1>
+
+<div class="paragraph"> </div>
+
+ Scope for element type of matrix/vector/list 
+</div>
+<div class="code">
+<span class="id" title="keyword">Declare Scope</span> <span class="id" title="var">A_scope</span>.<br/>
+<span class="id" title="keyword">Delimit</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">A_scope</span> <span class="id" title="keyword">with</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">A</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Scope for vector type 
+</div>
+<div class="code">
+<span class="id" title="keyword">Declare Scope</span> <span class="id" title="var">vec_scope</span>.<br/>
+<span class="id" title="keyword">Delimit</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">vec_scope</span> <span class="id" title="keyword">with</span> <span class="id" title="var">V</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">vec_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Scope for matrix type 
+</div>
+<div class="code">
+<span class="id" title="keyword">Declare Scope</span> <span class="id" title="var">mat_scope</span>.<br/>
+<span class="id" title="keyword">Delimit</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mat_scope</span> <span class="id" title="keyword">with</span> <span class="id" title="var">M</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mat_scope</span>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,2733 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="resources/coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="resources/coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resources/config.js"></script>
+<script type="text/javascript" src="resources/coqdocjs.js"></script>
+<title>FinMatrix Library</title>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="../index.html">Project Page</a>
+      <a href="./indexpage.html"> Index </a>
+      <a href="./toc.html"> Table of Contents </a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div id="toc">
+<h2><a href="FinMatrix.CoqExt.LogicExt.html">FinMatrix.CoqExt.LogicExt</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.LogicExt.html#lab1">Existing properties in Coq standard library</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.LogicExt.html#lab2">Properties from Coq.Logic.FunctionalExtensionality</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.LogicExt.html#lab3">Properties from Coq.Logic.PropExtensionality</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.LogicExt.html#lab4">Properties Coq.Logic.Classical_Prop</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.LogicExt.html#lab5">Properties from Coq.Logic.EqdepFacts</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.LogicExt.html#lab6">Other properties</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.LogicExt.html#lab7">Properties for logic operations</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.LogicExt.html#lab8">Exercises for logic</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.LogicExt.html#lab9">Properties for function</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.MyExtrOCamlR.html">FinMatrix.CoqExt.MyExtrOCamlR</a></h2>
+<h2><a href="FinMatrix.CoqExt.Basic.html">FinMatrix.CoqExt.Basic</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Basic.html#lab10">Basic libraries</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Basic.html#lab11">Reserved Notations</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Basic.html#lab12">Eliminate Warning.</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Basic.html#lab13">Customized tactics</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Basic.html#lab14">Repeat executing an unary function</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Basic.html#lab15">Extension for option type</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Basic.html#lab16">Extension for sig type</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Basic.html#lab17">Usually used scopes</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.BoolExt.html">FinMatrix.CoqExt.BoolExt</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.BoolExt.html#lab18">More properties for bool</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.BoolExt.html#lab19">bool to Prop</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.StrExt.html">FinMatrix.CoqExt.StrExt</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.StrExt.html#lab20">LF and CR strings</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.ListExt.html">FinMatrix.CoqExt.ListExt</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab21">list</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab22">Properties of cons</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab23">Properties of hd and tl</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab24">Properties of nth</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab25">nthFull : nth element with index-in-the-bound</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab26">Properties of fold_left</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab27">Properties of fold_right</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab28">Print a list</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab29">Set element of a list</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab32">Swap two elements</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab33">Properties of length</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab34">List to elements</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab35">Customized list induction</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab36">list repeat properties</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab37">Zero list</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab38">Properties of map</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab39">map two lists to a list</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab40">map2 on dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab41">map2 properties with same base type</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab43">concatenation of list</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab44">Convert between list and natural-number-index-function</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab45">Addition, Opposition and Subtraction of list</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab46">constant multiplication of list</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab47">product of two lists</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab48">Generate special list for MatrixUnit</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab49">Convert list to fixed-length list</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab50">Find non-zero element from a list</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab51">Sub list</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab52">dlist (list of list)</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab53">width of a dlist (dlist tA)</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab54">nnth : that is nth of nth of dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab55">dlist to elements</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab56">Properties of dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab57">Print a dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab58">a dlist with same element nil</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab59">map2 for dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab60">Convert between dlist and function</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab61">Convert between row and col. eg, <span class="inlinecode">1;2;3</span> &lt;-&gt; <span class="inlinecode">[1];[2];[3]</span></a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab62">head column of a dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab63">tail columns of a dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab64">construct a dlist with a list and a dlist by column</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab65">nth column of a dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab66">Append two objects of dlist type to one object of dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab67">Zero dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab68">transpose a dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab69">dlist unit, like a identity matrix</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab70">map of dlist with f : tA -&gt; tB</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab71">Extra properties of dmap</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab72">map of dlist with f : tA -&gt; tA</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab73">map2 of dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab74">dmap2 with same base type</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab75">Square Zero dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab76">dmap2 is considered as dladd</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab77">dmap2 is considered as dlsub</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab78">list dot dlist, and dlist dot dlist</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab79">Properties of dlcmul</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab80">Set element with a constant value</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab82">Set element with a generation function</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab83">Set row with a constant value</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab84">Set row with a generation function</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab85">Row Transform</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab89">dlist remove one row and/or one column</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab95">Setoid equal of list</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ListExt.html#lab96">Special search algorithm</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.Hierarchy.html">FinMatrix.CoqExt.Hierarchy</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab97">Small utilities</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab98">&lt;TEMPLATE structures&gt;</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab99">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab100">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab101">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab102">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab103">Equivalence relation</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab104">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab105">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab106">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab107">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab108">Decidable relation</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab109">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab110">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab111">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab112">Respect: an operation respect a relation (also known as "well-defined")</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab113">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab114">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab115">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab116">Injective</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab117">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab118">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab119">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab120">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab121">Surjective</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab122">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab123">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab124">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab125">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab126">Bijective</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab127">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab128">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab129">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab130">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab131">Homomorphic</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab132">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab133">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab134">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab135">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab136">Homomorphism</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab137">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab138">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab139">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab140">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab141">Isomorphism</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab142">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab143">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab144">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab145">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab146">Subset</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab147">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab148">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab149">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab150">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab151">Associative</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab152">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab153">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab154">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab155">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab156">Commutative</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab157">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab158">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab159">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab160">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab161">Identity Left/Right</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab162">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab163">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab164">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab165">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab166">Inverse Left/Right</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab167">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab168">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab169">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab170">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab171">Distributive</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab172">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab173">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab174">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab175">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab176">Involution Law</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab177">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab178">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab179">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab180">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab181">Semigroup 半群</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab182">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab183">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab184">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab185">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab186">Abelian semigroup 交换半群</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab187">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab188">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab189">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab190">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab191">Monoid 幺半群、独异点</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab192">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab193">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab194">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab195">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab196">Abelian monoid</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab197">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab198">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab199">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab200">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab201">Group</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab202">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab203">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab204">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab208">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab209">Abelian Group</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab210">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab211">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab212">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab213">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab214">SRing</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab215">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab216">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab217">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab218">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab219">Ring</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab220">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab221">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab222">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab223">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab224">ARing</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab225">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab226">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab227">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab228">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab229">Field</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab230">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab231">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab232">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab233">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab234">Total order relations</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab235">Class</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab236">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab237">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab238">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab239">Abelian-ring with total order</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab240">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab241">Extra Theories</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab250">Examples</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab251">Field with total order</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab252">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab253">Extra Theories</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab254">Convert to R type</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab255">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab256">Extra Theories</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab257">Metric space</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab258">Instances</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Hierarchy.html#lab259">Extra Theories</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.ElementType.html">FinMatrix.CoqExt.ElementType</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab260">ElementType</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab261">Instances</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab262">OrderedElementType</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab263">Element with abelian-monoid structure</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab264">Type of Element with abelian-monoid structure</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab265">Instances</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab266">Element with abelian-ring structure</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab267">Type of Element with abelian-ring structure</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab268">Instances</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab269">Element with abelian-ring structure and ordered relation</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab270">Type of Element with ordered abelian-ring structure</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab271">Instances</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab272">Element with field structure</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab273">Type of Element with field structure</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab274">Instances</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab275">Element with field structure and ordered relation</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab276">Type of Element with ordered field structure</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab277">Instances</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab278">Element with field structure and ordered relation and normed</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab279">Type of Element with normed ordered field structure</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ElementType.html#lab280">Instances</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.NatExt.html">FinMatrix.CoqExt.NatExt</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.NatExt.html#lab281">Algebraic Structures</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.NatExt.html#lab282">Instances for ElementType</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.NatExt.html#lab283">More properties for nat</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.NatExt.html#lab284">Loop shift</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.NatExt.html#lab285">Extension for nat from (Verified Quantum Computing).</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.NatExt.html#lab286">Useful bdestruct tactic with the help of reflection</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.NatExt.html#lab287">Lost or deprecated lemmas and new lemmas</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.NatExt.html#lab288">Properties for div and mod</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.PositiveExt.html">FinMatrix.CoqExt.PositiveExt</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.PositiveExt.html#lab289">Mathematical Structure</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.ZExt.html">FinMatrix.CoqExt.ZExt</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.ZExt.html#lab290">Algebraic Structures</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ZExt.html#lab291">Instances for ElementType</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ZExt.html#lab292">Conversion between Z and other types</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ZExt.html#lab293">Properties for Zeqb and Zeq</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.ZExt.html#lab294">Other properties</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.QExt.html">FinMatrix.CoqExt.QExt</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.QExt.html#lab295">Mathematical Structure</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.QExt.html#lab296">Instances for ElementType</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.QExt.html#lab297">Convertion between Q and other types</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.QExt.html#lab298">Properties for Qeqb and Qeq</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.QExt.html#lab299">Others</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.QExt.html#lab300">sqrt of Q</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.QcExt.html">FinMatrix.CoqExt.QcExt</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.QcExt.html#lab301">Preliminary properties</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.QcExt.html#lab302">Algebraic Structures</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.QcExt.html#lab303">Instances for ElementType</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.QcExt.html#lab304">Understanding the Qc type</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.QcExt.html#lab305">Convertion between Qc and other types</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.QcExt.html#lab306">Properties for Qeqb and Qeq</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.QcExt.html#lab307">Others</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.QcExt.html#lab308">Sqrt of Q</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtBase.html">FinMatrix.CoqExt.RExt.RExtBase</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtBase.html#lab309">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtBase.html#lab310">Additional properties</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtBase.html#lab311">Extra automation</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtCvt.html">FinMatrix.CoqExt.RExt.RExtCvt</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtCvt.html#lab312">Conversion between Z and R</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtCvt.html#lab313">R -&gt; Z</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtCvt.html#lab314">Rfloor and Rceiling for R -&gt; Z</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtCvt.html#lab315">Conversion between nat and R</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtCvt.html#lab316">Conversion between Q and R</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtCvt.html#lab317">Conversion between Qc and R</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtCvt.html#lab318">Conversion between nat and R</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtStruct.html">FinMatrix.CoqExt.RExt.RExtStruct</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtStruct.html#lab319">Algebraic Structures</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtStruct.html#lab320">Instances for ElementType</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtBool.html">FinMatrix.CoqExt.RExt.RExtBool</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtBool.html#lab321">Reqb,Rleb,Rltb: Boolean comparison of R</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtLt.html">FinMatrix.CoqExt.RExt.RExtLt</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtLt.html#lab322">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtLt.html#lab323">Additional properties</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtLt.html#lab330">Extra automation</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtPlus.html">FinMatrix.CoqExt.RExt.RExtPlus</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtPlus.html#lab331">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtPlus.html#lab332">Additional properties</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtOpp.html">FinMatrix.CoqExt.RExt.RExtOpp</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtOpp.html#lab333">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtOpp.html#lab334">Additional properties</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtOpp.html#lab335">Extra automation</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtMult.html">FinMatrix.CoqExt.RExt.RExtMult</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtMult.html#lab336">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtMult.html#lab337">Additional properties</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtPow.html">FinMatrix.CoqExt.RExt.RExtPow</a></h2>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtInv.html">FinMatrix.CoqExt.RExt.RExtInv</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtInv.html#lab338">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtInv.html#lab339">Additional properties</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtInv.html#lab340">Extra automation</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtSqr.html">FinMatrix.CoqExt.RExt.RExtSqr</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtSqr.html#lab341">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtSqr.html#lab342">Convert between x², x^n, and x*x</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtSqr.html#lab343">Additional properties</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtSqr.html#lab347">Extra automation</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtSqrt.html">FinMatrix.CoqExt.RExt.RExtSqrt</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtSqrt.html#lab348">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtSqrt.html#lab349">Additional properties</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtSqrt.html#lab353">Extra automation</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtAbs.html">FinMatrix.CoqExt.RExt.RExtAbs</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtAbs.html#lab354">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtAbs.html#lab355">Additional properties</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtAbs.html#lab356">Extra automation</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtSign.html">FinMatrix.CoqExt.RExt.RExtSign</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtSign.html#lab357">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtSign.html#lab358">Definition of sign</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtSign.html#lab359">Additional properties</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtExp.html">FinMatrix.CoqExt.RExt.RExtExp</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtExp.html#lab360">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtExp.html#lab361">Additional properties</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtLog.html">FinMatrix.CoqExt.RExt.RExtLog</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtLog.html#lab362">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtLog.html#lab363">Definition of Rlog</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtLog.html#lab364">Additional properties</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtRpower.html">FinMatrix.CoqExt.RExt.RExtRpower</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtRpower.html#lab365">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtRpower.html#lab366">Additional properties</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtApprox.html">FinMatrix.CoqExt.RExt.RExtApprox</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtApprox.html#lab367">Approximate of two real numbers</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtTrigo.html">FinMatrix.CoqExt.RExt.RExtTrigo</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtTrigo.html#lab368">Basic automation</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtTrigo.html#lab369">Convert between degree and radian</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtTrigo.html#lab370">Trigonometric functions about sin and cos</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtTrigo.html#lab380">Trigonometric functions about tan and cot</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtTrigo.html#lab386">Trigonometric functions about asin and acos</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtTrigo.html#lab387">Trigonometric functions about atan and acot</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtTrigo.html#lab390">Trigonometric functions about atan2</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtTrigo.html#lab391">Trigonometric functions about atan2</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtTrigo.html#lab392">Trigonometric functions about sec and csc</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RExt.RExtTrigo.html#lab394">Additional properties for asin, acos, atan, and acot</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.RExtAtan2.html">FinMatrix.CoqExt.RExt.RExtAtan2</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.RExtAtan2.html#lab395">atan2</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RExt.html">FinMatrix.CoqExt.RExt</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RExt.html#lab396">Test</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RFunExt.html">FinMatrix.CoqExt.RFunExt</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RFunExt.html#lab397">Basic real functions</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RFunExt.html#lab398">Real arithmetic functions</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RFunExt.html#lab399">Real constant functions</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RFunExt.html#lab400">Properties of real functions</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RFunExt.html#lab401">Automation for real functions</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RFunExt.html#lab402">Additional properties for real functions</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RFunExt.html#lab403">Multiply real function with a natural number</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RFunExt.html#lab404">Algebraic structures</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RFunExt.html#lab405">Instances for ElementType</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.RAnalysisExt.html">FinMatrix.CoqExt.RAnalysisExt</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RAnalysisExt.html#lab406">Basis of real analysis</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.RAnalysisExt.html#lab407">实数集</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RAnalysisExt.html#lab408">邻域</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RAnalysisExt.html#lab409">实数界的有界性</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RAnalysisExt.html#lab410">Domain of real functions</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RAnalysisExt.html#lab411">Range of real functions</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RAnalysisExt.html#lab412">Composition of real functions.</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RAnalysisExt.html#lab413">函数的有界性</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RAnalysisExt.html#lab414">函数的上界、下界、界</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RAnalysisExt.html#lab415">Parity of function</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RAnalysisExt.html#lab416">周期函数</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.RAnalysisExt.html#lab417">Analysis of basic elementary functions</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.Complex.html">FinMatrix.CoqExt.Complex</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Complex.html#lab418">1.1 Complex numbers and basic operations</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Complex.html#lab419">Definition of complex number</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab420">Automation of compleax</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab421">Injection from other type to complex</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab422">Square of norm of complex number</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab423">Norm of complex number</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab424">Addition of complex numbers</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab425">Opposition of complex numbers</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab426">Subtraction of complex numbers</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab427">Triangle Inequalities</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab428">Scalar multiplication of complex numbers</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab429">Multiplication of complex numbers</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab430">Power on C</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab431">Inversion of complex numbers</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab432">Division of complex numbers</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab433">Conjugate of complex numbers</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab434">1.2 Triangle Representation of Complex number (复数的三角表示)</a>
+<ul class="doclist">
+<li><a href="FinMatrix.CoqExt.Complex.html#lab435">Magnitude of complex number</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab436">1.2.2 复数模的三角不等式</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab437">1.2.3 复数的三角表示</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab438">1.2.4 用复数的三角表示作乘除法</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab439">1.2.5 复数的乘方与开方</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab440">Algebraic Structures</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.Complex.html#lab441">Instances for ElementType</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.CoqExt.LinearSpace.html">FinMatrix.CoqExt.LinearSpace</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.CoqExt.LinearSpace.html#lab442">Additional properties</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.LinearSpace.html#lab443">Linear Space</a>
+
+</li>
+<li><a href="FinMatrix.CoqExt.LinearSpace.html#lab444">Linear subspace (simply called subspace) from a linear space</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.Fin.html">FinMatrix.Matrix.Fin</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Fin.html#lab445">_fin type and basic operations</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Fin.html#lab446">Type of fin</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab447"><span class="inlinecode"><span class="id" title="var">fin</span></span> to <span class="inlinecode"><span class="id" title="var">nat</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab448"><span class="inlinecode"><span class="id" title="var">fin0</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab449"><span class="inlinecode"><span class="id" title="var">fin1</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab450"><span class="inlinecode"><span class="id" title="var">nat</span></span> to <span class="inlinecode">'<span class="id" title="var">I_</span>(<span class="id" title="var">S</span></span> <span class="inlinecode"><span class="id" title="var">n</span>)</span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab451"><span class="inlinecode"><span class="id" title="var">nat</span></span> to <span class="inlinecode">'<span class="id" title="var">I_n</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab452">Tactic for fin</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab453">Cast between <i>fin</i> terms</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Fin.html#lab454">Cast between two <span class="inlinecode"><span class="id" title="var">fin</span></span> type with actual equal range</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab455"><span class="inlinecode">'<span class="id" title="var">I_n</span></span> to <span class="inlinecode">'<span class="id" title="var">I_m</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab456"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> + <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">k</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">(<span class="id" title="var">i</span>+<span class="id" title="var">k</span>)</span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab457"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> + <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">k</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">(<span class="id" title="var">i</span>-<span class="id" title="var">k</span>)</span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab458"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">(<span class="id" title="var">S</span></span> <span class="inlinecode"><span class="id" title="var">i</span>)</span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab459"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">(<span class="id" title="var">pred</span></span> <span class="inlinecode"><span class="id" title="var">i</span>)</span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab460"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">(<span class="id" title="var">loop</span>-<span class="id" title="var">shift</span>-<span class="id" title="tactic">left</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode"><span class="id" title="keyword">with</span></span> <span class="inlinecode"><span class="id" title="var">k</span>)</span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab461"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">(<span class="id" title="var">loop</span>-<span class="id" title="var">shift</span>-<span class="id" title="tactic">right</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode"><span class="id" title="keyword">with</span></span> <span class="inlinecode"><span class="id" title="var">k</span>)</span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab462"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">(<span class="id" title="var">n</span></span> <span class="inlinecode">-</span> <span class="inlinecode"><span class="id" title="var">i</span>)</span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab463"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">(<span class="id" title="var">S</span></span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode"><span class="id" title="var">i</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab464"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">(<span class="id" title="var">S</span></span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab465"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">(<span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode"><span class="id" title="var">i</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab466"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">(<span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab467"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">(<span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode"><span class="id" title="var">i</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab468"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">(<span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab469"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">(<span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode">(<span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">i</span>)</span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab470"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">(<span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode">(<span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">i</span>)</span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab471"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">(<span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode">(<span class="id" title="var">i</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">n</span>)</span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab472"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">(<span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode">(<span class="id" title="var">i</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab473"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">(<span class="id" title="var">S</span></span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode">(<span class="id" title="var">S</span></span> <span class="inlinecode"><span class="id" title="var">i</span>)</span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab474"><span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> -&gt; <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">(<span class="id" title="var">S</span></span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode">(<span class="id" title="var">S</span></span> <span class="inlinecode"><span class="id" title="var">i</span>)</span></a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab475">Sequence of fin</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Fin.html#lab476">Sequence of fin</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Fin.html#lab477">Sequence of fin with bounds</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.Sequence.html">FinMatrix.Matrix.Sequence</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Sequence.html#lab478">Properties of sequence</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Sequence.html#lab479">Basic properties of sequence</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Sequence.html#lab480">Equality of sequence</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Sequence.html#lab481">Equality of sequence with two indexes</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Sequence.html#lab482">Folding of a sequence</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Sequence.html#lab483">Sum/Product of a sequence</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Sequence.html#lab484">Basic properties for sequence sum/product</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Sequence.html#lab487">Scalar multiplication of a sequence with different type.</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Sequence.html#lab488">More properties of sequence on special structure</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Sequence.html#lab489">Sum of a sequence with bounds</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Sequence.html#lab490">Usage demo</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.Vector.html">FinMatrix.Matrix.Vector</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Vector.html#lab491">vec type and basic operations</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Vector.html#lab492">Definition of vector type <span class="inlinecode"><span class="id" title="var">vec</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab493">Get element of a vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab494">Equality of vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab495">Cast between two <span class="inlinecode"><span class="id" title="var">vec</span></span> type that are actually of equal dimensions</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab496">Make a vector</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Vector.html#lab497">Vector with same elements</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab498">Zero vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab499">Convert between function and vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab500">Convert between list and vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab501">Convert vector to its elements</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab502">Automation for vector operations</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab503">vector with specific size</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab504">Vector by mapping one vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab505">Vector by mapping two vectors</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab506">Vector with only one element is 1</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab507">natural basis, 自然基（最常见的一种标准正交基)</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab508">Get head, tail, slice of a vector</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Vector.html#lab509">Get head or tail element</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab510">Get head or tail elements</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab511">Get slice of a vector</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab512">Update a vector</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Vector.html#lab513">Set element of a vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab514">Swap two elements of a vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab515">Insert element to a vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab516">Remove one element at given position</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab517">Remove element at head or tail</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab520">Remove elements at head or tail</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab523">Construct vector with a vector an an element at the head or tail</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab526">Construct vector by append two vectors</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab527">Predicate of vectors</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Vector.html#lab528">All elements of the vector hold</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab529">At least one element of the vector holds</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab530">An element belongs to the vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab531">An vector belongs to another vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab532">Two vectors are equivalent (i.e., contain each other)</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab533">Folding of a vector</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Vector.html#lab534">Folding of a vector</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab535">Algebraic operations</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Vector.html#lab536">Sum of a vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab537">Product of a vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab538">Vector addition</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab539">Vector opposition</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab540">Vector subtraction</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab541">Vector scalar multiplication</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab542">Dot product</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab543">Geometric operations</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Vector.html#lab544">Euclidean norm (i.e., L2 norm, length)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab545">Unit vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab546">Two vectors are orthogonal</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab547">Projection component of a vector onto another</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab548">Perpendicular component of a vector respect to another</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Vector.html#lab549">Two vectors are collinear, parallel or antiparallel.</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.Matrix.html">FinMatrix.Matrix.Matrix</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Matrix.html#lab554">Matrix type and basic operations</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Matrix.html#lab555">Definition of matrix type</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab556">Get element of a matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab557">Cast between two <span class="inlinecode"><span class="id" title="var">mat</span></span> type that are actually of equal dimensions</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab558">Convert between <span class="inlinecode"><span class="id" title="var">dlist</span></span> and <span class="inlinecode"><span class="id" title="var">mat</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab559">Automation for matrix operations</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab560">matrix transpose</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab561">Get row and column of a matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab562">Get head or tail row</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab563">Get head or tail column</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab564">Row vector and column vector</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Matrix.html#lab565">Definition of row/column vector type</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab566">Convert between <span class="inlinecode"><span class="id" title="var">cvec</span></span> and <span class="inlinecode"><span class="id" title="var">vec</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab567">Convert between <span class="inlinecode"><span class="id" title="var">rvec</span></span> and <span class="inlinecode"><span class="id" title="var">vec</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab568">Convert between <span class="inlinecode"><span class="id" title="var">cvec</span></span> and <span class="inlinecode"><span class="id" title="var">rvec</span></span></a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab569">Make a matrix</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Matrix.html#lab570">Zero matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab571">Convert between list of <span class="inlinecode"><span class="id" title="var">rvec</span></span> and <span class="inlinecode"><span class="id" title="var">mat</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab572">Convert between list of <span class="inlinecode"><span class="id" title="var">cvec</span></span> and <span class="inlinecode"><span class="id" title="var">mat</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab573">Convert between function and <span class="inlinecode"><span class="id" title="var">mat</span></span></a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab574">Construct matrix with two matrices</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab575">matrix with specific size</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab577">Make a diagonal matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab578">Matrix by mapping one matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab579">Matrix by mapping two matrices</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab580">Update a matrix</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Matrix.html#lab581">Set row or column of a matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab582">Construct matrix from vector and matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab583">Remove one row at head or tail</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab584">Remove one column at head or tail</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab585">Equality of the matrices created by mcons{r|c}{H|T} and vcons{H|T}</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab586">matrix column shift</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab587">Algebraic operations</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Matrix.html#lab588">Matrix Addition</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab589">Matrix Trace</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab590">Matrix Opposition</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab591">Matrix Subtraction</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab592">Unit matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab593">Matrix Scalar Multiplication</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab594">Matrix Multiplication</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab595">Matrix multiply vector (column matrix)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab596">Vector (row matrix) multiply matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab598">Skew-symmetric matrix</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab601">Elementary Row Transform</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Matrix.html#lab602">Matrix with one given element</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab603">Row scaling</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab604">Row addition with scaling</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Matrix.html#lab605">Row swapping</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.BMatrix.html">FinMatrix.Matrix.BMatrix</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.BMatrix.html#lab606">Block matrix</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.BMatrix.html#lab607">Conversion between block matrix and matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.BMatrix.html#lab608">Algebraic operations of block matrices</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.BMatrix.html#lab609">Block matrix with special cases</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.Permutation.html">FinMatrix.Matrix.Permutation</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Permutation.html#lab610">Lemmas for other libraries</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Permutation.html#lab611">Permutation of a list</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.Permutation.html#lab612">Method 1</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Permutation.html#lab613">Method 2</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Permutation.html#lab614">Method 3</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Permutation.html#lab615">reverse-order-number (RON) of a list, 逆序数</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Permutation.html#lab616">Parity of a permutation, 排列的奇偶性</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.Permutation.html#lab617">Exchange of a permutation 排列的对换</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixDet.html">FinMatrix.Matrix.MatrixDet</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab618">n-order of determinant</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab619">Full expansion of determinant</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab620">Determinant on concrete dimensions</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab621">Cofactor expansion of the determinant</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab622">sub-matrix  子矩阵</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab623">minor of matrix  余子式，余因式，余因子展开式</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab624">cofactor of matrix  代数余子式</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab625">cofactor matrix (matrix of cofactors) 代数余子阵</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab626">Cofactor expansion of the determinant (Laplace expansion)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab627">cofactor of matrix (Expansion version)  代数余子式(行列式为展开形式的版本)</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab628">Adjoint Matrix</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab629">Adjoint matrix (Adjugate matrix, adj(A), A* )</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixDet.html#lab630">Cramer rule</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixDet_test.html">FinMatrix.Matrix.MatrixDet_test</a></h2>
+<h2><a href="FinMatrix.Matrix.MatrixGauss.html">FinMatrix.Matrix.MatrixGauss</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixGauss.html#lab631">Gauss elimination.</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixGauss.html#lab632">行变换</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixGauss.html#lab633">行变换的逆过程</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixGauss.html#lab634">矩阵形状的谓词</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixGauss.html#lab635">某列的第一个非零元的行号</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixGauss.html#lab636">向下消元</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixGauss.html#lab637">化为行阶梯形</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixGauss.html#lab638">向上消元</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixGauss.html#lab639">最简行阶梯形矩阵</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixGauss_test.html">FinMatrix.Matrix.MatrixGauss_test</a></h2>
+<h2><a href="FinMatrix.Matrix.MatrixInvertible.html">FinMatrix.Matrix.MatrixInvertible</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixInvertible.html#lab640">Matrix inversibility</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixInvertible.html#lab641">Invertible (nonsingular, nondegenerate) matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixInvertible.html#lab642">Singular (degenerate, not invertible) matrix</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixInvAM.html">FinMatrix.Matrix.MatrixInvAM</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixInvAM.html#lab643">Matrix Inversion based on Adjoint Matrix</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixInvAM.html#lab644">Check matrix invertibility by AM</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixInvAM.html#lab645">Inverse matrix (option version) by AM</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixInvAM.html#lab646">Inverse matrix by AM</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixInvAM.html#lab647">Inverse matrix with lists for input and output by AM</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixInvAM.html#lab648">Solve equation with inverse matrix by AM</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixInvAM.html#lab649">Direct formulas of inverse matrix</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixInvGE.html">FinMatrix.Matrix.MatrixInvGE</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixInvGE.html#lab650">Matrix Inversion based on Gauss Elimination</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixInvGE.html#lab651">Check matrix invertibility</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixInvGE.html#lab652">Inverse matrix (option version)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixInvGE.html#lab653">Inverse matrix (default value version)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixInvGE.html#lab654">Inverse matrix with lists for input and output by GE</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixInvGE.html#lab655">Solve equation with inverse matrix by GE</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixOrth.html">FinMatrix.Matrix.MatrixOrth</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixOrth.html#lab656">Orthogonal Matrix</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixOrth.html#lab657">Orthonormal vectors 标准正交的向量组</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixOrth.html#lab658">Orthogonal matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixOrth.html#lab659">O(n): General Orthogonal Group, General Linear Group</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixOrth.html#lab660">Extract the properties of GOn to its carrier</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixOrth.html#lab661">SO(n): Special Orthogonal Group, Rotation Group</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixOrth.html#lab662">Extract the properties of SOn to its carrier</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixModule.html">FinMatrix.Matrix.MatrixModule</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab663">Basic matrix theory</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab664">Definition of the vector type</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab665">Equalities of the vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab666">Convert between vector and function</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab667">Convert between vector and list</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab668">Make concrete vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab669">Mapping of vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab670">Constant vector and zero vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab671">Set element of a vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab672">Swap two element of a vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab673">Insert element to a vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab674">Remove one element</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab675">Get head or tail element</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab676">Get head or tail elements</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab677">Remove exact one element at head or tail</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab678">Remove some elements at head or tail</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab679">Construct vector with one element at the head or tail position</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab680">Construct vector with two vectors</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab681">A proposition which all elements of the vector hold</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab682">A proposition which at least one element of the vector holds</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab683">An element belongs to the vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab684">An vector belongs to another vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab685">Two vectors are equivalent (i.e., contain each other)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab686">Folding of a vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab687">Automation for vector equality proofs</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab688">Definition of the matrix type</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab689">Equalities of the matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab690">Convert between cvec and vec</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab691">Convert between rvec and vec</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab692">Convert between matrix and function</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab693">Convert between matrix and list</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab694">Convert between `list of vectors` and mat</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab695">Make concrete matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab696">Get row and column of a matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab697">Construct matrix with two matrices</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab698">Get head or tail row</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab699">Get head or tail column</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab700">Construct matrix from vector and matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab701">Remove exact one row or column at head or tail</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab702">Mapping of matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab703">Set one row or one column of a matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab704">Matrix transposition</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab705">Diagonal Matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab706">Zero matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab707">Conversion between block matrix and matrix</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab708">Monoid matrix theory</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab709">Sum of a vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab710">Vector addition</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab711">Matrix addition</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab712">Ring matrix theory</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab713">自然基的基向量</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab714">natural basis, 自然基（最常见的一种标准正交基)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab715">Vector opposition</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab716">Vector subtraction</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab717">Vector scalar multiplication</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab718">Vector dot product</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab719">Properties of vsum</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab720">Unit vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab721">Orthogonal vectors</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab722">Identity matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab723">Matrix trace</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab724">Monoid structure over {madd,mat0,meq}</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab725">Matrix opposition</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab726">Matrix subtraction</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab727">Abelian group structure over {madd,mat0,mopp}</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab728">Scalar multiplication of matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab729">Matrix multiplication</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab730">Matrix multiply vector (treat vector as column vector)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab731">Vector multiply matrix (treat vector as row vector)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab732">Mixed properties about mmul, mmulv, mvmul</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab733">skew-symmetric matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab734">Hardmard product</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab735">minor of matrix  余子式，余因式，余因子展开式</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab736">cofactor of matrix  代数余子式</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab737">Determinant of a matrix over a ring</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab738">Determinant on matrix of 1-,2-, or 3-dim</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab739">Adjoint matrix (Adjugate matrix, adj(A), A* )</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab740">Invertible matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab741">Algebraic operations of block matrices</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab742">Ordered ring matrix theory</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab743">Field matrix theory</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab744">Properties about veye</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab745">Properties about vscal</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab746">Projection component of a vector onto another</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab747">Perpendicular component of a vector respect to another</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab748">un-sorted properties about vector</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab749">Properties about zero or non-zero matrices</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab750">Determinant of a matrix over a field</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab751">Cramer rule</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab752">Invertible matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab753">Gauss Elimination operations</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab754">Check matrix invertibility by GE</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab755">Inverse matrix (option version) by GE</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab756">Inverse matrix (default value version) by GE</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab757">Inverse matrix with lists for input and output by GE</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab758">Solve equation with inverse matrix by GE</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab759">Check matrix invertibility by AM</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab760">Inverse matrix (option version) by AM</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab761">Inverse matrix (default value version) by AM</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab762">Inverse matrix with lists for input and output by AM</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab763">Solve equation with inverse matrix by AM</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab764">Direct formulas of inverse matrix by AM</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab765">Orthonormal vectors 标准正交的向量组</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab766">Orthogonal matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab767">O(n): General Orthogonal Group, General Linear Group</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab768">SO(n): Special Orthogonal Group, Rotation Group</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab769">Ordered field matrix theory</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab770">Two vectors are collinear</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab771">Two vectors are parallel (i.e., collinear with same direction)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab772">Two vectors are antiparallel (i.e., collinear with opposite direction)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab773">Convert between //, //+, and //-</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixModule.html#lab774">Normed ordered field matrix theory</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixNat.html">FinMatrix.Matrix.MatrixNat</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixNat.html#lab775">Matrix theory come from common implementations</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixNat.html#lab776">Matrix theory applied to this type</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixNat.html#lab777">Usage demo</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixZ.html">FinMatrix.Matrix.MatrixZ</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixZ.html#lab778">Matrix theory come from common implementations</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixZ.html#lab779">Matrix theory applied to this type</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixZ.html#lab780">Usage demo</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixQ.html">FinMatrix.Matrix.MatrixQ</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixQ.html#lab781">Matrix theory come from common implementations</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixQ.html#lab782">Matrix theory applied to this type</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixQ.html#lab783">Usage demo</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixQc.html">FinMatrix.Matrix.MatrixQc</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixQc.html#lab784">Matrix theory come from common implementations</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixQc.html#lab785">Matrix theory applied to this type</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixQc.html#lab786">Usage demo</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixR.html">FinMatrix.Matrix.MatrixR</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab787">Matrix theory come from common implementations</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab788">OCaml Extraction of matrix inversion</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab789">Matrix theory applied to this type</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab790">Extension for R</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab791">去掉 a2r 以及 Aabs 的一些引理</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab792">Vector normalization (only valid in R type)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab793">Angle between two vectors</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab794">The cross product of 2D vectors</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab795">2D vector theory</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab796">Standard base of 2-D vectors</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab797">2D vector angle from one to another</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab798">Properties about parallel, orthogonal of 3D vectors</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab799">The cross product (vector product) of two 3-dim vectors</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab800">Skew-symmetric matrix of 3-dimensions</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab801">3D vector theory</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab802">Standard base for Euclidean space (3-D vectors)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab803">Direction cosine of 3-D vectors</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab804">The triple scalar product (or called Mixed products) of 3-D vectors</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab805">Standard base for 4-D vectors</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab806">matrix norm</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab807">matrix F norm</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab808">Orthogonal matrix</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab809">SO2 and SO3</a>
+
+</li>
+</ul>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab810">Modules for notations to avoid name pollution</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab811">Usage demo</a>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixR.html#lab812">Exercise in textbook</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixC.html">FinMatrix.Matrix.MatrixC</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixC.html#lab813">Matrix theory come from common implementations</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixC.html#lab814">Matrix theory applied to this type</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixC.html#lab815">Usage demo</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.MatrixRFun.html">FinMatrix.Matrix.MatrixRFun</a></h2>
+<ul class="doclist">
+<li><a href="FinMatrix.Matrix.MatrixRFun.html#lab816">Matrix theory come from common implementations</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixRFun.html#lab817">Matrix theory applied to this type</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.MatrixRFun.html#lab818">Usage demo</a>
+
+</li>
+</ul>
+<h2><a href="FinMatrix.Matrix.VectorSpace.html">FinMatrix.Matrix.VectorSpace</a></h2>
+<ul class="doclist">
+<li><ul class="doclist">
+<li><a href="FinMatrix.Matrix.VectorSpace.html#lab819">Linearly combination (线性组合)</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.VectorSpace.html#lab820">linear equation</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.VectorSpace.html#lab821">linearly representable</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.VectorSpace.html#lab822">向量组可由向量组“线性表示(线性表出)”</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.VectorSpace.html#lab823">Equivalent vectors</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.VectorSpace.html#lab824">Span (由向量组生成(张成)的子空间</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.VectorSpace.html#lab825">Linear Dependent, Linear Independent</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.VectorSpace.html#lab826">Maximal linearly independent system 极大线性无关组</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.VectorSpace.html#lab827">向量的范数，赋范向量空间</a>
+
+</li>
+<li><a href="FinMatrix.Matrix.VectorSpace.html#lab828">Vector Space</a>
+
+</li>
+</ul>
+
+</li>
+</ul>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr/">coqdoc</a> and improved with <a href="https://github.com/tebbi/coqdocjs">CoqdocJS</a>
+</div>
+</div>
+</body>
+
+</html>

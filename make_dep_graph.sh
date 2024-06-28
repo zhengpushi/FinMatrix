@@ -10,6 +10,11 @@
 # eval $(opam env)
 # opam pin add coq 8.10.0
 # 2. The manual of dot is: https://www.graphviz.org/pdf/dotguide.pdf
+# 3. Generate a simplified graph by omitting RExt details:
+# Comment out "Require Import RExt*" in FinMatrix/CoqExt/RExt.v
+# Comment out "RExt/*" in _CoqProject
+# Comment out "*_test.v" in _CoqProject
+# This results in a clear graph focusing on the main ideas.
 
 # Note, this path should be consistent with Makefile
 name=doc/FinMatrix/dep_graph

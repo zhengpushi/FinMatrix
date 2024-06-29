@@ -1493,6 +1493,11 @@ Module MonoidMatrixTheory (E : MonoidElementType).
   #[export] Instance vadd_AMonoid : forall n, AMonoid (@vadd n) vzero.
   Proof. apply vadd_AMonoid. Qed.
 
+  (** [∑_(j=0)^k {f(j)}].i = ∑_(j=0)^k {[f (j)].i} *)
+  Lemma vnth_seqsum_vadd : forall (n : nat) (f : nat -> vec n) (k : nat) (i : 'I_n),
+      (@seqsum _ vadd vzero k f) i = (@seqsum _ Aadd Azero k (fun x => f x i)).
+  Proof. intros. apply vnth_seqsum_vadd. Qed.
+
   (* ======================================================================= *)
   (** ** Matrix addition *)
 

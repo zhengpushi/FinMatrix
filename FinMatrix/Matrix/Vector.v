@@ -2273,6 +2273,15 @@ Section vadd.
   Lemma vadd_perm : forall {n} (a b c : vec n), (a + b) + c = (a + c) + b.
   Proof. intros. rewrite !associative. f_equal. apply commutative. Qed.
 
+  (** [∑_(j=0)^k {f(j)}].i = ∑_(j=0)^k {[f (j)].i} *)
+  Lemma vnth_seqsum_vadd : forall (n : nat) (f : nat -> vec n) (k : nat) (i : 'I_n),
+      (@seqsum _ vadd vzero k f) i = (@seqsum _ Aadd Azero k (fun x => f x i)).
+  Proof.
+    intros. induction k; simpl; auto. unfold seqsum in *.
+    rewrite seqsumAux_rebase. symmetry. rewrite seqsumAux_rebase.
+    rewrite !vnth_vadd. rewrite IHk. auto.
+  Qed.
+
 End vadd.
 
 Section vadd_extra.

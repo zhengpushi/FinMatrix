@@ -59,6 +59,10 @@ Notation smat tA n := (mat tA n n).
 (* Actually, mat tA r c = forall tA r c, 'I_r -> 'I_c -> tA  *)
 (* Eval cbv in forall tA r c, mat tA r c. *)
 
+(** Make a mat type explicitly *)
+Definition mmake {tA : Type} {r c : nat} (f : 'I_r -> 'I_c -> tA) : @mat tA r c := f.
+
+
 (* ======================================================================= *)
 (** ** Get element of a matrix *)
 

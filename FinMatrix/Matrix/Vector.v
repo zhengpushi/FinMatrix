@@ -50,6 +50,9 @@ Open Scope vec_scope.
 (** A n-dimensional vector over tA type *)
 Definition vec {tA : Type} (n : nat) := 'I_n -> tA.
 
+(** Make a vec type explicitly *)
+Definition vmake {tA : Type} {n : nat} (f : 'I_n -> tA) : @vec tA n := f.
+
 (* ======================================================================= *)
 (** ** Get element of a vector *)
 

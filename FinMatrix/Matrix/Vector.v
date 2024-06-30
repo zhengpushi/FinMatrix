@@ -28,7 +28,7 @@
 
 
 Require Export ListExt Hierarchy.
-Require Export RExt.
+Require Import RExt.
 Require Export Fin Sequence.
 Require Import Extraction.
 

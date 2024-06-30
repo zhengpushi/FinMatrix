@@ -24,7 +24,7 @@
        3. Leibniz equal is supported.
  *)
 
-Require Export QExt.
+Require Export QcExt QExt.
 Require Export MatrixModule.
 Require MatrixQc.
 

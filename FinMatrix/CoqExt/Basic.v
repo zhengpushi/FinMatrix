@@ -36,6 +36,7 @@ Require Export Coq.Bool.Bool.             (* reflect *)
 Require Export ExtrOcamlBasic ExtrOcamlNatInt MyExtrOCamlR.
 Require Export LogicExt BoolExt StrExt.
 Require Export List.
+Require Export Ring Field.
 
 
 

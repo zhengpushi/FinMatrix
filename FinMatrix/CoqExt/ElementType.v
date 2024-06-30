@@ -25,6 +25,7 @@
 *)
 
 Require Export Hierarchy.
+Require Import Reals Ring.
 
 
 (* ######################################################################### *)

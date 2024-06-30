@@ -31,6 +31,7 @@ Require Export ListExt.
 Require Export Vector.
 Require Reals.
 
+
 Generalizable Variable tA Aadd Azero Aopp Amul Aone Ainv.
 
 (** Control the scope *)

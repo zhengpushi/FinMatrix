@@ -9,7 +9,7 @@
  *)
 
 Require Import MatrixDet.
-Require Import ZArith Reals.
+Require Import ZArith Reals Lra.
 
 (** Test of determinant on `Z` type *)
 Section testZ.

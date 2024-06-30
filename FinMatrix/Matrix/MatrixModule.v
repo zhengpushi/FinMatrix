@@ -32,6 +32,7 @@ Require Export MatrixInvAM.
 Require Export MatrixInvGE.
 Require Export MatrixOrth.
 Require Export ElementType.
+Require Import Reals.
 
 
 (* ######################################################################### *)
@@ -4010,7 +4011,7 @@ Module NormedOrderedFieldMatrixTheory (E : NormedOrderedFieldElementType).
 
   (* 柯西.许西尔兹不等式，Cauchy-Schwarz Inequality *)
   (** |<a, b>| <= ||a|| * ||b|| *)
-  Lemma vdot_abs_le : forall {n} (a b : vec n), (|a2r (<a, b>)| <= ||a|| * ||b||)%R.
+  Lemma vdot_abs_le : forall {n} (a b : vec n), (Rabs (a2r (<a, b>)) <= ||a|| * ||b||)%R.
   Proof. intros. apply vdot_abs_le. Qed.
 
   (** <a, b> <= ||a|| * ||b|| *)

@@ -26,6 +26,9 @@
 Require Export RExt RFunExt.
 Require Export MatrixModule.
 
+(* Make sure sqrt:R->R, Hierarchy.le_trans *)
+Export Hierarchy R_sqrt.
+
 
 (* ######################################################################### *)
 (** * Matrix theory come from common implementations *)

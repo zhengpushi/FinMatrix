@@ -8,7 +8,7 @@
   date      : 2023.12
 *)
 
-Require Export QcExt.
+Require Export RExt QcExt.
 Require Export MatrixModule.
 
 

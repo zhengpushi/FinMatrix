@@ -583,7 +583,7 @@ Section morth.
     Lemma SOnP_mmul : forall {n} (M N : smat n), SOnP M -> SOnP N -> SOnP (M * N).
     Proof.
       intros. hnf in *. destruct H,H0. split.
-      apply morth_mmul; auto. rewrite mdet_mmul,H1,H2; ra.
+      apply morth_mmul; auto. rewrite mdet_mmul,H1,H2. field.
     Qed.
 
     (** I is SOn *)

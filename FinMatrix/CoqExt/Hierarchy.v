@@ -751,6 +751,35 @@ Ltac move2t c :=
 
 Section test.
   Context `{HASGroup : ASGroup}. Infix "+" := Aadd.
+
+  (* Example for manual proof *)
+  Goal forall a b c d e f, (a + b) + (c + d) + (e + f) = b + (c + a + f) + (d + e).
+  Proof.
+    intros.
+    (* Set Printing Parentheses. *)
+    rewrite (commutative a b).
+    rewrite (associative b a _).
+    rewrite (associative b _ (e + f)).
+    rewrite (associative b _ (d + e)).
+    f_equal.
+    rewrite (commutative a _).
+    rewrite (associative (c + d) a).
+    rewrite (associative c d).
+    rewrite (associative (c + a) f).
+    rewrite (associative c a).
+    f_equal.
+  Abort.
+  
+  (* Example for semi-automatic proof *)
+  Goal forall a b c d e f, (a + b) + (c + d) + (e + f) = b + (c + a + f) + (d + e).
+  Proof.
+    intros. move2h a; f_equal. move2h b; f_equal. move2h c; f_equal.
+    move2h d; f_equal. move2h e; f_equal.
+  Abort.
+
+  (* Print Ltac f_equal. *)
+  (* Print f_equal. *)
+  
   Variable a0 a1 a2 a3 a4 a5 a6 : tA.
 
   (* 这个例子表明，任何的项都可以调整到头部，多步调整后得到了相同形式 *)
@@ -790,15 +819,24 @@ Section try1.
   Ltac elimh :=
     rewrite ?associative; (* assure fully right-associative form *)
     repeat match goal with
-      | |- ?aeq (?f ?c _) (?f _ _) => move2h c; elimh1
-      | |- ?aeq (?f ?c _) (?f _ _) => move2h c; elimh1
+      | |- ?f ?c _ = ?f _ _ =>
+          move2h c;
+          (* elim common head element *)
+          match goal with
+          | |- ?f ?c ?a = ?f ?c ?b => f_equal
+          end
       end.
 
   (** 在交换半群中，自动消去左式中所有可能相同的尾部 *)
   Ltac elimt :=
     rewrite <- ?associative; (* assure fully left-associative form *)
     repeat match goal with
-      | |- ?aeq (?f _ ?c) (?f _ _) => move2t c; elimt1
+      | |- ?aeq (?f _ ?c) (?f _ _) =>
+          move2t c;
+          (* elim common tail element *)
+          match goal with
+          | |- ?f ?a ?c = ?f ?b ?c => f_equal
+          end
       end.
 
   (** 在交换半群中，自动消去左式和右式中所有可能相同的头部和尾部 *)
@@ -810,6 +848,10 @@ Section try1.
   Section test.
     Context `{HASGroup : ASGroup}. Infix "+" := Aadd.
     Variable a0 a1 a2 a3 a4 a5 a6 b1 b2 c1 c2 : tA.
+
+    (* The example in manual proof *)
+    Goal forall a b c d e f, (a + b) + (c + d) + (e + f) = b + (c + a + f) + (d + e).
+    Proof. intros. asgroup. Qed.
 
     (** 第一种情形，等式两侧完全相同 *)
 

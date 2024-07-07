@@ -310,7 +310,7 @@ Section minvGE.
   Proof.
     intros. assert (|M * M\-1| = |@mat1 n|). f_equal. apply mmul_minvGE_r; auto.
     rewrite mdet_mmul, mdet_mat1 in H0.
-    apply field_inv_eq_l in H0; auto.
+    apply field_inv_uniq_l in H0; auto.
     apply minvtble_iff_mdet_neq0; auto.
   Qed.
 

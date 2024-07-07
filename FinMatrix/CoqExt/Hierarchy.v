@@ -1175,6 +1175,9 @@ Class Group {tA} Aadd Azero (Aopp : tA -> tA) := {
     groupInvR :: InverseRight Aadd Azero Aopp;
   }.
 
+(* Check @groupMonoid. *)
+(* : forall (tA : Type) (Aadd : tA -> tA -> tA) (Azero : tA) (Aopp : tA -> tA), Group Aadd Azero Aopp -> Monoid Aadd Azero *)
+
 (** ** Instances *)
 Section Instances.
 End Instances.
@@ -1708,28 +1711,15 @@ Ltac agroup :=
     | AG : AGroup ?f ?e ?inv |- _ =>
         try pose proof (@agroupGroup _ f e inv AG) as HGroup;
         try pose proof (@agroupAM _ f e inv AG) as HAMonoid;
-        repeat
-          (agroup_only f e inv;
-           group_only f e inv;
-           amonoid)
+        repeat (agroup_only f e inv; group_only f e inv; amonoid)
     end;
   try match goal with
-    | G : Group ?f ?e ?inv |- _ =>
-        try pose proof (@agroupGroup _ f e inv G) as HGroup;
-        group_only f e inv
+    | G : Group ?f ?e ?inv |- _ => repeat (group_only f e inv; amonoid)
     end;
-  try match goal with
-    | AM : AMonoid ?f ?e |- _ => amonoid
-    end;
-  try match goal with
-    | M : Monoid ?f ?e |- _ => monoid
-    end;
-  try match goal with
-    | ASG : ASGroup ?f |- _ => asgroup
-    end;
-  try match goal with
-    | SG : SGroup ?f |- _ => sgroup
-    end.
+  try match goal with | AM : AMonoid ?f ?e |- _ => amonoid end;
+  try match goal with | M : Monoid ?f ?e |- _ => monoid end;
+  try match goal with | ASG : ASGroup ?f |- _ => asgroup end;
+  try match goal with | SG : SGroup ?f |- _ => sgroup end.
 
 (** ** Examples *)
 Section Examples.
@@ -2152,14 +2142,14 @@ Section Theory.
   Qed.
 
   (** a * b = 1 -> / a = b *)
-  Lemma field_inv_eq_l : forall a b : tA, a <> 0 -> a * b = 1 -> / a = b.
+  Lemma field_inv_uniq_l : forall a b : tA, a <> 0 -> a * b = 1 -> / a = b.
   Proof.
     intros. apply (@field_mul_cancel_l a (/ a) b); auto.
     rewrite field_mulInvR; auto.
   Qed.
 
   (** a * b = 1 -> / b = a *)
-  Lemma field_inv_eq_r : forall a b : tA, b <> 0 -> a * b = 1 -> / b = a.
+  Lemma field_inv_uniq_r : forall a b : tA, b <> 0 -> a * b = 1 -> / b = a.
   Proof.
     intros. apply (@field_mul_cancel_r (/ b) a b); auto.
     rewrite field_mulInvL; auto.
@@ -2183,7 +2173,7 @@ Section Theory.
   (** / (- a) = - (/ a) *)
   Lemma field_inv_opp : forall a : tA, a <> 0 -> / (- a) = - (/ a).
   Proof.
-    intros. apply field_inv_eq_l. apply group_opp_neq0_iff; auto.
+    intros. apply field_inv_uniq_l. apply group_opp_neq0_iff; auto.
     rewrite ring_mul_opp_opp. apply field_mulInvR; auto.
   Qed.
     

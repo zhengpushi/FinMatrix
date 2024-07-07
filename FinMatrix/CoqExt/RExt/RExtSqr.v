@@ -34,6 +34,26 @@
     2. other cases, write: autorewrite with R; auto with R.
  *)
 
+Require Import Reals Lra.
+Module about_Rsqr.
+  Open Scope R_scope.
+
+  (* statistics on which one is the most popular *)
+  (* Search (?a * ?a). (* 10 items *) *)
+  (* Search (_²). (* 96 items *) *)
+  (* Search (_ ^ 2). (* 14 items *) *)
+
+  (* Problem: ring can't handle Rsqr *)
+  Goal forall a b : R, (a * b)² = a² * b². intros. unfold Rsqr. ring. Qed.
+
+  (* Problem: lra can't handle Rsqr *)
+  Goal forall a b : R, (a * b)² = a² * b². intros. unfold Rsqr. lra. Qed.
+
+  (* Problem: lra and ring do well on pow (a fixpoin function) *)
+  Goal forall a b : R, (a * b) ^ 2 = a ^ 2 * b ^ 2. intros. ring. Qed.
+  
+End about_Rsqr.
+
 Require Export RExtBase.
 Require Export RExtBool RExtPlus RExtMult.
 

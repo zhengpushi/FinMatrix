@@ -22,8 +22,8 @@ Definition Rltb (r1 r2 : R) : bool := if Rlt_le_dec r1 r2 then true else false.
 Infix "=?"  := Reqb : R_scope.
 Notation "x >? y"  := (Rltb y x) : R_scope.
 Notation "x >=? y" := (Rleb y x) : R_scope.
-Infix "<=?" := Rleb : R_scope.
 Infix "<?"  := Rltb : R_scope.
+Infix "<=?" := Rleb : R_scope.
     
 Lemma Reqb_reflect : forall x y, reflect (x = y) (x =? y).
 Proof. intros. unfold Reqb. destruct Req_dec_T; constructor; auto. Qed.

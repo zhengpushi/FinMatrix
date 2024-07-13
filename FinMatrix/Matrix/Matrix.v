@@ -940,13 +940,11 @@ Proof. intros. unfold mremoverT, mconsrT. rewrite vremoveT_vconsT; auto. Qed.
 (** ** Remove one column at head or tail *)
 
 (** Remove head column *)
-Definition mremovecH {tA r c} (M : @mat tA r (S c)) : @mat tA r c :=
-  fun i => vremoveH (M.[i]).
+Definition mremovecH {tA r c} (M : @mat tA r (S c)) : @mat tA r c := vmap vremoveH M.
 #[export] Hint Unfold mremovecH : vec.
 
 (** Remove tail column *)
-Definition mremovecT {tA r c} (M : @mat tA r (S c)) : @mat tA r c :=
-  fun i => vremoveT (M.[i]).
+Definition mremovecT {tA r c} (M : @mat tA r (S c)) : @mat tA r c := vmap vremoveT M.
 #[export] Hint Unfold mremovecT : vec.
 
 (** mremovecH (mconscH A v) = A *)
@@ -1545,7 +1543,7 @@ Section malg.
     Lemma mremoverT_mremovecT_mat1 : forall {n},
         mremoverT (mremovecT (@mat1 (S n))) = mat1.
     Proof.
-      intros. apply meq_iff_mnth; intros. auto_vec. unfold vremoveT.
+      intros. apply meq_iff_mnth; intros. auto_vec. unfold vremoveT. auto_vec.
       destruct (i ??= j) as [Hij | Hij].
       - fin2nat. rewrite !mnth_mat1_same. auto.
       - rewrite !mnth_mat1_diff; fin. intro. destruct Hij. fin.

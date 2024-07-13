@@ -233,7 +233,7 @@ Proof.
     with (((<a, a> * <b, b>) - <a, b>²) / (||a|| * ||b||)²); auto.
   rewrite !Rsqr_mult, !Rsqr_div'. rewrite <- !vdot_sameR. field_simplify_eq.
   - autorewrite with R. auto.
-  - split; apply vdot_same_neq0_if_vnonzero; auto.
+  - split; apply vdot_same_neq0_if_neq0; auto.
 Qed.
 
 (** vnorm a _|_ b <-> a _|_ b *)
@@ -664,7 +664,7 @@ Lemma sqr_x_div_vlen : forall (a : vec 2),
     a <> vzero -> (a.1 / ||a||)² = (1 - (a.2 / ||a||)²)%R.
 Proof.
   intros. rewrite !Rsqr_div'. rewrite <- !vdot_same. field_simplify_eq.
-  cbv; field. apply vdot_same_neq0_if_vnonzero; auto.
+  cbv; field. apply vdot_same_neq0_if_neq0; auto.
 Qed.
 
 (** (a.2 / ||a||)² = 1 - (a.x / ||a||)² *)
@@ -672,7 +672,7 @@ Lemma sqr_y_div_vlen : forall (a : vec 2),
     a <> vzero -> (a.2 / ||a||)² = (1 - (a.1 / ||a||)²)%R.
 Proof.
   intros. rewrite !Rsqr_div'. rewrite <- !vdot_same. field_simplify_eq.
-  cbv; field. apply vdot_same_neq0_if_vnonzero; auto.
+  cbv; field. apply vdot_same_neq0_if_neq0; auto.
 Qed.
 
 (** 0 < <a, b> ->
@@ -694,7 +694,7 @@ Proof.
   rewrite acos_atan; [|ra]. f_equal. apply Rsqr_inj. ra. ra.
   rewrite !Rsqr_div', !Rsqr_mult, <- !vdot_sameR. field_simplify_eq; [|ra].
   rewrite Rsqr_sqrt; [|ra]. rewrite Rsqr_sqrt; [|ra].
-  autorewrite with R. field. split; apply vdot_same_neq0_if_vnonzero; auto.
+  autorewrite with R. field. split; apply vdot_same_neq0_if_neq0; auto.
 Qed.
 
 (** <a, b> < 0 ->
@@ -717,7 +717,7 @@ Proof.
   rewrite !Rsqr_div', !Rsqr_mult, <- !vdot_same. field_simplify_eq; [|ra].
   unfold a2r, id.
   rewrite Rsqr_sqrt; [|ra]. rewrite Rsqr_sqrt; [|ra].
-  autorewrite with R. field. split; apply vdot_same_neq0_if_vnonzero; auto.
+  autorewrite with R. field. split; apply vdot_same_neq0_if_neq0; auto.
 Qed.
 
 (* ======================================================================= *)
@@ -1502,7 +1502,7 @@ Qed.
 Lemma v3norm_sqr_eq1 : forall (a : vec 3),
     a <> vzero -> ((a.1 / ||a||)² + (a.2 / ||a||)² + (a.3 / ||a||)² = 1)%R.
 Proof.
-  intros. pose proof (vdot_same_neq0_if_vnonzero a H).
+  intros. pose proof (vdot_same_neq0_if_neq0 a H).
   rewrite !Rsqr_div'. rewrite <- !vdot_same. cbv. field. cbv in H0. ra.
 Qed.
 

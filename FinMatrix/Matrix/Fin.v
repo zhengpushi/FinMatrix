@@ -519,15 +519,15 @@ Hint Rewrite fSuccRange_nat2fin : fin.
 (** ** [Fin (S n) i] -> [Fin n i] *)
 
 (** {i<S n} -> {i<n} *)
-Definition fPredRange {n} (i : 'I_(S n)) (H : fin2nat i < n) : 'I_n :=
+Definition fPredRange {n} (i : 'I_(S n)) (H : i < n) : 'I_n :=
   nat2fin (fin2nat i) H.
 
-Lemma fin2nat_fPredRange : forall n (i : 'I_(S n)) (E : fin2nat i < n),
+Lemma fin2nat_fPredRange : forall n (i : 'I_(S n)) (E : i < n),
     fin2nat (@fPredRange n i E) = fin2nat i.
 Proof. intros. unfold fPredRange. simpl. auto. Qed.
 Hint Rewrite fin2nat_fPredRange : fin.
 
-Lemma fSuccRange_fPredRange : forall n (i : 'I_(S n)) (E : fin2nat i < n),
+Lemma fSuccRange_fPredRange : forall n (i : 'I_(S n)) (E : i < n),
     fSuccRange (fPredRange i E) = i.
 Proof.
   intros. destruct i. unfold fSuccRange,fPredRange,nat2finS; simpl. fin.
@@ -557,7 +557,7 @@ Hint Rewrite fin2nat_fin2AddRangeL : fin.
 
 (** ** [Fin (m + n) i] -> [Fin n i] *)
 
-(** {i < m + n} -> {i < m} *)
+(** {i < m + n} -> {i < n} *)
 Definition fin2AddRangeL' {m n} (i : 'I_(m + n)) (E : fin2nat i < n) : 'I_n :=
   nat2fin (fin2nat i) E.
 
@@ -701,7 +701,7 @@ Hint Rewrite fin2AddRangeAddR'_fin2AddRangeAddR : fin.
 (** ** [Fin (S n) (S i)] -> [Fin n i] *)
 
 (** {S i < S n} -> {i < n} *)
-Definition fPredRangeP {n} (i : 'I_(S n)) (E : 0 < fin2nat i) : 'I_n.
+Definition fPredRangeP {n} (i : 'I_(S n)) (E : 0 < i) : 'I_n.
   refine (nat2fin (pred (fin2nat i)) _).
   destruct i; simpl in *. apply pred_lt; auto.
 Defined.

@@ -3782,16 +3782,16 @@ Module OrderedFieldMatrixTheory (E : OrderedFieldElementType).
   Proof. intros. apply vdot_same_eq0_if_vzero; auto. Qed.
   
   (** <a, a> = 0 -> a = 0 *)
-  Lemma vdot_same_eq0_then_vzero : forall {n} (a : vec n), <a, a> = 0 -> a = vzero.
-  Proof. intros. apply vdot_same_eq0_then_vzero; auto. Qed.
+  Lemma vdot_same_eq0_imply_eq0 : forall {n} (a : vec n), <a, a> = 0 -> a = vzero.
+  Proof. intros. apply vdot_same_eq0_imply_eq0; auto. Qed.
 
   (** a <> vzero -> <a, a> <> 0 *)
-  Lemma vdot_same_neq0_if_vnonzero : forall {n} (a : vec n), a <> vzero -> <a, a> <> 0.
-  Proof. intros. apply vdot_same_neq0_if_vnonzero; auto. Qed.
+  Lemma vdot_same_neq0_if_neq0 : forall {n} (a : vec n), a <> vzero -> <a, a> <> 0.
+  Proof. intros. apply vdot_same_neq0_if_neq0; auto. Qed.
   
   (** <a, a> <> 0 -> a <> vzero *)
-  Lemma vdot_same_neq0_then_vnonzero : forall {n} (a : vec n), <a, a> <> 0 -> a <> vzero.
-  Proof. intros. apply vdot_same_neq0_then_vnonzero; auto. Qed.
+  Lemma vdot_same_neq0_imply_neq0 : forall {n} (a : vec n), <a, a> <> 0 -> a <> vzero.
+  Proof. intros. apply vdot_same_neq0_imply_neq0; auto. Qed.
 
   (** 0 < <a, a> *)
   Lemma vdot_gt0 : forall {n} (a : vec n), a <> vzero -> 0 < (<a, a>).

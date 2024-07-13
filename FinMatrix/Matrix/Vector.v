@@ -2456,7 +2456,7 @@ Section vscal.
   Notation "- a" := (vopp a) : vec_scope.
   Notation "a - b" := ((a + (-b))%V) : vec_scope.
   
-  Definition vscal {n : nat} (x : tA) (a : vec n) : vec n := vmap (fun y => Amul x y) a.
+  Definition vscal {n : nat} (x : tA) (a : vec n) : vec n := vmap (Amul x) a.
   Infix "s*" := vscal : vec_scope.
 
   (** (x s* a).i = x * a.i *)
@@ -2871,7 +2871,7 @@ Section vdot.
     Proof. intros. subst. rewrite vdot_0_l; auto. Qed.
     
     (** <a, a> = 0 -> a = 0 *)
-    Lemma vdot_same_eq0_then_vzero : forall {n} (a : vec n), <a, a> = 0 -> a = vzero.
+    Lemma vdot_same_eq0_imply_eq0 : forall {n} (a : vec n), <a, a> = 0 -> a = vzero.
     Proof.
       intros. unfold vdot,vsum in H. apply veq_iff_vnth; intros.
       apply seqsum_eq0_imply_seq0 with (i:=i) in H; fin.
@@ -2882,17 +2882,17 @@ Section vdot.
     Qed.
     
     (** a <> vzero -> <a, a> <> 0 *)
-    Lemma vdot_same_neq0_if_vnonzero : forall {n} (a : vec n), a <> vzero -> <a, a> <> 0.
-    Proof. intros. intro. apply vdot_same_eq0_then_vzero in H0; auto. Qed.
+    Lemma vdot_same_neq0_if_neq0 : forall {n} (a : vec n), a <> vzero -> <a, a> <> 0.
+    Proof. intros. intro. apply vdot_same_eq0_imply_eq0 in H0; auto. Qed.
     
     (** <a, a> <> 0 -> a <> vzero *)
-    Lemma vdot_same_neq0_then_vnonzero : forall {n} (a : vec n), <a, a> <> 0 -> a <> vzero.
+    Lemma vdot_same_neq0_imply_neq0 : forall {n} (a : vec n), <a, a> <> 0 -> a <> vzero.
     Proof. intros. intro. apply vdot_same_eq0_if_vzero in H0; auto. Qed.
     
     (** 0 < <a, a> *)
     Lemma vdot_gt0 : forall {n} (a : vec n), a <> vzero -> Azero < (<a, a>).
     Proof.
-      intros. apply vdot_same_neq0_if_vnonzero in H. pose proof (vdot_ge0 a).
+      intros. apply vdot_same_neq0_if_neq0 in H. pose proof (vdot_ge0 a).
       apply lt_if_le_and_neq; auto.
     Qed.
 
@@ -3132,7 +3132,7 @@ Section vlen.
     Lemma vlen_eq0_iff_eq0 : forall {n} (a : vec n), ||a|| = 0%R <-> a = vzero.
     Proof.
       intros. unfold vlen. split; intros.
-      - apply vdot_same_eq0_then_vzero. apply sqrt_eq_0 in H; auto.
+      - apply vdot_same_eq0_imply_eq0. apply sqrt_eq_0 in H; auto.
         apply a2r_eq0_iff; auto. apply a2r_ge0_iff; apply vdot_ge0.
       - rewrite H. rewrite vdot_0_l. rewrite a2r_0 at 1. ra.
     Qed.
@@ -3353,7 +3353,7 @@ Section vproj.
         c <> vzero -> (vproj (a + b) c = vproj a c + vproj b c)%V.
     Proof.
       intros. unfold vproj. rewrite vdot_vadd_l. rewrite <- vscal_add. f_equal.
-      field. apply vdot_same_neq0_if_vnonzero; auto.
+      field. apply vdot_same_neq0_if_neq0; auto.
     Qed.
     
     (** vproj (x s* a) b = x s* (vproj a b) *)
@@ -3361,14 +3361,14 @@ Section vproj.
         b <> vzero -> (vproj (x s* a) b = x s* (vproj a b))%V.
     Proof.
       intros. unfold vproj. rewrite vdot_vscal_l. rewrite vscal_assoc. f_equal.
-      field. apply vdot_same_neq0_if_vnonzero; auto.
+      field. apply vdot_same_neq0_if_neq0; auto.
     Qed.
     
     (** vproj a a = a *)
     Lemma vproj_same : forall {n} (a : vec n), a <> vzero -> vproj a a = a.
     Proof.
       intros. unfold vproj. replace (<a, a> / <a, a>) with Aone; try field.
-      apply vscal_1_l. apply vdot_same_neq0_if_vnonzero; auto.
+      apply vscal_1_l. apply vdot_same_neq0_if_neq0; auto.
     Qed.
   End OrderedField.
 End vproj.
@@ -3440,7 +3440,7 @@ Section vperp.
       intros. unfold vorth, vperp, vproj.
       rewrite !vdot_vscal_l. rewrite vdot_vsub_r. rewrite !vdot_vscal_r.
       rewrite (vdot_comm b a). field_simplify. rewrite ring_mul_0_l; auto.
-      apply vdot_same_neq0_if_vnonzero; auto.
+      apply vdot_same_neq0_if_neq0; auto.
     Qed.
     
     (** vperp (a + b) c = vperp a c + vperp b c *)

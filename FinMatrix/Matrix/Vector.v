@@ -3504,7 +3504,7 @@ End vperp.
   4. 本文的做法
   (1) 只在非零向量上定义平行、垂直、角度等。换言之，零向量上未定义几何关系。
  *)
-Section vcoll_vpara_vantipara.
+Section vcoll_vpara_vapara.
 
   (* 
      1. we need order relation to distinguish "x > 0 or x < 0" to define parallel
@@ -3675,15 +3675,15 @@ Section vcoll_vpara_vantipara.
 
 
   (** *** Properties about //- *)
-  Section vantipara.
+  Section vapara.
     
     (** Two non-zero vectors are antiparallel, if negative proportional *)
-    Definition vantipara {n} (a b : vec n) : Prop :=
+    Definition vapara {n} (a b : vec n) : Prop :=
       a <> vzero /\ b <> vzero /\ exists x : tA, x < 0 /\ x s* a = b.
-    Infix "//-" := vantipara : vec_scope.
+    Infix "//-" := vapara : vec_scope.
     
     (** a //- a *)
-    Lemma vantipara_refl : forall {n} (a : vec n), a <> vzero -> a //- a.
+    Lemma vapara_refl : forall {n} (a : vec n), a <> vzero -> a //- a.
     Proof.
       intros. hnf. repeat split; auto. exists (-(1))%A. split.
       apply gt0_iff_neg. apply lt_0_1.
@@ -3691,7 +3691,7 @@ Section vcoll_vpara_vantipara.
     Abort.
     
     (** a //- b -> b //- a *)
-    Lemma vantipara_sym : forall {n} (a b : vec n), a //- b -> b //- a.
+    Lemma vapara_sym : forall {n} (a b : vec n), a //- b -> b //- a.
     Proof.
       intros. hnf in *. destruct H as [H11 [H12 [x [H13 H14]]]].
       repeat split; auto. exists (/x). split; auto.
@@ -3701,7 +3701,7 @@ Section vcoll_vpara_vantipara.
     Qed.
 
     (** a //- b -> b //- c -> a //- c *)
-    Lemma vantipara_trans : forall {n} (a b c: vec n), a //- b -> b //- c -> a //- c.
+    Lemma vapara_trans : forall {n} (a b c: vec n), a //- b -> b //- c -> a //- c.
     Proof.
       intros. hnf in *.
       destruct H as [H11 [H12 [x1 [H13 H14]]]].
@@ -3712,7 +3712,7 @@ Section vcoll_vpara_vantipara.
     Abort.
 
     (** a //- b => ∃! x, x < 0 /\ x s* a = b *)
-    Lemma vantipara_imply_uniqueX : forall {n} (a b : vec n),
+    Lemma vapara_imply_uniqueX : forall {n} (a b : vec n),
         a //- b -> (exists ! x, x < 0 /\ x s* a = b).
     Proof.
       intros. destruct H as [H1 [H2 [x [H3 H4]]]]. exists x. split; auto.
@@ -3721,7 +3721,7 @@ Section vcoll_vpara_vantipara.
     Qed.
 
     (** a //- b -> (x s* a) //- b *)
-    Lemma vantipara_vscal_l : forall {n} x (a b : vec n),
+    Lemma vapara_vscal_l : forall {n} x (a b : vec n),
         0 < x -> a //- b -> x s* a //- b.
     Proof.
       intros. hnf in *. destruct H0 as [H1 [H2 [x1 [H3 H4]]]].
@@ -3735,18 +3735,18 @@ Section vcoll_vpara_vantipara.
     Qed.
 
     (** a //- b -> a //- (x s* b) *)
-    Lemma vantipara_vscal_r : forall {n} x (a b : vec n),
+    Lemma vapara_vscal_r : forall {n} x (a b : vec n),
         0 < x -> a //- b -> a //- (x s* b).
     Proof.
-      intros. apply vantipara_sym in H0. apply vantipara_sym.
-      apply vantipara_vscal_l; auto.
+      intros. apply vapara_sym in H0. apply vapara_sym.
+      apply vapara_vscal_l; auto.
     Qed.
     
-  End vantipara.
+  End vapara.
   
   Infix "//" := vcoll : vec_scope.
   Infix "//+" := vpara : vec_scope.
-  Infix "//-" := vantipara : vec_scope.
+  Infix "//-" := vapara : vec_scope.
 
   
   (** *** Convert between //, //+, and //-  *)
@@ -3760,14 +3760,14 @@ Section vcoll_vpara_vantipara.
     Qed.
     
     (** a //- b -> a // b *)
-    Lemma vantipara_imply_vcoll : forall {n} (a b : vec n), a //- b -> a // b.
+    Lemma vapara_imply_vcoll : forall {n} (a b : vec n), a //- b -> a // b.
     Proof.
       intros. hnf in *. destruct H as [H11 [H12 [x [H13 H14]]]].
       repeat split; auto. exists x. split; auto. apply lt_imply_neq; auto.
     Qed.
     
     (** a //+ b -> (-a) //- b *)
-    Lemma vpara_imply_vantipara_opp_l : forall {n} (a b : vec n), a //+ b -> (-a) //- b.
+    Lemma vpara_imply_vapara_opp_l : forall {n} (a b : vec n), a //+ b -> (-a) //- b.
     Proof.
       intros. hnf in *. destruct H as [H11 [H12 [x [H13 H14]]]].
       repeat split; auto. apply group_opp_neq0_iff; auto.
@@ -3776,7 +3776,7 @@ Section vcoll_vpara_vantipara.
     Qed.
     
     (** a //+ b -> a //- (-b)*)
-    Lemma vpara_imply_vantipara_opp_r : forall {n} (a b : vec n), a //+ b -> a //- (-b).
+    Lemma vpara_imply_vapara_opp_r : forall {n} (a b : vec n), a //+ b -> a //- (-b).
     Proof.
       intros. hnf in *. destruct H as [H11 [H12 [x [H13 H14]]]].
       repeat split; auto. apply group_opp_neq0_iff; auto.
@@ -3785,7 +3785,7 @@ Section vcoll_vpara_vantipara.
     Qed.
     
     (** a // b -> (a //+ b) \/ (a //- b) *)
-    Lemma vpara_imply_vpara_or_vantipara : forall {n} (a b : vec n),
+    Lemma vcoll_imply_vpara_or_vapara : forall {n} (a b : vec n),
         a // b -> a //+ b \/ a //- b.
     Proof.
       intros. hnf in *. destruct H as [H11 [H12 [x [H13 H14]]]].
@@ -3797,4 +3797,4 @@ Section vcoll_vpara_vantipara.
     
   End convert.
 
-End vcoll_vpara_vantipara.
+End vcoll_vpara_vapara.

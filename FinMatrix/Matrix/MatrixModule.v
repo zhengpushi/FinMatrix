@@ -3905,27 +3905,27 @@ Module OrderedFieldMatrixTheory (E : OrderedFieldElementType).
   (** ** Two vectors are antiparallel (i.e., collinear with opposite direction) *)
   
   (** Two non-zero vectors are antiparallel, if negative proportional *)
-  Definition vantipara {n} (a b : vec n) : Prop := @vantipara _ 0 Amul Alt _ a b.
-  Infix "//-" := vantipara : vec_scope.
+  Definition vapara {n} (a b : vec n) : Prop := @vapara _ 0 Amul Alt _ a b.
+  Infix "//-" := vapara : vec_scope.
 
   (** a //- b -> b //- a *)
-  Lemma vantipara_sym : forall {n} (a b : vec n),  a //- b -> b //- a.
-  Proof. intros. apply vantipara_sym; auto. Qed.
+  Lemma vapara_sym : forall {n} (a b : vec n),  a //- b -> b //- a.
+  Proof. intros. apply vapara_sym; auto. Qed.
 
   (** a //- b => ∃! x, x < 0 /\ x * a = b *)
-  Lemma vantipara_imply_uniqueX : forall {n} (a b : vec n),
+  Lemma vapara_imply_uniqueX : forall {n} (a b : vec n),
       a //- b -> (exists ! x, x < 0 /\ x s* a = b).
-  Proof. intros. apply vantipara_imply_uniqueX; auto. Qed.
+  Proof. intros. apply vapara_imply_uniqueX; auto. Qed.
 
   (** a //- b -> (x s* a) //- b *)
-  Lemma vantipara_vscal_l : forall {n} x (a b : vec n),
+  Lemma vapara_vscal_l : forall {n} x (a b : vec n),
       0 < x -> a //- b -> x s* a //- b.
-  Proof. intros. apply vantipara_vscal_l; auto. Qed.
+  Proof. intros. apply vapara_vscal_l; auto. Qed.
 
   (** a //- b -> a //- (x s* b) *)
-  Lemma vantipara_vscal_r : forall {n} x (a b : vec n),
+  Lemma vapara_vscal_r : forall {n} x (a b : vec n),
       0 < x -> a //- b -> a //- (x s* b).
-  Proof. intros. apply vantipara_vscal_r; auto. Qed.
+  Proof. intros. apply vapara_vscal_r; auto. Qed.
   
   (* ======================================================================= *)
   (** ** Convert between //, //+, and //-  *)
@@ -3935,21 +3935,21 @@ Module OrderedFieldMatrixTheory (E : OrderedFieldElementType).
   Proof. intros. apply vpara_imply_vcoll; auto. Qed.
   
   (** a //- b -> a // b *)
-  Lemma vantipara_imply_vcoll : forall {n} (a b : vec n), a //- b -> a // b.
-  Proof. intros. apply vantipara_imply_vcoll; auto. Qed.
+  Lemma vapara_imply_vcoll : forall {n} (a b : vec n), a //- b -> a // b.
+  Proof. intros. apply vapara_imply_vcoll; auto. Qed.
   
   (** a //+ b -> (-a) //- b *)
-  Lemma vpara_imply_vantipara_opp_l : forall {n} (a b : vec n), a //+ b -> (-a) //- b.
-  Proof. intros. apply vpara_imply_vantipara_opp_l; auto. Qed.
+  Lemma vpara_imply_vapara_opp_l : forall {n} (a b : vec n), a //+ b -> (-a) //- b.
+  Proof. intros. apply vpara_imply_vapara_opp_l; auto. Qed.
   
   (** a //+ b -> a //- (-b)*)
-  Lemma vpara_imply_vantipara_opp_r : forall {n} (a b : vec n), a //+ b -> a //- (-b).
-  Proof. intros. apply vpara_imply_vantipara_opp_r; auto. Qed.
+  Lemma vpara_imply_vapara_opp_r : forall {n} (a b : vec n), a //+ b -> a //- (-b).
+  Proof. intros. apply vpara_imply_vapara_opp_r; auto. Qed.
   
   (** a // b -> (a //+ b) \/ (a //- b) *)
-  Lemma vcoll_imply_vpara_or_vantipara : forall {n} (a b : vec n),
+  Lemma vcoll_imply_vpara_or_vapara : forall {n} (a b : vec n),
       a // b -> a //+ b \/ a //- b.
-  Proof. intros. apply vpara_imply_vpara_or_vantipara; auto. Qed.
+  Proof. intros. apply vcoll_imply_vpara_or_vapara; auto. Qed.
   
 End OrderedFieldMatrixTheory.
 

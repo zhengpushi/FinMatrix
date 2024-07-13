@@ -508,10 +508,10 @@ Proof.
 Qed.
 
 (** a //- b -> a /_ b = π *)
-Lemma vantipara_imply_vangle_PI : forall {n} (a b : vec n),
+Lemma vapara_imply_vangle_PI : forall {n} (a b : vec n),
     a <> vzero -> b <> vzero -> a //- b -> a /_ b = PI.
 Proof.
-  intros. apply vantipara_imply_uniqueX in H1. destruct H1 as [x [[H1 H2] _]].
+  intros. apply vapara_imply_uniqueX in H1. destruct H1 as [x [[H1 H2] _]].
   rewrite <- H2. rewrite vangle_vscal_r_lt0; auto. rewrite vangle_self; auto. lra.
 Qed.
 
@@ -519,9 +519,9 @@ Qed.
 Lemma vcoll_imply_vangle_0_or_PI : forall {n} (a b : vec n),
     a <> vzero -> b <> vzero -> a // b -> (a /_ b = 0 \/ a /_ b = PI).
 Proof.
-  intros. apply vcoll_imply_vpara_or_vantipara in H1. destruct H1.
+  intros. apply vcoll_imply_vpara_or_vapara in H1. destruct H1.
   - apply vpara_imply_vangle_0 in H1; auto.
-  - apply vantipara_imply_vangle_PI in H1; auto.
+  - apply vapara_imply_vangle_PI in H1; auto.
 Qed.
 
 (* a /_ b = 0 -> a //+ b *)
@@ -534,7 +534,7 @@ Proof.
 Abort.
 
 (* a /_ b = π -> a //- b *)
-Lemma vangle_PI_imply_vantipara : forall {n} (a b : vec n),
+Lemma vangle_PI_imply_vapara : forall {n} (a b : vec n),
     a <> vzero -> b <> vzero -> a /_ b = PI -> a //- b.
 Proof.
   intros. unfold vpara. repeat split; auto.
@@ -1136,7 +1136,7 @@ Proof.
 Qed.
 
 (** 两个反平行向量 a 和 b 若长度相等，则 a = - b *)
-Lemma vantipara_and_same_len_imply : forall {n} (a b : vec n),
+Lemma vapara_and_same_len_imply : forall {n} (a b : vec n),
     a //- b -> ||a|| = ||b|| -> a = -b.
 Proof.
   intros. destruct H as [H1 [H2 [x [H3 H4]]]].
@@ -1153,9 +1153,9 @@ Qed.
 Lemma vcoll_and_same_len_imply : forall {n} (a b : vec n),
     a // b -> ||a|| = ||b|| -> a = b \/ a = -b.
 Proof.
-  intros. destruct (vcoll_imply_vpara_or_vantipara a b H).
+  intros. destruct (vcoll_imply_vpara_or_vapara a b H).
   - left. apply vpara_and_same_len_imply; auto.
-  - right. apply vantipara_and_same_len_imply; auto.
+  - right. apply vapara_and_same_len_imply; auto.
 Qed.
 
 (* ======================================================================= *)

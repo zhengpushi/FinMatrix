@@ -18,6 +18,7 @@
 	  This implementation differs from the <a href="https://zhengpushi.github.io/projects/CoqMatrix/">CoqMatrix</a> project, which have various models.
 	  We have formalized many algebraic and geometric vector or matrix theories, especially including two inversion matrix algorithms: minvGE (inversion based on Gauss Elimination), minvAM (inversion based on Adjoint Matrix).
 	</p>
+
 	<h2>Resources</h2>
 	<p>Below are main links of this project:
 	  <ul>
@@ -49,16 +50,35 @@
 			  <a href="./v1.3/dep_graph.png">Dependency Graph (png)</a>,&nbsp;&nbsp;
 			  <a href="./v1.3/dep_graph.pdf">Dependency Graph (pdf)</a>
 			</li>
-			</ul>
-		  </li>
-		</ul>
-		
-		<div id="footer">
-		  <hr />
-		  COPYRIGHT by Zhengpu Shi, ALL RIGHTS RESERVED
-		</div>
-	  </div>
+		  </ul>
+		</li>
+	  </ul>
+	</p>
 
-	</body>
+	<h2>Installation</h2>
+	<ul>
+	  <li>From opam
+		<p>
+		  We are happy to announce that <b>FinMatrix</b> has been included in the <a href="https://coq.inria.fr/coq-package-index">Coq Package Index</a>. Thus, the following command can be used to install this library to your local environment:
+		</p>
+		<p><code>opam install coq-finmatrix</code></p>
+	  </li>
+	  <li>From source code
+		<p>
+		  The following commands can be used to compile and install this library to your local environment:
+		</p>
+		<pre>
+make
+make install
+		</pre>
+	  </li>
+	</ul>
+	
+	<div id="footer">
+	  <hr />
+	  COPYRIGHT by Zhengpu Shi, ALL RIGHTS RESERVED
+	</div>
 
-  </html>
+  </body>
+
+</html>

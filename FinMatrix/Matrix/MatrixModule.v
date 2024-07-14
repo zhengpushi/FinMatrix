@@ -1078,23 +1078,23 @@ Module BasicMatrixTheory (E : ElementType).
       mtailc (mconsrT (mconscT A v) (vconsT u x)) = vconsT v x.
   Proof. intros. apply mtailc_mconsrT_mconscT_vconsT. Qed.
 
-  (**     [v1 | a11 a12]   [v1]
-          [v2 | a21 a22]   [v2]
-   mheadc  -- | -------  = [ x]
-          [ x |  u1  u2]  *)
-  Lemma mheadc_mconscH_vconsT_mconsrT :
-    forall r c (A : mat r c) (u : vec c) (v : vec r) (x : tA),
-      mheadc (mconscH (vconsT v x) (mconsrT A u)) = vconsT v x.
-  Proof. intros. apply mheadc_mconscH_vconsT_mconsrT. Qed.
-
   (**     [v1 | a11 a12]
           [v2 | a21 a22]
-   mtailr  ------------  = [ x u1 u2]
+   mtailr  -- | -------  = [ x u1 u2]
           [ x |  u1  u2]  *)
-  Lemma mtailc_mconsrT_mconscH_vconsH :
+  Lemma mtailr_mconscH_vconsT_mconsrT :
     forall r c (A : mat r c) (u : vec c) (v : vec r) (x : tA),
-      mtailr (mconsrT (mconscH v A) (vconsH x u)) = vconsH x u.
-  Proof. intros. apply mtailc_mconsrT_mconscH_vconsH. Qed.
+      mtailr (mconscH (vconsT v x) (mconsrT A u)) = vconsH x u.
+  Proof. intros. apply mtailr_mconscH_vconsT_mconsrT. Qed.
+
+  (**     [v1 | a11 a12]   [v1]
+          [v2 | a21 a22]   [v2]
+   mheadc  ------------  = [ x]
+          [ x |  u1  u2]  *)
+  Lemma mheadc_mconsrT_mconscH_vconsH :
+    forall r c (A : mat r c) (u : vec c) (v : vec r) (x : tA),
+      mheadc (mconsrT (mconscH v A) (vconsH x u)) = vconsT v x.
+  Proof. intros. apply mheadc_mconsrT_mconscH_vconsH. Qed.
 
   (**     [ u1  u2 |  x]
    mheadr  ------- | --  = [u1 u2 x]
@@ -1129,7 +1129,7 @@ Module BasicMatrixTheory (E : ElementType).
           [v2 | a21 a22]  *)
   Lemma mheadc_mconsrH_vconsH_mconsrH :
     forall r c (A : mat r c) (u : vec c) (v : vec r) (x : tA),
-      mheadr (mconsrH (vconsH x u) (mconscH v A)) = vconsH x u.
+      mheadc (mconsrH (vconsH x u) (mconscH v A)) = vconsH x v.
   Proof. intros. apply mheadc_mconsrH_vconsH_mconsrH. Qed.
 
 

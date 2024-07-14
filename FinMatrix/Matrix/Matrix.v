@@ -842,24 +842,29 @@ Proof.
     erewrite vnth_vconsT_lt; auto. Unshelve. fin.
 Qed.
 
-(**       [v1 | a11 a12]   [v1]
-          [v2 | a21 a22]   [v2]
-   mheadc  -- | -------  = [ x]
-          [ x |  u1  u2]  *)
-Lemma mheadc_mconscH_vconsT_mconsrT :
-  forall tA r c (A : mat tA r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
-    mheadc (mconscH (vconsT v x) (mconsrT A u)) = vconsT v x.
-Proof. intros. apply veq_iff_vnth; intros. auto_vec. Qed.
-
 (**       [v1 | a11 a12]
           [v2 | a21 a22]
-   mtailr  ------------  = [ x u1 u2]
+   mtailr  -- | -------  = [ x u1 u2]
           [ x |  u1  u2]  *)
-Lemma mtailc_mconsrT_mconscH_vconsH :
+Lemma mtailr_mconscH_vconsT_mconsrT :
   forall tA r c (A : mat tA r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
-    mtailr (mconsrT (mconscH v A) (vconsH x u)) = vconsH x u.
+    mtailr (mconscH (vconsT v x) (mconsrT A u)) = vconsH x u.
 Proof.
-  intros. apply veq_iff_vnth; intros. auto_vec. rewrite vnth_vconsT_n; auto. fin.
+  intros. apply veq_iff_vnth; intros. auto_vec. rewrite !vnth_vconsT_n; fin.
+Qed.
+
+(**       [v1 | a11 a12]   [v1]
+          [v2 | a21 a22]   [v2]
+   mheadc  ------------  = [ x]
+          [ x |  u1  u2]  *)
+Lemma mheadc_mconsrT_mconscH_vconsH :
+  forall tA r c (A : mat tA r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
+    mheadc (mconsrT (mconscH v A) (vconsH x u)) = vconsT v x.
+Proof.
+  intros. apply veq_iff_vnth; intros. auto_vec. destruct (i ??= r).
+  - rewrite !vnth_vconsT_n; fin.
+  - erewrite !vnth_vconsT_lt; auto_vec. rewrite vnth_vconsH_0; auto.
+    Unshelve. fin.
 Qed.
 
 (**       [ u1  u2 |  x]
@@ -896,13 +901,13 @@ Lemma mheadr_mconscH_vconsH_mconsrH :
 Proof. intros. apply veq_iff_vnth; intros. auto_vec. Qed.
 
 (**       [ x |  u1  u2]   [ x]
-   mheadc  ------------  = [u1]
-          [v1 | a11 a12]   [u2]
+   mheadc  ------------  = [v1]
+          [v1 | a11 a12]   [v2]
           [v2 | a21 a22]  *)
 Lemma mheadc_mconsrH_vconsH_mconsrH :
   forall tA r c (A : mat tA r c) (u : @vec tA c) (v : @vec tA r) (x : tA),
-    mheadr (mconsrH (vconsH x u) (mconscH v A)) = vconsH x u.
-Proof. intros. apply veq_iff_vnth; intros. auto_vec. Qed.
+    mheadc (mconsrH (vconsH x u) (mconscH v A)) = vconsH x v.
+Proof. intros. apply veq_iff_vnth; intros. auto_vec. unfold vconsH. fin. Qed.
 
 Section test.
   Let a : @vec nat 2 := l2v 9 [1;2].

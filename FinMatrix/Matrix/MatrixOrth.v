@@ -544,7 +544,7 @@ Section morth.
     (* Tips: this lemma is useful to get the inversion matrix *)
     
     (** M\-1 = M\T *)
-    Lemma GOn_imply_minv_eq_trans : forall {n} (M : @GOn n), M\-1 = M\T.
+    Lemma GOn_minv_eq_trans : forall {n} (M : @GOn n), M\-1 = M\T.
     Proof.
       intros. destruct M as [M H]. simpl in *.
       rewrite morth_imply_minv_eq_trans; auto.

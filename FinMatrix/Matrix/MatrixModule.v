@@ -2203,14 +2203,14 @@ Module RingMatrixTheory (E : RingElementType).
       (M - N) * O = M * O - N * O.
   Proof. intros. apply mmul_msub_distr_r. Qed.
 
-  (** - (M * N) = (- M) * N *)
+  (** (- M) * N = - (M * N) *)
   Lemma mmul_mopp_l : forall {r c s : nat} (M : mat r c) (N : mat c s),
-      - (M * N) = (- M) * N.
+      (- M) * N = - (M * N).
   Proof. intros. apply mmul_mopp_l. Qed.
 
-  (** - (M * N) = M * (- N) *)
+  (** M * (- N) = - (M * N) *)
   Lemma mmul_mopp_r : forall {r c s : nat} (M : mat r c) (N : mat c s),
-      - (M * N) = M * (- N).
+      M * (- N) = - (M * N).
   Proof. intros. apply mmul_mopp_r. Qed.
 
   (** mat0 * M = mat0 *)
@@ -3653,8 +3653,8 @@ Module FieldMatrixTheory (E : FieldElementType).
   Proof. intros. apply GOn_Group. Qed.
 
   (** M \-1 = M \T *)
-  Lemma GOn_imply_inv_eq_trans : forall {n} (M : @GOn n), M\-1 = M \T.
-  Proof. intros. apply GOn_imply_minv_eq_trans. Qed.
+  Lemma GOn_inv_eq_trans : forall {n} (M : @GOn n), M\-1 = M \T.
+  Proof. intros. apply GOn_minv_eq_trans. Qed.
 
 
   (* ======================================================================= *)

@@ -1814,18 +1814,18 @@ Section malg.
     rewrite !vnth_vmap2, mnth_madd. ring.
   Qed.
 
-  (** - (M * N) = (- M) * N *)
+  (** (- M) * N = - (M * N) *)
   Lemma mmul_mopp_l : forall {r c t} (M : mat r c) (N : mat c t),
-      - (M * N) = (- M) * N.
+      (- M) * N = - (M * N).
   Proof.
     intros. apply meq_iff_mnth; intros. rewrite mnth_mopp, !mnth_mmul.
     unfold vdot. rewrite vsum_opp; apply vsum_eq; intros k.
     rewrite !vnth_vmap2, mnth_mopp. ring.
   Qed.
 
-  (** - (M * N) = M * (- N)*)
+  (** M * (- N) = - (M * N) *)
   Lemma mmul_mopp_r : forall {r c t} (M : mat r c) (N : mat c t),
-      - (M * N) = M * (- N).
+      M * (- N) = - (M * N).
   Proof.
     intros. apply meq_iff_mnth; intros. rewrite mnth_mopp, !mnth_mmul.
     unfold vdot. rewrite vsum_opp; apply vsum_eq; intros k.
@@ -1912,36 +1912,36 @@ Section malg.
     rewrite vsum_vsum. apply vsum_eq; intros. apply vsum_eq; intros. ring.
   Qed.
 
-  (* tr(MNOP) = tr(NOPM) = tr(OPMN) = tr(PMNO) *)
-  Lemma mtrace_cyclic4_NOPM :
-    forall {r c s t} (M : mat r c) (N : mat c s) (O : mat s t) (P : mat t r),
-      tr(M * N * O * P) = tr(N * O * P * M).
+  (* tr(ABCD) = tr(BCDA) = tr(CDAB) = tr(DABC) *)
+  Lemma mtrace_cyclic4_BCDA :
+    forall {r c s t} (A : mat r c) (B : mat c s) (C : mat s t) (D : mat t r),
+      tr(A * B * C * D) = tr(B * C * D * A).
   Proof.
-    intros. replace (M * N * O * P) with (M * (N * O * P)). apply mtrace_mmul.
+    intros. replace (A * B * C * D) with (A * (B * C * D)). apply mtrace_mmul.
     rewrite <- !mmul_assoc. auto.
   Qed.
   
-  Lemma mtrace_cyclic4_OPMN :
-    forall {r c s t} (M : mat r c) (N : mat c s) (O : mat s t) (P : mat t r),
-      tr(M * N * O * P) = tr(O * P * M * N).
-  Proof. intros. do 2 rewrite mtrace_cyclic4_NOPM. auto. Qed.
+  Lemma mtrace_cyclic4_CDAB :
+    forall {r c s t} (A : mat r c) (B : mat c s) (C : mat s t) (D : mat t r),
+      tr(A * B * C * D) = tr(C * D * A * B).
+  Proof. intros. do 2 rewrite mtrace_cyclic4_BCDA. auto. Qed.
   
-  Lemma mtrace_cyclic4_PMNO :
-    forall {r c s t} (M : mat r c) (N : mat c s) (O : mat s t) (P : mat t r),
-      tr(M * N * O * P) = tr(P * M * N * O).
-  Proof. intros. do 3 rewrite mtrace_cyclic4_NOPM. auto. Qed.
+  Lemma mtrace_cyclic4_DABC :
+    forall {r c s t} (A : mat r c) (B : mat c s) (C : mat s t) (D : mat t r),
+      tr(A * B * C * D) = tr(D * A * B * C).
+  Proof. intros. do 3 rewrite mtrace_cyclic4_BCDA. auto. Qed.
 
-  (* tr(MNO) = tr(NOM) = tr(OMN) *)
-  Lemma mtrace_cyclic3_NOM : forall {n} (M N O : smat n), tr(M * N * O) = tr(N * O * M).
+  (* tr(ABC) = tr(BCA) = tr(CAB) *)
+  Lemma mtrace_cyclic3_BCA : forall {n} (A B C : smat n), tr(A * B * C) = tr(B * C * A).
   Proof.
-    (* tr(MNO)=tr((MNO)\T))=tr((NO)\T M\T)=tr(M\T (NO)\T)=tr(NOM) *)
+    (* tr(ABC)=tr((ABC)\T))=tr((BC)\T A\T)=tr(A\T (BC)\T)=tr(BCA) *)
     intros. rewrite <- mtrace_mtrans. rewrite mmul_assoc. rewrite mtrans_mmul.
     rewrite mtrace_mmul. rewrite <- mtrans_mmul. apply mtrace_mtrans.
   Qed.
 
-  Lemma mtrace_cyclic3_OMN : forall {n} (M N O : smat n), tr(M * N * O) = tr(O * M * N).
+  Lemma mtrace_cyclic3_CAB : forall {n} (A B C : smat n), tr(A * B * C) = tr(C * A * B).
   Proof.
-    (* tr(MNO)=tr((MNO)\T))=tr(O\T (MN)\T)=tr((MN)\T O\T)=tr(OMN) *)
+    (* tr(ABC)=tr((ABC)\T))=tr(C\T (AB)\T)=tr((AB)\T C\T)=tr(CAB) *)
     intros. rewrite <- mtrace_mtrans. rewrite mtrans_mmul. rewrite mtrace_mmul.
     rewrite <- mtrans_mmul. rewrite mtrace_mtrans. rewrite mmul_assoc. auto.
   Qed.

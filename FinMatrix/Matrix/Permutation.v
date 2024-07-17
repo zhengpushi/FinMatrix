@@ -20,13 +20,13 @@
 Require Import Extraction.
 Require Export ListExt NatExt.
 
-Generalizable Variable A Aadd Azero Aopp Amul Aone Ainv.
+Generalizable Variable tA Aadd Azero Aopp Amul Aone Ainv.
 
 
 (** * Lemmas for other libraries *)
 
 (** (In l d -> length l = n) -> length (concat d) = n * length d *)
-Lemma in_concat_length : forall {A} (d : dlist A) n,
+Lemma in_concat_length : forall {tA} (d : dlist tA) n,
     (forall l, In l d -> length l = n) -> length (concat d) = n * length d.
 Proof.
   induction d; intros; simpl in *; auto.
@@ -38,7 +38,7 @@ Lemma nat_S_ltb_S : forall n m : nat, ((S n <? S m) = (n <? m))%nat.
 Proof. intros. bdestruct (n <? m)%nat; bdestruct (S n <? S m)%nat; auto; lia. Qed.
 
 (** lswap (a :: l) (S i) (S j) = a :: (lswap l i j) *)
-Lemma lswap_cons_S_S : forall {A Azero} (l : list A) (a : A) (i j : nat),
+Lemma lswap_cons_S_S : forall {tA Azero} (l : list tA) (a : tA) (i j : nat),
     i < length l -> j < length l ->
     lswap Azero (a :: l) (S i) (S j) = a :: (lswap Azero l i j).
 Proof.
@@ -47,7 +47,7 @@ Proof.
 Qed.
 
 (** lswap (a :: l) 0 (S j) = nth j l :: lset l j a. *)
-Lemma lswap_cons_0_S : forall {A Azero} (l : list A) (a : A) (j : nat),
+Lemma lswap_cons_0_S : forall {tA Azero} (l : list tA) (a : tA) (j : nat),
     j < length l ->
     lswap Azero (a :: l) 0 (S j) = nth j l Azero :: lset l j a.
 Proof.
@@ -57,7 +57,7 @@ Qed.
 
 (** fold_left f l (a1 + a2) = (fold_left f l a1) + a2) *)
 Lemma fold_left_rebase :
-  forall {A B} (f : A -> B -> A) (fa : A -> A -> A) (l : list B) (a1 a2 : A),
+  forall {tA tB} (f : tA -> tB -> tA) (fa : tA -> tA -> tA) (l : list tB) (a1 a2 : tA),
     (forall a1 a2 b, f (fa a1 a2) b = fa (f a1 b) a2) ->
     fold_left f l (fa a1 a2) = fa (fold_left f l a1) a2.
 Proof.
@@ -75,10 +75,10 @@ Qed.
 Module method1.
   
   Section def.
-    Context {A} {Azero : A}.
+    Context {tA} {Azero : tA}.
     
     (** Get k-th element and remaining elements from a list *)
-    Fixpoint pick (l : list A) (k : nat) : A * list A :=
+    Fixpoint pick (l : list tA) (k : nat) : tA * list tA :=
       match k with
       | 0 => (hd Azero l, tl l)
       | S k' =>
@@ -91,7 +91,7 @@ Module method1.
       end.
     
     (** Get permutation of a list from its top n elements *)
-    Fixpoint permAux (n : nat) (l : list A) : list (list A) :=
+    Fixpoint permAux (n : nat) (l : list tA) : list (list tA) :=
       match n with
       | 0 => [[]]
       | S n' =>
@@ -104,7 +104,7 @@ Module method1.
       end.
 
     (** Get permutation of a list *)
-    Definition perm (l : list A) : list (list A) := permAux (length l) l.
+    Definition perm (l : list tA) : list (list tA) := permAux (length l) l.
   End def.
   
   (* Compute perm [1;2;3]. *)
@@ -118,10 +118,10 @@ Module method2.
   Open Scope list_scope.
   
   Section def.
-    Context {A} {Azero : A}.
+    Context {tA} {Azero : tA}.
     
     (** Convert a list to list of (one element * remaining elements) *)
-    Fixpoint pick {A} (l : list A) (remaining : list A) : list (A * list A) :=
+    Fixpoint pick {tA} (l : list tA) (remaining : list tA) : list (tA * list tA) :=
       match l with
       | [] => []
       | hl :: tl =>
@@ -129,7 +129,7 @@ Module method2.
       end.
 
     (** Get permutation of a list from its top n elements *)
-    Fixpoint permAux {A} (n : nat) (l : list A) : list (list A) :=
+    Fixpoint permAux {tA} (n : nat) (l : list tA) : list (list tA) :=
       match n with
       | 0 => [[]]
       | S n' =>
@@ -142,7 +142,7 @@ Module method2.
       end.
     
     (** Get permutation of a list *)
-    Definition perm (l : list A) : list (list A) := permAux (length l) l.
+    Definition perm (l : list tA) : list (list tA) := permAux (length l) l.
   End def.
 
   (* Compute perm2 [1;2;3]. *)
@@ -155,17 +155,17 @@ End method2.
 Module Export method3.
 
   Section def.
-    Context {A : Type}.
+    Context {tA : Type}.
 
     (** Insert an element `a` into a list `l` at all possible position *)
-    Fixpoint perm1 (a : A) (l : list A) : list (list A) :=
+    Fixpoint perm1 (a : tA) (l : list tA) : list (list tA) :=
       match l with
       | [] => [[a]]
       | hl :: tl => (a :: l) :: (map (cons hl) (perm1 a tl))
       end.
 
     (** Permutation of a list *)
-    Fixpoint perm (l : list A) : list (list A) :=
+    Fixpoint perm (l : list tA) : list (list tA) :=
       match l with
       | [] => [[]]
       | hl :: tl => concat (map (perm1 hl) (perm tl))
@@ -180,19 +180,19 @@ Module Export method3.
 
 
   Section props.
-    Context {A : Type}.
-    Context {AeqDec : Dec (@eq A)}.
+    Context {tA : Type}.
+    Context {AeqDec : Dec (@eq tA)}.
 
     (** |perm1 (a::l)| = S |l| *)
-    Lemma perm1_length : forall a (l : list A), length (perm1 a l) = S (length l).
+    Lemma perm1_length : forall a (l : list tA), length (perm1 a l) = S (length l).
     Proof. induction l; simpl; auto. rewrite map_length. auto. Qed.
 
     (** perm1 a l <> [] *)
-    Lemma perm1_not_nil : forall a (l : list A), perm1 a l <> [].
+    Lemma perm1_not_nil : forall a (l : list tA), perm1 a l <> [].
     Proof. induction l; simpl; try easy. Qed.
 
     (** perm l <> [] *)
-    Lemma perm_not_nil : forall (l : list A), perm l <> [].
+    Lemma perm_not_nil : forall (l : list tA), perm l <> [].
     Proof.
       induction l; simpl; try easy.
       destruct (perm l) eqn:E; simpl; try easy.
@@ -201,7 +201,7 @@ Module Export method3.
     Qed.
     
     (** hd (perm l) = l *)
-    Lemma hd_perm : forall (l : list A), hd [] (perm l) = l.
+    Lemma hd_perm : forall (l : list tA), hd [] (perm l) = l.
     Proof.
       induction l; auto. simpl.
       destruct (perm l) as [|l0 dl] eqn:H1.
@@ -210,7 +210,7 @@ Module Export method3.
     Qed.
 
     (** x \in (perm1 a l) -> length x = S (length l) *)
-    Lemma in_perm1_length : forall (l : list A) (a : A) (x : list A),
+    Lemma in_perm1_length : forall (l : list tA) (a : tA) (x : list tA),
         In x (perm1 a l) -> length x = S (length l).
     Proof.
       induction l; intros; simpl in *.
@@ -221,7 +221,7 @@ Module Export method3.
     Qed.
 
     (** x \in (perm l) -> length x = length l *)
-    Lemma in_perm_length : forall (l x : list A),
+    Lemma in_perm_length : forall (l x : list tA),
         In x (perm l) -> length x = length l.
     Proof.
       induction l; intros; simpl in *.
@@ -233,12 +233,12 @@ Module Export method3.
     Qed.
 
     (** |perm (a::l)| = |(a::l)| * |perm l| *)
-    Lemma perm_cons_length : forall (l : list A) (a : A),
+    Lemma perm_cons_length : forall (l : list tA) (a : tA),
         length (perm (a :: l)) = (S (length l)) * (length (perm l)).
     Proof.
       destruct l; intros; auto.
-      unfold perm; fold (perm (a :: l)).
-      rewrite in_concat_length with (n:=S (length (a::l))).
+      unfold perm; fold (perm (t :: l)).
+      rewrite in_concat_length with (n:=S (length (t::l))).
       - rewrite map_length. auto.
       - intros. remember (a :: l) as d.
         apply in_map_iff in H. destruct H as [x [H H1]].
@@ -246,7 +246,7 @@ Module Export method3.
     Qed.
     
     (** |perm l| = |l|! *)
-    Lemma length_perm : forall (l : list A), length (perm l) = fact (length l).
+    Lemma length_perm : forall (l : list tA), length (perm l) = fact (length l).
     Proof.
       induction l. auto.
       rewrite perm_cons_length.
@@ -254,7 +254,7 @@ Module Export method3.
     Qed.
 
     (** In l0 (perm1 a l) -> (forall x, In x l0 -> x = a \/ In x l) *)
-    Lemma in_perm1 : forall (l : list A) (a : A) (l0 : list A),
+    Lemma in_perm1 : forall (l : list tA) (a : tA) (l0 : list tA),
         In l0 (perm1 a l) -> (forall x, In x l0 -> x = a \/ In x l).
     Proof.
       induction l; intros; simpl in *.
@@ -266,7 +266,7 @@ Module Export method3.
     Qed.
 
     (** In l0 (perm l) -> (forall x, In x l0 -> In x l) *)
-    Lemma in_perm : forall (l : list A) (l0 : list A),
+    Lemma in_perm : forall (l : list tA) (l0 : list tA),
         In l0 (perm l) -> (forall x, In x l0 -> In x l).
     Proof.
       induction l; intros; simpl in *.
@@ -283,11 +283,11 @@ Module Export method3.
 
   (* well-formed permutation *)
   Section wf_perm.
-    Context {A : Type}.
-    Context {AeqDec : Dec (@eq A)}.
+    Context {tA : Type}.
+    Context {AeqDec : Dec (@eq tA)}.
 
     (* A list is a permutation (no duplicate) *)
-    Definition wf_perm (l : list A) : Prop := NoDup l.
+    Definition wf_perm (l : list tA) : Prop := NoDup l.
   End wf_perm.
 
   (* 索引下标构成的排列 *)
@@ -311,29 +311,29 @@ End method3.
 (* ======================================================================= *)
 (** ** reverse-order-number (RON) of a list, 逆序数 *)
 Section ronum.
-  Context {A} {Altb : A -> A -> bool}.
+  Context {tA} {Altb : tA -> tA -> bool}.
   Infix "<?" := Altb.
 
   (** The RON of one element respect to a list *)
-  Definition ronum1 (a : A) (l : list A) : nat :=
-    fold_left (fun (n : nat) (b : A) => n + (if b <? a then 1 else 0)) l 0.
+  Definition ronum1 (a : tA) (l : list tA) : nat :=
+    fold_left (fun (n : nat) (b : tA) => n + (if b <? a then 1 else 0)) l 0.
 
   (** The RON of a list *)
-  Fixpoint ronum (l : list A) : nat :=
+  Fixpoint ronum (l : list tA) : nat :=
     match l with
     | [] => 0
     | x :: l' => ronum1 x l' + ronum l'
     end.
 
-  Context {Azero : A}.
+  Context {Azero : tA}.
   Notation lswap := (lswap Azero).
 
   (** ronum1 b (a :: l) = (if b <? a then 1 else 0) + ronum1 b l *)
-  Lemma ronum1_cons : forall (l : list A) a b,
+  Lemma ronum1_cons : forall (l : list tA) a b,
       ronum1 b (a :: l) = (if a <? b then 1 else 0) + ronum1 b l.
   Proof.
     intros. unfold ronum1. simpl.
-    remember (fun (n : nat) (b0 : A) => n + (if b0 <? b then 1 else 0)) as f.
+    remember (fun (n : nat) (b0 : tA) => n + (if b0 <? b then 1 else 0)) as f.
     remember (if a <? b then 1 else 0) as n.
     replace n with (0 + n) by lia.
     rewrite fold_left_rebase; try lia.
@@ -341,7 +341,7 @@ Section ronum.
   Qed.
 
   (** forall i, nth i l Azero <? a = true -> ronum1 a l > 0 *)
-  Lemma ronum1_gt0 : forall (l : list A) (i : nat) (a : A),
+  Lemma ronum1_gt0 : forall (l : list tA) (i : nat) (a : tA),
       i < length l -> nth i l Azero <? a = true -> ronum1 a l > 0.
   Proof.
     induction l; intros; simpl in *. lia. destruct i.
@@ -352,14 +352,14 @@ Section ronum.
   
   (** ronum1 b [a1;a2;...;a;...;an] + (ai<?b ?? 1 : 0)
      = ronum1 b [a1;a2;...;ai;...;an] + (a<?b ?? 1 : 0) *)
-  Lemma ronum1_lset_invariant : forall (l : list A) (i : nat) (a b : A),
+  Lemma ronum1_lset_invariant : forall (l : list tA) (i : nat) (a b : tA),
       i < length l ->
       ronum1 b (lset l i a) + (if nth i l Azero <? b then 1 else 0) = 
         ronum1 b l + (if a <? b then 1 else 0).
   Proof.
     induction l; intros; simpl in *. lia. destruct i.
     - unfold ronum1. simpl.
-      remember (fun (n : nat) (b0 : A) => n + (if b0 <? b then 1 else 0)) as f.
+      remember (fun (n : nat) (b0 : tA) => n + (if b0 <? b then 1 else 0)) as f.
       remember (if a0 <? b then 1 else 0) as n.
       remember (if a <? b then 1 else 0) as m.
       replace n with (0 + n) by lia.
@@ -371,7 +371,7 @@ Section ronum.
 
   (** ronum1 b [a1;a2;...;a;...;an] = ronum1 b [a1;a2;...;ai;...;an] + 
       (a<?b ?? 1 : 0) - (ai<?b ?? 1 : 0) *)
-  Lemma ronum1_lset : forall (l : list A) (i : nat) (a b : A),
+  Lemma ronum1_lset : forall (l : list tA) (i : nat) (a b : tA),
       i < length l ->
       ronum1 b (lset l i a) =
         ronum1 b l + (if a <? b then 1 else 0) -
@@ -379,7 +379,7 @@ Section ronum.
   Proof. intros. pose proof (ronum1_lset_invariant l i a b H). lia. Qed.
 
   (** ronum1 a (lswap l i j) = ronum1 a l *)
-  Lemma ronum1_lswap : forall (l : list A) (a : A) (i j : nat),
+  Lemma ronum1_lswap : forall (l : list tA) (a : tA) (i j : nat),
       i < length l -> j < length l -> i < j ->
       ronum1 a (lswap l i j) = ronum1 a l.
   Proof.
@@ -393,7 +393,7 @@ Section ronum.
   Qed.
   
   (** ronum (lswap l i j) = ronum l + S (2 * j - S i)) *)
-  Lemma ronum_lswap : forall (l : list A) (i j : nat),
+  Lemma ronum_lswap : forall (l : list tA) (i j : nat),
       i < length l -> j < length l -> i < j ->
       ronum (lswap l i j) = ronum l + S (2 * (j - S i)).
   Proof.
@@ -433,10 +433,10 @@ End test.
 (* ======================================================================= *)
 (** ** Parity of a permutation, 排列的奇偶性 *)
 Section parity.
-  Context {A} {Altb : A -> A -> bool}.
+  Context {tA} {Altb : tA -> tA -> bool}.
 
   (** The RON of a permutation is odd *)
-  Definition oddPerm (l : list A) : bool := odd (ronum (Altb:=Altb) l).
+  Definition oddPerm (l : list tA) : bool := odd (ronum (Altb:=Altb) l).
 
 End parity.
 
@@ -444,14 +444,14 @@ End parity.
 (* ======================================================================= *)
 (** ** Exchange of a permutation 排列的对换 *)
 Section permExchg.
-  Context {A} {Altb : A -> A -> bool} (Azero : A).
+  Context {tA} {Altb : tA -> tA -> bool} (Azero : tA).
 
   Notation ronum := (ronum (Altb:=Altb)).
   Notation oddPerm := (oddPerm (Altb:=Altb)).
   Notation lswap := (lswap Azero).
   
   (** Swap two elements will change the parity of a permutation *)
-  Theorem swap_perm_parity : forall (l : list A) (i0 i1 : nat),
+  Theorem swap_perm_parity : forall (l : list tA) (i0 i1 : nat),
       NoDup l ->
       i0 < length l -> i1 < length l -> i0 < i1 ->
       oddPerm (lswap l i0 i1) = negb (oddPerm l).

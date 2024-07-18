@@ -146,8 +146,8 @@ Hint Resolve Rplus2_sqr_gt0_r : R.
 Lemma Rsqr_mult_le : forall a b c d : R, (a * c + b * d)² <= (a² + b²) * (c² + d²).
 Proof.
   intros. unfold Rsqr. ring_simplify.
-  rewrite !associative. apply Rplus_le_compat_l.
-  rewrite <- !associative. apply Rplus_le_compat_r.
+  rewrite !Rplus_assoc. apply Rplus_le_compat_l.
+  rewrite <- !Rplus_assoc. apply Rplus_le_compat_r.
   autorewrite with R.
   replace (a² * d²) with (a * d)²; [|ra].
   replace (c² * b²) with (c * b)²; [|ra].

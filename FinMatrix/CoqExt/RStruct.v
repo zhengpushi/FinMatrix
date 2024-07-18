@@ -10,6 +10,7 @@
   remark    :
  *)
 
+Require Export ElementType.
 Require Export RExtCvt.
 Require Export RExtBase.
 

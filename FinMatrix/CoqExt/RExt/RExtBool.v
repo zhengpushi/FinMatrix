@@ -10,7 +10,7 @@
   remark    :
  *)
 
-Require Export RExtBase RExtStruct.
+Require Export Basic RExtBase.
 
 
 (* ######################################################################### *)
@@ -25,7 +25,7 @@ Notation "x >=? y" := (Rleb y x) : R_scope.
 Infix "<?"  := Rltb : R_scope.
 Infix "<=?" := Rleb : R_scope.
     
-Lemma Reqb_reflect : forall x y, reflect (x = y) (x =? y).
+Lemma Reqb_reflect : forall x y : R, reflect (x = y) (x =? y).
 Proof. intros. unfold Reqb. destruct Req_dec_T; constructor; auto. Qed.
 Hint Resolve Reqb_reflect : bdestruct.
 

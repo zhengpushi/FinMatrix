@@ -3530,14 +3530,16 @@ Section vcoll_vpara_vapara.
   Notation Adiv a b := (a * (/ b))%A.
   Infix "/" := Adiv : A_scope.
 
-  Notation vzero := (vzero Azero).
+  Notation vzero := (vzero 0).
   Notation vadd := (@vadd _ Aadd).
   Notation vopp := (@vopp _ Aopp).
   Notation vscal := (@vscal _ Amul).
+  Notation vorth := (@vorth _ Aadd 0 Amul _).
   Infix "+" := vadd : vec_scope.
   Notation "- a" := (vopp a) : vec_scope.
   Notation "a - b" := ((a + -b)%V) : vec_scope.
   Infix "s*" := vscal : vec_scope.
+  Infix "_|_" := vorth : vec_scope.
 
 
   (** *** Colinear *)
@@ -3796,5 +3798,61 @@ Section vcoll_vpara_vapara.
     Qed.
     
   End convert.
+
+  (** *** Extra properties for //, //+, //-  *)
+  Section extra_props.
+
+    (* 与两个不共线的向量都垂直的向量是共线的 *)
+    Lemma vcoll_if_vorth_both : forall {n} (a b c d : vec n),
+        ~(a // b) -> a _|_ c -> b _|_ c -> a _|_ d -> b _|_ d -> c // d.
+    Proof.
+    Abort.
+
+    Context `{HA2R : A2R _ Aadd 0 Aopp Amul 1 Ainv Alt Ale}.
+    Notation vlen := (@vlen _ Aadd 0 Amul a2r _).
+    Notation "|| a ||" := (vlen a) : vec_scope.
+
+    (** 两个平行向量 a 和 b 若长度相等，则 a = b *)
+    Lemma vpara_vlen_eq_imply : forall {n} (a b : vec n),
+        a //+ b -> ||a|| = ||b|| -> a = b.
+    Proof.
+      intros. destruct H as [H1 [H2 [x [H3 H4]]]].
+      destruct (Aeqdec a vzero), (Aeqdec b vzero); try easy.
+      assert (x = 1).
+      { rewrite <- H4 in H0. rewrite vlen_vscal in H0.
+        symmetry in H0. apply Rmult_eq_r_reg in H0.
+        { (* x = 1 *)
+          apply a2r_Aabs_eq1 in H0; auto. }
+        { (* ||a|| <> 0 *)
+          intro. apply vlen_eq0_iff_eq0 in H. easy. } }
+      rewrite H in H4. rewrite vscal_1_l in H4; auto.
+    Qed.
+
+    (** 两个反平行向量 a 和 b 若长度相等，则 a = - b *)
+    Lemma vapara_vlen_eq_imply : forall {n} (a b : vec n),
+        a //- b -> ||a|| = ||b|| -> a = -b.
+    Proof.
+      intros. destruct H as [H1 [H2 [x [H3 H4]]]].
+      destruct (Aeqdec a vzero), (Aeqdec b vzero); try easy.
+      assert (x = - (1))%A.
+      { rewrite <- H4 in H0. rewrite vlen_vscal in H0.
+        symmetry in H0. apply Rmult_eq_r_reg in H0; auto.
+        { (* x = - 1 *)
+          apply a2r_Aabs_eq_n1 in H0; auto. }
+        { (* ||a|| <> 0 *)
+          intro. apply vlen_eq0_iff_eq0 in H. easy. } }
+      rewrite H in H4. rewrite vscal_neg1_l in H4. rewrite <- H4, vopp_vopp. auto.
+    Qed.
+
+    (** 两个共线向量 a 和 b 若长度相等，则 a = ± b *)
+    Lemma vcoll_vlen_eq_imply : forall {n} (a b : vec n),
+        a // b -> ||a|| = ||b|| -> a = b \/ a = -b.
+    Proof.
+      intros. destruct (vcoll_imply_vpara_or_vapara a b H).
+      - left. apply vpara_vlen_eq_imply; auto.
+      - right. apply vapara_vlen_eq_imply; auto.
+    Qed.
+    
+  End extra_props.
 
 End vcoll_vpara_vapara.

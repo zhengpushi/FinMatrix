@@ -102,6 +102,7 @@
 Require Import Coq.Logic.Description. (* constructive_definite_description *)
 Require Export Basic.
 Require Import Reals.
+Require RExtAbs.
 Import ListNotations.
 
 Open Scope nat_scope.
@@ -3152,6 +3153,9 @@ Class A2R {tA} Aadd Azero Aopp Amul Aone Ainv Alt Ale
 Section Theory.
   Context `{HA2R : A2R}.
   Context {AeqDec : Dec (@eq tA)}.
+  Notation "0" := Azero : A_scope.
+  Notation "1" := Aone : A_scope.
+  Notation "- a" := (Aopp a) : A_scope.
   Infix "<" := Alt : A_scope.
   Infix "<=" := Ale : A_scope.
 
@@ -3172,6 +3176,8 @@ Section Theory.
   Proof. intros. rewrite <- a2r_0. apply a2r_lt_iff. Qed.
 
   Section OrderedARing.
+    Import RExtAbs.
+    Open Scope A_scope.
     Context `{HOrderedARing :
         OrderedARing tA Aadd Azero Aopp Amul Aone Alt Ale}.
     Notation "| a |" := (Rabs a) : R_scope.
@@ -3186,6 +3192,31 @@ Section Theory.
       - rewrite Rabs_left. rewrite a2r_opp. auto.
         rewrite <- a2r_0. apply a2r_lt_iff. apply not_le_lt; auto.
     Qed.
+
+    (** 0 < a -> |a2r a| = 1 -> a = 1 *)
+    Lemma Rabs_a2r_eq1 : forall a : tA, 0 < a -> (|a2r a| = 1)%R -> a = 1.
+    Proof.
+      intros. apply Rabs_gt0_eq1 in H0.
+      - apply a2r_eq_iff. rewrite H0. symmetry. rewrite a2r_1. auto.
+      - rewrite <- a2r_0. apply a2r_lt_iff. auto.
+    Qed.
+
+    (** a < 0 -> |a2r a| = 1 -> a = - 1 *)
+    Lemma Rabs_a2r_eq_n1 : forall a : tA, a < 0 -> (|a2r a| = 1)%R -> a = - (1).
+    Proof.
+      intros. apply Rabs_lt0_eq_n1 in H0.
+      - apply a2r_eq_iff. rewrite H0. rewrite a2r_opp. cbv. f_equal.
+        symmetry. apply a2r_1.
+      - rewrite <- a2r_0. apply a2r_lt_iff. auto.
+    Qed.
+
+    (** 0 < a -> a2r | a | = 1 -> a = 1 *)
+    Lemma a2r_Aabs_eq1 : forall a : tA, 0 < a -> (a2r (| a |) = 1%R) -> a = 1.
+    Proof. intros. rewrite a2r_Aabs in H0. apply Rabs_a2r_eq1 in H0; auto. Qed.
+
+    (** a < 0 -> a2r | a | = 1 -> a = - 1 *)
+    Lemma a2r_Aabs_eq_n1 : forall a : tA, a < 0 -> (a2r (| a |) = 1%R) -> a = - (1).
+    Proof. intros. rewrite a2r_Aabs in H0. apply Rabs_a2r_eq_n1 in H0; auto. Qed.
     
   End OrderedARing.
   

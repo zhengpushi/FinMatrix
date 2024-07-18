@@ -104,13 +104,23 @@ Proof.
     apply Rabs_pos_imply; ra.
 Qed.
 
-Lemma Rdiv_abs_gt0 : forall r, r > 0 -> r / | r | = 1.
+(** 0 < r -> r / | r | = 1 *)
+Lemma Rdiv_abs_gt0 : forall r, 0 < r -> r / | r | = 1.
 Proof. intros. rewrite Rabs_right; ra. Qed.
 Hint Resolve Rdiv_abs_gt0 : R.
 
+(** r < 0 -> r / | r | = -1 *)
 Lemma Rdiv_abs_lt0 : forall r, r < 0 -> r / | r | = -1.
 Proof. intros. rewrite Rabs_left; ra. Qed.
 Hint Resolve Rdiv_abs_lt0 : R.
+
+(** 0 < r -> | r | = 1 -> r = 1 *)
+Lemma Rabs_gt0_eq1 : forall r : R, 0 < r -> | r | = 1 -> r = 1.
+Proof. intros. unfold Rabs in H0. destruct (Rcase_abs); lra. Qed.
+
+(** r < 0 -> | r | = 1 -> r = - 1 *)
+Lemma Rabs_lt0_eq_n1 : forall r : R, r < 0 -> | r | = 1 -> r = -1.
+Proof. intros. unfold Rabs in H0. destruct (Rcase_abs); lra. Qed.
 
 
 (* ======================================================================= *)

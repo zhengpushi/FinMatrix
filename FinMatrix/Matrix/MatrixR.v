@@ -169,9 +169,9 @@ Proof.
   - bdestruct (x =? 0). easy. rewrite Rabs_left; ra.
 Qed.
 
-(** x > 0 -> vnorm (x s* a) = vnorm a *)
+(** 0 < x -> vnorm (x s* a) = vnorm a *)
 Lemma vnorm_vscal_k_gt0 : forall {n} x (a : vec n),
-    x > 0 -> a <> vzero -> vnorm (x s* a) = vnorm a.
+    0 < x -> a <> vzero -> vnorm (x s* a) = vnorm a.
 Proof.
   intros. rewrite vnorm_vscal; auto; ra. rewrite sign_gt0; auto. apply vscal_1_l.
 Qed.
@@ -660,7 +660,7 @@ Lemma v2len_eq : forall a : vec 2, ||a|| = sqrt (a.1² + a.2²).
 Proof. intros. cbv. f_equal. ra. Qed.
 
 (** (a.1 / ||a||)² = 1 - (a.2 / ||a||)² *)
-Lemma sqr_x_div_vlen : forall (a : vec 2),
+Lemma sqr_x_div_v2len : forall (a : vec 2),
     a <> vzero -> (a.1 / ||a||)² = (1 - (a.2 / ||a||)²)%R.
 Proof.
   intros. rewrite !Rsqr_div'. rewrite <- !vdot_same. field_simplify_eq.
@@ -668,7 +668,7 @@ Proof.
 Qed.
 
 (** (a.2 / ||a||)² = 1 - (a.x / ||a||)² *)
-Lemma sqr_y_div_vlen : forall (a : vec 2),
+Lemma sqr_y_div_v2len : forall (a : vec 2),
     a <> vzero -> (a.2 / ||a||)² = (1 - (a.1 / ||a||)²)%R.
 Proof.
   intros. rewrite !Rsqr_div'. rewrite <- !vdot_same. field_simplify_eq.
@@ -962,10 +962,10 @@ Proof.
   rewrite vnth_vnorm; auto. pose proof (vlen_gt0 a H).
   rewrite v2cross_i_l. bdestruct (0 <=? a #1).
   - rewrite sin_acos; auto with vec.
-    + rewrite <- sqr_y_div_vlen; auto. ra.
+    + rewrite <- sqr_y_div_v2len; auto. ra.
     + apply vnth_div_vlen_bound; auto.
   - rewrite sin_neg. rewrite sin_acos; auto with vec.
-    + rewrite <- sqr_y_div_vlen; auto. rewrite sqrt_Rsqr_abs. rewrite Rabs_left; ra.
+    + rewrite <- sqr_y_div_v2len; auto. rewrite sqrt_Rsqr_abs. rewrite Rabs_left; ra.
       assert (a #1 < 0); ra.
     + apply vnth_div_vlen_bound; auto.
 Qed.
@@ -986,12 +986,12 @@ Proof.
   rewrite vnth_vnorm; auto. pose proof (vlen_gt0 a H).
   rewrite v2cross_j_l. bdestruct (0 <=? - a #0).
   - assert (a.1 <= 0); ra. rewrite sin_acos; auto with vec.
-    + rewrite <- sqr_x_div_vlen; auto. rewrite sqrt_Rsqr_abs.
+    + rewrite <- sqr_x_div_v2len; auto. rewrite sqrt_Rsqr_abs.
       rewrite Rabs_left1; ra.
       assert (0 < / (||a||)); ra.
     + apply vnth_div_vlen_bound; auto.
   - assert (a.1 > 0); ra. rewrite sin_acos; auto with vec.
-    + rewrite <- sqr_x_div_vlen; auto.
+    + rewrite <- sqr_x_div_v2len; auto.
       rewrite sqrt_Rsqr_abs. rewrite Rabs_right; ra.
     + apply vnth_div_vlen_bound; auto.
 Qed.
@@ -1111,52 +1111,6 @@ Lemma vangle_vadd : forall {n} (a b c d : vec n),
 Proof.
 Admitted.
 
-
-(* ======================================================================= *)
-(** ** Properties about parallel, orthogonal of 3D vectors *)
-
-(* 与两个不共线的向量都垂直的向量是共线的 *)
-Lemma vcoll_if_vorth_both : forall {n} (a b c d : vec n),
-    ~(a // b) -> a _|_ c -> b _|_ c -> a _|_ d -> b _|_ d -> c // d.
-Proof.
-Abort.
-
-(** 两个平行向量 a 和 b 若长度相等，则 a = b *)
-Lemma vpara_and_same_len_imply : forall {n} (a b : vec n),
-    a //+ b -> ||a|| = ||b|| -> a = b.
-Proof.
-  intros. destruct H as [H1 [H2 [x [H3 H4]]]].
-  destruct (Aeqdec a vzero), (Aeqdec b vzero); try easy.
-  assert (x = 1).
-  { rewrite <- H4 in H0. rewrite vlen_vscal in H0. unfold a2r,id in H0.
-    symmetry in H0. apply Rmult_eq_r_reg in H0; auto.
-    autounfold with tA in *. unfold Aabs in H0. destruct (Ale_dec 0 x); lra.
-    apply vlen_neq0_iff_neq0; auto. }
-  rewrite H in H4. rewrite vscal_1_l in H4; auto.
-Qed.
-
-(** 两个反平行向量 a 和 b 若长度相等，则 a = - b *)
-Lemma vapara_and_same_len_imply : forall {n} (a b : vec n),
-    a //- b -> ||a|| = ||b|| -> a = -b.
-Proof.
-  intros. destruct H as [H1 [H2 [x [H3 H4]]]].
-  destruct (Aeqdec a vzero), (Aeqdec b vzero); try easy.
-  assert (x = - (1))%R.
-  { rewrite <- H4 in H0. rewrite vlen_vscal in H0. unfold a2r,id in H0.
-    symmetry in H0. apply Rmult_eq_r_reg in H0; auto.
-    autounfold with tA in *. unfold Aabs in H0. destruct (Ale_dec 0 x); lra.
-    apply vlen_neq0_iff_neq0; auto. }
-  rewrite H in H4. rewrite vscal_neg1_l in H4. rewrite <- H4, vopp_vopp. auto.
-Qed.
-
-(** 两个共线向量 a 和 b 若长度相等，则 a = ± b *)
-Lemma vcoll_and_same_len_imply : forall {n} (a b : vec n),
-    a // b -> ||a|| = ||b|| -> a = b \/ a = -b.
-Proof.
-  intros. destruct (vcoll_imply_vpara_or_vapara a b H).
-  - left. apply vpara_and_same_len_imply; auto.
-  - right. apply vapara_and_same_len_imply; auto.
-Qed.
 
 (* ======================================================================= *)
 (** ** The cross product (vector product) of two 3-dim vectors *)

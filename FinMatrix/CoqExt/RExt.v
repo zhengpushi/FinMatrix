@@ -61,11 +61,11 @@
  *)
 
 
-Require Export QcExt.
-Require Export RExtBase RExtCvt RExtStruct RExtBool RExtLt.
+Require Export RExtBase RExtCvt RExtBool RExtLt.
 Require Export RExtPlus RExtMult RExtPow RExtOpp RExtInv.
 Require Export RExtSqr RExtSqrt RExtAbs RExtSign RExtExp RExtLog RExtRpower.
 Require Export RExtApprox RExtTrigo RExtAtan2.
+Require Export QcExt RStruct.
 
 
 (* ======================================================================= *)

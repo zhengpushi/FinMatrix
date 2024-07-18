@@ -10,7 +10,6 @@
   remark    :
  *)
 
-Require Export ElementType.
 Require Export Reals Lra.
 
 Open Scope R_scope.

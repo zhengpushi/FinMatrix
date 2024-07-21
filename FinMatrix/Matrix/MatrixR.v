@@ -1152,12 +1152,12 @@ Lemma v3cross_anticomm : forall a b : vec 3, a \x b = -(b \x a).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
 (** (a + b) × c = (a × c) + (b × c) *)
-Lemma v3cross_add_distr_l : forall a b c : vec 3,
+Lemma v3cross_vadd_distr_l : forall a b c : vec 3,
     (a + b) \x c = (a \x c) + (b \x c).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
 (** a × (b + c) = (a × b) + (a × c) *)
-Lemma v3cross_add_distr_r : forall a b c : vec 3,
+Lemma v3cross_vadd_distr_r : forall a b c : vec 3,
     a \x (b + c) = (a \x b) + (a \x c).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
@@ -1170,22 +1170,22 @@ Lemma v3cross_vopp_r : forall a b : vec 3, a \x (-b) = - (a \x b).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
 (** (a - b) × c = (a × c) - (b × c) *)
-Lemma v3cross_sub_distr_l : forall a b c : vec 3,
+Lemma v3cross_vsub_distr_l : forall a b c : vec 3,
     (a - b) \x c = (a \x c) - (b \x c).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
 (** a × (b - c) = (a × b) - (a × c) *)
-Lemma v3cross_sub_distr_r : forall a b c : vec 3,
+Lemma v3cross_vsub_distr_r : forall a b c : vec 3,
     a \x (b - c) = (a \x b) - (a \x c).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
 (** (x .* a) × b = x .* (a × b) *)
-Lemma v3cross_vscal_assoc_l : forall (x : R) (a b : vec 3),
+Lemma v3cross_vscal_l : forall (x : R) (a b : vec 3),
     (x s* a) \x b = x s* (a \x b).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
 (** a × (x .* b) = x s* (a × b) *)
-Lemma v3cross_vscal_assoc_r : forall (x : R) (a b : vec 3),
+Lemma v3cross_vscal_r : forall (x : R) (a b : vec 3),
     a \x (x s* b) = x s* (a \x b).
 Proof. intros. apply v3eq_iff; cbv; ra. Qed.
 
@@ -1953,11 +1953,11 @@ Section SO3_keep_v3cross.
       morth M -> mdet M = 1 -> (M *v a) \x (M *v b) = (M *v (a \x b)).
   Proof.
     intros.
-    pose proof (morth_keep_v3cross_det1_aux M).
     apply vdot_cancel_l; intros.
     rewrite !v3mixed_swap_op. fold (v3mixed c (M *v a) (M *v b)).
+    pose proof (morth_keep_v3cross_det1_aux M).
     specialize (H1 (M\T *v c) a b H H0).
-    replace (M *v (M \T *v c)) with c in H1; auto.
+    replace (M *v (M \T) *v c) with c in H1. auto.
     rewrite <- mmulv_assoc. rewrite morth_iff_mul_trans_r in H.
     rewrite H; auto. rewrite mmulv_1_l. auto.
   Qed.

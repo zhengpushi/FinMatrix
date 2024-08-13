@@ -65,6 +65,7 @@ Hint Rewrite
   Rsqr_0              (* 0² = 0 *)
   Rsqr_1              (* 1² = 1 *)
   Rsqr_mult           (* (x * y)² = x² * y² *)
+  Rsqr_inv'           (* (/ x)² = / x² *)
   : R.
 
 Hint Resolve

@@ -125,19 +125,16 @@ Reserved Notation "| r |"   (at level 30, r at level 25, format "| r |").  (* Ra
 (*   (at level 25, i, j at next level, format "f ! i ! j" ). *)
 
 (* Get element of vector/matrix by index. *)
-(* Reserved Notation "V $ i" *)
-(*   (at level 25, i at next level, format "V $ i" ). *)
 
+(* keep same with "mathcomp/ssrreflect/ssrnotation.v"  *)
 Reserved Notation "v .[ i ]"
-  (at level 2, i at next level, left associativity, format "v .[ i ]").
-Reserved Notation "v .[ i <- a ]"
-  (at level 2, i at next level, left associativity, format "v .[ i <- a ]").
-Reserved Notation "M .[ i , j ]"
-  (at level 2, i, j at next level, left associativity, format "M .[ i , j ]").
-Reserved Notation "M .[ i , j <- a ]"
-  (at level 2, i, j at next level, left associativity, format "M .[ i , j <- a ]").
+  (* (at level 2, i at next level, left associativity, format "v .[ i ]"). *)
+  (at level 2, left associativity, format "v .[ i ]").
+(* Reserved Notation "v .[ i <- a ]" *)
+(*   (at level 2, i at next level, left associativity, format "v .[ i <- a ]"). *)
 Reserved Notation "M &[ i ]"
-  (at level 2, i at next level, left associativity, format "M &[ i ]").
+  (at level 2, left associativity, format "M &[ i ]").
+  (* (at level 2, i at next level, left associativity, format "M &[ i ]"). *)
 
 
 (* Get element of finite vector/matrix by index.
@@ -145,10 +142,11 @@ Reserved Notation "M &[ i ]"
    Many programming language use 0, but MATLAB and many mathematical textbook use 1.
    Maybe it is a convention problem, we choose 1. *)
 
-Reserved Notation "V .1"       (at level 25, format "V .1").      (* v[1] *)
-Reserved Notation "V .2"       (at level 25, format "V .2").
-Reserved Notation "V .3"       (at level 25, format "V .3").
-Reserved Notation "V .4"       (at level 25, format "V .4").
+(* keep same with "p .1" in Coq/ssr/ssrfun.v *)
+Reserved Notation "V .1"       (at level 2, left associativity, format "V .1"). (* v[1] *)
+Reserved Notation "V .2"       (at level 2, left associativity, format "V .2").
+Reserved Notation "V .3"       (at level 2, left associativity, format "V .3").
+Reserved Notation "V .4"       (at level 2, left associativity, format "V .4").
 
 (* For 2-/3-/4-D vector *)
 (* Reserved Notation "V .x"       (at level 25, format "V .x").      (* v[1] *) *)

@@ -181,6 +181,11 @@ Hint Resolve Rplus2_sqr_neq0_if : R.
 Lemma Rplus2_sqr_neq0 : forall r1 r2, r1² + r2² <> 0 <-> r1 <> 0 \/ r2 <> 0.
 Proof. ra. Qed.
 
+(** 0 < r1 -> 0 < r2 -> r1 < r2 -> r1² < r2² *)
+Lemma Rsqr_mono_gt0 : forall r1 r2, 0 < r1 -> 0 < r2 -> r1 < r2 -> r1² < r2².
+Proof. ra. Qed.
+
+
 (* -------------------------------------------- *)
 (** *** r1² + r2² + r3² *)
 

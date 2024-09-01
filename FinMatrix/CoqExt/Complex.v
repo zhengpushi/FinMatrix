@@ -831,7 +831,7 @@ Proof.
     + bdestruct (b >? 0).
       * rewrite Carg_xeq0_ygt0; ra.
       * apply Cneq_iff in H; simpl in H. assert (b < 0) by ra.
-        rewrite Carg_xeq0_ylt0; ra. ra.
+        rewrite Carg_xeq0_ylt0; ra.
     + bdestruct (b >=? 0).
       * rewrite Carg_xlt0_yge0; ra. rewrite cos_atan.
         unfold Rdiv at 1. rewrite Rinv_Rsqrt_1_plus_Rsqr_b_div_a; ra.

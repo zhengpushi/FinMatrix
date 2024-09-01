@@ -14,7 +14,7 @@
 
  *)
 
-Require Export RExtBase RExtPlus RExtMult RExtSqr RExtOpp RExtInv RExtBool.
+Require Export RExtBase RExtPlus RExtMult RExtSqr RExtOpp RExtInv RExtSqrt RExtBool.
 
 
 (* ======================================================================= *)
@@ -350,22 +350,6 @@ Fact cot_5PI6 : cot (5 * PI / 6) = - (sqrt 3). Admitted.
 Fact cot_3PI2 : cot (3 * PI / 2) = 0. Admitted.
 (* Fact cot_2PI : cot (2 * PI) = inf. Admitted. *)
 
-
-(* ======================================================================= *)
-(** ** Trigonometric functions about asin and acos *)
-
-
-(* ======================================================================= *)
-(** ** Trigonometric functions about atan and acot *)
-
-(** sin r / cos r = tan r *)
-Lemma tan_rw : forall r : R, sin r / cos r = tan r.
-Proof. auto. Qed.
-Hint Rewrite tan_rw : R.
-
-(** *** 缺失了的函数 *)
-Parameter acot : R -> R.
-
 (** *** 诱导公式 *)
 Fact tan_PI2_add : forall x, tan (PI/2 + x) = - cot x. Admitted.
 Fact tan_PI2_sub : forall x, tan (PI/2 - x) = cot x. Admitted.
@@ -407,12 +391,43 @@ Hint Rewrite
   cot_2PI_add
   : R.
 
+
 (* ======================================================================= *)
-(** ** Trigonometric functions about atan2 *)
+(** ** Trigonometric functions about asin and acos *)
 
 
 (* ======================================================================= *)
-(** ** Trigonometric functions about atan2 *)
+(** ** Trigonometric functions about atan and acot *)
+
+(** sin r / cos r = tan r *)
+Lemma tan_rw : forall r : R, sin r / cos r = tan r.
+Proof. auto. Qed.
+Hint Rewrite tan_rw : R.
+
+(** *** 缺失了的函数 *)
+Parameter acot : R -> R.
+
+(** *** 诱导公式 *)
+
+(** 0 < a -> 0 < b -> sin (atan (a / b)) = a / sqrt (a*a + b*b) *)
+Lemma sin_atan : forall a b : R,
+    0 < a -> 0 < b -> sin (atan (a / b)) = a / (sqrt (a * a + b * b)).
+Proof.
+  intros. rewrite sin_atan. ra.
+  replace (1 + a² / b²) with ((a² + b²) * (/ b²)) by ra.
+  rewrite sqrt_mult_alt; ra.
+  replace (| b|) with b; ra.
+Qed.
+
+(** 0 < a -> 0 < b -> cos (atan (a / b)) = b / sqrt (a*a + b*b) *)
+Lemma cos_atan : forall a b : R,
+    0 < a -> 0 < b -> cos (atan (a / b)) = b / (sqrt (a * a + b * b)).
+Proof.
+  intros. rewrite cos_atan. ra.
+  replace (1 + a² / b²) with ((a² + b²) * (/ b²)) by ra.
+  rewrite sqrt_mult_alt; ra.
+  replace (| b|) with b; ra.
+Qed.
 
 (* ======================================================================= *)
 (** ** Trigonometric functions about sec and csc *)

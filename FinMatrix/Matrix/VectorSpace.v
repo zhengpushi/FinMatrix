@@ -1333,11 +1333,11 @@ Section props.
       intros. unfold lindep, ldep in *. intro. destruct H.
       destruct H0 as [cs [H H0]]. exists cs. split; auto.
       rewrite veq_iff_vnth. rewrite veq_iff_vnth in H0. intros.
-      specialize (H0 (fin2AddRangeAddL i)).
+      specialize (H0 (fAddRangeAddL i)).
       rewrite vnth_vzero in *. rewrite <- H0 at 2.
       rewrite lcomb_vec_vmap2_vapp. erewrite vnth_vapp_r.
-      rewrite fin2AddRangeAddL'_fin2AddRangeAddL. auto.
-      Unshelve. rewrite fin2nat_fin2AddRangeAddL. lia.
+      rewrite fAddRangeAddL'_fAddRangeAddL. auto.
+      Unshelve. rewrite fin2nat_fAddRangeAddL. lia.
     Qed.
 
     (** 在每个向量尾部都加入数个元素后保持线性无关 *)
@@ -1348,11 +1348,11 @@ Section props.
       intros. unfold lindep, ldep in *. intro. destruct H.
       destruct H0 as [cs [H H0]]. exists cs. split; auto.
       rewrite veq_iff_vnth. rewrite veq_iff_vnth in H0. intros.
-      specialize (H0 (fin2AddRangeR i)).
+      specialize (H0 (fAddRangeR i)).
       rewrite vnth_vzero in *. rewrite <- H0 at 2.
       rewrite lcomb_vec_vmap2_vapp. erewrite vnth_vapp_l.
-      rewrite fin2AddRangeR'_fin2AddRangeR. auto.
-      Unshelve. rewrite fin2nat_fin2AddRangeR. apply fin2nat_lt.
+      rewrite fAddRangeR'_fAddRangeR. auto.
+      Unshelve. rewrite fin2nat_fAddRangeR. apply fin2nat_lt.
     Qed.
 
     (** 对每个向量都插入1个元素后保持线性无关 *)
@@ -1386,7 +1386,7 @@ Section props.
     Proof.
       intros. unfold ldep in *. destruct H as [cs [H H0]]. exists cs. split; auto.
       rewrite veq_iff_vnth. rewrite veq_iff_vnth in H0. intros.
-      specialize (H0 (fin2AddRangeAddL i)). rewrite vnth_vzero in *.
+      specialize (H0 (fAddRangeAddL i)). rewrite vnth_vzero in *.
       rewrite <- H0 at 2. rewrite !vnth_lcomb. apply vsum_eq; intros j.
       rewrite !vnth_vmap2. f_equal.
     Qed.
@@ -1397,7 +1397,7 @@ Section props.
     Proof.
       intros. unfold ldep in *. destruct H as [cs [H H0]]. exists cs. split; auto.
       rewrite veq_iff_vnth. rewrite veq_iff_vnth in H0. intros.
-      specialize (H0 (fin2AddRangeR i)). rewrite vnth_vzero in *.
+      specialize (H0 (fAddRangeR i)). rewrite vnth_vzero in *.
       rewrite <- H0 at 2. rewrite !vnth_lcomb. apply vsum_eq; intros j.
       rewrite !vnth_vmap2. f_equal.
     Qed.

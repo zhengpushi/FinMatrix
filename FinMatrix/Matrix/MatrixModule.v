@@ -401,7 +401,7 @@ Module BasicMatrixTheory (E : ElementType).
 
   (** (vheadN a).i = a.i *)
   Lemma vnth_vheadN : forall {m n} (a : vec (m + n)) i,
-      (vheadN a).[i] = a.[fin2AddRangeR i].
+      (vheadN a).[i] = a.[fAddRangeR i].
   Proof. intros. apply vnth_vheadN. Qed.
 
   (** i < n -> (vtailN a).i = (v2f a).(m + i) *)
@@ -411,7 +411,7 @@ Module BasicMatrixTheory (E : ElementType).
 
   (** (vtailN a).i = a.(n + i) *)
   Lemma vnth_vtailN : forall {m n} (a : vec (m + n)) i,
-      (vtailN a).[i] = a.[fin2AddRangeAddL i].
+      (vtailN a).[i] = a.[fAddRangeAddL i].
   Proof. intros. apply vnth_vtailN. Qed.
 
   (* ======================================================================= *)
@@ -489,7 +489,7 @@ Module BasicMatrixTheory (E : ElementType).
   
   (** (vremoveHN a).i = a.(m + i) *)
   Lemma vnth_vremoveHN : forall {m n} (a : vec (m + n)) (i : 'I_n),
-      (vremoveHN a).[i] = a.[fin2AddRangeAddL i].
+      (vremoveHN a).[i] = a.[fAddRangeAddL i].
   Proof. intros. apply vnth_vremoveHN; auto. Qed.
   
   (** a <> 0 -> vheadN v = 0 -> vremoveHN a <> 0 *)
@@ -504,7 +504,7 @@ Module BasicMatrixTheory (E : ElementType).
   
   (** (vremoveTN a).i = a.i *)
   Lemma vnth_vremoveTN : forall {m n} (a : vec (m + n)) (i : 'I_m),
-      (vremoveTN a).[i] = a.[fin2AddRangeR i].
+      (vremoveTN a).[i] = a.[fAddRangeR i].
   Proof. intros. apply vnth_vremoveTN; auto. Qed.
   
   (** a <> 0 -> vtailN v = 0 -> vremoveTN a <> 0 *)
@@ -647,12 +647,12 @@ Module BasicMatrixTheory (E : ElementType).
   
   (** i < n -> (a ++ b).[i] = a.[i] *)
   Lemma vnth_vapp_l : forall {n m} (a : vec n) (b : vec m) (i : 'I_(n + m)) (H: i < n),
-      (a ++ b).[i] = a.[fin2AddRangeR' i H].
+      (a ++ b).[i] = a.[fAddRangeR' i H].
   Proof. intros. apply vnth_vapp_l. Qed.
   
   (** n <= i -> (a ++ b).[i] = b.[i] *)
   Lemma vnth_vapp_r : forall {n m} (a : vec n) (b : vec m) (i : 'I_(n + m)) (H : n <= i),
-      (a ++ b).[i] = b.[fin2AddRangeAddL' i H].
+      (a ++ b).[i] = b.[fAddRangeAddL' i H].
   Proof. intros. apply vnth_vapp_r. Qed.
 
   (** a ++ b = 0 <-> a = 0 /\ b = 0 *)
@@ -1446,8 +1446,8 @@ Module MonoidMatrixTheory (E : MonoidElementType).
   (** `vsum` of the m+n elements equal to plus of two parts. *)
   (*     Σ[0,(m+n)] a = Σ[0,m](fun i=>a[i]) + Σ[m,m+n] (fun i=>a[m+i]) *)
   Lemma vsum_plusIdx : forall m n (a : vec (m + n)),
-      vsum a = (vsum (fun i => a.[fin2AddRangeR i]) +
-                 vsum (fun i => a.[fin2AddRangeAddL i]))%A.
+      vsum a = (vsum (fun i => a.[fAddRangeR i]) +
+                 vsum (fun i => a.[fAddRangeAddL i]))%A.
   Proof. intros. apply vsum_plusIdx; auto. Qed.
 
   (** The order of two nested summations can be exchanged.

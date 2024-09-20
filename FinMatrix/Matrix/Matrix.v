@@ -1141,7 +1141,7 @@ Section mcsh.
   Definition mcshl {r c} (M : mat tA r c) (k : 'I_c) : mat tA r c :=
     fun i j =>
       if (fin2nat j + fin2nat k ??< c)%nat
-      then M.[i].[fin2SameRangeAdd j k]
+      then M.[i].[fSameRangeAdd j k]
       else Azero.
 
   (** right shift column. *)
@@ -1149,18 +1149,18 @@ Section mcsh.
   Definition mcshr {r c} (M : mat tA r c) (k : 'I_c) : mat tA r c :=
     fun i j =>
       if (fin2nat k ??<= fin2nat j)%nat
-      then M.[i].[fin2SameRangeSub j k]
+      then M.[i].[fSameRangeSub j k]
       else Azero.
 
   (** loop shift left of column. *)
   (* [[1;2;3];[4;5;6];[7;8;9] ==1==> [[2;3;1];[5;6;4];[8;9;7] *)
   Definition mclsl {r c} (M : @mat tA r c) (k : 'I_c) : @mat tA r c :=
-    fun i j => M.[i].[fin2SameRangeLSL j k].
+    fun i j => M.[i].[fSameRangeLSL j k].
 
   (** loop shift right of column *)
   (* [[1;2;3];[4;5;6];[7;8;9] ==1==> [[3;1;2];[6;4;5];[9;7;8] *)
   Definition mclsr {r c} (M : @mat tA r c) (k : 'I_c) : @mat tA r c :=
-    fun i j => M.[i].[fin2SameRangeLSR j k].
+    fun i j => M.[i].[fSameRangeLSR j k].
 
 End mcsh.
 

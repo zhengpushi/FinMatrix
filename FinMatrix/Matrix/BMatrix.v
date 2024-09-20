@@ -32,7 +32,7 @@ Section block_matrix.
 
   (** Get left upper matrix of matrix A *)
   Definition bmlu {r1 r2 c1 c2} (A : mat (r1 + r2) (c1 + c2)) : mat r1 c1 :=
-    fun i j => A (fin2AddRangeR i) (fin2AddRangeR j).
+    fun i j => A (fAddRangeR i) (fAddRangeR j).
 
   Lemma bmlu_spec : forall r1 r2 c1 c2 (A : mat (r1 + r2) (c1 + c2)) (i j : nat),
       i < r1 -> j < c1 -> m2f (bmlu A) i j = m2f A i j.
@@ -42,7 +42,7 @@ Section block_matrix.
 
   (** Get right upper matrix of matrix A *)
   Definition bmru {r1 r2 c1 c2} (A : mat (r1 + r2) (c1 + c2)) : mat r1 c2 :=
-    fun i j => A (fin2AddRangeR i) (fin2AddRangeAddL j).
+    fun i j => A (fAddRangeR i) (fAddRangeAddL j).
 
   Lemma bmru_spec : forall r1 r2 c1 c2 (A : mat (r1 + r2) (c1 + c2)) (i j : nat),
       i < r1 -> j < c2 -> m2f (bmru A) i j = m2f A i (c1 + j).
@@ -52,7 +52,7 @@ Section block_matrix.
 
   (** Get left bottom matrix of matrix A *)
   Definition bmlb {r1 r2 c1 c2} (A : mat (r1 + r2) (c1 + c2)) : mat r2 c1 :=
-    fun i j => A (fin2AddRangeAddL i) (fin2AddRangeR j).
+    fun i j => A (fAddRangeAddL i) (fAddRangeR j).
 
   Lemma bmlb_spec : forall r1 r2 c1 c2 (A : mat (r1 + r2) (c1 + c2)) (i j : nat),
       i < r2 -> j < c1 -> m2f (bmlb A) i j = m2f A (r1 + i) j.
@@ -62,7 +62,7 @@ Section block_matrix.
 
   (** Get right bottom matrix of matrix A *)
   Definition bmrb {r1 r2 c1 c2} (A : mat (r1 + r2) (c1 + c2)) : mat r2 c2 :=
-    fun i j => A (fin2AddRangeAddL i) (fin2AddRangeAddL j).
+    fun i j => A (fAddRangeAddL i) (fAddRangeAddL j).
 
   Lemma bmrb_spec : forall r1 r2 c1 c2 (A : mat (r1 + r2) (c1 + c2)) (i j : nat),
       i < r2 -> j < c2 -> m2f (bmrb A) i j = m2f A (r1 + i) (c1 + j).
@@ -75,12 +75,12 @@ Section block_matrix.
     (lb : mat r2 c1) (rb : mat r2 c2) : mat (r1 + r2) (c1 + c2).
   Proof.
     intros i j. destruct (i ??< r1) as [Hi|Hi], (j ??< c1) as [Hj|Hj].
-    - refine (lu (fin2AddRangeR' i Hi) (fin2AddRangeR' j Hj)).
-    - refine (ru (fin2AddRangeR' i Hi) (fin2AddRangeAddL' j _)).
+    - refine (lu (fAddRangeR' i Hi) (fAddRangeR' j Hj)).
+    - refine (ru (fAddRangeR' i Hi) (fAddRangeAddL' j _)).
       apply Nat.nlt_ge; auto.
-    - refine (lb (fin2AddRangeAddL' i _) (fin2AddRangeR' j Hj)).
+    - refine (lb (fAddRangeAddL' i _) (fAddRangeR' j Hj)).
       apply Nat.nlt_ge; auto.
-    - refine (rb (fin2AddRangeAddL' i _) (fin2AddRangeAddL' j _)).
+    - refine (rb (fAddRangeAddL' i _) (fAddRangeAddL' j _)).
       all: apply Nat.nlt_ge; auto.
   Defined.
 

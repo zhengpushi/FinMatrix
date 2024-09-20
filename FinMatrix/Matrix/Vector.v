@@ -647,7 +647,7 @@ Section vheadN_vtailN.
 
   (** Get head elements *)
   Definition vheadN {m n} (a : @vec tA (m + n)) : @vec tA m :=
-    fun i => a.[fin2AddRangeR i].
+    fun i => a.[fAddRangeR i].
 
   (** i < m -> (vheadN a).i = (v2f a).i *)
   Lemma vheadN_spec : forall {m n} (a : @vec tA (m + n)) i,
@@ -659,12 +659,12 @@ Section vheadN_vtailN.
 
   (** (vheadN a).i = a.i *)
   Lemma vnth_vheadN : forall {m n} (a : @vec tA (m + n)) i,
-      (vheadN a).[i] = a.[fin2AddRangeR i].
+      (vheadN a).[i] = a.[fAddRangeR i].
   Proof. auto. Qed.
 
   (** Get tail elements *)
   Definition vtailN {m n} (a : @vec tA (m + n)) : @vec tA n :=
-    fun i => a.[fin2AddRangeAddL i].
+    fun i => a.[fAddRangeAddL i].
 
   (** i < n -> (vtailN a).i = (v2f a).(m + i) *)
   Lemma vtailN_spec : forall {m n} (a : @vec tA (m + n)) i,
@@ -676,7 +676,7 @@ Section vheadN_vtailN.
 
   (** (vtailN a).i = a.(n + i) *)
   Lemma vnth_vtailN : forall {m n} (a : @vec tA (m + n)) i,
-      (vtailN a).[i] = a.[fin2AddRangeAddL i].
+      (vtailN a).[i] = a.[fAddRangeAddL i].
   Proof. auto. Qed.
 End vheadN_vtailN.
 
@@ -1214,7 +1214,7 @@ Section vremoveHN_vremoveTN.
   
   (** Remove head elements *)
   Definition vremoveHN {m n} (a : @vec tA (m + n)) : @vec tA n :=
-    fun i => a.[fin2AddRangeAddL i].
+    fun i => a.[fAddRangeAddL i].
 
   (** i < n -> (vremoveHN a).i = a.(m + i) *)
   Lemma vremoveHN_spec : forall {m n} (a : @vec tA (m + n)) (i : nat),
@@ -1227,7 +1227,7 @@ Section vremoveHN_vremoveTN.
   
   (** (vremoveHN a).i = a.(m + i) *)
   Lemma vnth_vremoveHN : forall {m n} (a : @vec tA (m + n)) (i : 'I_n),
-      (vremoveHN a).[i] = a.[fin2AddRangeAddL i].
+      (vremoveHN a).[i] = a.[fAddRangeAddL i].
   Proof. auto. Qed.
   
   (** a <> 0 -> vheadN v = 0 -> vremoveHN a <> 0 *)
@@ -1239,11 +1239,11 @@ Section vremoveHN_vremoveTN.
     rewrite veq_iff_vnth in H1. unfold vremoveHN in H1.
     destruct H. apply veq_iff_vnth; intros.
     destruct (m ??<= i) as [E|E].
-    - specialize (H1 (fin2AddRangeAddL' i E)).
-      rewrite fin2AddRangeAddL_fin2AddRangeAddL' in H1. rewrite H1. cbv. auto.
+    - specialize (H1 (fAddRangeAddL' i E)).
+      rewrite fAddRangeAddL_fAddRangeAddL' in H1. rewrite H1. cbv. auto.
     - assert (i < m). lia.
-      specialize (H0 (fin2AddRangeR' i H)).
-      rewrite fin2AddRangeR_fin2AddRangeR' in H0. rewrite H0. cbv. auto.
+      specialize (H0 (fAddRangeR' i H)).
+      rewrite fAddRangeR_fAddRangeR' in H0. rewrite H0. cbv. auto.
   Qed.
   
   
@@ -1251,7 +1251,7 @@ Section vremoveHN_vremoveTN.
 
   (** Remove tail elements *)
   Definition vremoveTN {m n} (a : @vec tA (m + n)) : @vec tA m :=
-    fun i => a.[fin2AddRangeR i].
+    fun i => a.[fAddRangeR i].
 
   (** i < n -> (vremoveTN a).i = a.i *)
   Lemma vremoveTN_spec : forall {m n} (a : @vec tA (m + n)) (i : nat),
@@ -1262,7 +1262,7 @@ Section vremoveHN_vremoveTN.
   
   (** (vremoveTN a).i = a.i *)
   Lemma vnth_vremoveTN : forall {m n} (a : @vec tA (m + n)) (i : 'I_m),
-      (vremoveTN a).[i] = a.[fin2AddRangeR i].
+      (vremoveTN a).[i] = a.[fAddRangeR i].
   Proof. intros. auto. Qed.
   
   (** a <> 0 -> vtailN v = 0 -> vremoveTN a <> 0 *)
@@ -1274,11 +1274,11 @@ Section vremoveHN_vremoveTN.
     rewrite veq_iff_vnth in H1. unfold vremoveTN in H1.
     destruct H. apply veq_iff_vnth; intros.
     destruct (m ??<= i) as [E|E].
-    - specialize (H0 (fin2AddRangeAddL' i E)).
-      rewrite fin2AddRangeAddL_fin2AddRangeAddL' in H0. rewrite H0. cbv. auto.
+    - specialize (H0 (fAddRangeAddL' i E)).
+      rewrite fAddRangeAddL_fAddRangeAddL' in H0. rewrite H0. cbv. auto.
     - assert (i < m). lia.
-      specialize (H1 (fin2AddRangeR' i H)).
-      rewrite fin2AddRangeR_fin2AddRangeR' in H1. rewrite H1. cbv. auto.
+      specialize (H1 (fAddRangeR' i H)).
+      rewrite fAddRangeR_fAddRangeR' in H1. rewrite H1. cbv. auto.
   Qed.
 
 End vremoveHN_vremoveTN.
@@ -1506,9 +1506,9 @@ Section vapp.
   (** Append two vectors, denoted with a ++ b *)
   Definition vapp {n m} (a : vec n) (b : vec m) : vec (n + m).
     intros i. destruct (i ??< n) as [E|E].
-    - exact (a.[fin2AddRangeR' i E]).
+    - exact (a.[fAddRangeR' i E]).
     - assert (n <= i). apply Nat.nlt_ge; auto.
-      exact (b.[fin2AddRangeAddL' i H]).
+      exact (b.[fAddRangeAddL' i H]).
   Defined.
   Infix "++" := vapp : vec_scope.
   
@@ -1533,12 +1533,12 @@ Section vapp.
   
   (** i < n -> (a ++ b).[i] = a.[i] *)
   Lemma vnth_vapp_l : forall {n m} (a : vec n) (b : vec m) (i : 'I_(n + m)) (H : i < n),
-      (a ++ b).[i] = a.[fin2AddRangeR' i H].
+      (a ++ b).[i] = a.[fAddRangeR' i H].
   Proof. intros. destruct i as [i Hi]. unfold vapp. simpl. fin. Qed.
   
   (** n <= i -> (a ++ b).[i] = b.[i] *)
   Lemma vnth_vapp_r : forall {n m} (a : vec n) (b : vec m) (i : 'I_(n + m)) (H : n <= i),
-      (a ++ b).[i] = b.[fin2AddRangeAddL' i H].
+      (a ++ b).[i] = b.[fAddRangeAddL' i H].
   Proof. intros. destruct i as [i Hi]. unfold vapp. simpl in *. fin. Qed.
 
   (** (a ++ b) = 0 <-> a = 0 /\ b = 0 *)
@@ -1547,18 +1547,18 @@ Section vapp.
   Proof.
     intros. rewrite !veq_iff_vnth. split; intros.
     - split; intros.
-      + specialize (H (fin2AddRangeR i)).
-        erewrite vnth_vapp_l in H. rewrite fin2AddRangeR'_fin2AddRangeR in H.
+      + specialize (H (fAddRangeR i)).
+        erewrite vnth_vapp_l in H. rewrite fAddRangeR'_fAddRangeR in H.
         rewrite H. cbv. auto.
-      + specialize (H (fin2AddRangeAddL i)).
-        erewrite vnth_vapp_r in H. erewrite fin2AddRangeAddL'_fin2AddRangeAddL in H.
+      + specialize (H (fAddRangeAddL i)).
+        erewrite vnth_vapp_r in H. erewrite fAddRangeAddL'_fAddRangeAddL in H.
         rewrite H. cbv. auto.
     - destruct H. destruct (i ??< n) as [E|E].
       + rewrite vnth_vapp_l with (H:=E). rewrite H. cbv. auto.
       + erewrite vnth_vapp_r. rewrite H0. cbv. auto.
         Unshelve. all: try lia.
-        * rewrite fin2nat_fin2AddRangeR. apply fin2nat_lt.
-        * rewrite fin2nat_fin2AddRangeAddL. lia.
+        * rewrite fin2nat_fAddRangeR. apply fin2nat_lt.
+        * rewrite fin2nat_fAddRangeAddL. lia.
   Qed.
   
   (** vapp (vheadN a) (vtailN a) = a *)
@@ -1567,9 +1567,9 @@ Section vapp.
     intros. apply veq_iff_vnth; intros.
     destruct (i ??< n) as [E|E].
     - erewrite vnth_vapp_l. rewrite vnth_vheadN.
-      rewrite fin2AddRangeR_fin2AddRangeR'. auto.
+      rewrite fAddRangeR_fAddRangeR'. auto.
     - erewrite vnth_vapp_r. rewrite vnth_vtailN.
-      rewrite fin2AddRangeAddL_fin2AddRangeAddL'. auto.
+      rewrite fAddRangeAddL_fAddRangeAddL'. auto.
       Unshelve. auto. lia.
   Qed.
 
@@ -1873,8 +1873,8 @@ Section vsum.
   (** `vsum` of the m+n elements equal to plus of two parts.
       Σ[0,(m+n)] a = Σ[0,m](fun i=>a[i]) + Σ[m,m+n] (fun i=>a[m+i]) *)
   Lemma vsum_plusIdx : forall m n (a : @vec tA (m + n)),
-      \sum a = \sum (fun i => a.[fin2AddRangeR i]) +
-                 \sum (fun i => a.[fin2AddRangeAddL i]).
+      \sum a = \sum (fun i => a.[fAddRangeR i]) +
+                 \sum (fun i => a.[fAddRangeAddL i]).
   Proof.
     intros. unfold vsum. rewrite seqsum_plusIdx. f_equal.
     - apply seqsum_eq; intros. erewrite !nth_v2f. f_equal. apply fin_eq_iff; auto.
@@ -1887,8 +1887,8 @@ Section vsum.
       (i < n -> a.(m+i) = c.i) ->
       Σ[0,(m+n)] a = Σ[0,m] b + Σ[m,m+n] c. *)
   Lemma vsum_plusIdx_ext : forall m n (a : @vec tA (m + n)) (b : @vec tA m) (c : @vec tA n),
-      (forall i : 'I_m, a.[fin2AddRangeR i] = b.[i]) ->
-      (forall i : 'I_n, a.[fin2AddRangeAddL i] = c.[i]) ->
+      (forall i : 'I_m, a.[fAddRangeR i] = b.[i]) ->
+      (forall i : 'I_n, a.[fAddRangeAddL i] = c.[i]) ->
       \sum a = \sum b + \sum c.
   Proof.
     intros. unfold vsum. rewrite seqsum_plusIdx. f_equal.
@@ -1934,11 +1934,11 @@ Section vsum.
       \sum (a ++ b) = \sum a + \sum b.
   Proof.
     intros. apply vsum_plusIdx_ext; intros.
-    - erewrite vnth_vapp_l. f_equal. rewrite fin2AddRangeR'_fin2AddRangeR. auto.
+    - erewrite vnth_vapp_l. f_equal. rewrite fAddRangeR'_fAddRangeR. auto.
     - erewrite vnth_vapp_r. f_equal.
-      rewrite fin2AddRangeAddL'_fin2AddRangeAddL. auto.
-      Unshelve. rewrite fin2nat_fin2AddRangeR. apply fin2nat_lt.
-      rewrite fin2nat_fin2AddRangeAddL. lia.
+      rewrite fAddRangeAddL'_fAddRangeAddL. auto.
+      Unshelve. rewrite fin2nat_fAddRangeR. apply fin2nat_lt.
+      rewrite fin2nat_fAddRangeAddL. lia.
   Qed.
 
   (** ∑ (vconsT a x) = ∑ a + x *)
@@ -2196,8 +2196,8 @@ Section vprod.
   (** `vprod` of the m+n elements equal to multiplication of two parts.
       Π[0,(m+n)] a = Π[0,m](fun i=>a[i]) * Π[m,m+n] (fun i=>a[m+i]) *)
   Lemma vprod_plusIdx : forall m n (a : @vec tA (m + n)),
-      vprod a = vprod (fun i => a.[fin2AddRangeR i]) *
-                 vprod (fun i => a.[fin2AddRangeAddL i]).
+      vprod a = vprod (fun i => a.[fAddRangeR i]) *
+                 vprod (fun i => a.[fAddRangeAddL i]).
   Proof.
     intros. unfold vprod. rewrite seqprod_plusIdx. f_equal.
     - apply seqprod_eq; intros. erewrite !nth_v2f. f_equal. apply fin_eq_iff; auto.
@@ -2210,8 +2210,8 @@ Section vprod.
       (i < n -> a.(m+i) = c.i) ->
       Π[0,(m+n)] a = Π[0,m] b * Π[m,m+n] c. *)
   Lemma vprod_plusIdx_ext : forall m n (a : @vec tA (m + n)) (b : @vec tA m) (c : @vec tA n),
-      (forall i : 'I_m, a.[fin2AddRangeR i] = b.[i]) ->
-      (forall i : 'I_n, a.[fin2AddRangeAddL i] = c.[i]) ->
+      (forall i : 'I_m, a.[fAddRangeR i] = b.[i]) ->
+      (forall i : 'I_n, a.[fAddRangeAddL i] = c.[i]) ->
       vprod a = vprod b * vprod c.
   Proof.
     intros. unfold vprod. rewrite seqprod_plusIdx. f_equal.
